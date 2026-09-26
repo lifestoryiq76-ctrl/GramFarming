@@ -8,6 +8,9 @@ const bot = new TelegramBot(TOKEN, { polling: true });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Aapki Secret Telegram Admin ID
+const ADMIN_TELEGRAM_ID = 6806028116;
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
@@ -32,7 +35,30 @@ bot.onText(/\/start/, (msg) => {
                 [
                     {
                         text: "🚀 Play Gram Farming",
-                        web_app: { url: "https://gramfarming-api.onrender.com" }
+                        web_app: { url: "https://gramfarming.onrender.com" }
+                    }
+                ]
+            ]
+        }
+    });
+});
+
+// Telegram Command: /admin (Sirf aapke liye khulega)
+bot.onText(/\/admin/, (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+
+    if (userId !== ADMIN_TELEGRAM_ID) {
+        return bot.sendMessage(chatId, '⚠️ You are not authorized to access the Admin Panel.');
+    }
+
+    bot.sendMessage(chatId, '🛠 Click the button below to open the Admin Panel inside Telegram:', {
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    {
+                        text: '🛠 Open Admin Panel',
+                        web_app: { url: 'https://gramfarming.onrender.com/admin' }
                     }
                 ]
             ]
