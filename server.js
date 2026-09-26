@@ -22,25 +22,9 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    const userName = msg.from.first_name || 'Friend';
-
-    const welcomeMessage = `Hello ${userName}! 🌱\n\nWelcome to **Gram Farming Mini App**!\n\nEarn coins, complete tasks, grow trees in mining, and withdraw real rewards directly. Click the button below to start playing!`;
-
-    bot.sendMessage(chatId, welcomeMessage, {
-        parse_mode: 'Markdown',
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    {
-                        text: "🚀 Play Gram Farming",
-                        web_app: { url: "https://gramfarming.onrender.com" }
-                    }
-                ]
-            ]
-        }
-    });
+// Bot Error Handling
+bot.on('polling_error', (error) => {
+    console.log(error.code);
 });
 
 // Telegram Command: /admin (Sirf aapke liye khulega)
