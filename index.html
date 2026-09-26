@@ -1,103 +1,707 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gram Farming Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0f172a;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-            background: #1e293b;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            width: 90%;
-            max-width: 400px;
-        }
-        h1 { color: #38bdf8; font-size: 24px; }
-        .balance { font-size: 32px; font-weight: bold; margin: 20px 0; color: #4ade80; }
-        button {
-            background-color: #38bdf8;
-            color: #0f172a;
-            border: none;
-            padding: 12px 24px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
-        button:active { background-color: #0ea5e9; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gram Farming Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #22c55e;
+      --accent-hover: #16a34a;
+      --yellow: #eab308;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 80px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); }
+    .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 1px solid var(--border); }
+    .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; }
+    .btn:active { transform: scale(0.96); }
+    .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; backdrop-filter: blur(10px); }
+    .nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; }
+    .nav-item.active { color: var(--accent); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    
+    .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+    .tree-icon { font-size: 32px; transition: transform 0.3s ease; margin: 5px 0; display: inline-block; }
+    .tree-progress-bar { width: 100%; background: #334155; height: 6px; border-radius: 3px; margin: 8px 0; overflow: hidden; }
+    .tree-progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s ease; }
+    
+    #miningBoxesSection { display: none; }
+    #miningBoxesSection.show { display: block; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Gram Farming</h1>
-        <p>Your Balance</p>
-        <div class="balance" id="balance">0 GRAM</div>
-        <button onclick="earnPoints()">Farm +1 Point</button>
+
+  <div class="header">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <h3 style="margin:0; color: var(--accent);">🌱 Gram Farming</h3>
+      <span class="live-badge">🔴 LIVE</span>
+    </div>
+    <select id="langSelect" onchange="changeLanguage(this.value)" style="width: auto; padding: 6px 12px;">
+      <option value="en">🇬🇧 EN</option>
+      <option value="ru">🇷🇺 RU</option>
+      <option value="hi" selected>🇮🇳 HI</option>
+    </select>
+  </div>
+
+  <!-- 🏠 HOME PAGE -->
+  <div id="home" class="tab-content active">
+    <div class="card">
+      <div class="flex-between" style="align-items: flex-start;">
+        <div>
+          <span style="font-size: 14px; color: var(--text-muted);" data-i18n="homeTitle">🏠 Home</span><br><br>
+          <span style="font-size: 16px; font-weight: bold;">🪙 <span data-i18n="balanceText">Balance</span>: <strong id="userBalance" style="color: var(--accent);">0.00</strong> Coin</span>
+        </div>
+        <div style="text-align: right;">
+          <small style="color: var(--text-muted);" data-i18n="coinVolume">Coin Volume</small><br>
+          <strong id="displayCoinVolume" style="color: var(--yellow); font-size: 15px;">1 Coin = $0.01</strong>
+        </div>
+      </div>
+      <br>
+      <div class="flex-between" style="background:#111827; padding:10px; border-radius:10px; border: 1px solid var(--border);">
+        <button class="btn" onclick="switchTab('tasks')" style="margin-right: 6px;" data-i18n="earnBtn">⚡ Earn</button>
+        <button class="btn" onclick="switchTab('wallet')" style="margin-left: 6px; background: #0284c7;" data-i18n="withdrawNavBtn">🪙 Withdraw</button>
+      </div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+    <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
+      <span style="font-size: 15px;" data-i18n="dailyBonus">🎁 Daily Bonus</span>
+      <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
+    </div>
 
-        // Telegram user info (fallback to test user if opened outside telegram)
-        const user = tg.initDataUnsafe?.user || { id: "123456789", username: "test_user" };
-        const telegramId = user.id.toString();
-        const username = user.username || "player";
+    <div class="card flex-between">
+      <div data-i18n="adsgramAd">🎟️ Adsgram Sponsored Ad</div>
+      <button class="btn" style="width: auto;" onclick="watchAdWithTimer(5, 'Adsgram')" data-i18n="watchBtn">Watch</button>
+    </div>
 
-        // Render Backend URL
-        const BACKEND_URL = "https://gramfarming.onrender.com";
+    <div class="card" style="background:var(--card-bg); border:1px solid var(--accent); cursor: pointer;" onclick="toggleMiningBoxes()">
+      <div class="flex-between">
+        <h4 style="margin:0; color: var(--accent);" data-i18n="treeMiningHeader">⛏️ Mining (Open 4 Boxes)</h4>
+        <span id="miningArrow" style="font-size: 16px; color: var(--accent); font-weight: bold;">▼</span>
+      </div>
+    </div>
 
-        // Fetch User Data on Load
-        async function fetchUser() {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/user`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ telegramId, username })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    document.getElementById('balance').innerText = `${data.user.balance} GRAM`;
-                }
-            } catch (err) {
-                console.error('Error fetching user:', err);
-            }
+    <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
+      <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);" data-i18n="treeMiningHeader">🌳 Advanced Tree Mining</h4>
+      
+      <div class="mining-grid">
+        <div class="mining-box" id="mBox-0">
+          <div>
+            <b style="font-size:13px;" data-i18n="pineTreeName">🌲 Pine Tree</b><br>
+            <span class="tree-icon" id="treeIcon-0">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-0">Reward: 10 Coins</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-0"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="startTreeMining(0, '🌲 Pine Tree', 10, 30)" id="treeBtn-0" data-i18n="startTreeBtn">Start Mining</button>
+          </div>
+        </div>
+
+        <div class="mining-box" id="mBox-1">
+          <div>
+            <b style="font-size:13px;" data-i18n="appleTreeName">🍎 Apple Tree</b><br>
+            <span class="tree-icon" id="treeIcon-1">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-1">Reward: 25 Coins</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-1"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="startTreeMining(1, '🍎 Apple Tree', 25, 60)" id="treeBtn-1" data-i18n="startTreeBtn">Start Mining</button>
+          </div>
+        </div>
+
+        <div class="mining-box" id="mBox-2">
+          <div>
+            <b style="font-size:13px;" data-i18n="sakuraTreeName">🌸 Sakura Tree</b><br>
+            <span class="tree-icon" id="treeIcon-2">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-2">Reward: 50 Coins</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-2"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="startTreeMining(2, '🌸 Sakura Tree', 50, 120)" id="treeBtn-2" data-i18n="startTreeBtn">Start Mining</button>
+          </div>
+        </div>
+
+        <div class="mining-box" id="mBox-3">
+          <div>
+            <b style="font-size:13px;" data-i18n="crystalTreeName">💎 Crystal Tree</b><br>
+            <span class="tree-icon" id="treeIcon-3">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-3">Reward: 100 Coins</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-3"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="startTreeMining(3, '💎 Crystal Tree', 100, 300)" id="treeBtn-3" data-i18n="startTreeBtn">Start Mining</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📋 TASKS PAGE -->
+  <div id="tasks" class="tab-content">
+    <h3 data-i18n="tasksOffers">📋 Tasks & Offers</h3>
+    <div style="display:flex; gap:10px; margin-bottom:12px;">
+      <button class="btn" onclick="toggleTaskTab('adsTasks')" style="flex:1;" data-i18n="adsTasksTab">Ads Tasks</button>
+      <button class="btn" onclick="toggleTaskTab('userTasks')" style="flex:1; background:#334155;" data-i18n="userTasksTab">User Tasks</button>
+    </div>
+
+    <div id="adsTasks">
+      <div class="card flex-between">
+        <div>🎟️ Adsgram Ad<br><small style="color:var(--text-muted);" data-i18n="reward5Coins">Reward: +5 Coin</small></div>
+        <button class="btn" style="width: auto;" onclick="watchAdWithTimer(5, 'Adsgram')" data-i18n="watchBtn">Watch</button>
+      </div>
+      <div class="card flex-between">
+        <div>🚀 Monetag Ad<br><small style="color:var(--text-muted);" data-i18n="reward4Coins">Reward: +4 Coin</small></div>
+        <button class="btn" style="width: auto;" onclick="watchAdWithTimer(4, 'Monetag')" data-i18n="watchBtn">Watch</button>
+      </div>
+      <div class="card flex-between">
+        <div>⚡ Gigapub Ad<br><small style="color:var(--text-muted);" data-i18n="reward3Coins">Reward: +3 Coin</small></div>
+        <button class="btn" style="width: auto;" onclick="watchAdWithTimer(3, 'Gigapub')" data-i18n="watchBtn">Watch</button>
+      </div>
+    </div>
+
+    <div id="userTasks" style="display:none;">
+      <div class="card" style="background:#0f172a; border: 1px dashed var(--accent); text-align: center;">
+        <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="addYourTask">➕ Add Your Task</h4>
+        <input type="text" id="customTaskTitle" placeholder="Task Name (e.g., Join Channel)">
+        <input type="text" id="customTaskLink" placeholder="Your Link (https://t.me/...)">
+        <button class="btn" style="margin-top:10px;" onclick="addNewTask()" data-i18n="publishTaskBtn">Publish Task (-10 Coin)</button>
+      </div>
+
+      <div id="dynamicTasksList">
+        <div class="card flex-between">
+          <div><span data-i18n="joinTelegram">📢 Join Telegram Channel</span><br><small style="color:var(--text-muted);" data-i18n="reward10Coins">Reward: +10 Coin</small></div>
+          <button class="btn" style="width: auto;" onclick="completeTask(10, 'Telegram Channel')" data-i18n="completeBtn">Complete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 💎 STAKING PAGE -->
+  <div id="staking" class="tab-content">
+    <h3 data-i18n="stakingOptions">💎 Staking Options</h3>
+    
+    <div class="card" style="background:#111827; border:1px solid var(--accent);">
+      <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="stakingCalc">🧮 Staking Calculator & Preview</h4>
+      <label style="font-size:13px; color:var(--text-muted);" data-i18n="enterStakingCoins">Enter Staking Coins:</label>
+      <input type="number" id="stakeCalcInput" placeholder="e.g. 100" oninput="calculateStakeRewards()">
+      
+      <label style="font-size:13px; color:var(--text-muted); margin-top:8px; display:block;" data-i18n="selectPlan">Select Plan:</label>
+      <select id="stakeCalcPlan" onchange="calculateStakeRewards()">
+        <option value="0|4">Flexible (0 Days - 4% APY)</option>
+        <option value="7|3">Fixed (7 Days - 3% APY)</option>
+        <option value="15|4.5">Fixed (15 Days - 4.5% APY)</option>
+        <option value="30|6.25">Fixed (30 Days - 6.25% APY)</option>
+        <option value="60|8">Fixed (60 Days - 8% APY)</option>
+        <option value="90|11.25">Fixed (90 Days - 11.25% APY)</option>
+        <option value="120|14.5">Fixed (120 Days - 14.5% APY)</option>
+        <option value="365|20">Fixed (365 Days - 20% APY)</option>
+      </select>
+
+      <div style="margin-top:10px; padding:10px; background:#0f172a; border-radius:8px; font-size:13px; border:1px solid var(--border);">
+        <div>☀️ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
+        <div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
+      </div>
+    </div>
+
+    <h4 style="color: var(--accent); margin-bottom: 8px;" data-i18n="flexHeader">1. Flexible Staking</h4>
+    <div class="card">
+      <div class="flex-between">
+        <div>
+          <b data-i18n="flexTitle">Flexible Staking</b><br>
+          <small style="color:var(--text-muted);" data-i18n="flexDesc">Unstake anytime with zero locking period.</small><br>
+          <span style="color: var(--accent); font-size: 13px; font-weight: bold;">4% APY</span>
+        </div>
+        <button class="btn" style="width: auto;" onclick="stake('Flexible', 0, 4)" data-i18n="stakeBtn">Stake</button>
+      </div>
+    </div>
+
+    <h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;" data-i18n="fixedHeader">2. Fixed Staking (Up to 20% APY)</h4>
+    <div class="grid-cards">
+      <div class="card" style="text-align:center; margin:0;">
+        <b>7 Days</b><br><span style="color: var(--accent);">3% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, 3)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>15 Days</b><br><span style="color: var(--accent);">4.5% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, 4.5)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>30 Days</b><br><span style="color: var(--accent);">6.25% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, 6.25)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>60 Days</b><br><span style="color: var(--accent);">8% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, 8)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>90 Days</b><br><span style="color: var(--accent);">11.25% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (90 Days)', 90, 11.25)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>120 Days</b><br><span style="color: var(--accent);">14.5% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (120 Days)', 120, 14.5)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0; grid-column: span 2;">
+        <b>365 Days</b><br><span style="color: var(--accent);">20% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (365 Days)', 365, 20)">Lock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 👥 REFERRALS PAGE -->
+  <div id="referrals" class="tab-content">
+    <h3 data-i18n="referralProgram">👥 REFERRAL PROGRAM</h3>
+    
+    <div class="grid-cards" style="margin-bottom: 12px;">
+      <div class="card" style="margin:0;">
+        <div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+          <span>👤</span> <b data-i18n="friendsTitle">Friends</b>
+        </div>
+        <small style="color:var(--text-muted); font-size:11px;" data-i18n="totalInvited">Total invited</small>
+        <div style="margin-top:12px; font-size:18px; font-weight:bold; color:var(--text-main);" id="totalInvitedCount">0 USERS</div>
+      </div>
+
+      <div class="card" style="margin:0;">
+        <div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+          <span>🎁</span> <b data-i18n="rewardsTitle">Rewards</b>
+        </div>
+        <small style="color:var(--text-muted); font-size:11px;" data-i18n="minClaim1Coin">Min. claim 1 Coin</small>
+        <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:16px; font-weight:bold; color:var(--yellow);" id="refRewardBalance">+0.00 🪙</span>
+          <button class="btn" style="width: auto; padding: 6px 12px; font-size:12px; background:var(--accent);" onclick="claimRefRewards()" data-i18n="claimBtn">Claim</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px; font-weight:bold; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+        <span>🔗</span> <span data-i18n="inviteEarn">Invite & Earn</span>
+      </div>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;" data-i18n="inviteDesc">Get 20% bonus from all 🪙 earned by your invited friends.</p>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" style="background:#334155; flex:1;" onclick="copyRef()" data-i18n="copyLinkBtn">Copy Link</button>
+        <button class="btn" style="background:#0284c7; flex:1;" onclick="shareRef()" data-i18n="shareBtn">Share</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 💼 WALLET PAGE -->
+  <div id="wallet" class="tab-content">
+    <h3 data-i18n="walletExchange">💼 Wallet & Exchange</h3>
+    
+    <div class="card">
+      <h4 style="margin:0 0 8px 0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange Coin (Live Rate)</h4>
+      
+      <div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
+        <div>💎 TON Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong> TON</div>
+        <div>💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">0.00</strong> USDT</div>
+        <div style="margin-top:4px; font-size:11px; color:var(--text-muted);" id="liveRateStatus">📡 Fetching Live TON Rate...</div>
+      </div>
+
+      <label data-i18n="convertCoinTo">Convert Coin to:</label>
+      <select id="exchangeCurrency" onchange="calculateExchange()">
+        <option value="USDT">USDT (1 Coin = $0.01)</option>
+        <option value="TON">TON (Based on Live TON Price)</option>
+      </select>
+      
+      <label style="margin-top:8px; display:block;" data-i18n="coinAmountExchange">Coin Amount to Exchange:</label>
+      <input type="number" id="exchangeAmount" placeholder="Enter coins" oninput="calculateExchange()">
+      
+      <p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
+      
+      <button class="btn" style="margin-top:10px; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
+    </div>
+
+    <div class="card">
+      <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="withdrawFunds">📤 Withdraw Funds</h4>
+      <label data-i18n="withdrawMethod">Withdrawal Method:</label>
+      <select id="withdrawMethod" onchange="toggleWithdrawFields()">
+        <option value="ton" data-i18n="tonWalletOpt">TON Wallet Address</option>
+        <option value="faucetpay" data-i18n="faucetpayOpt">FaucetPay Email</option>
+      </select>
+      
+      <label style="margin-top:8px; display:block;" data-i18n="amountLabel">Amount:</label>
+      <input type="number" id="withdrawAmount" placeholder="0.05" step="0.01">
+      
+      <label id="addressLabel" style="margin-top:8px; display:block;" data-i18n="tonAddressLabel">TON Address:</label>
+      <input type="text" id="withdrawDestination" placeholder="Enter TON address or Email">
+      
+      <small style="color:var(--text-muted); display:block; margin-top:8px;" data-i18n="feeNotice">* 5% withdrawal fee applies.</small>
+      <button class="btn" style="margin-top:12px;" onclick="requestWithdrawal()" data-i18n="submitWithdrawBtn">Submit Withdraw</button>
+    </div>
+  </div>
+
+  <!-- 🏆 RANK PAGE -->
+  <div id="leaderboard" class="tab-content">
+    <div class="card" style="background:var(--card-bg); border:1px solid var(--border); padding: 14px; margin-bottom: 12px;">
+      <div class="flex-between" style="margin-bottom: 10px;">
+        <div style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:16px;">
+          <span>🏆</span> <span data-i18n="topEarnersRank">Top Earners Rank</span>
+        </div>
+        <button onclick="updateBalances()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px;">🔄</button>
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom: 5px;" data-i18n="liveRankingStats">Your live ranking and stats</div>
+    </div>
+
+    <div class="card flex-between" style="background:#111827; padding: 12px; margin-bottom: 12px;">
+      <span style="font-size:13px; color:var(--text-muted);" data-i18n="yourRank">Your Rank:</span>
+      <span style="background:var(--accent); color:#fff; padding: 4px 10px; border-radius:6px; font-size:12px; font-weight:bold;" data-i18n="rankPlace">#1 place</span>
+    </div>
+
+    <div id="rankListContainer">
+      <div class="card" style="margin-bottom:8px; padding: 14px; background:#111827;">
+        <div class="flex-between" style="margin-bottom: 8px;">
+          <span style="font-weight:bold; font-size:14px; color:var(--yellow);" id="telegramUserName">👑 Loading User...</span>
+        </div>
+        <div class="flex-between" style="font-size:12px; border-top:1px solid var(--border); padding-top:8px; margin-top:6px;">
+          <span style="color:var(--text-muted); display:flex; align-items:center; gap:4px;">🪙 BALANCE: <b id="rankBalance" style="color:var(--yellow);">0.00</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bar">
+    <div class="nav-item active" onclick="switchTab('home')">🏠<br><span data-i18n="navHome">Home</span></div>
+    <div class="nav-item" onclick="switchTab('tasks')">📋<br><span data-i18n="navTasks">Tasks</span></div>
+    <div class="nav-item" onclick="switchTab('staking')">💎<br><span data-i18n="navStaking">Staking</span></div>
+    <div class="nav-item" onclick="switchTab('referrals')">👥<br><span data-i18n="navReferrals">Referrals</span></div>
+    <div class="nav-item" onclick="switchTab('wallet')">💼<br><span data-i18n="navWallet">Wallet</span></div>
+    <div class="nav-item" onclick="switchTab('leaderboard')">🏆<br><span data-i18n="navRank">Rank</span></div>
+  </div>
+
+  <script>
+    const translations = {
+      en: { 
+        homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
+        dailyBonus: "🎁 Daily Bonus", clickToClaim: "Click to Claim!", adsgramAd: "🎟️ Adsgram Sponsored Ad", watchBtn: "Watch", 
+        treeMiningHeader: "⛏️ Mining (Open 4 Boxes)", pineTreeName: "🌲 Pine Tree", appleTreeName: "🍎 Apple Tree", sakuraTreeName: "🌸 Sakura Tree", crystalTreeName: "💎 Crystal Tree", startTreeBtn: "Start Mining",
+        tasksOffers: "📋 Tasks & Offers", adsTasksTab: "Ads Tasks", userTasksTab: "User Tasks", reward5Coins: "Reward: +5 Coin", 
+        reward4Coins: "Reward: +4 Coin", reward3Coins: "Reward: +3 Coin", addYourTask: "➕ Add Your Task", publishTaskBtn: "Publish Task (-10 Coin)", 
+        joinTelegram: "📢 Join Telegram Channel", reward10Coins: "Reward: +10 Coin", completeBtn: "Complete", 
+        stakingOptions: "💎 Staking Options", stakingCalc: "🧮 Staking Calculator & Preview", enterStakingCoins: "Enter Staking Coins:", 
+        selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking", 
+        flexTitle: "Flexible Staking", flexDesc: "Unstake anytime with zero locking period.", stakeBtn: "Stake", fixedHeader: "2. Fixed Staking (Up to 20% APY)",
+        referralProgram: "👥 REFERRAL PROGRAM", friendsTitle: "Friends", totalInvited: "Total invited", rewardsTitle: "Rewards", 
+        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get 20% bonus from all 🪙 earned by your invited friends.", 
+        copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin", 
+        convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
+        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "FaucetPay Email", 
+        amountLabel: "Amount:", tonAddressLabel: "TON Address:", feeNotice: "* 5% withdrawal fee applies.", submitWithdrawBtn: "Submit Withdraw", 
+        topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
+        navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" 
+      },
+      hi: { 
+        homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", 
+        dailyBonus: "🎁 डेली बोनस", clickToClaim: "क्लेम करने के लिए क्लिक करें!", adsgramAd: "🎟️ एड्सग्राम स्पॉन्सरड एड", watchBtn: "देखें", 
+        treeMiningHeader: "⛏️ माइनिंग (4 बॉक्स खोलें)", pineTreeName: "🌲 पाइन ट्री", appleTreeName: "🍎 एप्पल ट्री", sakuraTreeName: "🌸 साकुरा ट्री", crystalTreeName: "💎 क्रिस्टल ट्री", startTreeBtn: "माइनिंग शुरू",
+        tasksOffers: "📋 टास्क और ऑफर्स", adsTasksTab: "एड्स टास्क", userTasksTab: "यूजर टास्क", reward5Coins: "इनाम: +5 कॉइन", 
+        reward4Coins: "इनाम: +4 कॉइन", reward3Coins: "इनाम: +3 कॉइन", addYourTask: "➕ अपना टास्क जोड़ें", publishTaskBtn: "टास्क पब्लिश करें (-10 कॉइन)", 
+        joinTelegram: "📢 टेलीग्राम चैनल ज्वाइन करें", reward10Coins: "इनाम: +10 कॉइन", completeBtn: "पूरा करें", 
+        stakingOptions: "💎 स्टेकिंग विकल्प", stakingCalc: "🧮 स्टेकिंग कैलकुलेटर और पूर्वावलोकन", enterStakingCoins: "स्टेकिंग कॉइन दर्ज करें:", 
+        selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
+        flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
+        referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम", 
+        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 25% बोनस पाएं।", 
+        copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें", 
+        convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
+        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON वॉलेट पता", faucetpayOpt: "FaucetPay ईमेल", 
+        amountLabel: "मात्रा:", tonAddressLabel: "TON पता / ईमेल:", feeNotice: "* 5% निकासी शुल्क लागू है।", submitWithdrawBtn: "निकासी सबमिट करें", 
+        topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
+        navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" 
+      },
+      ru: { 
+        homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", 
+        dailyBonus: "🎁 Ежедневный бонус", clickToClaim: "Нажмите, чтобы забрать!", adsgramAd: "🎟️ Реклама Adsgram", watchBtn: "Смотреть", 
+        treeMiningHeader: "⛏️ Майнинг (4 Бокса)", pineTreeName: "🌲 Сосна", appleTreeName: "🍎 Яблоня", sakuraTreeName: "🌸 Сакура", crystalTreeName: "💎 Кристалл", startTreeBtn: "Начать",
+        tasksOffers: "📋 Задания", adsTasksTab: "Реклама", userTasksTab: "Пользовательские", reward5Coins: "Награда: +5", 
+        reward4Coins: "Награда: +4", reward3Coins: "Награда: +3", addYourTask: "➕ Добавить", publishTaskBtn: "Опубликовать", 
+        joinTelegram: "📢 Подписаться", reward10Coins: "Награда: +10", completeBtn: "Выполнить", 
+        stakingOptions: "💎 Стейкинг", stakingCalc: "🧮 Калькулятор", enterStakingCoins: "Введите монеты:", 
+        selectPlan: "План:", dailyReward: "Дневная", totalPeriodReward: "Общая", flexHeader: "1. Гибкий", 
+        flexTitle: "Гибкий стейкинг", flexDesc: "Без лока.", stakeBtn: "В стейкинг", fixedHeader: "2. Фиксированный стейкинг",
+        referralProgram: "👥 РЕФЕРАЛЫ", friendsTitle: "Друзья", totalInvited: "Приглашено", rewardsTitle: "Награды", 
+        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус 20%", 
+        copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен", 
+        convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
+        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Кошелек", faucetpayOpt: "FaucetPay Email", 
+        amountLabel: "Сумма:", tonAddressLabel: "Адрес TON:", feeNotice: "* Комиссия 5%.", submitWithdrawBtn: "Вывести", 
+        topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
+        navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" 
+      }
+    };
+
+    function changeLanguage(lang) {
+      const dict = translations[lang] || translations['en'];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.innerText = dict[key];
+      });
+    }
+
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    let displayName = "👑 My Account";
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      let user = tg.initDataUnsafe.user;
+      let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
+    }
+    document.getElementById('telegramUserName').innerText = displayName;
+
+    let balance = parseFloat(localStorage.getItem('coin_balance')) || 0.00;
+    let tonBalance = parseFloat(localStorage.getItem('ton_balance')) || 0.00;
+    let usdtBalance = parseFloat(localStorage.getItem('usdt_balance')) || 0.00;
+    let refReward = parseFloat(localStorage.getItem('ref_reward')) || 0.00;
+    let totalInvited = parseInt(localStorage.getItem('total_invited')) || 0;
+    
+    let coinUsdtValue = 0.01; 
+    let liveTonPrice = 1.50; // Fallback price agar API load na ho
+
+    // LIVE TON PRICE FETCH FROM COINGECKO API
+    async function fetchLiveTonPrice() {
+      try {
+        let response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+        let data = await response.json();
+        if(data && data['the-open-network'] && data['the-open-network'].usd) {
+          liveTonPrice = data['the-open-network'].usd;
+          document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice} USDT (Real-time)`;
+          calculateExchange();
+        }
+      } catch (error) {
+        console.log("Live rate fetch failed, using fallback:", error);
+        document.getElementById('liveRateStatus').innerText = `📡 TON Rate: $${liveTonPrice} USDT (Fallback)`;
+      }
+    }
+
+    function updateBalances() {
+      document.getElementById('userBalance').innerText = balance.toFixed(2);
+      document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
+      document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4);
+      document.getElementById('refRewardBalance').innerText = `+${refReward.toFixed(2)} 🪙`;
+      document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
+      document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
+      document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
+
+      localStorage.setItem('coin_balance', balance);
+      localStorage.setItem('ton_balance', tonBalance);
+      localStorage.setItem('usdt_balance', usdtBalance);
+    }
+    
+    updateBalances();
+    fetchLiveTonPrice();
+    setInterval(fetchLiveTonPrice, 60000); // Har 1 minute mein live rate update hoga
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function toggleTaskTab(subTab) {
+      if(subTab === 'adsTasks') {
+        document.getElementById('adsTasks').style.display = 'block';
+        document.getElementById('userTasks').style.display = 'none';
+      } else {
+        document.getElementById('adsTasks').style.display = 'none';
+        document.getElementById('userTasks').style.display = 'block';
+      }
+    }
+
+    function toggleMiningBoxes() {
+      let section = document.getElementById('miningBoxesSection');
+      let arrow = document.getElementById('miningArrow');
+      if (section.classList.contains('show')) {
+        section.classList.remove('show');
+        arrow.innerText = '▼';
+      } else {
+        section.classList.add('show');
+        arrow.innerText = '▲';
+      }
+    }
+
+    let AdController = null;
+    try { AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); } catch(e) {}
+
+    function watchAdWithTimer(reward, adName) {
+      if (adName === 'Adsgram' && AdController) {
+        AdController.show().then(() => {
+          balance += reward;
+          updateBalances();
+          alert(`+${reward} Coin added.`);
+        }).catch(() => { alert("Ad skipped."); });
+      } else {
+        balance += reward;
+        updateBalances();
+        alert(`${adName} completed! +${reward} Coin added.`);
+      }
+    }
+
+    function claimDailyBonus() {
+      let lastClaimDate = localStorage.getItem('last_bonus_date');
+      let todayStr = new Date().toDateString();
+      if(lastClaimDate === todayStr) { alert("Daily bonus already claimed today!"); return; }
+      localStorage.setItem('last_bonus_date', todayStr);
+      balance += 2.00;
+      updateBalances();
+      alert("🎁 Daily bonus claimed! +2.00 Coin added.");
+    }
+
+    function startTreeMining(index, treeName, rewardCoins, totalDurationSec) {
+      let btn = document.getElementById(`treeBtn-${index}`);
+      let statusEl = document.getElementById(`treeStatus-${index}`);
+      let iconEl = document.getElementById(`treeIcon-${index}`);
+      let progFill = document.getElementById(`treeProg-${index}`);
+
+      btn.disabled = true;
+      let timeLeft = totalDurationSec;
+      iconEl.innerText = "🌿"; 
+
+      let timer = setInterval(() => {
+        timeLeft--;
+        let elapsed = totalDurationSec - timeLeft;
+        let percent = (elapsed / totalDurationSec) * 100;
+        progFill.style.width = `${percent}%`;
+
+        if (percent > 75) {
+          iconEl.innerText = "🌳🍎"; 
+          statusEl.innerHTML = `🍎 Almost Ready`;
+        } else if (percent > 40) {
+          iconEl.innerText = "🌳"; 
+          statusEl.innerHTML = `⏳ Growing: ${timeLeft}s`;
+        } else {
+          iconEl.innerText = "🪴"; 
+          statusEl.innerHTML = `🌱 Sprouting: ${timeLeft}s`;
         }
 
-        // Earn Points Function
-        async function earnPoints() {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/update-balance`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ telegramId, pointsToAdd: 1 })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    document.getElementById('balance').innerText = `${data.newBalance} GRAM`;
-                }
-            } catch (err) {
-                console.error('Error updating balance:', err);
-            }
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          iconEl.innerText = "✨🌳✨";
+          statusEl.innerHTML = `🎉 Ready to Claim!`;
+          
+          btn.innerText = "🎁 Claim Reward";
+          btn.style.background = "#eab308";
+          btn.style.color = "#000";
+          btn.disabled = false;
+          btn.setAttribute('onclick', `claimTreeReward(${index}, ${rewardCoins}, '${treeName}', ${totalDurationSec})`);
         }
+      }, 1000);
+    }
 
-        fetchUser();
-    </script>
+    function claimTreeReward(index, rewardCoins, treeName, totalDurationSec) {
+      balance += rewardCoins;
+      updateBalances();
+
+      let btn = document.getElementById(`treeBtn-${index}`);
+      let statusEl = document.getElementById(`treeStatus-${index}`);
+      let iconEl = document.getElementById(`treeIcon-${index}`);
+      let progFill = document.getElementById(`treeProg-${index}`);
+
+      progFill.style.width = "0%";
+      iconEl.innerText = "🌱";
+      statusEl.innerHTML = `Reward: ${rewardCoins} Coins`;
+      btn.innerText = "Start Mining";
+      btn.style.background = "#22c55e";
+      btn.style.color = "#fff";
+      btn.setAttribute('onclick', `startTreeMining(${index}, '${treeName}', ${rewardCoins}, ${totalDurationSec})`);
+      
+      alert(`🎉 Success! You claimed +${rewardCoins} coins from ${treeName}!`);
+    }
+
+    function calculateStakeRewards() {
+      let coins = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
+      let planVal = document.getElementById('stakeCalcPlan').value.split('|');
+      let days = parseInt(planVal[0]);
+      let apy = parseFloat(planVal[1]);
+      
+      let totalRev = (coins * (apy / 100) * (days === 0 ? 1 : days / 365));
+      let dailyRev = days > 0 ? totalRev / days : totalRev / 365;
+      
+      document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)} Coin`;
+      document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} Coin`;
+    }
+
+    // ACCURATE LIVE EXCHANGE CALCULATION
+    function calculateExchange() {
+      let amt = parseFloat(document.getElementById('exchangeAmount').value) || 0;
+      let curr = document.getElementById('exchangeCurrency').value;
+      
+      let totalUsdtValue = amt * coinUsdtValue; 
+      
+      if(curr === 'USDT') {
+        document.getElementById('previewExchange').innerText = `${totalUsdtValue.toFixed(4)} USDT`;
+      } else {
+        let tonReceived = totalUsdtValue / liveTonPrice; 
+        document.getElementById('previewExchange').innerText = `${tonReceived.toFixed(4)} TON (Worth $${totalUsdtValue.toFixed(2)})`;
+      }
+    }
+
+    function exchangeCoins() {
+      let amt = parseFloat(document.getElementById('exchangeAmount').value);
+      let curr = document.getElementById('exchangeCurrency').value;
+      if(!amt || isNaN(amt) || amt <= 0) { alert("Please enter a valid amount."); return; }
+      if(balance < amt) { alert("Insufficient coin balance!"); return; }
+
+      balance -= amt;
+      let totalUsdtValue = amt * coinUsdtValue;
+
+      if(curr === 'TON') {
+        let tonReceived = totalUsdtValue / liveTonPrice;
+        tonBalance += tonReceived;
+        alert(`Successfully exchanged for ${tonReceived.toFixed(4)} TON (Live Rate: $${liveTonPrice})!`);
+      } else {
+        usdtBalance += totalUsdtValue;
+        alert(`Successfully exchanged for ${totalUsdtValue.toFixed(4)} USDT!`);
+      }
+      updateBalances();
+      calculateExchange();
+    }
+
+    function toggleWithdrawFields() {
+      let method = document.getElementById('withdrawMethod').value;
+      let label = document.getElementById('addressLabel');
+      let input = document.getElementById('withdrawDestination');
+      if(method === 'ton') {
+        label.innerText = "TON Address:";
+        input.placeholder = "Enter TON address";
+      } else {
+        label.innerText = "FaucetPay Email:";
+        input.placeholder = "Enter FaucetPay email address";
+      }
+    }
+
+    function requestWithdrawal() {
+      let amt = parseFloat(document.getElementById('withdrawAmount').value);
+      let dest = document.getElementById('withdrawDestination').value;
+      if(!amt || amt < 0.05) { alert("Minimum withdrawal limit is 0.05."); return; }
+      if(!dest) { alert("Please enter destination address or email."); return; }
+      if(balance < amt) { alert("Insufficient balance!"); return; }
+
+      balance -= amt;
+      updateBalances();
+      alert(`Withdrawal request submitted successfully for ${amt} Coins!`);
+    }
+
+    function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
+    function copyRef() { navigator.clipboard.writeText("https://t.me/GramFarmingBot?start=ref_12345"); alert("Referral link copied!"); }
+    function shareRef() { copyRef(); }
+    function claimRefRewards() { alert("No referral rewards to claim yet."); }
+    function addNewTask() { alert("Task feature enabled."); }
+    function completeTask(r, n) { balance += r; updateBalances(); alert(`Task completed! +${r} Coins added.`); }
+  </script>
 </body>
 </html>
