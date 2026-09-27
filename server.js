@@ -1,10 +1,9 @@
 const { TonClient, WalletContractV4, internal, toNano } = require("@ton/ton");
 const { mnemonicToPrivateKey } = require("@ton/crypto");
 
-// TON Client Setup
+// TON Client Setup (Bina API key ke direct connect karega)
 const client = new TonClient({
-  endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-  apiKey: process.env.TONCENTER_API_KEY || 'YOUR_TONCENTER_API_KEY'
+  endpoint: 'https://toncenter.com/api/v2/jsonRPC'
 });
 
 // TON Withdraw API Endpoint
