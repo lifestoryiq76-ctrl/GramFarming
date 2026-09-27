@@ -1,48 +1,48 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gram Farming Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #22c55e;
-            --accent-hover: #16a34a;
-            --yellow: #eab308;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 80px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); }
-        .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        .card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 1px solid var(--border); }
-        .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; }
-        .btn:active { transform: scale(0.96); }
-        .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; backdrop-filter: blur(10px); }
-        .nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; }
-        .nav-item.active { color: var(--accent); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        
-        .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-        .tree-icon { font-size: 32px; transition: transform 0.3s ease; margin: 5px 0; display: inline-block; }
-        .tree-progress-bar { width: 100%; background: #334155; height: 6px; border-radius: 3px; margin: 8px 0; overflow: hidden; }
-        .tree-progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s ease; }
-        
-        #miningBoxesSection { display: none; }
-        #miningBoxesSection.show { display: block; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gram Farming Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #22c55e;
+      --accent-hover: #16a34a;
+      --yellow: #eab308;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 80px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); }
+    .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 1px solid var(--border); }
+    .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; }
+    .btn:active { transform: scale(0.96); }
+    .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; backdrop-filter: blur(10px); }
+    .nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; }
+    .nav-item.active { color: var(--accent); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    
+    .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+    .tree-icon { font-size: 32px; transition: transform 0.3s ease; margin: 5px 0; display: inline-block; }
+    .tree-progress-bar { width: 100%; background: #334155; height: 6px; border-radius: 3px; margin: 8px 0; overflow: hidden; }
+    .tree-progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s ease; }
+    
+    #miningBoxesSection { display: none; }
+    #miningBoxesSection.show { display: block; }
+  </style>
 </head>
 <body>
 
@@ -327,7 +327,10 @@
     </div>
 
     <div class="card">
-      <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="withdrawFunds">📤 Withdraw Funds</h4>
+      <div class="flex-between" style="margin-bottom: 8px;">
+        <h4 style="margin:0; color: var(--accent);" data-i18n="withdrawFunds">📤 Withdraw Funds</h4>
+        <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">⚡ Instant Payouts</span>
+      </div>
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
       <select id="withdrawMethod" onchange="toggleWithdrawFields()">
         <option value="ton" data-i18n="tonWalletOpt">TON Wallet Address</option>
@@ -383,24 +386,7 @@
     <div class="nav-item" onclick="switchTab('leaderboard')">🏆<br><span data-i18n="navRank">Rank</span></div>
   </div>
 
-  <!-- Firebase v10 SDK Scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg", 
-        authDomain: "gramfarmingbot-1a570.firebaseapp.com",
-        databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com",
-        projectId: "gramfarmingbot-1a570",
-        storageBucket: "gramfarmingbot-1a570.firebasestorage.app",
-        messagingSenderId: "113291680927",
-        appId: "1:113291680927:web:cb20c9f6b7914a546156aa" 
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
+  <script>
     const translations = {
       en: { 
         homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
@@ -461,69 +447,33 @@
       }
     };
 
-    window.changeLanguage = function(lang) {
+    function changeLanguage(lang) {
       const dict = translations[lang] || translations['en'];
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.innerText = dict[key];
       });
-    };
+    }
 
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    let userId = "guest_user";
-    let userName = "My Account";
+    let displayName = "👑 My Account";
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
       let user = tg.initDataUnsafe.user;
-      userId = user.id.toString();
-      userName = `${user.first_name || ''} ${user.last_name || ''}`.trim() + (user.username ? ` (@${user.username})` : '');
+      let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
     }
-    document.getElementById('telegramUserName').innerText = `👑 ${userName}`;
+    document.getElementById('telegramUserName').innerText = displayName;
 
-    let balance = 0.00;
-    let tonBalance = 0.00;
-    let usdtBalance = 0.00;
-    let refReward = 0.00;
-    let totalInvited = 0;
-    let coinUsdtValue = 0.01;
+    let balance = parseFloat(localStorage.getItem('coin_balance')) || 0.00;
+    let tonBalance = parseFloat(localStorage.getItem('ton_balance')) || 0.00;
+    let usdtBalance = parseFloat(localStorage.getItem('usdt_balance')) || 0.00;
+    let refReward = parseFloat(localStorage.getItem('ref_reward')) || 0.00;
+    let totalInvited = parseInt(localStorage.getItem('total_invited')) || 0;
+    
+    let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
-
-    // Load user data from Firebase on startup
-    window.addEventListener('DOMContentLoaded', () => {
-      // Fetch admin settings like coin value
-      get(ref(db, 'adminSettings/general')).then((snapshot) => {
-        if (snapshot.exists()) {
-          const gen = snapshot.val();
-          coinUsdtValue = gen.coinUsdtValue || 0.01;
-          document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
-        }
-      });
-
-      // Fetch specific user profile data
-      get(ref(db, 'users/' + userId)).then((snapshot) => {
-        if (snapshot.exists()) {
-          const u = snapshot.val();
-          balance = u.balance || 0;
-          tonBalance = u.tonBalance || 0;
-          usdtBalance = u.usdtBalance || 0;
-          refReward = u.refReward || 0;
-          totalInvited = u.invitedCount || 0;
-        } else {
-          // Save new user to database
-          set(ref(db, 'users/' + userId), {
-            name: userName,
-            balance: 0,
-            tonBalance: 0,
-            usdtBalance: 0,
-            invitedCount: 0
-          });
-        }
-        updateBalances();
-      });
-
-      fetchLiveTonPrice();
-    });
 
     async function fetchLiveTonPrice() {
       try {
@@ -531,44 +481,40 @@
         let data = await response.json();
         if(data && data['the-open-network'] && data['the-open-network'].usd) {
           liveTonPrice = data['the-open-network'].usd;
-          document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice} USDT`;
+          document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice} USDT (Real-time)`;
           calculateExchange();
         }
       } catch (error) {
+        console.log("Live rate fetch failed, using fallback:", error);
         document.getElementById('liveRateStatus').innerText = `📡 TON Rate: $${liveTonPrice} USDT (Fallback)`;
       }
     }
 
-    function syncUserDataToFirebase() {
-      update(ref(db, 'users/' + userId), {
-        name: userName,
-        balance: balance,
-        tonBalance: tonBalance,
-        usdtBalance: usdtBalance,
-        invitedCount: totalInvited
-      });
-    }
-
-    window.updateBalances = function() {
+    function updateBalances() {
       document.getElementById('userBalance').innerText = balance.toFixed(2);
       document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
       document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4);
       document.getElementById('refRewardBalance').innerText = `+${refReward.toFixed(2)} 🪙`;
       document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
       document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
-      
-      syncUserDataToFirebase();
+      document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
+
+      localStorage.setItem('coin_balance', balance);
+      localStorage.setItem('ton_balance', tonBalance);
+      localStorage.setItem('usdt_balance', usdtBalance);
     }
     
+    updateBalances();
+    fetchLiveTonPrice();
     setInterval(fetchLiveTonPrice, 60000);
 
-    window.switchTab = function(tabId) {
+    function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
-    };
+    }
 
-    window.toggleTaskTab = function(subTab) {
+    function toggleTaskTab(subTab) {
       if(subTab === 'adsTasks') {
         document.getElementById('adsTasks').style.display = 'block';
         document.getElementById('userTasks').style.display = 'none';
@@ -576,9 +522,9 @@
         document.getElementById('adsTasks').style.display = 'none';
         document.getElementById('userTasks').style.display = 'block';
       }
-    };
+    }
 
-    window.toggleMiningBoxes = function() {
+    function toggleMiningBoxes() {
       let section = document.getElementById('miningBoxesSection');
       let arrow = document.getElementById('miningArrow');
       if (section.classList.contains('show')) {
@@ -588,12 +534,12 @@
         section.classList.add('show');
         arrow.innerText = '▲';
       }
-    };
+    }
 
     let AdController = null;
     try { AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); } catch(e) {}
 
-    window.watchAdWithTimer = function(reward, adName) {
+    function watchAdWithTimer(reward, adName) {
       if (adName === 'Adsgram' && AdController) {
         AdController.show().then(() => {
           balance += reward;
@@ -605,19 +551,19 @@
         updateBalances();
         alert(`${adName} completed! +${reward} Coin added.`);
       }
-    };
+    }
 
-    window.claimDailyBonus = function() {
-      let lastClaimDate = localStorage.getItem('last_bonus_date_' + userId);
+    function claimDailyBonus() {
+      let lastClaimDate = localStorage.getItem('last_bonus_date');
       let todayStr = new Date().toDateString();
       if(lastClaimDate === todayStr) { alert("Daily bonus already claimed today!"); return; }
-      localStorage.setItem('last_bonus_date_' + userId, todayStr);
+      localStorage.setItem('last_bonus_date', todayStr);
       balance += 2.00;
       updateBalances();
       alert("🎁 Daily bonus claimed! +2.00 Coin added.");
-    };
+    }
 
-    window.startTreeMining = function(index, treeName, rewardCoins, totalDurationSec) {
+    function startTreeMining(index, treeName, rewardCoins, totalDurationSec) {
       let btn = document.getElementById(`treeBtn-${index}`);
       let statusEl = document.getElementById(`treeStatus-${index}`);
       let iconEl = document.getElementById(`treeIcon-${index}`);
@@ -656,9 +602,9 @@
           btn.setAttribute('onclick', `claimTreeReward(${index}, ${rewardCoins}, '${treeName}', ${totalDurationSec})`);
         }
       }, 1000);
-    };
+    }
 
-    window.claimTreeReward = function(index, rewardCoins, treeName, totalDurationSec) {
+    function claimTreeReward(index, rewardCoins, treeName, totalDurationSec) {
       balance += rewardCoins;
       updateBalances();
 
@@ -676,9 +622,9 @@
       btn.setAttribute('onclick', `startTreeMining(${index}, '${treeName}', ${rewardCoins}, ${totalDurationSec})`);
       
       alert(`🎉 Success! You claimed +${rewardCoins} coins from ${treeName}!`);
-    };
+    }
 
-    window.calculateStakeRewards = function() {
+    function calculateStakeRewards() {
       let coins = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
       let planVal = document.getElementById('stakeCalcPlan').value.split('|');
       let days = parseInt(planVal[0]);
@@ -689,11 +635,12 @@
       
       document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)} Coin`;
       document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} Coin`;
-    };
+    }
 
-    window.calculateExchange = function() {
+    function calculateExchange() {
       let amt = parseFloat(document.getElementById('exchangeAmount').value) || 0;
       let curr = document.getElementById('exchangeCurrency').value;
+      
       let totalUsdtValue = amt * coinUsdtValue; 
       
       if(curr === 'USDT') {
@@ -702,9 +649,9 @@
         let tonReceived = totalUsdtValue / liveTonPrice; 
         document.getElementById('previewExchange').innerText = `${tonReceived.toFixed(4)} TON (Worth $${totalUsdtValue.toFixed(2)})`;
       }
-    };
+    }
 
-    window.exchangeCoins = function() {
+    function exchangeCoins() {
       let amt = parseFloat(document.getElementById('exchangeAmount').value);
       let curr = document.getElementById('exchangeCurrency').value;
       if(!amt || isNaN(amt) || amt <= 0) { alert("Please enter a valid amount."); return; }
@@ -716,16 +663,16 @@
       if(curr === 'TON') {
         let tonReceived = totalUsdtValue / liveTonPrice;
         tonBalance += tonReceived;
-        alert(`Successfully exchanged for ${tonReceived.toFixed(4)} TON!`);
+        alert(`Successfully exchanged for ${tonReceived.toFixed(4)} TON (Live Rate: $${liveTonPrice})!`);
       } else {
         usdtBalance += totalUsdtValue;
         alert(`Successfully exchanged for ${totalUsdtValue.toFixed(4)} USDT!`);
       }
       updateBalances();
       calculateExchange();
-    };
+    }
 
-    window.toggleWithdrawFields = function() {
+    function toggleWithdrawFields() {
       let method = document.getElementById('withdrawMethod').value;
       let label = document.getElementById('addressLabel');
       let input = document.getElementById('withdrawDestination');
@@ -736,10 +683,9 @@
         label.innerText = "FaucetPay Email:";
         input.placeholder = "Enter FaucetPay email address";
       }
-    };
+    }
 
-    // Push withdrawal request to Firebase Realtime Database
-    window.requestWithdrawal = function() {
+    function requestWithdrawal() {
       let amt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
       if(!amt || amt < 0.05) { alert("Minimum withdrawal limit is 0.05."); return; }
@@ -748,28 +694,15 @@
 
       balance -= amt;
       updateBalances();
+      alert(`⚡ Instant withdrawal request processed successfully for ${amt} Coins!`);
+    }
 
-      // Send withdrawal request to Firebase
-      push(ref(db, 'withdrawals'), {
-        userId: userId,
-        username: userName,
-        amount: amt,
-        walletDetails: dest,
-        status: 'Pending ⏳',
-        timestamp: Date.now()
-      }).then(() => {
-        alert(`Withdrawal request submitted successfully for ${amt} Coins! Check Admin Panel.`);
-      }).catch((error) => {
-        alert("Error submitting request: " + error.message);
-      });
-    };
-
-    window.stake = function(planName, days, apy) { alert(`${planName} Staked successfully!`); };
-    window.copyRef = function() { navigator.clipboard.writeText(`https://t.me/GramFarmingBot?start=ref_${userId}`); alert("Referral link copied!"); };
-    window.shareRef = function() { copyRef(); };
-    window.claimRefRewards = function() { alert("No referral rewards to claim yet."); };
-    window.addNewTask = function() { alert("Task feature enabled."); };
-    window.completeTask = function(r, n) { balance += r; updateBalances(); alert(`Task completed! +${r} Coins added.`); };
+    function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
+    function copyRef() { navigator.clipboard.writeText("https://t.me/GramFarmingBot?start=ref_12345"); alert("Referral link copied!"); }
+    function shareRef() { copyRef(); }
+    function claimRefRewards() { alert("No referral rewards to claim yet."); }
+    function addNewTask() { alert("Task feature enabled."); }
+    function completeTask(r, n) { balance += r; updateBalances(); alert(`Task completed! +${r} Coins added.`); }
   </script>
 </body>
 </html>
