@@ -4,7 +4,7 @@ const { mnemonicToPrivateKey } = require("@ton/crypto");
 // TON Client Setup
 const client = new TonClient({
   endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-  apiKey: 'YOUR_TONCENTER_API_KEY' // Yahan apni Toncenter API key daalni hai (Free me milti hai)
+  apiKey: process.env.TONCENTER_API_KEY || 'YOUR_TONCENTER_API_KEY'
 });
 
 // TON Withdraw API Endpoint
