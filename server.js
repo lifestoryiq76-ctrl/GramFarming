@@ -50,6 +50,20 @@ bot.onText(/\/admin/, (msg) => {
     });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
+    
+    // Telegram Bot ke Menu Bar mein direct Admin Panel button set karne ke liye
+    try {
+        await bot.setChatMenuButton({
+            menu_button: {
+                type: 'web_app',
+                text: '🛠 Admin Panel',
+                web_app: { url: 'https://gramfarming.onrender.com/admin' }
+            }
+        });
+        console.log("Telegram Menu Button set successfully!");
+    } catch (err) {
+        console.log("Failed to set menu button:", err.message);
+    }
 });
