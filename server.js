@@ -1,46 +1,49 @@
-const express = require('express');
-const TelegramBot = require('node-telegram-bot-api');
-const path = require('path');
+const { TonClient, WalletContractV4, internal, toNano } = require("@ton/ton");
+const { mnemonicToPrivateKey } = require("@ton/crypto");
 
-const TOKEN = '7822460549:AAFVaZdN4R_vMeSh20AC6mGslissN490';
-const bot = new TelegramBot(TOKEN, { polling: true });
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Admin Secret Telegram Chat ID
-const ADMIN_CHAT_ID = 'YOUR_ADMIN_CHAT_ID';
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname)));
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+// TON Client Setup
+const client = new TonClient({
+  endpoint: 'https://toncenter.com/api/v2/jsonRPC',
+  apiKey: 'YOUR_TONCENTER_API_KEY' // Yahan apni Toncenter API key daalni hai (Free me milti hai)
 });
 
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
-});
+// TON Withdraw API Endpoint
+app.post('/api/withdraw-ton', async (serverReq, serverRes) => {
+  try {
+    const { userId, tonAddress, amountTon } = serverReq.body;
 
-// Error handling
-bot.on('polling_error', (error) => {
-    console.log(error.code);
-});
-
-app.listen(PORT, async () => {
-    console.log(`Server is running on port ${PORT}`);
-
-    // Set up the specific admin panel web app menu button
-    try {
-        await bot.setChatMenuButton({
-            menu_button: {
-                type: 'web_app',
-                text: 'Admin Panel',
-                web_app: { url: 'https://lifestoryiq76-ctrl.github.io/GramFarming' }
-            }
-        });
-        console.log('Admin Panel Menu Button set successfully!');
-    } catch (error) {
-        console.log('Failed to set menu button:', error.message);
+    if (!amountTon || amountTon < 0.05) {
+      return serverRes.json({ success: false, message: "Minimum withdraw limit 0.05 TON hai!" });
     }
+
+    // Aapke bot ke admin wallet ke 24 secret words yahan aayenge
+    const MNEMONIC = process.env.BOT_WALLET_MNEMONIC || "word1 word2 word3 ... word24";
+    const key = await mnemonicToPrivateKey(MNEMONIC.split(" "));
+    
+    const wallet = WalletContractV4.create({ workchain: 0, publicKey: key.publicKey });
+    const walletContract = client.open(wallet);
+    
+    const seqno = await walletContract.getSeqno();
+    
+    const transfer = walletContract.createTransfer({
+      seqno,
+      secretKey: key.secretKey,
+      messages: [
+        internal({
+          to: tonAddress,
+          value: toNano(amountTon.toString()),
+          bounce: false,
+          body: "Gram Farming Instant Payout 🚀"
+        })
+      ]
+    });
+
+    await walletContract.send(transfer);
+
+    serverRes.json({ success: true, message: "TON successfully transfer ho gaya!" });
+
+  } catch (error) {
+    console.error("TON Withdraw Error:", error);
+    serverRes.json({ success: false, message: "Transaction fail ho gayi, dobara koshish karein." });
+  }
 });
