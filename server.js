@@ -1,48 +1,65 @@
-const { TonClient, WalletContractV4, internal, toNano } = require("@ton/ton");
-const { mnemonicToPrivateKey } = require("@ton/crypto");
+const express = require('express');
+const axios = require('axios');
+const app = express();
 
-// TON Client Setup (Bina API key ke direct connect karega)
-const client = new TonClient({
-  endpoint: 'https://toncenter.com/api/v2/jsonRPC'
-});
+app.use(express.json());
 
-// TON Withdraw API Endpoint
-app.post('/api/withdraw-ton', async (serverReq, serverRes) => {
+// 1. FaucetPay Instant Withdraw (Option 1)
+app.post('/api/withdraw/faucetpay', async (req, res) => {
   try {
-    const { userId, tonAddress, amountTon } = serverReq.body;
+    const { userEmailOrAddress, amount, currency } = req.body;
+    const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY;
 
-    if (!amountTon || amountTon < 0.05) {
-      return serverRes.json({ success: false, message: "Minimum withdraw limit 0.05 TON hai!" });
+    if (!FAUCETPAY_API_KEY) {
+      return res.json({ success: false, message: "FaucetPay API key missing!" });
     }
 
-    // Aapke bot ke admin wallet ke 24 secret words yahan aayenge
-    const MNEMONIC = process.env.BOT_WALLET_MNEMONIC || "word1 word2 word3 ... word24";
-    const key = await mnemonicToPrivateKey(MNEMONIC.split(" "));
-    
-    const wallet = WalletContractV4.create({ workchain: 0, publicKey: key.publicKey });
-    const walletContract = client.open(wallet);
-    
-    const seqno = await walletContract.getSeqno();
-    
-    const transfer = walletContract.createTransfer({
-      seqno,
-      secretKey: key.secretKey,
-      messages: [
-        internal({
-          to: tonAddress,
-          value: toNano(amountTon.toString()),
-          bounce: false,
-          body: "Gram Farming Instant Payout 🚀"
-        })
-      ]
+    const response = await axios.post('https://faucetpay.io/api/v1/send', {
+      api_key: FAUCETPAY_API_KEY,
+      to: userEmailOrAddress,
+      amount: amount,
+      currency: currency || 'DGB'
     });
 
-    await walletContract.send(transfer);
-
-    serverRes.json({ success: true, message: "TON successfully transfer ho gaya!" });
-
+    if (response.data && response.data.status === 200) {
+      return res.json({ success: true, message: "FaucetPay withdrawal successful!" });
+    } else {
+      return res.json({ success: false, message: response.data.message || "Transfer failed." });
+    }
   } catch (error) {
-    console.error("TON Withdraw Error:", error);
-    serverRes.json({ success: false, message: "Transaction fail ho gayi, dobara koshish karein." });
+    console.error("FaucetPay Error:", error);
+    res.json({ success: false, message: "Server error during FaucetPay transfer." });
   }
 });
+
+// 2. Second Option connected with FaucetPay as well
+app.post('/api/withdraw/second-option', async (req, res) => {
+  try {
+    const { userEmailOrAddress, amount, currency } = req.body;
+    const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY;
+
+    if (!FAUCETPAY_API_KEY) {
+      return res.json({ success: false, message: "FaucetPay API key missing!" });
+    }
+
+    // Yahan bhi FaucetPay ka hi API request chalega
+    const response = await axios.post('https://faucetpay.io/api/v1/send', {
+      api_key: FAUCETPAY_API_KEY,
+      to: userEmailOrAddress,
+      amount: amount,
+      currency: currency || 'USDT' // Aap chahein toh currency badal sakte hain
+    });
+
+    if (response.data && response.data.status === 200) {
+      return res.json({ success: true, message: "Withdrawal successful via FaucetPay!" });
+    } else {
+      return res.json({ success: false, message: response.data.message || "Transfer failed." });
+    }
+  } catch (error) {
+    console.error("FaucetPay Option 2 Error:", error);
+    res.json({ success: false, message: "Server error during transfer." });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
