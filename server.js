@@ -4,6 +4,11 @@ const app = express();
 
 app.use(express.json());
 
+// Root route taaki 'Cannot GET /' error na aaye
+app.get('/', (req, res) => {
+  res.send("Gram Farming Mini App Server is Live!");
+});
+
 // 1. FaucetPay Instant Withdraw (Option 1)
 app.post('/api/withdraw/faucetpay', async (req, res) => {
   try {
@@ -32,7 +37,7 @@ app.post('/api/withdraw/faucetpay', async (req, res) => {
   }
 });
 
-// 2. Second Option connected with FaucetPay as well
+// 2. Second Option connected with FaucetPay as well (Option 2)
 app.post('/api/withdraw/second-option', async (req, res) => {
   try {
     const { userEmailOrAddress, amount, currency } = req.body;
@@ -42,12 +47,11 @@ app.post('/api/withdraw/second-option', async (req, res) => {
       return res.json({ success: false, message: "FaucetPay API key missing!" });
     }
 
-    // Yahan bhi FaucetPay ka hi API request chalega
     const response = await axios.post('https://faucetpay.io/api/v1/send', {
       api_key: FAUCETPAY_API_KEY,
       to: userEmailOrAddress,
       amount: amount,
-      currency: currency || 'USDT' // Aap chahein toh currency badal sakte hain
+      currency: currency || 'USDT'
     });
 
     if (response.data && response.data.status === 200) {
