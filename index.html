@@ -477,15 +477,11 @@
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
 
-    // --- 20% COMMISSION LOGIC ---
+    // --- 20% COMMISSION LOGIC (Updated to cover all earning actions) ---
     function addEarningsWithReferral(earnedAmount) {
-      // Main user balance update
       balance += earnedAmount;
-      
-      // 20% referral commission calculation (agar user kisi ke referral se aaya hai ya simulate karne ke liye)
       let refCommission = earnedAmount * 0.20;
       refReward += refCommission;
-
       updateBalances();
     }
 
@@ -738,7 +734,16 @@
       alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins to your main balance!`);
     }
 
-    function addNewTask() { alert("Task feature enabled."); }
+    function addNewTask() { 
+      let title = document.getElementById('customTaskTitle').value;
+      let link = document.getElementById('customTaskLink').value;
+      if(!title || !link) { alert("Please fill task details."); return; }
+      if(balance < 10) { alert("Insufficient balance! You need 10 coins to publish a task."); return; }
+      
+      balance -= 10; // Task publishing fee (Deduction, no referral needed here)
+      updateBalances();
+      alert("Task published successfully! -10 Coins deducted.");
+    }
     
     function completeTask(r, n) { 
       addEarningsWithReferral(r); 
