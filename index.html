@@ -698,8 +698,16 @@
     }
 
     function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
-    function copyRef() { navigator.clipboard.writeText("https://t.me/GramFarmingBot?start=ref_12345"); alert("Referral link copied!"); }
-    function shareRef() { copyRef(); }
+    function copyRef() { 
+      navigator.clipboard.writeText("https://t.me/GramFarmingBot?start=ref_12345"); 
+      alert("Referral link copied!"); 
+    }
+    function shareRef() {
+      let refUrl = "https://t.me/GramFarmingBot?start=ref_12345";
+      let text = encodeURIComponent("🌱 Join Gram Farming and start earning coins & crypto instantly! Play now:\n" + refUrl);
+      let telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(refUrl)}&text=${text}`;
+      window.open(telegramShareUrl, '_blank');
+    }
     function claimRefRewards() { alert("No referral rewards to claim yet."); }
     function addNewTask() { alert("Task feature enabled."); }
     function completeTask(r, n) { balance += r; updateBalances(); alert(`Task completed! +${r} Coins added.`); }
