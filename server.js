@@ -27,33 +27,10 @@ bot.on('polling_error', (error) => {
     console.log(error.code);
 });
 
-// Telegram Command: /admin (Sirf aapke liye khulega)
-bot.onText(/\/admin/, (msg) => {
-    const chatId = msg.chat.id;
-    const userId = msg.from.id;
-
-    if (userId !== ADMIN_TELEGRAM_ID) {
-        return bot.sendMessage(chatId, '⚠️ You are not authorized to access the Admin Panel.');
-    }
-
-    bot.sendMessage(chatId, '🛠 Click the button below to open the Admin Panel inside Telegram:', {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    {
-                        text: '🛠 Open Admin Panel',
-                        web_app: { url: 'https://gramfarming.onrender.com/admin' }
-                    }
-                ]
-            ]
-        }
-    });
-});
-
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
     
-    // Telegram Bot ke Menu Bar mein direct Admin Panel button set karne ke liye
+    // Yahan URL ko seedha admin panel par set kar diya gaya hai
     try {
         await bot.setChatMenuButton({
             menu_button: {
@@ -62,7 +39,7 @@ app.listen(PORT, async () => {
                 web_app: { url: 'https://gramfarming.onrender.com/admin' }
             }
         });
-        console.log("Telegram Menu Button set successfully!");
+        console.log("Admin Panel Menu Button set successfully!");
     } catch (err) {
         console.log("Failed to set menu button:", err.message);
     }
