@@ -337,11 +337,11 @@
         <option value="faucetpay" data-i18n="faucetpayOpt">FaucetPay Email</option>
       </select>
       
-      <label style="margin-top:8px; display:block;" data-i18n="amountLabel">Amount:</label>
+      <label style="margin-top:8px; display:block;" data-i18n="amountLabel">Amount (TON):</label>
       <input type="number" id="withdrawAmount" placeholder="0.05" step="0.01">
       
       <label id="addressLabel" style="margin-top:8px; display:block;" data-i18n="tonAddressLabel">TON Address:</label>
-      <input type="text" id="withdrawDestination" placeholder="Enter TON address or Email">
+      <input type="text" id="withdrawDestination" placeholder="Enter TON address">
       
       <small style="color:var(--text-muted); display:block; margin-top:8px;" data-i18n="feeNotice">* 5% withdrawal fee applies.</small>
       <button class="btn" style="margin-top:12px;" onclick="requestWithdrawal()" data-i18n="submitWithdrawBtn">Submit Withdraw</button>
@@ -477,7 +477,6 @@
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
 
-    // --- 20% COMMISSION LOGIC (Updated to cover all earning actions) ---
     function addEarningsWithReferral(earnedAmount) {
       balance += earnedAmount;
       let refCommission = earnedAmount * 0.20;
@@ -695,16 +694,50 @@
       }
     }
 
-    function requestWithdrawal() {
+    // --- UPDATED INSTANT TON WITHDRAWAL FUNCTION ---
+    async function requestWithdrawal() {
       let amt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
-      if(!amt || amt < 0.05) { alert("Minimum withdrawal limit is 0.05."); return; }
-      if(!dest) { alert("Please enter destination address or email."); return; }
-      if(balance < amt) { alert("Insufficient balance!"); return; }
+      let method = document.getElementById('withdrawMethod').value;
 
-      balance -= amt;
-      updateBalances();
-      alert(`⚡ Instant withdrawal request processed successfully for ${amt} Coins!`);
+      if(!amt || amt < 0.05) { alert("Minimum withdrawal limit is 0.05 TON."); return; }
+      if(!dest) { alert("Please enter destination address or email."); return; }
+      
+      // Agar TON withdrawal select kiya hai to server par instant API request jayegi
+      if (method === 'ton') {
+        if(tonBalance < amt) { alert("Insufficient TON balance!"); return; }
+        
+        alert("TON withdrawal process ho raha hai, kripya intezar karein...");
+        try {
+          let response = await fetch('https://gramfarming-api.onrender.com/api/withdraw-ton', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: userId,
+              tonAddress: dest,
+              amountTon: amt
+            })
+          });
+
+          let result = await response.json();
+          if (result.success) {
+            tonBalance -= amt;
+            updateBalances();
+            alert("🎉 Success! TON successfully transfer ho gaya.");
+          } else {
+            alert("Error: " + result.message);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Network error aagaya hai.");
+        }
+      } else {
+        // FaucetPay withdrawal ke liye
+        if(balance < amt) { alert("Insufficient balance!"); return; }
+        balance -= amt;
+        updateBalances();
+        alert(`⚡ FaucetPay withdrawal request successfully submit ho gayi hai!`);
+      }
     }
 
     function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
@@ -740,7 +773,7 @@
       if(!title || !link) { alert("Please fill task details."); return; }
       if(balance < 10) { alert("Insufficient balance! You need 10 coins to publish a task."); return; }
       
-      balance -= 10; // Task publishing fee (Deduction, no referral needed here)
+      balance -= 10;
       updateBalances();
       alert("Task published successfully! -10 Coins deducted.");
     }
