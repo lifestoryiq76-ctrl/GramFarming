@@ -2,14 +2,14 @@ const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const path = require('path');
 
-const TOKEN = '8823465549:AAFFnZ1hDHR_eAWiEh5eWLCEm6dLkuSfHN0';
+const TOKEN = '7822460549:AAFVaZdN4R_vMeSh20AC6mGslissN490';
 const bot = new TelegramBot(TOKEN, { polling: true });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Aapki Secret Telegram Admin ID
-const ADMIN_TELEGRAM_ID = 6806028116;
+// Admin Secret Telegram Chat ID
+const ADMIN_CHAT_ID = 'YOUR_ADMIN_CHAT_ID';
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
@@ -22,25 +22,25 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// Bot Error Handling
+// Error handling
 bot.on('polling_error', (error) => {
     console.log(error.code);
 });
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
-    
-    // Yahan URL ko seedha admin panel par set kar diya gaya hai
+
+    // Set up the specific admin panel web app menu button
     try {
         await bot.setChatMenuButton({
             menu_button: {
                 type: 'web_app',
-                text: '🛠 Admin Panel',
-                web_app: { url: 'https://gramfarming.onrender.com/admin' }
+                text: 'Admin Panel',
+                web_app: { url: 'https://lifestoryiq76-ctrl.github.io/GramFarming' }
             }
         });
-        console.log("Admin Panel Menu Button set successfully!");
-    } catch (err) {
-        console.log("Failed to set menu button:", err.message);
+        console.log('Admin Panel Menu Button set successfully!');
+    } catch (error) {
+        console.log('Failed to set menu button:', error.message);
     }
 });
