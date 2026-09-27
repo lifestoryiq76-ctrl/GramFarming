@@ -1,13 +1,15 @@
 {
   "name": "gram-farming",
   "version": "1.0.0",
-  "description": "Gram Farming Telegram Bot and Mini App",
+  "description": "Gram Farming Telegram Bot",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "node-telegram-bot-api": "^0.65.1"
+    "cors": "^2.8.5",
+    "@ton/ton": "^13.11.2",
+    "@ton/crypto": "^3.2.0"
   }
 }
