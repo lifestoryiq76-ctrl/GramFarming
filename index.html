@@ -418,7 +418,7 @@
         selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
         flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
         referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम", 
-        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 25% बोनस पाएं।", 
+        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 20% बोनस पाएं।", 
         copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें", 
         convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
         withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON वॉलेट पता", faucetpayOpt: "FaucetPay ईमेल", 
@@ -459,10 +459,12 @@
     tg.expand();
 
     let displayName = "👑 My Account";
+    let userId = "12345";
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
       let user = tg.initDataUnsafe.user;
       let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
+      userId = user.id;
     }
     document.getElementById('telegramUserName').innerText = displayName;
 
@@ -474,6 +476,18 @@
     
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
+
+    // --- 20% COMMISSION LOGIC ---
+    function addEarningsWithReferral(earnedAmount) {
+      // Main user balance update
+      balance += earnedAmount;
+      
+      // 20% referral commission calculation (agar user kisi ke referral se aaya hai ya simulate karne ke liye)
+      let refCommission = earnedAmount * 0.20;
+      refReward += refCommission;
+
+      updateBalances();
+    }
 
     async function fetchLiveTonPrice() {
       try {
@@ -502,6 +516,8 @@
       localStorage.setItem('coin_balance', balance);
       localStorage.setItem('ton_balance', tonBalance);
       localStorage.setItem('usdt_balance', usdtBalance);
+      localStorage.setItem('ref_reward', refReward);
+      localStorage.setItem('total_invited', totalInvited);
     }
     
     updateBalances();
@@ -542,13 +558,11 @@
     function watchAdWithTimer(reward, adName) {
       if (adName === 'Adsgram' && AdController) {
         AdController.show().then(() => {
-          balance += reward;
-          updateBalances();
-          alert(`+${reward} Coin added.`);
+          addEarningsWithReferral(reward);
+          alert(`+${reward} Coin added (20% referral bonus credited to rewards).`);
         }).catch(() => { alert("Ad skipped."); });
       } else {
-        balance += reward;
-        updateBalances();
+        addEarningsWithReferral(reward);
         alert(`${adName} completed! +${reward} Coin added.`);
       }
     }
@@ -558,8 +572,9 @@
       let todayStr = new Date().toDateString();
       if(lastClaimDate === todayStr) { alert("Daily bonus already claimed today!"); return; }
       localStorage.setItem('last_bonus_date', todayStr);
-      balance += 2.00;
-      updateBalances();
+      
+      let bonusReward = 2.00;
+      addEarningsWithReferral(bonusReward);
       alert("🎁 Daily bonus claimed! +2.00 Coin added.");
     }
 
@@ -605,8 +620,7 @@
     }
 
     function claimTreeReward(index, rewardCoins, treeName, totalDurationSec) {
-      balance += rewardCoins;
-      updateBalances();
+      addEarningsWithReferral(rewardCoins);
 
       let btn = document.getElementById(`treeBtn-${index}`);
       let statusEl = document.getElementById(`treeStatus-${index}`);
@@ -698,19 +712,38 @@
     }
 
     function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
+    
     function copyRef() { 
-      navigator.clipboard.writeText("https://t.me/GramFarmingBot?start=ref_12345"); 
-      alert("Referral link copied!"); 
+      let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
+      navigator.clipboard.writeText(refLink); 
+      alert("Referral link copied: " + refLink); 
     }
+
     function shareRef() {
-      let refUrl = "https://t.me/GramFarmingBot?start=ref_12345";
-      let text = encodeURIComponent("🌱 Join Gram Farming and start earning coins & crypto instantly! Play now:\n" + refUrl);
-      let telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(refUrl)}&text=${text}`;
+      let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
+      let text = encodeURIComponent("🌱 Join Gram Farming and start earning coins & crypto instantly! Play now:\n" + refLink);
+      let telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
       window.open(telegramShareUrl, '_blank');
     }
-    function claimRefRewards() { alert("No referral rewards to claim yet."); }
+
+    function claimRefRewards() {
+      if (refReward < 1.00) {
+        alert("Minimum claim amount for referral rewards is 1 Coin.");
+        return;
+      }
+      balance += refReward;
+      let claimedAmount = refReward;
+      refReward = 0.00;
+      updateBalances();
+      alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins to your main balance!`);
+    }
+
     function addNewTask() { alert("Task feature enabled."); }
-    function completeTask(r, n) { balance += r; updateBalances(); alert(`Task completed! +${r} Coins added.`); }
+    
+    function completeTask(r, n) { 
+      addEarningsWithReferral(r); 
+      alert(`Task completed! +${r} Coins added.`); 
+    }
   </script>
 </body>
 </html>
