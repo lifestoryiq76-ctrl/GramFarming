@@ -355,7 +355,7 @@
         <div style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:16px;">
           <span>🏆</span> <span data-i18n="topEarnersRank">Top Earners Rank</span>
         </div>
-        <button onclick="updateBalances()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px;">🔄</button>
+        <button onclick="loadUserData()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px;">🔄</button>
       </div>
       <div style="font-size:12px; color:var(--text-muted); margin-bottom: 5px;" data-i18n="liveRankingStats">Your live ranking and stats</div>
     </div>
@@ -464,24 +464,64 @@
       let user = tg.initDataUnsafe.user;
       let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
-      userId = user.id;
+      userId = user.id.toString();
     }
     document.getElementById('telegramUserName').innerText = displayName;
 
-    let balance = parseFloat(localStorage.getItem('coin_balance')) || 0.00;
-    let tonBalance = parseFloat(localStorage.getItem('ton_balance')) || 0.00;
-    let usdtBalance = parseFloat(localStorage.getItem('usdt_balance')) || 0.00;
-    let refReward = parseFloat(localStorage.getItem('ref_reward')) || 0.00;
-    let totalInvited = parseInt(localStorage.getItem('total_invited')) || 0;
+    let balance = 0.00;
+    let tonBalance = 0.00;
+    let usdtBalance = 0.00;
+    let refReward = 0.00;
+    let totalInvited = 0;
     
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
+    const API_BASE = "https://gramfarming-api.onrender.com";
+
+    // Backend se data load karne ka function
+    async function loadUserData() {
+      try {
+        let res = await fetch(`${API_BASE}/api/get-user?userId=${userId}`);
+        let data = await res.json();
+        if (data && data.success && data.user) {
+          balance = data.user.balance || 0;
+          tonBalance = data.user.tonBalance || 0;
+          usdtBalance = data.user.usdtBalance || 0;
+          refReward = data.user.refReward || 0;
+          totalInvited = data.user.totalInvited || 0;
+        }
+      } catch (e) {
+        console.log("Failed to load from backend, using default values:", e);
+      }
+      updateBalancesUI();
+    }
+
+    // Backend par data save karne ka function
+    async function saveUserData() {
+      try {
+        await fetch(`${API_BASE}/api/update-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: userId,
+            balance: balance,
+            tonBalance: tonBalance,
+            usdtBalance: usdtBalance,
+            refReward: refReward,
+            totalInvited: totalInvited
+          })
+        });
+      } catch (e) {
+        console.log("Failed to sync with backend:", e);
+      }
+    }
 
     function addEarningsWithReferral(earnedAmount) {
       balance += earnedAmount;
       let refCommission = earnedAmount * 0.20;
       refReward += refCommission;
-      updateBalances();
+      updateBalancesUI();
+      saveUserData();
     }
 
     async function fetchLiveTonPrice() {
@@ -499,7 +539,7 @@
       }
     }
 
-    function updateBalances() {
+    function updateBalancesUI() {
       document.getElementById('userBalance').innerText = balance.toFixed(2);
       document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
       document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4);
@@ -507,15 +547,10 @@
       document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
       document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
-
-      localStorage.setItem('coin_balance', balance);
-      localStorage.setItem('ton_balance', tonBalance);
-      localStorage.setItem('usdt_balance', usdtBalance);
-      localStorage.setItem('ref_reward', refReward);
-      localStorage.setItem('total_invited', totalInvited);
     }
     
-    updateBalances();
+    // Page load hone par database se data fetch karein
+    loadUserData();
     fetchLiveTonPrice();
     setInterval(fetchLiveTonPrice, 60000);
 
@@ -677,7 +712,8 @@
         usdtBalance += totalUsdtValue;
         alert(`Successfully exchanged for ${totalUsdtValue.toFixed(4)} USDT!`);
       }
-      updateBalances();
+      updateBalancesUI();
+      saveUserData();
       calculateExchange();
     }
 
@@ -694,7 +730,6 @@
       }
     }
 
-    // --- UPDATED INSTANT TON WITHDRAWAL FUNCTION ---
     async function requestWithdrawal() {
       let amt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
@@ -703,13 +738,12 @@
       if(!amt || amt < 0.05) { alert("Minimum withdrawal limit is 0.05 TON."); return; }
       if(!dest) { alert("Please enter destination address or email."); return; }
       
-      // Agar TON withdrawal select kiya hai to server par instant API request jayegi
       if (method === 'ton') {
         if(tonBalance < amt) { alert("Insufficient TON balance!"); return; }
         
         alert("TON withdrawal process ho raha hai, kripya intezar karein...");
         try {
-          let response = await fetch('https://gramfarming-api.onrender.com/api/withdraw-ton', {
+          let response = await fetch(`${API_BASE}/api/withdraw-ton`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -722,7 +756,8 @@
           let result = await response.json();
           if (result.success) {
             tonBalance -= amt;
-            updateBalances();
+            updateBalancesUI();
+            saveUserData();
             alert("🎉 Success! TON successfully transfer ho gaya.");
           } else {
             alert("Error: " + result.message);
@@ -732,10 +767,10 @@
           alert("Network error aagaya hai.");
         }
       } else {
-        // FaucetPay withdrawal ke liye
         if(balance < amt) { alert("Insufficient balance!"); return; }
         balance -= amt;
-        updateBalances();
+        updateBalancesUI();
+        saveUserData();
         alert(`⚡ FaucetPay withdrawal request successfully submit ho gayi hai!`);
       }
     }
@@ -763,7 +798,8 @@
       balance += refReward;
       let claimedAmount = refReward;
       refReward = 0.00;
-      updateBalances();
+      updateBalancesUI();
+      saveUserData();
       alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins to your main balance!`);
     }
 
@@ -774,7 +810,8 @@
       if(balance < 10) { alert("Insufficient balance! You need 10 coins to publish a task."); return; }
       
       balance -= 10;
-      updateBalances();
+      updateBalancesUI();
+      saveUserData();
       alert("Task published successfully! -10 Coins deducted.");
     }
     
