@@ -2,13 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gram Farming Mini App</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-top: 50px;
+        }
+        h1 {
+            color: #38bdf8;
+            font-size: 24px;
+        }
+        .score-board {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #facc15;
+        }
+        .tap-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            color: white;
+            font-size: 22px;
+            padding: 20px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            transition: 0.1s;
+            margin-top: 20px;
+        }
+        .tap-btn:active {
+            transform: scale(0.95);
+        }
+        .info {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Gram Farming App</h1>
+    <div class="container">
+        <h1>Gram Farming</h1>
+        
+        <!-- Coins Display -->
+        <div class="score-board">
+            🪙 <span id="coinCount">0</span> GRAM
+        </div>
 
-    <!-- Firebase v10 CDN Scripts -->
+        <!-- Tap Button -->
+        <button class="tap-btn" onclick="tapCoin()">TAP & FARM</button>
+
+        <!-- Admin Settings Info -->
+        <div class="info">
+            <p>Per Click Reward: <span id="displayPerClick">1</span></p>
+            <p>Min Withdrawal: <span id="displayWithdraw">1000</span></p>
+        </div>
+    </div>
+
+    <!-- Firebase v10 CDN Scripts & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
@@ -26,16 +92,34 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        window.coinPerClick = 1;
+        window.minWithdrawal = 1000;
+
+        // Local Storage se coins load karna
+        let userCoins = localStorage.getItem('gramCoins') ? Number(localStorage.getItem('gramCoins')) : 0;
+        document.getElementById('coinCount').innerText = userCoins;
+
+        // Firebase se settings fetch karna
         const settingsRef = ref(db, 'adminSettings/general');
         onValue(settingsRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 console.log("Settings data mil gaya:", data);
-                window.coinPerClick = data.coinPerClick;
+                window.coinPerClick = data.coinPerClick || 1;
                 window.timer = data.timer;
-                window.minWithdrawal = data.minWithdrawal;
+                window.minWithdrawal = data.minWithdrawal || 1000;
+
+                document.getElementById('displayPerClick').innerText = window.coinPerClick;
+                document.getElementById('displayWithdraw').innerText = window.minWithdrawal;
             }
         });
+
+        // Tap function
+        window.tapCoin = function() {
+            userCoins += window.coinPerClick;
+            document.getElementById('coinCount').innerText = userCoins;
+            localStorage.setItem('gramCoins', userCoins);
+        }
     </script>
 
 </body>
