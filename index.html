@@ -494,7 +494,22 @@
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
 
+    // Fetch Admin Settings from Firebase
+    async function loadAdminSettings() {
+      try {
+        let adminDoc = await db.collection("settings").doc("adminSettings").get();
+        if(adminDoc.exists) {
+          let settings = adminDoc.data();
+          if(settings.coinUsdtValue) coinUsdtValue = parseFloat(settings.coinUsdtValue);
+          updateBalancesUI();
+        }
+      } catch (e) {
+        console.log("Error loading admin settings:", e);
+      }
+    }
+
     async function loadUserData() {
+      await loadAdminSettings();
       try {
         let userDocRef = db.collection("users").doc(userId);
         let doc = await userDocRef.get();
