@@ -6,6 +6,9 @@
   <title>Gram Farming Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -387,6 +390,20 @@
   </div>
 
   <script>
+    // Updated Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
+      authDomain: "gramfarmingbot-1a570.firebaseapp.com",
+      databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com",
+      projectId: "gramfarmingbot-1a570",
+      storageBucket: "gramfarmingbot-1a570.firebasestorage.app",
+      messagingSenderId: "113291680927",
+      appId: "1:113291680927:web:cb20c9f6b7914a546156aa"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const translations = {
       en: { 
         homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
@@ -476,43 +493,47 @@
     
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
-    const API_BASE = "https://gramfarming-api.onrender.com";
 
-    // Backend se data load karne ka function
     async function loadUserData() {
       try {
-        let res = await fetch(`${API_BASE}/api/get-user?userId=${userId}`);
-        let data = await res.json();
-        if (data && data.success && data.user) {
-          balance = data.user.balance || 0;
-          tonBalance = data.user.tonBalance || 0;
-          usdtBalance = data.user.usdtBalance || 0;
-          refReward = data.user.refReward || 0;
-          totalInvited = data.user.totalInvited || 0;
+        let userDocRef = db.collection("users").doc(userId);
+        let doc = await userDocRef.get();
+        if (doc.exists) {
+          let data = doc.data();
+          balance = data.balance || 0;
+          tonBalance = data.tonBalance || 0;
+          usdtBalance = data.usdtBalance || 0;
+          refReward = data.refReward || 0;
+          totalInvited = data.totalInvited || 0;
+        } else {
+          await userDocRef.set({
+            balance: 0,
+            tonBalance: 0,
+            usdtBalance: 0,
+            refReward: 0,
+            totalInvited: 0,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
         }
       } catch (e) {
-        console.log("Failed to load from backend, using default values:", e);
+        console.log("Firebase load error:", e);
       }
       updateBalancesUI();
     }
 
-    // Backend par data save karne ka function
     async function saveUserData() {
       try {
-        await fetch(`${API_BASE}/api/update-user`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: userId,
-            balance: balance,
-            tonBalance: tonBalance,
-            usdtBalance: usdtBalance,
-            refReward: refReward,
-            totalInvited: totalInvited
-          })
-        });
+        let userDocRef = db.collection("users").doc(userId);
+        await userDocRef.set({
+          balance: balance,
+          tonBalance: tonBalance,
+          usdtBalance: usdtBalance,
+          refReward: refReward,
+          totalInvited: totalInvited,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
       } catch (e) {
-        console.log("Failed to sync with backend:", e);
+        console.log("Firebase save error:", e);
       }
     }
 
@@ -534,8 +555,7 @@
           calculateExchange();
         }
       } catch (error) {
-        console.log("Live rate fetch failed, using fallback:", error);
-        document.getElementById('liveRateStatus').innerText = `📡 TON Rate: $${liveTonPrice} USDT (Fallback)`;
+        console.log("Live rate fetch failed:", error);
       }
     }
 
@@ -549,7 +569,6 @@
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
     }
     
-    // Page load hone par database se data fetch karein
     loadUserData();
     fetchLiveTonPrice();
     setInterval(fetchLiveTonPrice, 60000);
@@ -589,7 +608,7 @@
       if (adName === 'Adsgram' && AdController) {
         AdController.show().then(() => {
           addEarningsWithReferral(reward);
-          alert(`+${reward} Coin added (20% referral bonus credited to rewards).`);
+          alert(`+${reward} Coin added!`);
         }).catch(() => { alert("Ad skipped."); });
       } else {
         addEarningsWithReferral(reward);
@@ -691,7 +710,7 @@
         document.getElementById('previewExchange').innerText = `${totalUsdtValue.toFixed(4)} USDT`;
       } else {
         let tonReceived = totalUsdtValue / liveTonPrice; 
-        document.getElementById('previewExchange').innerText = `${tonReceived.toFixed(4)} TON (Worth $${totalUsdtValue.toFixed(2)})`;
+        document.getElementById('previewExchange').innerText = `${tonReceived.toFixed(4)} TON (worth $${totalUsdtValue.toFixed(2)})`;
       }
     }
 
@@ -707,7 +726,7 @@
       if(curr === 'TON') {
         let tonReceived = totalUsdtValue / liveTonPrice;
         tonBalance += tonReceived;
-        alert(`Successfully exchanged for ${tonReceived.toFixed(4)} TON (Live Rate: $${liveTonPrice})!`);
+        alert(`Successfully exchanged for ${tonReceived.toFixed(4)} TON!`);
       } else {
         usdtBalance += totalUsdtValue;
         alert(`Successfully exchanged for ${totalUsdtValue.toFixed(4)} USDT!`);
@@ -735,44 +754,19 @@
       let dest = document.getElementById('withdrawDestination').value;
       let method = document.getElementById('withdrawMethod').value;
 
-      if(!amt || amt < 0.05) { alert("Minimum withdrawal limit is 0.05 TON."); return; }
+      if(!amt || amt < 0.05) { alert("Minimum withdrawal limit is 0.05."); return; }
       if(!dest) { alert("Please enter destination address or email."); return; }
       
       if (method === 'ton') {
         if(tonBalance < amt) { alert("Insufficient TON balance!"); return; }
-        
-        alert("TON withdrawal process ho raha hai, kripya intezar karein...");
-        try {
-          let response = await fetch(`${API_BASE}/api/withdraw-ton`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: userId,
-              tonAddress: dest,
-              amountTon: amt
-            })
-          });
-
-          let result = await response.json();
-          if (result.success) {
-            tonBalance -= amt;
-            updateBalancesUI();
-            saveUserData();
-            alert("🎉 Success! TON successfully transfer ho gaya.");
-          } else {
-            alert("Error: " + result.message);
-          }
-        } catch (err) {
-          console.error(err);
-          alert("Network error aagaya hai.");
-        }
+        tonBalance -= amt;
       } else {
         if(balance < amt) { alert("Insufficient balance!"); return; }
         balance -= amt;
-        updateBalancesUI();
-        saveUserData();
-        alert(`⚡ FaucetPay withdrawal request successfully submit ho gayi hai!`);
       }
+      updateBalancesUI();
+      saveUserData();
+      alert(`📤 Withdrawal request successfully submitted!`);
     }
 
     function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
@@ -780,14 +774,13 @@
     function copyRef() { 
       let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
       navigator.clipboard.writeText(refLink); 
-      alert("Referral link copied: " + refLink); 
+      alert("Referral link copied!"); 
     }
 
     function shareRef() {
       let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
-      let text = encodeURIComponent("🌱 Join Gram Farming and start earning coins & crypto instantly! Play now:\n" + refLink);
-      let telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
-      window.open(telegramShareUrl, '_blank');
+      let text = encodeURIComponent("🌱 Join Gram Farming and start earning crypto instantly!\n" + refLink);
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`, '_blank');
     }
 
     function claimRefRewards() {
@@ -800,19 +793,19 @@
       refReward = 0.00;
       updateBalancesUI();
       saveUserData();
-      alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins to your main balance!`);
+      alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins!`);
     }
 
     function addNewTask() { 
       let title = document.getElementById('customTaskTitle').value;
       let link = document.getElementById('customTaskLink').value;
       if(!title || !link) { alert("Please fill task details."); return; }
-      if(balance < 10) { alert("Insufficient balance! You need 10 coins to publish a task."); return; }
+      if(balance < 10) { alert("Insufficient balance! You need 10 coins."); return; }
       
       balance -= 10;
       updateBalancesUI();
       saveUserData();
-      alert("Task published successfully! -10 Coins deducted.");
+      alert("Task published successfully!");
     }
     
     function completeTask(r, n) { 
