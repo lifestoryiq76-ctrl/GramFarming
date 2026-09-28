@@ -2,9 +2,9 @@
   "name": "gram-farming",
   "version": "1.0.0",
   "description": "Telegram Bot and Mini App Backend",
-  "main": "admin.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node admin.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
