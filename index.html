@@ -233,7 +233,7 @@
       </select>
 
       <div style="margin-top:10px; padding:10px; background:#0f172a; border-radius:8px; font-size:13px; border:1px solid var(--border);">
-        <div>☀️️ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
+        <div>☀️ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
         <div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
       </div>
     </div>
@@ -912,7 +912,7 @@
       if(!dest) { alert("Please enter destination address or email."); return; }
       
       let fee = rawAmt * 0.05;
-      let finalReceiveAmt = rawAmt - fee; // Exact amount after 5% fee deduction
+      let finalReceiveAmt = rawAmt - fee; 
 
       if (method === 'ton') {
         if(tonBalance < rawAmt) { alert("Insufficient TON balance!"); return; }
@@ -931,7 +931,7 @@
 
           let result = await response.json();
           if (result.success) {
-            tonBalance -= rawAmt; // Deduct total entered amount from balance
+            tonBalance -= rawAmt; 
             saveToFirebase();
             renderUIValues();
             alert(`🎉 Success! ${finalReceiveAmt.toFixed(4)} TON successfully transferred.`);
