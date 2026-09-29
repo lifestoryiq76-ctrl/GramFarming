@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
@@ -14,58 +14,52 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Global settings object jo game me use hoga
+// Global settings object
 window.gameSettings = {
     general: {},
     trees: {},
-    ads: {},
     staking: {}
 };
 
-// Game start hone par Firebase se latest admin settings load karna
-window.addEventListener('DOMContentLoaded', () => {
-    loadAdminSettings();
-});
-
-function loadAdminSettings() {
-    get(ref(db, 'adminSettings')).then((snapshot) => {
+// 🔴 Real-time Listener: Jaise hi Admin Panel se data change hoga, Mini App me turant update ho jayega
+function listenAdminSettings() {
+    const settingsRef = ref(db, 'adminSettings');
+    
+    onValue(settingsRef, (snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
             window.gameSettings = data;
-            console.log("Admin Settings Loaded successfully in Game:", data);
+            console.log("Live Admin Settings Updated:", data);
             
-            // Yahan hum settings ko game ke variables me set kar rahe hain
+            // Yahan values ko game ke variables / UI par apply kar dein
             applySettingsToGame(data);
+        } else {
+            console.log("No admin settings found in database.");
         }
-    }).catch((error) => {
-        console.error("Error loading admin settings:", error);
+    }, (error) => {
+        console.error("Error listening to admin settings:", error);
     });
 }
 
+// Game start hote hi listener chalu ho jayega
+window.addEventListener('DOMContentLoaded', () => {
+    listenAdminSettings();
+});
+
 function applySettingsToGame(data) {
     try {
-        // 1. General Settings apply karna
+        // Example: General settings apply karna
         if (data.general) {
-            window.coinUsdtValue = data.general.coinUsdtValue;
-            window.dailyBonusReward = data.general.dailyBonus;
-            window.referralBonusPercent = data.general.refBonus;
-            window.minWithdrawalLimit = data.general.minWithdrawal;
+            window.coinUsdtValue = data.general.coinUsdtValue || 0.01;
+            window.dailyBonusReward = data.general.dailyBonus || 1.00;
         }
 
-        // 2. Trees Configuration apply karna
+        // Example: Trees settings apply karna (Aap apne game ke variables ke mutabiq yahan set karein)
         if (data.trees) {
-            window.pineSettings = data.trees.pine;
-            window.appleSettings = data.trees.apple;
-            window.sakuraSettings = data.trees.sakura;
-            window.crystalSettings = data.trees.crystal;
+            window.treeSettings = data.trees;
         }
 
-        // 3. Staking APY apply karna
-        if (data.staking) {
-            window.stakingAPY = data.staking;
-        }
-
-        console.log("Settings applied to game variables successfully!");
+        console.log("Game variables updated successfully from Admin Panel!");
     } catch (err) {
         console.error("Error applying settings:", err);
     }
