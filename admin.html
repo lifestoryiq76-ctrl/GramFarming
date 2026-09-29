@@ -226,7 +226,7 @@
 <!-- Firebase App & Realtime Database CDN scripts -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg", 
@@ -241,14 +241,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Load all settings & user tables on startup
     window.addEventListener('DOMContentLoaded', () => {
-        // Load Settings from Firebase
-        get(ref(db, 'adminSettings')).then((snapshot) => {
+        // 1. Live Real-time Sync for Settings (Auto updates inputs instantly if changed in DB)
+        onValue(ref(db, 'adminSettings'), (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 
-                // 1. General Settings
                 if(data.general) {
                     document.getElementById('coinUsdtValue').value = data.general.coinUsdtValue ?? 0.01;
                     document.getElementById('dailyBonus').value = data.general.dailyBonus ?? 2.00;
@@ -257,7 +255,6 @@
                     document.getElementById('minClaimCoin').value = data.general.minClaimCoin ?? 10;
                 }
 
-                // 2. Trees Configuration
                 if(data.trees) {
                     if(data.trees.pine) {
                         document.getElementById('pineReward').value = data.trees.pine.reward ?? 10;
@@ -285,7 +282,6 @@
                     }
                 }
 
-                // 3. Ads Configuration
                 if(data.ads) {
                     if(data.ads.homeAd) {
                         document.getElementById('homeAdReward').value = data.ads.homeAd.reward ?? 5;
@@ -309,7 +305,6 @@
                     }
                 }
 
-                // 4. Staking APY Percentages
                 if(data.staking) {
                     document.getElementById('stakeFlex').value = data.staking.flex ?? 4;
                     document.getElementById('stake7d').value = data.staking.d7 ?? 3;
@@ -323,8 +318,8 @@
             }
         });
 
-        // Load Withdrawal Requests
-        get(ref(db, 'withdrawals')).then((snapshot) => {
+        // 2. Live Real-time Sync for Withdrawal Requests
+        onValue(ref(db, 'withdrawals'), (snapshot) => {
             const tbody = document.getElementById('withdrawalsTableBody');
             tbody.innerHTML = '';
             if (snapshot.exists()) {
@@ -347,8 +342,8 @@
             }
         });
 
-        // Load Users List, Referrals & Staking
-        get(ref(db, 'users')).then((snapshot) => {
+        // 3. Live Real-time Sync for Users List & Staking
+        onValue(ref(db, 'users'), (snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
             if (snapshot.exists()) {
@@ -375,8 +370,7 @@
     window.markSuccess = function(withdrawId) {
         update(ref(db, 'withdrawals/' + withdrawId), { status: 'Successful ✅' })
             .then(() => {
-                alert('Marked as Successful ✅');
-                location.reload();
+                // Realtime listener handles UI update automatically
             })
             .catch((error) => {
                 alert('Error: ' + error.message);
