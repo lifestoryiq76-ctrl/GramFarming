@@ -6,9 +6,6 @@
   <title>Gram Farming Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <!-- Firebase SDK Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -358,7 +355,7 @@
         <div style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:16px;">
           <span>🏆</span> <span data-i18n="topEarnersRank">Top Earners Rank</span>
         </div>
-        <button onclick="updateBalances()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px;">🔄</button>
+        <button onclick="loadUserData()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px;">🔄</button>
       </div>
       <div style="font-size:12px; color:var(--text-muted); margin-bottom: 5px;" data-i18n="liveRankingStats">Your live ranking and stats</div>
     </div>
@@ -390,20 +387,6 @@
   </div>
 
   <script>
-    // --- FIREBASE INITIALIZATION ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
-      authDomain: "gramfarmingbot-1a570.firebaseapp.com",
-      databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com",
-      projectId: "gramfarmingbot-1a570",
-      storageBucket: "gramfarmingbot-1a570.firebasestorage.app",
-      messagingSenderId: "113291680927",
-      appId: "1:113291680927:web:cb20c9f6b7914a546156aa"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
     const translations = {
       en: { 
         homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
@@ -494,45 +477,49 @@
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
 
-    // --- LOAD USER DATA FROM FIREBASE ---
-    const userRef = db.ref('users/' + userId);
-    userRef.on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        balance = data.balance || 0.00;
-        tonBalance = data.tonBalance || 0.00;
-        usdtBalance = data.usdtBalance || 0.00;
-        refReward = data.refReward || 0.00;
-        totalInvited = data.totalInvited || 0;
-      } else {
-        // Initialize user in database if not exists
-        userRef.set({
-          name: displayName,
-          balance: 0.00,
-          tonBalance: 0.00,
-          usdtBalance: 0.00,
-          refReward: 0.00,
-          totalInvited: 0
-        });
+    // --- LOAD USER DATA FROM BACKEND / MONGODB ---
+    async function loadUserData() {
+      try {
+        let response = await fetch(`/api/user/${userId}`);
+        let result = await response.json();
+        if (result.success && result.data) {
+          balance = result.data.balance || 0.00;
+          tonBalance = result.data.tonBalance || 0.00;
+          usdtBalance = result.data.usdtBalance || 0.00;
+          refReward = result.data.refReward || 0.00;
+          totalInvited = result.data.totalInvited || 0;
+          renderUIValues();
+        }
+      } catch (err) {
+        console.error("Failed to load user data:", err);
       }
-      renderUIValues();
-    });
+    }
 
-    function saveToFirebase() {
-      userRef.update({
-        balance: balance,
-        tonBalance: tonBalance,
-        usdtBalance: usdtBalance,
-        refReward: refReward,
-        totalInvited: totalInvited
-      });
+    // --- SAVE USER DATA TO BACKEND / MONGODB ---
+    async function saveToBackend() {
+      try {
+        await fetch('/api/update-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: userId,
+            balance: balance,
+            tonBalance: tonBalance,
+            usdtBalance: usdtBalance,
+            refReward: refReward,
+            totalInvited: totalInvited
+          })
+        });
+      } catch (err) {
+        console.error("Failed to save user data:", err);
+      }
     }
 
     function addEarningsWithReferral(earnedAmount) {
       balance += earnedAmount;
       let refCommission = earnedAmount * 0.20;
       refReward += refCommission;
-      saveToFirebase();
+      saveToBackend();
       renderUIValues();
     }
 
@@ -561,7 +548,10 @@
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
     }
     
+    loadUserData();
     fetchLiveTonPrice();
+    // Auto-refresh data every 5 seconds to instantly catch Admin Panel updates
+    setInterval(loadUserData, 5000);
     setInterval(fetchLiveTonPrice, 60000);
 
     function switchTab(tabId) {
@@ -722,7 +712,7 @@
         usdtBalance += totalUsdtValue;
         alert(`Successfully exchanged for ${totalUsdtValue.toFixed(4)} USDT!`);
       }
-      saveToFirebase();
+      saveToBackend();
       renderUIValues();
       calculateExchange();
     }
@@ -766,7 +756,7 @@
           let result = await response.json();
           if (result.success) {
             tonBalance -= amt;
-            saveToFirebase();
+            saveToBackend();
             renderUIValues();
             alert("🎉 Success! TON successfully transfer ho gaya.");
           } else {
@@ -779,7 +769,7 @@
       } else {
         if(balance < amt) { alert("Insufficient balance!"); return; }
         balance -= amt;
-        saveToFirebase();
+        saveToBackend();
         renderUIValues();
         alert(`⚡ FaucetPay withdrawal request successfully submit ho gayi hai!`);
       }
@@ -808,7 +798,7 @@
       balance += refReward;
       let claimedAmount = refReward;
       refReward = 0.00;
-      saveToFirebase();
+      saveToBackend();
       renderUIValues();
       alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins to your main balance!`);
     }
@@ -820,7 +810,7 @@
       if(balance < 10) { alert("Insufficient balance! You need 10 coins to publish a task."); return; }
       
       balance -= 10;
-      saveToFirebase();
+      saveToBackend();
       renderUIValues();
       alert("Task published successfully! -10 Coins deducted.");
     }
