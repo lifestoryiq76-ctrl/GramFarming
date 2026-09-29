@@ -226,7 +226,7 @@
 <!-- Firebase App & Realtime Database CDN scripts -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg", 
@@ -241,10 +241,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Load all settings & live sync tables on startup
+    // Load all settings & user tables on startup
     window.addEventListener('DOMContentLoaded', () => {
-        // Live Settings sync from Firebase
-        onValue(ref(db, 'adminSettings'), (snapshot) => {
+        // Load Settings from Firebase
+        get(ref(db, 'adminSettings')).then((snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 
@@ -323,8 +323,8 @@
             }
         });
 
-        // Live Real-time Sync for Withdrawal Requests
-        onValue(ref(db, 'withdrawals'), (snapshot) => {
+        // Load Withdrawal Requests
+        get(ref(db, 'withdrawals')).then((snapshot) => {
             const tbody = document.getElementById('withdrawalsTableBody');
             tbody.innerHTML = '';
             if (snapshot.exists()) {
@@ -347,8 +347,8 @@
             }
         });
 
-        // Live Real-time Sync for Users List & Staking
-        onValue(ref(db, 'users'), (snapshot) => {
+        // Load Users List, Referrals & Staking
+        get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
             if (snapshot.exists()) {
@@ -375,7 +375,8 @@
     window.markSuccess = function(withdrawId) {
         update(ref(db, 'withdrawals/' + withdrawId), { status: 'Successful ✅' })
             .then(() => {
-                // Realtime listener handles UI update automatically
+                alert('Marked as Successful ✅');
+                location.reload();
             })
             .catch((error) => {
                 alert('Error: ' + error.message);
