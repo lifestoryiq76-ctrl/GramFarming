@@ -22,7 +22,7 @@ window.gameSettings = {
     staking: {}
 };
 
-// Game start hone par Firebase से latest admin settings load karna
+// Game start hone par Firebase se latest admin settings load karna
 window.addEventListener('DOMContentLoaded', () => {
     loadAdminSettings();
 });
@@ -34,10 +34,39 @@ function loadAdminSettings() {
             window.gameSettings = data;
             console.log("Admin Settings Loaded successfully in Game:", data);
             
-            // Yahan aap apni game ki values ko update kar sakte hain
-            // Jaise ki tree rewards, timers, ya staking percentages ko variables me assign karna
+            // Yahan hum settings ko game ke variables me set kar rahe hain
+            applySettingsToGame(data);
         }
     }).catch((error) => {
         console.error("Error loading admin settings:", error);
     });
+}
+
+function applySettingsToGame(data) {
+    try {
+        // 1. General Settings apply karna
+        if (data.general) {
+            window.coinUsdtValue = data.general.coinUsdtValue;
+            window.dailyBonusReward = data.general.dailyBonus;
+            window.referralBonusPercent = data.general.refBonus;
+            window.minWithdrawalLimit = data.general.minWithdrawal;
+        }
+
+        // 2. Trees Configuration apply karna
+        if (data.trees) {
+            window.pineSettings = data.trees.pine;
+            window.appleSettings = data.trees.apple;
+            window.sakuraSettings = data.trees.sakura;
+            window.crystalSettings = data.trees.crystal;
+        }
+
+        // 3. Staking APY apply karna
+        if (data.staking) {
+            window.stakingAPY = data.staking;
+        }
+
+        console.log("Settings applied to game variables successfully!");
+    } catch (err) {
+        console.error("Error applying settings:", err);
+    }
 }
