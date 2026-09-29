@@ -241,12 +241,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // Load all settings & live sync tables on startup
     window.addEventListener('DOMContentLoaded', () => {
-        // 1. Live Real-time Sync for Settings (Auto updates inputs instantly if changed in DB)
+        // Live Settings sync from Firebase
         onValue(ref(db, 'adminSettings'), (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 
+                // 1. General Settings
                 if(data.general) {
                     document.getElementById('coinUsdtValue').value = data.general.coinUsdtValue ?? 0.01;
                     document.getElementById('dailyBonus').value = data.general.dailyBonus ?? 2.00;
@@ -255,6 +257,7 @@
                     document.getElementById('minClaimCoin').value = data.general.minClaimCoin ?? 10;
                 }
 
+                // 2. Trees Configuration
                 if(data.trees) {
                     if(data.trees.pine) {
                         document.getElementById('pineReward').value = data.trees.pine.reward ?? 10;
@@ -282,6 +285,7 @@
                     }
                 }
 
+                // 3. Ads Configuration
                 if(data.ads) {
                     if(data.ads.homeAd) {
                         document.getElementById('homeAdReward').value = data.ads.homeAd.reward ?? 5;
@@ -305,6 +309,7 @@
                     }
                 }
 
+                // 4. Staking APY Percentages
                 if(data.staking) {
                     document.getElementById('stakeFlex').value = data.staking.flex ?? 4;
                     document.getElementById('stake7d').value = data.staking.d7 ?? 3;
@@ -318,7 +323,7 @@
             }
         });
 
-        // 2. Live Real-time Sync for Withdrawal Requests
+        // Live Real-time Sync for Withdrawal Requests
         onValue(ref(db, 'withdrawals'), (snapshot) => {
             const tbody = document.getElementById('withdrawalsTableBody');
             tbody.innerHTML = '';
@@ -342,7 +347,7 @@
             }
         });
 
-        // 3. Live Real-time Sync for Users List & Staking
+        // Live Real-time Sync for Users List & Staking
         onValue(ref(db, 'users'), (snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
