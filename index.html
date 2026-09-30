@@ -356,11 +356,11 @@
       
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
       <select id="withdrawMethod" onchange="toggleWithdrawFields()">
-        <option value="faucetpay">1. FaucetPay (Automated API Payout)</option>
+        <option value="faucetpay">1. Faucetpay email id</option>
         <option value="ton">2. TON Wallet Direct</option>
       </select>
       
-      <label style="margin-top:8px; display:block;" data-i18n="amountLabel">Amount (TON):</label>
+      <label id="amountLabel" style="margin-top:8px; display:block;">Amount (TON):</label>
       <input type="number" id="withdrawAmount" placeholder="0.05" step="0.01" oninput="calculateWithdrawFee()">
       
       <div style="margin-top:6px; font-size:12px; color:var(--yellow);" id="withdrawFeePreview">
@@ -473,7 +473,7 @@
         minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get 20% bonus from all 🪙 earned by your invited friends.", 
         copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin", 
         convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
-        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "FaucetPay Email", 
+        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
         amountLabel: "Amount:", tonAddressLabel: "TON Address:", submitWithdrawBtn: "Submit Withdraw", 
         topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
         navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" 
@@ -490,7 +490,7 @@
         minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 20% बोनस पाएं।", 
         copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें", 
         convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
-        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON वॉलेट पता", faucetpayOpt: "FaucetPay ईमेल", 
+        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON वॉलेट पता", faucetpayOpt: "Faucetpay email id", 
         amountLabel: "मात्रा:", tonAddressLabel: "TON पता / ईमेल:", submitWithdrawBtn: "निकासी सबमिट करें", 
         topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
         navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" 
@@ -507,7 +507,7 @@
         minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус 20%", 
         copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен", 
         convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
-        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Кошелек", faucetpayOpt: "FaucetPay Email", 
+        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Кошелек", faucetpayOpt: "Faucetpay email id", 
         amountLabel: "Сумма:", tonAddressLabel: "Адрес TON:", submitWithdrawBtn: "Вывести", 
         topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
         navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" 
@@ -520,6 +520,7 @@
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.innerText = dict[key];
       });
+      toggleWithdrawFields(); // update dynamic label on language switch
     }
 
     const tg = window.Telegram.WebApp;
@@ -918,12 +919,16 @@
       let method = document.getElementById('withdrawMethod').value;
       let label = document.getElementById('addressLabel');
       let input = document.getElementById('withdrawDestination');
+      let amountLabel = document.getElementById('amountLabel');
+      
       if(method === 'ton') {
         label.innerText = "TON Wallet Address:";
         input.placeholder = "Enter TON wallet address";
+        amountLabel.innerText = "Amount (TON):";
       } else {
         label.innerText = "FaucetPay Email:";
         input.placeholder = "Enter FaucetPay email address";
+        amountLabel.innerText = "Amount (TON):";
       }
     }
 
