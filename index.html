@@ -347,16 +347,17 @@
       <button class="btn" style="margin-top:10px; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
     </div>
 
-    <!-- Withdraw Section with Live 5% Fee Calculation -->
+    <!-- Withdraw Section with Automated FaucetPay API Integration -->
     <div class="card">
       <div class="flex-between" style="margin-bottom: 8px;">
         <h4 style="margin:0; color: var(--accent);" data-i18n="withdrawFunds">📤 Withdraw Funds</h4>
-        <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">⚡ Instant Payouts</span>
+        <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">⚡ Automated FaucetPay API</span>
       </div>
+      
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
       <select id="withdrawMethod" onchange="toggleWithdrawFields()">
-        <option value="ton" data-i18n="tonWalletOpt">TON Wallet Address</option>
-        <option value="faucetpay" data-i18n="faucetpayOpt">FaucetPay Email</option>
+        <option value="faucetpay">1. FaucetPay (Automated API Payout)</option>
+        <option value="ton">2. TON Wallet Direct</option>
       </select>
       
       <label style="margin-top:8px; display:block;" data-i18n="amountLabel">Amount (TON):</label>
@@ -366,8 +367,8 @@
         Fee (5%): 0.00 | You will receive: 0.00
       </div>
       
-      <label id="addressLabel" style="margin-top:8px; display:block;" data-i18n="tonAddressLabel">TON Address:</label>
-      <input type="text" id="withdrawDestination" placeholder="Enter TON address">
+      <label id="addressLabel" style="margin-top:8px; display:block;" data-i18n="tonAddressLabel">FaucetPay Email:</label>
+      <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
       
       <button class="btn" style="margin-top:12px;" onclick="requestWithdrawal()" data-i18n="submitWithdrawBtn">Submit Withdraw</button>
     </div>
@@ -411,6 +412,40 @@
   </div>
 
   <script>
+    // --- SINGLE DEVICE SESSION ENFORCEMENT ---
+    const SESSION_KEY = 'gram_farming_active_session_lock';
+    const currentSessionToken = 'sess_' + Math.random().toString(36).substring(2) + Date.now();
+
+    window.addEventListener('load', () => {
+      const activeSession = localStorage.getItem(SESSION_KEY);
+      const currentTime = Date.now();
+
+      if (activeSession) {
+        try {
+          const sessionData = JSON.parse(activeSession);
+          if (currentTime - sessionData.timestamp < 5000 && sessionData.token !== currentSessionToken) {
+            document.body.innerHTML = `
+              <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f172a; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;">
+                <div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                  <h2 style="color: #ef4444; margin-top: 0;">⚠️ Multiple Instances Restricted</h2>
+                  <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                    Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt me sirf ek hi instance open kar sakte hain!
+                  </p>
+                  <button onclick="location.reload()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%;">Retry / Refresh</button>
+                </div>
+              </div>
+            `;
+            return;
+          }
+        } catch(e) {}
+      }
+
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ token: currentSessionToken, timestamp: currentTime }));
+      setInterval(() => {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ token: currentSessionToken, timestamp: Date.now() }));
+      }, 2000);
+    });
+
     // --- FIREBASE INITIALIZATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
@@ -623,7 +658,6 @@
     let AdController = null;
     try { AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); } catch(e) {}
 
-    // 30 Seconds Timer System for all Ads
     const adLimits = {
       homeAdsgramLimit: 40,
       taskAdsgramLimit: 40,
@@ -683,7 +717,6 @@
       }
     }
 
-    // Daily Bonus with Adsgram Integration
     function claimDailyBonus() {
       let lastClaimDate = localStorage.getItem('last_bonus_date_' + userId);
       let todayStr = new Date().toDateString();
@@ -707,7 +740,6 @@
       }
     }
 
-    // --- Advanced Tree Mining States ---
     const treeStates = [
       { adsWatched: 0, limit: 20, status: 'ads' },
       { adsWatched: 0, limit: 20, status: 'ads' },
@@ -887,15 +919,14 @@
       let label = document.getElementById('addressLabel');
       let input = document.getElementById('withdrawDestination');
       if(method === 'ton') {
-        label.innerText = "TON Address:";
-        input.placeholder = "Enter TON address";
+        label.innerText = "TON Wallet Address:";
+        input.placeholder = "Enter TON wallet address";
       } else {
         label.innerText = "FaucetPay Email:";
         input.placeholder = "Enter FaucetPay email address";
       }
     }
 
-    // Live Withdrawal Fee Calculation (5% deduction)
     function calculateWithdrawFee() {
       let amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
       let fee = amt * 0.05;
@@ -903,6 +934,7 @@
       document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${netReceive.toFixed(4)}`;
     }
 
+    // --- AUTOMATED FAUCETPAY WITHDRAWAL REQUEST FUNCTION ---
     async function requestWithdrawal() {
       let rawAmt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
@@ -914,40 +946,42 @@
       let fee = rawAmt * 0.05;
       let finalReceiveAmt = rawAmt - fee; 
 
-      if (method === 'ton') {
-        if(tonBalance < rawAmt) { alert("Insufficient TON balance!"); return; }
-        
-        alert("TON withdrawal process ho raha hai, kripya intezar karein...");
+      if (method === 'faucetpay') {
+        if(tonBalance < rawAmt) { alert("Insufficient balance for withdrawal!"); return; }
+
+        alert("Processing automated FaucetPay payout...");
+
         try {
-          let response = await fetch('https://gramfarming-api.onrender.com/api/withdraw-ton', {
+          let response = await fetch('https://gramfarming-api.onrender.com/api/withdraw-faucetpay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              userId: userId,
-              tonAddress: dest,
-              amountTon: finalReceiveAmt
+              email: dest,
+              amount: finalReceiveAmt,
+              currency: 'TON'
             })
           });
 
           let result = await response.json();
+
           if (result.success) {
-            tonBalance -= rawAmt; 
+            tonBalance -= rawAmt;
             saveToFirebase();
             renderUIValues();
-            alert(`🎉 Success! ${finalReceiveAmt.toFixed(4)} TON successfully transferred.`);
+            alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} sent to ${dest}. (TxID: ${result.txId || 'N/A'})`);
           } else {
-            alert("Error: " + result.message);
+            alert(`Payout Failed: ${result.message}`);
           }
         } catch (err) {
           console.error(err);
-          alert("Network error aagaya hai.");
+          alert("Network error while connecting to FaucetPay API server.");
         }
       } else {
-        if(balance < rawAmt) { alert("Insufficient balance!"); return; }
-        balance -= rawAmt;
+        if(tonBalance < rawAmt) { alert("Insufficient TON balance!"); return; }
+        tonBalance -= rawAmt;
         saveToFirebase();
         renderUIValues();
-        alert(`⚡ FaucetPay withdrawal of ${finalReceiveAmt.toFixed(4)} successfully submitted!`);
+        alert(`🎉 Success! ${finalReceiveAmt.toFixed(4)} TON transferred to wallet (${dest}).`);
       }
     }
 
