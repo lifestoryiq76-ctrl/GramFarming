@@ -15,13 +15,13 @@ app.use((req, res, next) => {
 });
 
 const FAUCETPAY_API_URL = 'https://faucetpay.io/api/v1/payout';
-const FAUCETPAY_API_KEY = '54554fbdf90a';
+const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY;
 
 app.post('/api/withdraw-faucetpay', async (req, res) => {
   try {
     const { email, amount, currency } = req.body;
 
-    if (!email ||!amount ||!currency) {
+    if (!email || !amount || !currency) {
       return res.status(400).json({ success: false, message: 'Missing required fields (email, amount, currency)' });
     }
 
