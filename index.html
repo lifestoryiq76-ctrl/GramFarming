@@ -356,8 +356,8 @@
       
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
       <select id="withdrawMethod" onchange="toggleWithdrawFields()">
-        <option value="faucetpay">1. Faucetpay email id</option>
-        <option value="ton">2. TON Wallet Direct</option>
+        <option value="faucetpay">Faucetpay email id</option>
+        <option value="ton">TON Wallet Direct</option>
       </select>
       
       <label id="amountLabel" style="margin-top:8px; display:block;">Amount (TON):</label>
@@ -928,7 +928,7 @@
       } else {
         label.innerText = "FaucetPay Email:";
         input.placeholder = "Enter FaucetPay email address";
-        amountLabel.innerText = "Amount (TON):";
+        amountLabel.innerText = "Amount (USDT):";
       }
     }
 
@@ -952,7 +952,7 @@
       let finalReceiveAmt = rawAmt - fee; 
 
       if (method === 'faucetpay') {
-        if(tonBalance < rawAmt) { alert("Insufficient balance for withdrawal!"); return; }
+        if(usdtBalance < rawAmt) { alert("Insufficient USDT balance for withdrawal!"); return; }
 
         alert("Processing automated FaucetPay payout...");
 
@@ -963,17 +963,17 @@
             body: JSON.stringify({
               email: dest,
               amount: finalReceiveAmt,
-              currency: 'TON'
+              currency: 'USDT'
             })
           });
 
           let result = await response.json();
 
           if (result.success) {
-            tonBalance -= rawAmt;
+            usdtBalance -= rawAmt;
             saveToFirebase();
             renderUIValues();
-            alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} sent to ${dest}. (TxID: ${result.txId || 'N/A'})`);
+            alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} USDT sent to ${dest}. (TxID: ${result.txId || 'N/A'})`);
           } else {
             alert(`Payout Failed: ${result.message}`);
           }
