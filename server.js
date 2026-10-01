@@ -10,12 +10,18 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// --- 1. Firebase Initialization (Fixed with individual env vars) ---
+// --- 1. Firebase Initialization (Fixed with automatic newline replacement) ---
+let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+// यदि Render में की सिंगल लाइन में या \n के रूप में है, तो यह उसे सही फॉर्मेट में बदल देगा
+if (privateKey.includes('\\n')) {
+  privateKey = privateKey.replace(/\\n/g, '\n');
+}
+
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : ''
+    privateKey: privateKey
   })
 });
 const db = admin.firestore();
