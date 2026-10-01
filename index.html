@@ -362,10 +362,6 @@
       <div style="text-align: left;">
         <label style="font-size: 13px; color: var(--text-muted);">Saved TON Wallet Address:</label>
         <input type="text" id="manualTonAddress" placeholder="UQ... ya EQ... apna address daalein">
-        
-        <!-- Optional Memo / Tag for Manual Wallet -->
-        <label style="font-size: 13px; color: var(--text-muted); margin-top: 8px; display: block;">Memo / Tag (Optional):</label>
-        <input type="text" id="manualMemoTag" placeholder="12345">
 
         <div style="display: flex; gap: 8px; margin-top: 10px;">
           <button class="btn" style="background: var(--accent); flex: 1;" onclick="saveTonAddress()">Save Address</button>
@@ -404,10 +400,6 @@
       
       <label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
       <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
-
-      <!-- Optional Memo / Tag Field Added Here -->
-      <label style="margin-top:8px; display:block; font-size:13px; color:var(--text-muted);">Memo / Tag (Optional):</label>
-      <input type="text" id="withdrawMemoTag" placeholder="12345">
       
       <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
     </div>
@@ -592,7 +584,6 @@
     let refReward = 0.00;
     let totalInvited = 0;
     let savedTonAddress = "";
-    let savedManualMemo = "";
     
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
@@ -608,7 +599,6 @@
         refReward = data.refReward || 0.00;
         totalInvited = data.totalInvited || 0;
         savedTonAddress = data.savedTonAddress || "";
-        savedManualMemo = data.savedManualMemo || "";
       } else {
         userRef.set({
           name: displayName,
@@ -617,8 +607,7 @@
           usdtBalance: 0.00,
           refReward: 0.00,
           totalInvited: 0,
-          savedTonAddress: "",
-          savedManualMemo: ""
+          savedTonAddress: ""
         });
       }
       renderUIValues();
@@ -632,43 +621,35 @@
         usdtBalance: usdtBalance,
         refReward: refReward,
         totalInvited: totalInvited,
-        savedTonAddress: savedTonAddress,
-        savedManualMemo: savedManualMemo
+        savedTonAddress: savedTonAddress
       });
     }
 
     // --- MANUAL TON ADDRESS SAVE & DISCONNECT LOGIC ---
     function saveTonAddress() {
       let addrInput = document.getElementById('manualTonAddress').value.trim();
-      let memoInput = document.getElementById('manualMemoTag').value.trim();
 
       if (!addrInput || addrInput.length < 15) {
         alert("Kripya ek valid TON wallet address enter karein.");
         return;
       }
       savedTonAddress = addrInput;
-      savedManualMemo = memoInput;
       saveToFirebase();
 
       document.getElementById('manualTonAddress').value = savedTonAddress;
       document.getElementById('manualTonAddress').readOnly = true;
-      document.getElementById('manualMemoTag').value = savedManualMemo;
-      document.getElementById('manualMemoTag').readOnly = true;
 
-      alert("✅ TON Wallet address & Memo successfully save ho gaya hai!");
+      alert("✅ TON Wallet address successfully save ho gaya hai!");
       toggleWithdrawFields();
     }
 
     function disconnectTonAddress() {
       if (confirm("Kya aap apna wallet address disconnect karna chahte hain?")) {
         savedTonAddress = "";
-        savedManualMemo = "";
         saveToFirebase();
 
         document.getElementById('manualTonAddress').value = "";
         document.getElementById('manualTonAddress').readOnly = false;
-        document.getElementById('manualMemoTag').value = "";
-        document.getElementById('manualMemoTag').readOnly = false;
 
         alert("🔄 Wallet successfully disconnect ho gaya hai. Ab aap naya link laga sakte hain.");
         toggleWithdrawFields();
@@ -720,18 +701,13 @@
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
       
       let manInput = document.getElementById('manualTonAddress');
-      let manMemoInput = document.getElementById('manualMemoTag');
 
       if (savedTonAddress) {
         manInput.value = savedTonAddress;
         manInput.readOnly = true;
-        manMemoInput.value = savedManualMemo;
-        manMemoInput.readOnly = true;
       } else {
         manInput.value = "";
         manInput.readOnly = false;
-        manMemoInput.value = "";
-        manMemoInput.readOnly = false;
       }
 
       let method = document.getElementById('withdrawMethod').value;
@@ -1082,7 +1058,6 @@
       let rawAmt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
       let method = document.getElementById('withdrawMethod').value;
-      let memoTag = document.getElementById('withdrawMemoTag').value.trim(); // Optional Memo/Tag
 
       if(!rawAmt || rawAmt < 0.05) { alert("Minimum withdrawal limit is 0.05."); return; }
       
@@ -1102,8 +1077,7 @@
             body: JSON.stringify({
               email: dest,
               amount: finalReceiveAmt,
-              currency: 'USDT',
-              memo: memoTag || null
+              currency: 'USDT'
             })
           });
 
@@ -1113,7 +1087,7 @@
             usdtBalance -= rawAmt;
             saveToFirebase();
             renderUIValues();
-            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT to ${dest} ${memoTag ? '(Memo: ' + memoTag + ')' : ''}`);
+            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT to ${dest}`);
             alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} USDT sent to ${dest}. (TxID: ${result.txId || 'N/A'})`);
           } else {
             alert(`Payout Failed: ${result.message}`);
@@ -1126,13 +1100,12 @@
         if(tonBalance < rawAmt) { alert("Insufficient TON balance!"); return; }
         if(!savedTonAddress) { alert("Pehle apna TON wallet address save karein!"); return; }
 
-        let finalMemoToUse = memoTag || savedManualMemo;
         alert("Processing TON withdrawal to saved address: " + savedTonAddress);
         
         tonBalance -= rawAmt;
         saveToFirebase();
         renderUIValues();
-        recordTransactionHistory(`TON Withdrawal: ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress} ${finalMemoToUse ? '(Memo: ' + finalMemoToUse + ')' : ''}`);
+        recordTransactionHistory(`TON Withdrawal: ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress}`);
         alert(`🎉 TON Withdrawal Request Successful! ${finalReceiveAmt.toFixed(4)} TON bhej diya gaya hai.`);
       }
     }
