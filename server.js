@@ -10,12 +10,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// --- 1. Firebase Initialization (Fixed with automatic newline replacement) ---
-let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-// यदि Render में की सिंगल लाइन में या \n के रूप में है, तो यह उसे सही फॉर्मेट में बदल देगा
-if (privateKey.includes('\\n')) {
-  privateKey = privateKey.replace(/\\n/g, '\n');
-}
+// --- 1. Firebase Initialization (Auto-fix quotes and newlines) ---
+let rawPrivateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+
+// अगर Render में गलती से आगे-पीछे कोट्स लग गए हों तो उन्हें हटा देगा
+rawPrivateKey = rawPrivateKey.replace(/^["']|["']$/g, '');
+
+// \n को असली न्यू-लाइन में बदल देगा
+const privateKey = rawPrivateKey.replace(/\\n/g, '\n');
 
 admin.initializeApp({
   credential: admin.credential.cert({
