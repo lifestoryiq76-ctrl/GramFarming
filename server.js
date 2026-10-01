@@ -1,68 +1,104 @@
 const express = require('express');
-const axios = require('axios');
+const bodyParser = require('body-parser');
+const axios = require('axios'); // FaucetPay API calls के लिए
+const { TonClient, WalletContractV4, internal, mnemonicToPrivateKey } = require("@ton/ton");
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(bodyParser.json());
+app.use(express.static('public')); // अगर frontend files public folder में हैं
 
-app.use(express.json());
-
-// CORS headers configuration
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
-// Aapki FaucetPay API Key
-const FAUCETPAY_API_KEY = "54554fbd31a9a72c7e84e4418b59abcde50bd6921c4a89d8dd86ae9b7c8df90a";
-
-app.get('/', (req, res) => {
-  res.send('Gram Farming API Server is Live & Running 🚀');
-});
-
-// Instant FaucetPay Payout API Route
+// ==========================================
+// 1. FAUCETPAY WITHDRAWAL ROUTE
+// ==========================================
 app.post('/api/withdraw-faucetpay', async (req, res) => {
-  try {
-    const { email, amount, currency } = req.body;
+    try {
+        const { email, amount, currency } = req.body;
 
-    if (!email || !amount) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Email aur amount likhna zaroori hai!" 
-      });
+        if (!email || !amount || amount <= 0) {
+            return res.json({ success: false, message: "Invalid FaucetPay parameters" });
+        }
+
+        const faucetPayApiKey = process.env.FAUCETPAY_API_KEY; // Render environment variable
+        
+        const response = await axios.post('https://faucetpay.io/api/v1/send', null, {
+            params: {
+                api_key: faucetPayApiKey,
+                to: email,
+                amount: Math.floor(amount * 100000000), // Satoshis / smallest unit
+                currency: currency || 'USDT'
+            }
+        });
+
+        if (response.data && response.data.status === 200) {
+            return res.json({ success: true, message: "FaucetPay payout successful", data: response.data });
+        } else {
+            return res.json({ success: false, message: response.data.message || "FaucetPay transfer failed" });
+        }
+
+    } catch (error) {
+        console.error("FaucetPay Payout Error:", error.response?.data || error.message);
+        return res.json({ success: false, message: error.message });
     }
-
-    const params = new URLSearchParams();
-    params.append('api_key', FAUCETPAY_API_KEY);
-    params.append('amount', Math.round(Number(amount) * 100000000));
-    params.append('currency', currency || 'USDT');
-    params.append('to', email);
-    params.append('ip_address', req.ip || '127.0.0.1');
-
-    const fpResponse = await axios.post('https://faucetpay.io/api/v1/send', params);
-    const fpResult = fpResponse.data;
-
-    if (fpResult.status === 200) {
-      return res.json({
-        success: true,
-        txId: fpResult.payout_id || "FP_" + Date.now(),
-        message: "Payment successfully send ho gayi!"
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: fpResult.message || "FaucetPay se payout nahi ho paya."
-      });
-    }
-
-  } catch (error) {
-    console.error("FaucetPay API Error:", error.message);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Server me koi error aa gayi hai." 
-    });
-  }
 });
 
+
+// ==========================================
+// 2. TON WALLET INSTANT PAYOUT ROUTE
+// ==========================================
+app.post('/api/withdraw-ton', async (req, res) => {
+    try {
+        const { recipientAddress, amount } = req.body; // amount TON में होगा
+        
+        if (!recipientAddress || !amount || amount <= 0) {
+            return res.json({ success: false, message: "Invalid TON parameters" });
+        }
+
+        // 1. TonClient initialize करें (Mainnet)
+        const client = new TonClient({
+            endpoint: 'https://toncenter.com/api/v2/jsonRPC',
+            apiKey: process.env.TONCENTER_API_KEY || '' 
+        });
+
+        // 2. Render के Environment Variable से एडमिन वॉलेट की mnemonic लें
+        const mnemonicSeed = process.env.ADMIN_MNEMONIC;
+        if (!mnemonicSeed) {
+            return res.json({ success: false, message: "Admin TON wallet not configured on server." });
+        }
+
+        const mnemonic = mnemonicSeed.split(" ");
+        const key = await mnemonicToPrivateKey(mnemonic);
+        
+        let workchain = 0;
+        let wallet = WalletContractV4.create({ workchain, publicKey: key.publicKey });
+        let contract = client.open(wallet);
+
+        // 3. Transfer message तैयार करें
+        const seqno = await contract.getSeqno();
+        const nanoAmount = BigInt(Math.floor(amount * 1000000000)); // TON to NanoTON conversion
+
+        await contract.sendTransfer({
+            seqno,
+            secretKey: key.secretKey,
+            messages: [
+                internal({
+                    to: recipientAddress,
+                    value: nanoAmount,
+                    bounce: false,
+                    body: "Gram Farming Instant Payout"
+                })
+            ]
+        });
+
+        return res.json({ success: true, message: "TON sent successfully!", txId: seqno });
+
+    } catch (error) {
+        console.error("TON Payout Error:", error);
+        return res.json({ success: false, message: error.message });
+    }
+});
+
+// Server Port Setup
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
