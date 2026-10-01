@@ -1,15 +1,17 @@
 {
   "name": "gramfarming-api",
   "version": "1.0.0",
-  "description": "Backend API for Gram Farming",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "@ton/ton": "^15.0.0",
-    "cors": "^2.8.5",
     "express": "^4.18.2",
-    "node-fetch": "^2.6.9"
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^12.0.0",
+    "axios": "^1.6.8",
+    "@ton/ton": "^14.0.0",
+    "@ton/crypto": "^3.2.0"
   }
 }
