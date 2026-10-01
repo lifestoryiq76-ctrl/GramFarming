@@ -10,10 +10,13 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// --- 1. Firebase Initialization ---
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
+// --- 1. Firebase Initialization (Fixed with individual env vars) ---
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : ''
+  })
 });
 const db = admin.firestore();
 
@@ -77,11 +80,9 @@ async function sendTonToAddress(recipientAddress, amountInTon) {
 app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
   const userId = req.user.uid;
   const { amount, payout_method, destination } = req.body; 
-  // payout_method: 'ton' या 'faucetpay'
-  // destination: यूजर द्वारा डाला गया TON एड्रेस या FaucetPay ईमेल
 
   try {
-    const minWithdraw = 0.5; // न्यूनतम विथड्रॉल लिमिट
+    const minWithdraw = 0.5; 
     if (!amount || amount < minWithdraw) {
       return res.status(400).json({ success: false, message: `Minimum withdraw amount is ${minWithdraw}` });
     }
@@ -106,7 +107,7 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
 
     let payoutResponse = null;
 
-    // A. TON Payout (यूजर के दिए गए एड्रेस पर सीधा ट्रांसफर)
+    // A. TON Payout
     if (payout_method === 'ton') {
       const tonResult = await sendTonToAddress(destination, amount);
       if (!tonResult.success) {
@@ -114,13 +115,13 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
       }
       payoutResponse = { network: 'TON', address: destination };
     } 
-    // B. FaucetPay Payout (यूजर के दिए गए ईमेल/नंबर पर ट्रांसफर)
+    // B. FaucetPay Payout
     else if (payout_method === 'faucetpay') {
-      const currency = 'USDT'; // या TRX / DOGE जो भी आप देना चाहें
+      const currency = 'USDT'; 
       const fpRes = await axios.post('https://faucetpay.io/api/v1/send', {
         api_key: FAUCETPAY_API_KEY,
         to: destination,
-        amount: Math.floor(amount * 100000000), // Satoshis
+        amount: Math.floor(amount * 100000000), 
         currency: currency
       });
 
@@ -133,7 +134,7 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid payout method' });
     }
 
-    // पेमेंट सफल होने पर Firebase में यूजर का बैलेंस तुरंत काट लें
+    // Update balance in Firebase
     await db.runTransaction(async (transaction) => {
       const freshDoc = await transaction.get(userRef);
       const newBalance = freshDoc.data().balance - amount;
