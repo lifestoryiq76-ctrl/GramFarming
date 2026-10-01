@@ -328,7 +328,6 @@
     <div class="card">
       <div class="flex-between" style="margin-bottom: 10px;">
         <h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange Coin (Live Rate)</h4>
-        <!-- 🪙 Balance show coin hoga live -->
         <span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
           🪙 Balance: <span id="walletCoinDisplay">0.00</span>
         </span>
@@ -357,14 +356,14 @@
     <!-- 1. 📤 Withdraw Funds Section -->
     <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
       <div class="flex-between" style="margin-bottom: 8px;">
-        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TonKeeperWallet instant.(MyTonWallet & TonKeeper wallet)</h4>
+        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TonKeeperWallet instant (MyTonWallet & TonKeeper wallet)</h4>
         <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
       </div>
       
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
       <select id="withdrawMethod" onchange="toggleWithdrawFields()">
-        <option value="faucetpay">FaucetPay Email ID</option>
-        <option value="ton">TON Wallet Direct (TonKeeperWallet / MyTonWallet)</option>
+        <option value="faucetpay">FaucetPay Email ID (USDT)</option>
+        <option value="ton">TON Wallet Direct (Tonkeeper / MyTonWallet)</option>
       </select>
       
       <label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT):</label>
@@ -382,8 +381,8 @@
         Fee (5%): 0.00 | You will receive: 0.00
       </div>
       
-      <label id="addressLabel" style="margin-top:8px; display:block;">TonKeeper Wallet Address (TON):</label>
-      <input type="text" id="withdrawDestination" placeholder="EQ... or UQ... (TON Network)">
+      <label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
+      <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
       
       <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
     </div>
@@ -944,7 +943,7 @@
       calculateExchange();
     }
 
-    // --- UPDATED DYNAMIC WITHDRAWAL FIELDS LOGIC ---
+    // --- DYNAMIC WITHDRAWAL FIELDS LOGIC ---
     function toggleWithdrawFields() {
       let method = document.getElementById('withdrawMethod').value;
       let headerTitle = document.getElementById('withdrawHeaderTitle');
@@ -954,13 +953,13 @@
       let minLabel = document.getElementById('withdrawMinLabel');
       
       if(method === 'ton') {
-        headerTitle.innerText = "⚡ TonKeeperWallet instant (MyTonWallet & TonKeeper wallet)";
-        label.innerText = "TonKeeper Wallet Address (TON):";
+        headerTitle.innerText = "⚡ Tonkeeper Wallet instant (MyTonWallet & Tonkeeper)";
+        label.innerText = "Tonkeeper Wallet Address (TON):";
         input.placeholder = "EQ... or UQ... (TON Network)";
         amountLabel.innerText = "Amount (TON):";
         minLabel.innerText = "Min 0.05 TON";
       } else {
-        headerTitle.innerText = "⚡ FaucetPay instant";
+        headerTitle.innerText = "⚡ FaucetPay instant (USDT)";
         label.innerText = "FaucetPay Email ID:";
         input.placeholder = "Enter FaucetPay email address";
         amountLabel.innerText = "Amount (USDT):";
@@ -1032,8 +1031,8 @@
         tonBalance -= rawAmt;
         saveToFirebase();
         renderUIValues();
-        recordTransactionHistory(`TonKeeperWallet: ${finalReceiveAmt.toFixed(4)} TON to ${dest}`);
-        alert(`🎉 Success! ${finalReceiveAmt.toFixed(4)} TON transferred to TonKeeper wallet (${dest}).`);
+        recordTransactionHistory(`Tonkeeper: ${finalReceiveAmt.toFixed(4)} TON to ${dest}`);
+        alert(`🎉 Success! ${finalReceiveAmt.toFixed(4)} TON transferred to wallet (${dest}).`);
       }
     }
 
@@ -1048,9 +1047,7 @@
       }
     }
 
-    function loadTransactionHistory() {
-      // Refresh or check history log visually
-    }
+    function loadTransactionHistory() {}
 
     function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
     
