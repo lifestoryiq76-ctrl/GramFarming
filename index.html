@@ -21,10 +21,10 @@
       --border: #334155;
     }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 80px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
     .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-    .card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 1px solid var(--border); position: relative; }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 1px solid var(--border); position: relative; }
     .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; }
     .btn:active { transform: scale(0.96); }
     .btn:disabled { background: #475569; cursor: not-allowed; }
@@ -36,7 +36,8 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
+    input:focus, select:focus { border-color: var(--accent); }
     
     .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
@@ -325,7 +326,13 @@
     <h3 data-i18n="walletExchange">💼 Wallet & Exchange</h3>
     
     <div class="card">
-      <h4 style="margin:0 0 8px 0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange Coin (Live Rate)</h4>
+      <div class="flex-between" style="margin-bottom: 10px;">
+        <h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange Coin (Live Rate)</h4>
+        <!-- 🪙 Balance show coin hoga live -->
+        <span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
+          🪙 Balance: <span id="walletCoinDisplay">0.00</span>
+        </span>
+      </div>
       
       <div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
         <div>💎 TON Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong> TON</div>
@@ -347,30 +354,49 @@
       <button class="btn" style="margin-top:10px; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
     </div>
 
-    <!-- Withdraw Section with Automated FaucetPay API Integration -->
-    <div class="card">
+    <!-- 1. 📤 Withdraw Funds Section -->
+    <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
       <div class="flex-between" style="margin-bottom: 8px;">
-        <h4 style="margin:0; color: var(--accent);" data-i18n="withdrawFunds">📤 Withdraw Funds</h4>
-        <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">⚡ Automated FaucetPay API</span>
+        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TonKeeperWallet instant.(MyTonWallet & TonKeeper wallet)</h4>
+        <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
       </div>
       
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
       <select id="withdrawMethod" onchange="toggleWithdrawFields()">
-        <option value="faucetpay">Faucetpay email id</option>
-        <option value="ton">TON Wallet Direct</option>
+        <option value="faucetpay">FaucetPay Email ID</option>
+        <option value="ton">TON Wallet Direct (TonKeeperWallet / MyTonWallet)</option>
       </select>
       
-      <label id="amountLabel" style="margin-top:8px; display:block;">Amount (TON):</label>
-      <input type="number" id="withdrawAmount" placeholder="0.05" step="0.01" oninput="calculateWithdrawFee()">
+      <label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT):</label>
+      <input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.01" oninput="calculateWithdrawFee()">
       
-      <div style="margin-top:6px; font-size:12px; color:var(--yellow);" id="withdrawFeePreview">
+      <div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
+        <span id="withdrawMinLabel">Min 0.05</span>
+        <div>
+          <span id="availableWithdrawBalance" style="color:var(--text-muted); margin-right:8px;">Available: 0.0000</span>
+          <button onclick="setMaxWithdraw()" style="background:none; border:none; color:var(--accent); font-weight:bold; cursor:pointer;">MAX</button>
+        </div>
+      </div>
+      
+      <div style="margin-top:4px; font-size:12px; color:var(--yellow);" id="withdrawFeePreview">
         Fee (5%): 0.00 | You will receive: 0.00
       </div>
       
-      <label id="addressLabel" style="margin-top:8px; display:block;" data-i18n="tonAddressLabel">FaucetPay Email:</label>
-      <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
+      <label id="addressLabel" style="margin-top:8px; display:block;">TonKeeper Wallet Address (TON):</label>
+      <input type="text" id="withdrawDestination" placeholder="EQ... or UQ... (TON Network)">
       
-      <button class="btn" style="margin-top:12px;" onclick="requestWithdrawal()" data-i18n="submitWithdrawBtn">Submit Withdraw</button>
+      <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
+    </div>
+
+    <!-- 2. TRANSACTION HISTORY SECTION -->
+    <div class="card" style="background: #111827; border: 1px solid var(--border);">
+      <div class="flex-between" style="margin-bottom: 8px;">
+        <h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
+        <span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
+      </div>
+      <div id="transactionHistoryList" style="font-size: 12px; color: var(--text-muted); min-height: 40px; display: flex; align-items: center;">
+        No recent withdrawals yet.
+      </div>
     </div>
   </div>
 
@@ -471,10 +497,10 @@
         flexTitle: "Flexible Staking", flexDesc: "Unstake anytime with zero locking period.", stakeBtn: "Stake", fixedHeader: "2. Fixed Staking (Up to 20% APY)",
         referralProgram: "👥 REFERRAL PROGRAM", friendsTitle: "Friends", totalInvited: "Total invited", rewardsTitle: "Rewards", 
         minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get 20% bonus from all 🪙 earned by your invited friends.", 
-        copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin", 
+        copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", 
         convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
-        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "Amount:", tonAddressLabel: "TON Address:", submitWithdrawBtn: "Submit Withdraw", 
+        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "Tonkeeper Wallet", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "Amount:", tonAddressLabel: "Tonkeeper Wallet Address:", submitWithdrawBtn: "Submit Withdraw", 
         topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
         navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" 
       },
@@ -488,10 +514,10 @@
         flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
         referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम", 
         minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 20% बोनस पाएं।", 
-        copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें", 
+        copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", 
         convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
-        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON वॉलेट पता", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "मात्रा:", tonAddressLabel: "TON पता / ईमेल:", submitWithdrawBtn: "निकासी सबमिट करें", 
+        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "Tonkeeper Wallet", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "मात्रा:", tonAddressLabel: "Tonkeeper Wallet पता:", submitWithdrawBtn: "निकासी सबमिट करें", 
         topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
         navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" 
       },
@@ -505,10 +531,10 @@
         flexTitle: "Гибкий стейкинг", flexDesc: "Без лока.", stakeBtn: "В стейкинг", fixedHeader: "2. Фиксированный стейкинг",
         referralProgram: "👥 РЕФЕРАЛЫ", friendsTitle: "Друзья", totalInvited: "Приглашено", rewardsTitle: "Награды", 
         minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус 20%", 
-        copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен", 
+        copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", 
         convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
-        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Кошелек", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "Сумма:", tonAddressLabel: "Адрес TON:", submitWithdrawBtn: "Вывести", 
+        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "Tonkeeper Wallet", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "Сумма:", tonAddressLabel: "Адрес Tonkeeper Wallet:", submitWithdrawBtn: "Вывести", 
         topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
         navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" 
       }
@@ -520,7 +546,7 @@
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.innerText = dict[key];
       });
-      toggleWithdrawFields(); // update dynamic label on language switch
+      toggleWithdrawFields();
     }
 
     const tg = window.Telegram.WebApp;
@@ -566,6 +592,7 @@
         });
       }
       renderUIValues();
+      toggleWithdrawFields();
     });
 
     function saveToFirebase() {
@@ -596,9 +623,7 @@
           calculateExchange();
           return;
         }
-      } catch (error) {
-        console.log("CoinGecko API failed, trying Binance backup...");
-      }
+      } catch (error) {}
 
       try {
         let backupResponse = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=TONUSDT');
@@ -610,19 +635,23 @@
           return;
         }
       } catch (error) {
-        console.log("Backup API failed, using fallback:", error);
         document.getElementById('liveRateStatus').innerText = `📡 TON Rate: $${liveTonPrice} USDT (Fallback)`;
       }
     }
 
     function renderUIValues() {
       document.getElementById('userBalance').innerText = balance.toFixed(2);
+      document.getElementById('walletCoinDisplay').innerText = balance.toFixed(2);
       document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
       document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4);
       document.getElementById('refRewardBalance').innerText = `+${refReward.toFixed(2)} 🪙`;
       document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
       document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
+      
+      let method = document.getElementById('withdrawMethod').value;
+      let availVal = (method === 'ton') ? tonBalance : usdtBalance;
+      document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
     }
     
     fetchLiveTonPrice();
@@ -704,7 +733,7 @@
       alert(`+${reward} Coin added successfully!`);
 
       if (btn) {
-        let cooldown = 30;
+        let cooldown = 60; 
         btn.innerText = `Wait ${cooldown}s`;
         let timerInterval = setInterval(() => {
           cooldown--;
@@ -787,7 +816,7 @@
       if (state.adsWatched < 20) {
         statusEl.innerHTML = `Watched ${state.adsWatched}/20 Ads`;
         
-        let cooldown = 30;
+        let cooldown = 60; 
         btn.innerText = `Wait ${cooldown}s`;
         let tInterval = setInterval(() => {
           cooldown--;
@@ -915,21 +944,36 @@
       calculateExchange();
     }
 
+    // --- UPDATED DYNAMIC WITHDRAWAL FIELDS LOGIC ---
     function toggleWithdrawFields() {
       let method = document.getElementById('withdrawMethod').value;
+      let headerTitle = document.getElementById('withdrawHeaderTitle');
       let label = document.getElementById('addressLabel');
       let input = document.getElementById('withdrawDestination');
-      let amountLabel = document.getElementById('amountLabel');
+      let amountLabel = document.getElementById('withdrawAmountLabel');
+      let minLabel = document.getElementById('withdrawMinLabel');
       
       if(method === 'ton') {
-        label.innerText = "TON Wallet Address:";
-        input.placeholder = "Enter TON wallet address";
+        headerTitle.innerText = "⚡ TonKeeperWallet instant (MyTonWallet & TonKeeper wallet)";
+        label.innerText = "TonKeeper Wallet Address (TON):";
+        input.placeholder = "EQ... or UQ... (TON Network)";
         amountLabel.innerText = "Amount (TON):";
+        minLabel.innerText = "Min 0.05 TON";
       } else {
-        label.innerText = "FaucetPay Email:";
+        headerTitle.innerText = "⚡ FaucetPay instant";
+        label.innerText = "FaucetPay Email ID:";
         input.placeholder = "Enter FaucetPay email address";
         amountLabel.innerText = "Amount (USDT):";
+        minLabel.innerText = "Min 0.05 USDT";
       }
+      renderUIValues();
+    }
+
+    function setMaxWithdraw() {
+      let method = document.getElementById('withdrawMethod').value;
+      let maxVal = (method === 'ton') ? tonBalance : usdtBalance;
+      document.getElementById('withdrawAmount').value = maxVal.toFixed(4);
+      calculateWithdrawFee();
     }
 
     function calculateWithdrawFee() {
@@ -939,7 +983,7 @@
       document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${netReceive.toFixed(4)}`;
     }
 
-    // --- AUTOMATED FAUCETPAY WITHDRAWAL REQUEST FUNCTION ---
+    // --- AUTOMATED FAUCETPAY & TON WITHDRAWAL REQUEST FUNCTION ---
     async function requestWithdrawal() {
       let rawAmt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
@@ -973,6 +1017,7 @@
             usdtBalance -= rawAmt;
             saveToFirebase();
             renderUIValues();
+            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT to ${dest}`);
             alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} USDT sent to ${dest}. (TxID: ${result.txId || 'N/A'})`);
           } else {
             alert(`Payout Failed: ${result.message}`);
@@ -983,11 +1028,28 @@
         }
       } else {
         if(tonBalance < rawAmt) { alert("Insufficient TON balance!"); return; }
+        
         tonBalance -= rawAmt;
         saveToFirebase();
         renderUIValues();
-        alert(`🎉 Success! ${finalReceiveAmt.toFixed(4)} TON transferred to wallet (${dest}).`);
+        recordTransactionHistory(`TonKeeperWallet: ${finalReceiveAmt.toFixed(4)} TON to ${dest}`);
+        alert(`🎉 Success! ${finalReceiveAmt.toFixed(4)} TON transferred to TonKeeper wallet (${dest}).`);
       }
+    }
+
+    function recordTransactionHistory(details) {
+      let historyList = document.getElementById('transactionHistoryList');
+      let timeStr = new Date().toLocaleTimeString();
+      let newItem = `<div style="padding: 6px 0; border-bottom: 1px solid var(--border); width: 100%;">✅ [${timeStr}] ${details}</div>`;
+      if(historyList.innerText.includes("No recent withdrawals")) {
+        historyList.innerHTML = newItem;
+      } else {
+        historyList.innerHTML = newItem + historyList.innerHTML;
+      }
+    }
+
+    function loadTransactionHistory() {
+      // Refresh or check history log visually
     }
 
     function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
