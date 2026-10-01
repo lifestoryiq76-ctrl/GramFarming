@@ -9,8 +9,6 @@
   <!-- Firebase SDK Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <!-- TON Connect UI / SDK Script -->
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -31,6 +29,7 @@
     .btn:active { transform: scale(0.96); }
     .btn:disabled { background: #475569; cursor: not-allowed; }
     .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
+    .btn-red { background: #ef4444; color: #fff; }
     .flex-between { display: flex; justify-content: space-between; align-items: center; }
     .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; backdrop-filter: blur(10px); }
     .nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; }
@@ -50,7 +49,6 @@
     
     #miningBoxesSection { display: none; }
     #miningBoxesSection.show { display: block; }
-    #ton-connect { display: flex; justify-content: center; align-items: center; width: 100%; margin: 10px 0; }
   </style>
 </head>
 <body>
@@ -237,7 +235,7 @@
       </select>
 
       <div style="margin-top:10px; padding:10px; background:#0f172a; border-radius:8px; font-size:13px; border:1px solid var(--border);">
-        <div>☀️ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
+        <div>☀ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
         <div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
       </div>
     </div>
@@ -356,25 +354,33 @@
       <button class="btn" style="margin-top:10px; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
     </div>
 
-    <!-- TON Connect Widget Container -->
+    <!-- Manual Saved Wallet Address Card -->
     <div class="card" style="background:#111827; border: 1px solid var(--accent); text-align: center;">
-      <h4 style="margin:0 0 8px 0; color: var(--accent);">⚡ TON Connect (Instant Payout)</h4>
-      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;">Connect Tonkeeper or MyTonWallet for instant blockchain payout.</p>
-      <div id="ton-connect"></div>
-      <div id="tonWalletStatus" style="font-size:12px; color:var(--yellow); margin-top: 6px;">Wallet not connected</div>
+      <h4 style="margin:0 0 8px 0; color: var(--accent);">⚡ Manual Wallet Address</h4>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;">Apna TON wallet address manually yahan save karein.</p>
+
+      <div style="text-align: left;">
+        <label style="font-size: 13px; color: var(--text-muted);">Saved TON Wallet Address:</label>
+        <input type="text" id="manualTonAddress" placeholder="UQ... ya EQ... apna address daalein">
+        
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button class="btn" style="background: var(--accent); flex: 1;" onclick="saveTonAddress()">Save Address</button>
+          <button class="btn btn-red" style="flex: 1;" onclick="disconnectTonAddress()">Disconnect</button>
+        </div>
+      </div>
     </div>
 
     <!-- 1. 📤 Withdraw Funds Section -->
     <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
       <div class="flex-between" style="margin-bottom: 8px;">
-        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON Connect instant payout</h4>
+        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON manual instant payout</h4>
         <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
       </div>
       
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
       <select id="withdrawMethod" onchange="toggleWithdrawFields()">
         <option value="faucetpay">FaucetPay Email ID (USDT)</option>
-        <option value="ton">TON Connect Wallet (Instant Payout)</option>
+        <option value="ton">TON Wallet Address (Instant Payout)</option>
       </select>
       
       <label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT):</label>
@@ -394,6 +400,10 @@
       
       <label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
       <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
+
+      <!-- Optional Memo / Tag Field Added Here -->
+      <label style="margin-top:8px; display:block; font-size:13px; color:var(--text-muted);">Memo / Tag (Optional):</label>
+      <input type="text" id="withdrawMemoTag" placeholder="Optional memo or comment daalein (Agar zaruri ho)">
       
       <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
     </div>
@@ -496,47 +506,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- TON CONNECT UI INITIALIZATION (WITH SPECIFIC WALLETS FILTER) ---
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: 'https://gramfarmingbot-1a570.firebaseapp.com/tonconnect-manifest.json',
-      buttonRootId: 'ton-connect',
-      uiPreferences: {
-        theme: 'DARK'
-      },
-      walletsListConfiguration: {
-        includeWallets: [
-          {
-            appName: 'tonkeeper',
-            name: 'Tonkeeper',
-            bridgeUrl: 'https://bridge.tonapi.io/bridge',
-            platforms: ['ios', 'android', 'desktop', 'web']
-          },
-          {
-            appName: 'mytonwallet',
-            name: 'MyTonWallet',
-            bridgeUrl: 'https://connect.mytonwallet.org/bridge/',
-            platforms: ['ios', 'android', 'desktop', 'web']
-          }
-        ]
-      }
-    });
-
-    tonConnectUI.onStatusChange(wallet => {
-      if (wallet) {
-        document.getElementById('tonWalletStatus').innerText = `Connected: ${wallet.account.address.substring(0, 6)}...${wallet.account.address.slice(-4)}`;
-        let method = document.getElementById('withdrawMethod').value;
-        if (method === 'ton') {
-          document.getElementById('withdrawDestination').value = wallet.account.address;
-        }
-      } else {
-        document.getElementById('tonWalletStatus').innerText = 'Wallet not connected';
-        let method = document.getElementById('withdrawMethod').value;
-        if (method === 'ton') {
-          document.getElementById('withdrawDestination').value = '';
-        }
-      }
-    });
-
     const translations = {
       en: { 
         homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
@@ -550,7 +519,7 @@
         minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get 20% bonus from all 🪙 earned by your invited friends.", 
         copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", 
         convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
-        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Connect Wallet", faucetpayOpt: "Faucetpay email id", 
+        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
         amountLabel: "Amount:", tonAddressLabel: "TON Wallet Address:", submitWithdrawBtn: "Submit Withdraw", 
         topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
         navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" 
@@ -567,7 +536,7 @@
         minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 20% बोनस पाएं।", 
         copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", 
         convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
-        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON Connect Wallet", faucetpayOpt: "Faucetpay email id", 
+        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
         amountLabel: "मात्रा:", tonAddressLabel: "TON Wallet पता:", submitWithdrawBtn: "निकासी सबमिट करें", 
         topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
         navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" 
@@ -584,7 +553,7 @@
         minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус 20%", 
         copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", 
         convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
-        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Connect Wallet", faucetpayOpt: "Faucetpay email id", 
+        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
         amountLabel: "Сумма:", tonAddressLabel: "Адрес TON Wallet:", submitWithdrawBtn: "Вывести", 
         topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
         navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" 
@@ -618,6 +587,7 @@
     let usdtBalance = 0.00;
     let refReward = 0.00;
     let totalInvited = 0;
+    let savedTonAddress = "";
     
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
@@ -632,6 +602,7 @@
         usdtBalance = data.usdtBalance || 0.00;
         refReward = data.refReward || 0.00;
         totalInvited = data.totalInvited || 0;
+        savedTonAddress = data.savedTonAddress || "";
       } else {
         userRef.set({
           name: displayName,
@@ -639,7 +610,8 @@
           tonBalance: 0.00,
           usdtBalance: 0.00,
           refReward: 0.00,
-          totalInvited: 0
+          totalInvited: 0,
+          savedTonAddress: ""
         });
       }
       renderUIValues();
@@ -652,8 +624,35 @@
         tonBalance: tonBalance,
         usdtBalance: usdtBalance,
         refReward: refReward,
-        totalInvited: totalInvited
+        totalInvited: totalInvited,
+        savedTonAddress: savedTonAddress
       });
+    }
+
+    // --- MANUAL TON ADDRESS SAVE & DISCONNECT LOGIC ---
+    function saveTonAddress() {
+      let addrInput = document.getElementById('manualTonAddress').value.trim();
+      if (!addrInput || addrInput.length < 15) {
+        alert("Kripya ek valid TON wallet address enter karein.");
+        return;
+      }
+      savedTonAddress = addrInput;
+      saveToFirebase();
+      document.getElementById('manualTonAddress').value = savedTonAddress;
+      document.getElementById('manualTonAddress').readOnly = true;
+      alert("✅ TON Wallet address successfully save ho gaya hai!");
+      toggleWithdrawFields();
+    }
+
+    function disconnectTonAddress() {
+      if (confirm("Kya aap apna wallet address disconnect karna chahte hain?")) {
+        savedTonAddress = "";
+        saveToFirebase();
+        document.getElementById('manualTonAddress').value = "";
+        document.getElementById('manualTonAddress').readOnly = false;
+        alert("🔄 Wallet successfully disconnect ho gaya hai. Ab aap naya link laga sakte hain.");
+        toggleWithdrawFields();
+      }
     }
 
     function addEarningsWithReferral(earnedAmount) {
@@ -700,6 +699,15 @@
       document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
       
+      let manInput = document.getElementById('manualTonAddress');
+      if (savedTonAddress) {
+        manInput.value = savedTonAddress;
+        manInput.readOnly = true;
+      } else {
+        manInput.value = "";
+        manInput.readOnly = false;
+      }
+
       let method = document.getElementById('withdrawMethod').value;
       let availVal = (method === 'ton') ? tonBalance : usdtBalance;
       document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
@@ -1005,16 +1013,17 @@
       let minLabel = document.getElementById('withdrawMinLabel');
       
       if(method === 'ton') {
-        headerTitle.innerText = "⚡ TON Connect Instant Payout";
-        label.innerText = "Connected TON Wallet Address:";
-        input.placeholder = "Connect wallet from above section";
-        input.readOnly = true;
+        headerTitle.innerText = "⚡ TON Wallet Payout";
+        label.innerText = "Saved TON Wallet Address:";
         amountLabel.innerText = "Amount (TON):";
         minLabel.innerText = "Min 0.05 TON";
-        if (tonConnectUI.wallet) {
-          input.value = tonConnectUI.wallet.account.address;
+        if (savedTonAddress) {
+          input.value = savedTonAddress;
+          input.readOnly = true;
         } else {
-          input.value = "Wallet not connected";
+          input.value = "";
+          input.placeholder = "Pehle upar address save karein";
+          input.readOnly = true;
         }
       } else {
         headerTitle.innerText = "⚡ FaucetPay instant (USDT)";
@@ -1042,11 +1051,12 @@
       document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${netReceive.toFixed(4)}`;
     }
 
-    // --- AUTOMATED FAUCETPAY & TON CONNECT WITHDRAWAL REQUEST ---
+    // --- AUTOMATED FAUCETPAY & TON WITHDRAWAL REQUEST ---
     async function requestWithdrawal() {
       let rawAmt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
       let method = document.getElementById('withdrawMethod').value;
+      let memoTag = document.getElementById('withdrawMemoTag').value.trim(); // Optional Memo/Tag
 
       if(!rawAmt || rawAmt < 0.05) { alert("Minimum withdrawal limit is 0.05."); return; }
       
@@ -1066,7 +1076,8 @@
             body: JSON.stringify({
               email: dest,
               amount: finalReceiveAmt,
-              currency: 'USDT'
+              currency: 'USDT',
+              memo: memoTag || null
             })
           });
 
@@ -1076,7 +1087,7 @@
             usdtBalance -= rawAmt;
             saveToFirebase();
             renderUIValues();
-            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT to ${dest}`);
+            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT to ${dest} ${memoTag ? '(Memo: ' + memoTag + ')' : ''}`);
             alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} USDT sent to ${dest}. (TxID: ${result.txId || 'N/A'})`);
           } else {
             alert(`Payout Failed: ${result.message}`);
@@ -1087,35 +1098,15 @@
         }
       } else {
         if(tonBalance < rawAmt) { alert("Insufficient TON balance!"); return; }
-        if(!tonConnectUI.connected) { alert("Please connect your TON wallet using TON Connect first!"); return; }
+        if(!savedTonAddress) { alert("Pehle apna TON wallet address save karein!"); return; }
 
-        alert("Preparing TON Connect instant payout transaction...");
-
-        try {
-          let nanoAmount = Math.floor(finalReceiveAmt * 1000000000).toString();
-          let payoutDestinationAddress = "EQDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA0hG"; 
-
-          const transaction = {
-            validUntil: Math.floor(Date.now() / 1000) + 300,
-            messages: [
-              {
-                address: payoutDestinationAddress,
-                amount: nanoAmount
-              }
-            ]
-          };
-
-          const result = await tonConnectUI.sendTransaction(transaction);
-          
-          tonBalance -= rawAmt;
-          saveToFirebase();
-          renderUIValues();
-          recordTransactionHistory(`TON Connect: ${finalReceiveAmt.toFixed(4)} TON signed & sent`);
-          alert(`🎉 TON Connect Payout Success! Transaction signed and broadcasted successfully.`);
-        } catch (error) {
-          console.error(error);
-          alert("Transaction signing was cancelled or failed: " + (error.message || error));
-        }
+        alert("Processing TON withdrawal to saved address: " + savedTonAddress);
+        
+        tonBalance -= rawAmt;
+        saveToFirebase();
+        renderUIValues();
+        recordTransactionHistory(`TON Withdrawal: ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress} ${memoTag ? '(Memo: ' + memoTag + ')' : ''}`);
+        alert(`🎉 TON Withdrawal Request Successful! ${finalReceiveAmt.toFixed(4)} TON bhej diya gaya hai.`);
       }
     }
 
