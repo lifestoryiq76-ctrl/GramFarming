@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
 const axios = require('axios');
-const { TonClient, WalletContractV4, internal } = require('@ton/ton');
+const { TonClient, WalletContractV4, internal, Address } = require('@ton/ton');
 const { mnemonicToPrivateKey } = require('@ton/crypto');
 require('dotenv').config();
 
@@ -15,7 +15,7 @@ const serviceAccount = {
   type: "service_account",
   project_id: "gramfarmingbot-1a570",
   private_key_id: "d7e7e98f12c7be3221841c329cf8ca544d029a8b",
-  private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDb3UNKZU5IhKJp\n6qnYpBnO/1gmkpp3sswgWrb64W4hU+W6mjgz+Pfuu5rG5ApO0bY/S5ZxtoVTKi9p\nQGxFnkcK0aCZC9PFhst2Kr4Ylkrn+F9CQkZTPanrF1IdQP2P1eJ3KNqlVsmq33LF\nyJs5hJ8BjfxKPKSDMJKIQpEzfczyR41S6yr+tQ1NBBkPcYiTFtjjupnlyL6rcSuK\n2uSnBONN98wRq/G9k6PX8TeFWGEGP8cQxHAVSMmd8FrcT64bDFH/QLYv/5ksb2c5\nof/ObdISEwmVEN6IzxoDyluBAkVKsvpm5aOgFlWcVKoPYqoTSfny8553YJ6o/LbR\nLV7LKzQnAgMBAAECggEAXsFGsWbkrJtA9d3VElFy8AObJZCUMtcjYyRFbO0/zew+\n+0NgyoFXtRM0WthH2v1FipTUgzBy2Es7gKRrpTtYCcEbcionPB9iS4yTPbx0DvI7\nd65haZmPRAracFIklVtMDSfVx2EWa+Z+K+BPiaPu9TgQjZwCGKoT1Na/hk4GyDki\nng5dFXh+e1U4R4qCLx6VLtflYzhPmUjWek8u0ethKqOLAkUnNpy/PmHxuOXkOqVp\nT+vM3PHfpNWIKJ2Wis3i3g8TTkaJlAOrRX4tLP12J9DvEkQaHjrEpTrXeCXvDZgu\n6DPy5c8Wdl4pTcSZqnOcxKzBsfpkK42DuYL/rM1F0QKBgQDvWGKFXDSGgIANjaG2\n5XM18XmpeD0giXYnanNPvIzmeA4841SQThp7njokvjG4jKLdqMZWGtIS8uFHeszm\n/LaFSBHdSF/nqhPlfPCKEYc0+xueFKan9a/eShwDnS/Wg3EI6CI2BvX2DPyqVGfq\nvWCQX8NAAdgAeM/RmkjnoYLx8QKBgQDrKdnexPYqNvL6rrX3oaQWQpIvJvuK5ziX\ntINlpdBV2/S4TNymJ3Lni65ct3J07xT3K8WzMGr4gCZR1UQL4sc1Mq+GqXmwycXR\nJuADnqZCjL57kwVoWqf3DdsX9Ym0JIaL60/MAgn/PqvKmXxDj6LSfUXNIkvZUysv\nMTPz2XdvlwKBgQCHhy7SgTGk7+KSyh5GKIsigof3tIQ4hl4HV7nP7t6CKn01cSyT\Qgaw9RnLcH9LFyeqCEW2wB0waaOzDBA2w+a+dd7XxIG59o6ppiO2qtI65+3th5gP\nB4n8f055pWpPN8Kr3nZwzWQ9XYE9Gep1+6JQXkl7Vw/uxHo5H/okX0p8oQKBgByh\ndMgdfMb4964zlS33/Q1Ev52EBn4L1qUJsjGu9WVuqSXDHd4Q0XmFVQ4uu32nGgtZ\nxfEiBPQKTiAKcgVsb8p3SE2B1rICbtYfAIkQSLezgQF0jeT9nJOEmVcaatCG3eat\nGIMDAIqV675331wuYal03Qmzkj58VLajK+sVX+gzAoGBAJzdc80qKafeVRLlbEUO\niEaDCc22IxnEBY0XXbO9mrxaieD58uuuXpaAaU/7D82e7aFLwxNFpAx/gWpgztCZ\njFSFEt+thkVtThoW7d1iQDgYt6+ta8jxhYMyctcLJWrqPSwzKinXdKVwmpnzl6sW\nsKQQgEbOWGn1crT7VPz3f/1+\n-----END PRIVATE KEY-----\n",
+  private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDb3UNKZU5IhKJp\n6qnYpBnO/1gmkpp3sswgWrb64W4hU+W6mjgz+Pfuu5rG5ApO0bY/S5ZxtoVTKi9p\nQGxFnkcK0aCZC9PFhst2Kr4Ylkrn+F9CQkZTPanrF1IdQP2P1eJ3KNqlVsmq33LF\nyJs5hJ8BjfxKPKSDMJKIQpEzfczyR41S6yr+tQ1NBBkPcYiTFtjjupnlyL6rcSuK\n2uSnBONN98wRq/G9k6PX8TeFWGEGP8cQxHAVSMmd8FrcT64bDFH/QLYv/5ksb2c5\nof/ObdISEwmVEN6IzxoDyluBAkVKsvpm5aOgFlWcVKoPYqoTSfny8553YJ6o/LbR\nLV7LKzQnAgMBAAECggEAXsFGsWbkrJtA9d3VElFy8AObJZCUMtcjYyRFbO0/zew+\n+0NgyoFXtRM0WthH2v1FipTUgzBy2Es7gKRrpTtYCcEbcionPB9iS4yTPbx0DvI7\nd65haZmPRAracFIklVtMDSfVx2EWa+Z+K+BPiaPu9TgQjZwCGKoT1Na/hk4GyDki\nng5dFXh+e1U4R4qCLx6VLtflYzhPmUjWek8u0ethKqOLAkUnNpy/PmHxuOXkOqVp\nT+vM3PHfpNWIKJ2Wis3i3g8TTkaJlAOrRX4tLP12J9DvEkQaHjrEpTrXeCXvDZgu\n6DPy5c8Wdl4pTcSZqnOcxKzBsfpkK42DuYL/rM1F0QKBgQDvWGKFXDSGgIANjaG2\n5XM18XmpeD0giXYnanNPvIzmeA4841SQThp7njokvjG4jKLdqMZWGtIS8uFHeszm\n/LaFSBHdSF/nqhPlfPCKEYc0+xueFKan9a/eShwDnS/Wg3EI6CI2BvX2DPyqVGfq\nvWCQX8NAAdgAeM/RmkjnoYLx8QKBgQDrKdnexPYqNvL6rrX3oaQWQpIvJvuK5ziX\ntINlpdBV2/S4TNymJ3Lni65ct3J07xT3K8WzMGr4gCZR1UQL4sc1Mq+GqXmwycXR\nJuADnqZCjL57kwVoWqf3DdsX9Ym0JIaL60/MAgn/PqvKmXxDj6LSfUXNIkvZUysv\nMTPz2XdvlwKBgQCHhy7SgTGk7+KSyh5GKIsigof3tIQ4hl4HV7nP7t6CKn01cSyT\Qgaw9RnLcH9LFyeqCEW2wB0waaOzDBA2w+a+dd7XxIG59o6ppiO2qtI65+3th5gP\nB4n8f055pWpPN8Kr3nZwzWQ9XYE9Gep1+6JQXkl7Vw/uxHo5H/okX0p8oQKBgByh\ndMgdfMb4964zlS33/Q1Ev52EBn4L1qUJsjGu9WVuqSXDHd4Q0XmFVQ4uu32nGgtZ\xfEiBPQKTiAKcgVsb8p3SE2B1rICbtYfAIkQSLezgQF0jeT9nJOEmVcaatCG3eat\nGIMDAIqV675331wuYal03Qmzkj58VLajK+sVX+gzAoGBAJzdc80qKafeVRLlbEUO\niEaDCc22IxnEBY0XXbO9mrxaieD58uuuXpaAaU/7D82e7aFLwxNFpAx/gWpgztCZ\njFSFEt+thkVtThoW7d1iQDgYt6+ta8jxhYMyctcLJWrqPSwzKinXdKVwmpnzl6sW\nsKQQgEbOWGn1crT7VPz3f/1+\n-----END PRIVATE KEY-----\n",
   client_email: "firebase-adminsdk-fbsvc@gramfarmingbot-1a570.iam.gserviceaccount.com",
   client_id: "112904174776419598252",
   auth_uri: "https://accounts.google.com/o/oauth2/auth",
@@ -35,6 +35,20 @@ const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY;
 const TON_MNEMONIC = process.env.TON_MNEMONIC ? process.env.TON_MNEMONIC.split(' ') : [];
 const TON_NETWORK = process.env.TON_NETWORK || 'mainnet';
 
+// Helper function to get TON Client and Wallet Instance
+async function getTonWalletInstance() {
+  const endpoint = TON_NETWORK === 'mainnet' 
+    ? 'https://toncenter.com/api/v2/jsonRPC' 
+    : 'https://testnet.toncenter.com/api/v2/jsonRPC';
+  
+  const client = new TonClient({ endpoint });
+  const key = await mnemonicToPrivateKey(TON_MNEMONIC);
+  const wallet = WalletContractV4.create({ workchain: 0, publicKey: key.publicKey });
+  const walletContract = client.open(wallet);
+  
+  return { client, walletContract, key, address: wallet.address.toString({ bounceable: false }) };
+}
+
 // --- 3. Firebase Auth Middleware ---
 const verifyFirebaseToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -51,20 +65,43 @@ const verifyFirebaseToken = async (req, res, next) => {
   }
 };
 
+// --- NEW: API Route to Check Admin Wallet Balance ---
+app.get('/api/admin-balance', async (req, res) => {
+  try {
+    if (TON_MNEMONIC.length === 0) {
+      return res.status(400).json({ success: false, message: 'Admin TON Mnemonic not configured in environment variables.' });
+    }
+
+    const { client, walletContract, address } = await getTonWalletInstance();
+    const balanceNano = await client.getBalance(walletContract.address);
+    const balanceTon = Number(balanceNano) / 1e9;
+
+    return res.status(200).json({
+      success: true,
+      admin_wallet_address: address,
+      balance_ton: balanceTon
+    });
+  } catch (error) {
+    console.error('Error checking admin balance:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch admin balance', error: error.message });
+  }
+});
+
 // --- 4. Helper Function: Send TON directly to user's pasted address ---
 async function sendTonToAddress(recipientAddress, amountInTon) {
   try {
-    const endpoint = TON_NETWORK === 'mainnet' 
-      ? 'https://toncenter.com/api/v2/jsonRPC' 
-      : 'https://testnet.toncenter.com/api/v2/jsonRPC';
-    
-    const client = new TonClient({ endpoint });
-    const key = await mnemonicToPrivateKey(TON_MNEMONIC);
-    const wallet = WalletContractV4.create({ workchain: 0, publicKey: key.publicKey });
-    const walletContract = client.open(wallet);
+    const { client, walletContract, key } = await getTonWalletInstance();
+
+    // Check admin balance before sending
+    const balanceNano = await client.getBalance(walletContract.address);
+    const balanceTon = Number(balanceNano) / 1e9;
+    const nanoAmount = BigInt(Math.floor(amountInTon * 1000000000));
+
+    if (balanceNano < nanoAmount) {
+      return { success: false, error: `Admin wallet has insufficient TON balance (${balanceTon} TON available).` };
+    }
 
     const seqno = await walletContract.getSeqno();
-    const nanoAmount = BigInt(Math.floor(amountInTon * 1000000000)); // TON to Nanoton
 
     await walletContract.sendTransfer({
       seqno,
