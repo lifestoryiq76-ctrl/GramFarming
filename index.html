@@ -794,7 +794,7 @@
       alert(`+${reward} Coin added successfully!`);
 
       if (btn) {
-        let cooldown = 60; 
+        let cooldown = 5; // Updated from 60 to 5 seconds
         btn.innerText = `Wait ${cooldown}s`;
         let timerInterval = setInterval(() => {
           cooldown--;
@@ -877,7 +877,7 @@
       if (state.adsWatched < 20) {
         statusEl.innerHTML = `Watched ${state.adsWatched}/20 Ads`;
         
-        let cooldown = 60; 
+        let cooldown = 5; // Updated from 60 to 5 seconds
         btn.innerText = `Wait ${cooldown}s`;
         let tInterval = setInterval(() => {
           cooldown--;
