@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
 const axios = require('axios');
-const { TonClient, WalletContractV4, internal, Address } = require('@ton/ton');
+const { TonClient, WalletContractV4, internal, Address, beginCell, toNano } = require('@ton/ton');
 const { mnemonicToPrivateKey } = require('@ton/crypto');
 require('dotenv').config();
 
@@ -10,12 +10,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// --- 1. Firebase Initialization (Clean Single-Line PEM Key) ---
+// --- 1. Firebase Initialization ---
 const serviceAccount = {
   type: "service_account",
   project_id: process.env.FIREBASE_PROJECT_ID || "gramfarmingbot-1a570",
   private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID || "d7e7e98f12c7be3221841c329cf8ca544d029a8b",
-  private_key: "-----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDb3UNKZU5IhKJp\\n6qnYpBnO/1gmkpp3sswgWrb64W4hU+W6mjgz+Pfuu5rG5ApO0bY/S5ZxtoVTKi9p\\nQGxFnkcK0aCZC9PFhst2Kr4Ylkrn+F9CQkZTPanrF1IdQP2P1eJ3KNqlVsmq33LF\\nyJs5hJ8BjfxKPKSDMJKIQpEzfczyR41S6yr+tQ1NBBkPcYiTFtjjupnlyL6rcSuK\\n2uSnBONN98wRq/G9k6PX8TeFWGEGP8cQxHAVSMmd8FrcT64bDFH/QLYv/5ksb2c5\\nof/ObdISEwmVEN6IzxoDyluBAkVKsvpm5aOgFlWcVKoPYqoTSfny8553YJ6o/LbR\\nLV7LKzQnAgMBAAECggEAXsFGsWbkrJtA9d3VElFy8AObJZCUMtcjYyRFbO0/zew+\\n+0NgyoFXtRM0WthH2v1FipTUgzBy2Es7gKRrpTtYCcEbcionPB9iS4yTPbx0DvI7\\nd65haZmPRAracFIklVtMDSfVx2EWa+Z+K+BPiaPu9TgQjZwCGKoT1Na/hk4GyDki\\nng5dFXh+e1U4R4qCLx6VLtflYzhPmUjWek8u0ethKqOLAkUnNpy/PmHxuOXkOqVp\\nT+vM3PHfpNWIKJ2Wis3i3g8TTkaJlAOrRX4tLP12J9DvEkQaHjrEpTrXeCXvDZgu\\n6DPy5c8Wdl4pTcSZqnOcxKzBsfpkK42DuYL/rM1F0QKBgQDvWGKFXDSGgIANjaG2\\n5XM18XmpeD0giXYnanNPvIzmeA4841SQThp7njokvjG4jKLdqMZWGtIS8uFHeszm\\n/LaFSBHdSF/nqhPlfPCKEYc0+xueFKan9a/eShwDnS/Wg3EI6CI2BvX2DPyqVGfq\\nvWCQX8NAAdgAeM/RmkjnoYLx8QKBgQDrKdnexPYqNvL6rrX3oaQWQpIvJvuK5ziX\\ntINlpdBV2/S4TNymJ3Lni65ct3J07xT3K8WzMGr4gCZR1UQL4sc1Mq+GqXmwycXR\\nJuADnqZCjL57kwVoWqf3DdsX9Ym0JIaL60/MAgn/PqvKmXxDj6LSfUXNIkvZUysv\\nMTPz2XdvlwKBgQCHhy7SgTGk7+KSyh5GKIsigof3tIQ4hl4HV7nP7t6CKn01cSyT\\nQgaw9RnLcH9LFyeqCEW2wB0waaOzDBA2w+a+dd7XxIG59o6ppiO2qtI65+3th5gP\\nB4n8f055pWpPN8Kr3nZwzWQ9XYE9Gep1+6JQXkl7Vw/uxHo5H/okX0p8oQKBgByh\\ndMgdfMb4964zlS33/Q1Ev52EBn4L1qUJsjGu9WVuqSXDHd4Q0XmFVQ4uu32nGgtZ\\nxfEiBPQKTiAKcgVsb8p3SE2B1rICbtYfAIkQSLezgQF0jeT9nJOEmVcaatCG3eat\\nGIMDAIqV675331wuYal03Qmzkj58VLajK+sVX+gzAoGBAJzdc80qKafeVRLlbEUO\\niEaDCc22IxnEBY0XXbO9mrxaieD58uuuXpaAaU/7D82e7aFLwxNFpAx/gWpgztCZ\\njFSFEt+thkVtThoW7d1iQDgYt6+ta8jxhYMyctcLJWrqPSwzKinXdKVwmpnzl6sW\\nsKQQgEbOWGn1crT7VPz3f/1+\\n-----END PRIVATE KEY-----".replace(/\\n/g, '\n'),
+  private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDb3UNKZU5IhKJp\n6qnYpBnO/1gmkpp3sswgWrb64W4hU+W6mjgz+Pfuu5rG5ApO0bY/S5ZxtoVTKi9p\nQGxFnkcK0aCZC9PFhst2Kr4Ylkrn+F9CQkZTPanrF1IdQP2P1eJ3KNqlVsmq33LF\nyJs5hJ8BjfxKPKSDMJKIQpEzfczyR41S6yr+tQ1NBBkPcYiTFtjjupnlyL6rcSuK\n2uSnBONN98wRq/G9k6PX8TeFWGEGP8cQxHAVSMmd8FrcT64bDFH/QLYv/5ksb2c5\nof/ObdISEwmVEN6IzxoDyluBAkVKsvpm5aOgFlWcVKoPYqoTSfny8553YJ6o/LbR\LV7LKzQnAgMBAAECggEAXsFGsWbkrJtA9d3VElFy8AObJZCUMtcjYyRFbO0/zew+\n+0NgyoFXtRM0WthH2v1FipTUgzBy2Es7gKRrpTtYCcEbcionPB9iS4yTPbx0DvI7\nd65haZmPRAracFIklVtMDSfVx2EWa+Z+K+BPiaPu9TgQjZwCGKoT1Na/hk4GyDki\nng5dFXh+e1U4R4qCLx6VLtflYzhPmUjWek8u0ethKqOLAkUnNpy/PmHxuOXkOqVp\nT+vM3PHfpNWIKJ2Wis3i3g8TTkaJlAOrRX4tLP12J9DvEkQaHjrEpTrXeCXvDZgu\n6DPy5c8Wdl4pTcSZqnOcxKzBsfpkK42DuYL/rM1F0QKBgQDvWGKFXDSGgIANjaG2\n5XM18XmpeD0giXYnanNPvIzmeA4841SQThp7njokvjG4jKLdqMZWGtIS8uFHeszm\n/LaFSBHdSF/nqhPlfPCKEYc0+xueFKan9a/eShwDnS/Wg3EI6CI2BvX2DPyqVGfq\nvWCQX8NAAdgAeM/RmkjnoYLx8QKBgQDrKdnexPYqNvL6rrX3oaQWQpIvJvuK5ziX\ntINlpdBV2/S4TNymJ3Lni65ct3J07xT3K8WzMGr4gCZR1UQL4sc1Mq+GqXmwycXR\JuADnqZCjL57kwVoWqf3DdsX9Ym0JIaL60/MAgn/PqvKmXxDj6LSfUXNIkvZUysv\nMTPz2XdvlwKBgQCHhy7SgTGk7+KSyh5GKIsigof3tIQ4hl4HV7nP7t6CKn01cSyT\Qgaw9RnLcH9LFyeqCEW2wB0waaOzDBA2w+a+dd7XxIG59o6ppiO2qtI65+3th5gP\nB4n8f055pWpPN8Kr3nZwzWQ9XYE9Gep1+6JQXkl7Vw/uxHo5H/okX0p8oQKBgByh\ndMgdfMb4964zlS33/Q1Ev52EBn4L1qUJsjGu9WVuqSXDHd4Q0XmFVQ4uu32nGgtZ\xfEiBPQKTiAKcgVsb8p3SE2B1rICbtYfAIkQSLezgQF0jeT9nJOEmVcaatCG3eat\nGIMDAIqV675331wuYal03Qmzkj58VLajK+sVX+gzAoGBAJzdc80qKafeVRLlbEUO\niEaDCc22IxnEBY0XXbO9mrxaieD58uuuXpaAaU/7D82e7aFLwxNFpAx/gWpgztCZ\njFSFEt+thkVtThoW7d1iQDgYt6+ta8jxhYMyctcLJWrqPSwzKinXdKVwmpnzl6sW\nsKQQgEbOWGn1crT7VPz3f/1+\n-----END PRIVATE KEY-----".replace(/\\n/g, '\n'),
   client_email: process.env.FIREBASE_CLIENT_EMAIL || "firebase-adminsdk-fbsvc@gramfarmingbot-1a570.iam.gserviceaccount.com",
   client_id: "112904174776419598252",
   auth_uri: "https://accounts.google.com/o/oauth2/auth",
@@ -34,6 +34,7 @@ const db = admin.firestore();
 const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY;
 const TON_MNEMONIC = process.env.TON_MNEMONIC ? process.env.TON_MNEMONIC.split(' ') : [];
 const TON_NETWORK = process.env.TON_NETWORK || 'mainnet';
+const GRAM_MASTER_ADDRESS = process.env.GRAM_MASTER_ADDRESS || 'EQC..._apka_gram_master_address_...';
 
 async function getTonWalletInstance() {
   const endpoint = TON_NETWORK === 'mainnet' 
@@ -63,37 +64,31 @@ const verifyFirebaseToken = async (req, res, next) => {
   }
 };
 
-app.get('/api/admin-balance', async (req, res) => {
+async function getJettonWalletAddress(client, masterAddress, ownerAddress) {
+  const res = await client.callGetMethod(Address.parse(masterAddress), 'get_wallet_address', [
+    { type: 'slice', cell: beginCell().storeAddress(Address.parse(ownerAddress)).endCell() }
+  ]);
+  return res.stack.readAddress();
+}
+
+async function sendGramTokenToAddress(recipientAddress, amountInGram) {
   try {
-    if (TON_MNEMONIC.length === 0) {
-      return res.status(400).json({ success: false, message: 'Admin TON Mnemonic not configured.' });
-    }
+    const { client, walletContract, key, address: adminAddress } = await getTonWalletInstance();
+    const amountNano = BigInt(Math.floor(amountInGram * 1e9));
 
-    const { client, walletContract, address } = await getTonWalletInstance();
-    const balanceNano = await client.getBalance(walletContract.address);
-    const balanceTon = Number(balanceNano) / 1e9;
+    const adminJettonWallet = await getJettonWalletAddress(client, GRAM_MASTER_ADDRESS, adminAddress);
+    const recipientJettonWallet = await getJettonWalletAddress(client, GRAM_MASTER_ADDRESS, recipientAddress);
 
-    return res.status(200).json({
-      success: true,
-      admin_wallet_address: address,
-      balance_ton: balanceTon
-    });
-  } catch (error) {
-    console.error('Error checking admin balance:', error);
-    return res.status(500).json({ success: false, message: 'Failed to fetch admin balance', error: error.message });
-  }
-});
-
-async function sendTonToAddress(recipientAddress, amountInTon) {
-  try {
-    const { client, walletContract, key } = await getTonWalletInstance();
-    const balanceNano = await client.getBalance(walletContract.address);
-    const balanceTon = Number(balanceNano) / 1e9;
-    const nanoAmount = BigInt(Math.floor(amountInTon * 1000000000));
-
-    if (balanceNano < nanoAmount) {
-      return { success: false, error: `Admin wallet has insufficient TON balance (${balanceTon} TON available).` };
-    }
+    const transferBody = beginCell()
+      .storeUint(0xf8a7ea5f, 32)
+      .storeUint(0, 64)
+      .coins(amountNano)
+      .storeAddress(Address.parse(recipientAddress))
+      .storeAddress(Address.parse(adminAddress))
+      .storeBit(0)
+      .coins(toNano('0.01'))
+      .storeBit(0)
+      .endCell();
 
     const seqno = await walletContract.getSeqno();
 
@@ -102,17 +97,17 @@ async function sendTonToAddress(recipientAddress, amountInTon) {
       secretKey: key.secretKey,
       messages: [
         internal({
-          to: recipientAddress,
-          value: nanoAmount,
-          body: 'Gram Farming Instant Payout',
-          bounce: false
+          to: adminJettonWallet,
+          value: toNano('0.05'),
+          body: transferBody,
+          bounce: true
         })
       ]
     });
 
     return { success: true };
   } catch (error) {
-    console.error('TON Transfer Error:', error);
+    console.error('Gram Jetton Transfer Error:', error);
     return { success: false, error: error.message };
   }
 }
@@ -122,7 +117,8 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
   const { amount, payout_method, destination } = req.body; 
 
   try {
-    const minWithdraw = 0.5; 
+    // Minimum withdraw limit updated to 0.01 for testing
+    const minWithdraw = 0.01; 
     if (!amount || amount < minWithdraw) {
       return res.status(400).json({ success: false, message: `Minimum withdraw amount is ${minWithdraw}` });
     }
@@ -147,12 +143,12 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
 
     let payoutResponse = null;
 
-    if (payout_method === 'ton') {
-      const tonResult = await sendTonToAddress(destination, amount);
-      if (!tonResult.success) {
-        return res.status(400).json({ success: false, message: 'TON Transfer Failed: ' + tonResult.error });
+    if (payout_method === 'ton' || payout_method === 'gram') {
+      const transferResult = await sendGramTokenToAddress(destination, amount);
+      if (!transferResult.success) {
+        return res.status(400).json({ success: false, message: 'Gram Transfer Failed: ' + transferResult.error });
       }
-      payoutResponse = { network: 'TON', address: destination };
+      payoutResponse = { network: 'TON / Gram Jetton', address: destination, amount: amount };
     } 
     else if (payout_method === 'faucetpay') {
       const currency = 'USDT'; 
@@ -183,7 +179,7 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Withdrawal successful! Payment sent instantly.',
+      message: 'Withdrawal successful! Gram tokens sent.',
       data: payoutResponse
     });
 
