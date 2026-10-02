@@ -13,8 +13,11 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-// User Bot Token (Render environment variable se ya fallback)
-const bot = new Telegraf(process.env.BOT_TOKEN || '8823465549:AAFfNZ1hDHR_eAWiEhH5eWLCEm6dLkuSfHN0');
+// Safe Token Check
+const TOKEN = process.env.BOT_TOKEN || '8823465549:AAFfNZ1hDHR_eAWiEhH5eWLCEm6dLkuSfHN0';
+console.log('Using Bot Token starting with:', TOKEN.substring(0, 10) + '...');
+
+const bot = new Telegraf(TOKEN);
 
 bot.start((ctx) => {
     ctx.reply('🌾 Welcome to Gram Farming!\n\nTap the button below to open the game and start farming:', {
@@ -25,5 +28,6 @@ bot.start((ctx) => {
     });
 });
 
-bot.launch();
-console.log('User Mini App Bot is running successfully! 🚀');
+bot.launch()
+    .then(() => console.log('User Mini App Bot is running successfully! 🚀'))
+    .catch((err) => console.error('Bot launch error:', err));
