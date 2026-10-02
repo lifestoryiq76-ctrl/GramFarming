@@ -373,14 +373,14 @@
     <!-- 1. 📤 Withdraw Funds Section -->
     <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
       <div class="flex-between" style="margin-bottom: 8px;">
-        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON manual instant payout</h4>
+        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON manual payout (24h)</h4>
         <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
       </div>
       
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
       <select id="withdrawMethod" onchange="toggleWithdrawFields()">
-        <option value="faucetpay">FaucetPay Email ID (USDT)</option>
-        <option value="ton">TON Wallet Address (Instant Payout)</option>
+        <option value="faucetpay">FaucetPay Email ID (Instant)</option>
+        <option value="ton">TON Wallet Address (Manual - 24 Hours Processing)</option>
       </select>
       
       <label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT):</label>
@@ -794,7 +794,7 @@
       alert(`+${reward} Coin added successfully!`);
 
       if (btn) {
-        let cooldown = 5; // Updated from 60 to 5 seconds
+        let cooldown = 5;
         btn.innerText = `Wait ${cooldown}s`;
         let timerInterval = setInterval(() => {
           cooldown--;
@@ -877,7 +877,7 @@
       if (state.adsWatched < 20) {
         statusEl.innerHTML = `Watched ${state.adsWatched}/20 Ads`;
         
-        let cooldown = 5; // Updated from 60 to 5 seconds
+        let cooldown = 5;
         btn.innerText = `Wait ${cooldown}s`;
         let tInterval = setInterval(() => {
           cooldown--;
@@ -1015,7 +1015,7 @@
       let minLabel = document.getElementById('withdrawMinLabel');
       
       if(method === 'ton') {
-        headerTitle.innerText = "⚡ TON Wallet Payout";
+        headerTitle.innerText = "⚡ TON Wallet Payout (Manual - 24 Hours Processing)";
         label.innerText = "Saved TON Wallet Address:";
         amountLabel.innerText = "Amount (TON):";
         minLabel.innerText = "Min 0.05 TON";
@@ -1053,7 +1053,7 @@
       document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${netReceive.toFixed(4)}`;
     }
 
-    // --- AUTOMATED FAUCETPAY & TON WITHDRAWAL REQUEST ---
+    // --- AUTOMATED FAUCETPAY & MANUAL 24H TON WITHDRAWAL REQUEST ---
     async function requestWithdrawal() {
       let rawAmt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
@@ -1097,16 +1097,52 @@
           alert("Network error while connecting to FaucetPay API server.");
         }
       } else {
+        // --- TON MANUAL WITHDRAWAL (SAVING TO FIREBASE WITHDRAWALS COLLECTION) ---
         if(tonBalance < rawAmt) { alert("Insufficient TON balance!"); return; }
         if(!savedTonAddress) { alert("Pehle apna TON wallet address save karein!"); return; }
 
-        alert("Processing TON withdrawal to saved address: " + savedTonAddress);
-        
-        tonBalance -= rawAmt;
-        saveToFirebase();
-        renderUIValues();
-        recordTransactionHistory(`TON Withdrawal: ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress}`);
-        alert(`🎉 TON Withdrawal Request Successful! ${finalReceiveAmt.toFixed(4)} TON bhej diya gaya hai.`);
+        alert("Processing TON withdrawal request...");
+
+        try {
+          // Firebase me direct save karne ke liye reference push karein taki admin ko turant dikhe
+          let withdrawRef = db.ref('withdrawals').push();
+          let withdrawData = {
+            userId: userId,
+            userName: displayName,
+            method: 'TON',
+            amount: finalReceiveAmt,
+            destination: savedTonAddress,
+            status: 'Pending (24 Hours Processing)',
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+          };
+
+          await withdrawRef.set(withdrawData);
+
+          // Backend API call (agar ho toh)
+          try {
+            await fetch('https://gramfarming-api.onrender.com/api/withdraw', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: userId,
+                userName: displayName,
+                amount: finalReceiveAmt,
+                currency: 'TON',
+                destination: savedTonAddress
+              })
+            });
+          } catch(e) {}
+
+          tonBalance -= rawAmt;
+          saveToFirebase();
+          renderUIValues();
+          recordTransactionHistory(`TON Withdrawal (Processing 24h): ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress}`);
+          alert(`🎉 TON Withdrawal Request Successful! Aapka request submit ho gaya hai, admin ko Firebase me turant dikhega aur 24 ghante ke andar process kar diya jayega.`);
+
+        } catch (err) {
+          console.error(err);
+          alert("Error while processing withdrawal request to Firebase.");
+        }
       }
     }
 
