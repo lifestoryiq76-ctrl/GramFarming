@@ -1,13 +1,28 @@
 const { Telegraf, Markup } = require('telegraf');
 const admin = require('firebase-admin');
 
-// BotFather se mila hua apna token yaha daalein
-const adminBot = new Telegraf('8887103142:AAEBZAe-bi4ylcSaub-mMGxf7iVxHaZr1E');
+// Firebase Initialization with Environment Variables
+if (!admin.apps.length) {
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY 
+        ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') 
+        : undefined;
 
-// Yaha apni Telegram numeric ID daalein (Jisse sirf aap access kar saken)
-const ADMIN_TELEGRAM_ID = 123456789; // <-- Apni ID yaha daalein
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: privateKey
+        })
+    });
+}
 
-// Firebase database connection (agar pehle se initialized nahi hai toh ensure karein)
+// Bot token (Render environment variable se ya fallback)
+const adminBot = new Telegraf(process.env.BOT_TOKEN || '8887103142:AAEBZAe-bi4ylcSaub-mMGxf7iVxHaZr1E');
+
+// Apni Telegram numeric ID yaha daalein ya environment variable se lein
+const ADMIN_TELEGRAM_ID = Number(process.env.ADMIN_TELEGRAM_ID) || 123456789; 
+
+// Firebase database connection
 const db = admin.firestore();
 
 // /start ya /admin command
