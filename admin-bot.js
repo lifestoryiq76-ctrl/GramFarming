@@ -1,5 +1,18 @@
+const express = require('express');
 const { Telegraf, Markup } = require('telegraf');
 const admin = require('firebase-admin');
+
+// Express Server Setup for Render Port Binding
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send('Admin Bot is running successfully! 🚀');
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 
 // Firebase Initialization with Environment Variables
 if (!admin.apps.length) {
