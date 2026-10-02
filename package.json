@@ -9,6 +9,7 @@
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "firebase": "^10.8.0",
     "firebase-admin": "^12.0.0",
     "axios": "^1.6.8",
     "@ton/ton": "^14.0.0",
