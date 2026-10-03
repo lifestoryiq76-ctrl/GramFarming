@@ -44,14 +44,17 @@ const verifyFirebaseToken = async (req, res, next) => {
   }
 };
 
-// --- Root & Admin Panel Route ---
-app.get('/', (req, res) => {
-  res.send('Gram Farming API & Admin Server is running! 🚀');
-});
+// --- Static Files Middleware (Frontend Integration) ---
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Admin Panel HTML page serve karne ka route
+// --- Root & Admin Panel Route ---
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// Fallback route to serve frontend index.html for Telegram WebApp
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // --- Withdraw API ---
