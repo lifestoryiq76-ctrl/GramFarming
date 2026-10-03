@@ -1,5 +1,18 @@
 const { Telegraf } = require('telegraf');
 const admin = require('firebase-admin');
+const express = require('express');
+
+// --- 0. Simple Express Server for Render Port Binding ---
+const app = express();
+const PORT = process.env.PORT || 10000;
+
+app.get('/', (req, res) => {
+  res.send('Gram Farming Admin Bot is running successfully! 🚀');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 // --- 1. Telegram Bot Initialization ---
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
@@ -93,7 +106,7 @@ bot.hears('⏳ Pending Withdrawals', async (ctx) => {
       if (w.status === 'pending' || !w.status || w.status.includes('Pending')) {
         count++;
         message += `👤 User: ${w.username || w.userId || 'N/A'}\n`;
-        message += `💰 Amount: ${w.amount}\n`;
+        messageляти += `💰 Amount: ${w.amount}\n`;
         message += `🌐 Method/Wallet: ${w.payoutMethod || w.walletDetails || 'N/A'}\n`;
         message += `-------------------\n`;
       }
