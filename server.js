@@ -44,20 +44,7 @@ const verifyFirebaseToken = async (req, res, next) => {
   }
 };
 
-// --- Static Files Middleware (Frontend Integration) ---
-app.use(express.static(path.join(__dirname, 'public')));
-
-// --- Root & Admin Panel Route ---
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin.html'));
-});
-
-// Fallback route to serve frontend index.html for Telegram WebApp
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// --- Withdraw API ---
+// --- 2. API Routes (Inhe Hamesha Static/Fallback se Pehle Rakhein) ---
 app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
   const userId = req.user.uid;
   const { amount, payout_method, destination } = req.body; 
@@ -137,6 +124,18 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
     console.error('Withdrawal System Error:', error);
     return res.status(500).json({ success: false, message: 'Internal Server Error', error: error.message });
   }
+});
+
+// --- 3. Static Files & Frontend Routing ---
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// Fallback route to serve frontend index.html for Telegram WebApp
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
