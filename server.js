@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
 const axios = require('axios');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -42,6 +43,16 @@ const verifyFirebaseToken = async (req, res, next) => {
     return res.status(403).json({ success: false, message: 'Invalid token', error: error.message });
   }
 };
+
+// --- Root & Admin Panel Route ---
+app.get('/', (req, res) => {
+  res.send('Gram Farming API & Admin Server is running! 🚀');
+});
+
+// Admin Panel HTML page serve karne ka route
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
 
 // --- Withdraw API ---
 app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
