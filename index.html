@@ -607,6 +607,13 @@
     let coinUsdtValue = 0.01; 
     let liveTonPrice = 1.50;
 
+    const adLimits = {
+      homeAdsgramLimit: 40,
+      taskAdsgramLimit: 40,
+      taskMonetagLimit: 40,
+      taskGigapubLimit: 40
+    };
+
     // --- LOAD USER DATA FROM FIREBASE ---
     const userRef = db.ref('users/' + userId);
     userRef.on('value', (snapshot) => {
@@ -618,6 +625,25 @@
         refReward = data.refReward || 0.00;
         totalInvited = data.totalInvited || 0;
         savedTonAddress = data.savedTonAddress || "";
+
+        // Firebase se ad limits load karein taaki refresh karne par na hate
+        if (data.homeAdsgramLimit !== undefined) {
+          adLimits.homeAdsgramLimit = data.homeAdsgramLimit;
+          if(document.getElementById('homeAdsgramLimit')) document.getElementById('homeAdsgramLimit').innerText = `${adLimits.homeAdsgramLimit} left`;
+        }
+        if (data.taskAdsgramLimit !== undefined) {
+          adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
+          if(document.getElementById('taskAdsgramLimit')) document.getElementById('taskAdsgramLimit').innerText = `${adLimits.taskAdsgramLimit} left`;
+        }
+        if (data.taskMonetagLimit !== undefined) {
+          adLimits.taskMonetagLimit = data.taskMonetagLimit;
+          if(document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adLimits.taskMonetagLimit} left`;
+        }
+        if (data.taskGigapubLimit !== undefined) {
+          adLimits.taskGigapubLimit = data.taskGigapubLimit;
+          if(document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adLimits.taskGigapubLimit} left`;
+        }
+
       } else {
         userRef.set({
           name: displayName,
@@ -626,7 +652,11 @@
           usdtBalance: 0.00,
           refReward: 0.00,
           totalInvited: 0,
-          savedTonAddress: ""
+          savedTonAddress: "",
+          homeAdsgramLimit: 40,
+          taskAdsgramLimit: 40,
+          taskMonetagLimit: 40,
+          taskGigapubLimit: 40
         });
       }
       renderUIValues();
@@ -640,7 +670,11 @@
         usdtBalance: usdtBalance,
         refReward: refReward,
         totalInvited: totalInvited,
-        savedTonAddress: savedTonAddress
+        savedTonAddress: savedTonAddress,
+        homeAdsgramLimit: adLimits.homeAdsgramLimit,
+        taskAdsgramLimit: adLimits.taskAdsgramLimit,
+        taskMonetagLimit: adLimits.taskMonetagLimit,
+        taskGigapubLimit: adLimits.taskGigapubLimit
       });
     }
 
@@ -768,13 +802,6 @@
     let AdController = null;
     try { AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); } catch(e) {}
 
-    const adLimits = {
-      homeAdsgramLimit: 40,
-      taskAdsgramLimit: 40,
-      taskMonetagLimit: 40,
-      taskGigapubLimit: 40
-    };
-
     function watchAdWithTimer(reward, adName, limitElementId, btnElementId) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
       let currentLimit = adLimits[limitKey] !== undefined ? adLimits[limitKey] : 40;
@@ -807,6 +834,7 @@
       addEarningsWithReferral(reward);
       currentLimit--;
       adLimits[limitKey] = currentLimit;
+      saveToFirebase();
       if (document.getElementById(limitKey)) {
         document.getElementById(limitKey).innerText = `${currentLimit} left`;
       }
