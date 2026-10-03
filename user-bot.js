@@ -26,8 +26,8 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
-// Admin Telegram User IDs (Yahan apni Telegram ID daal sakte hain)
-const ADMIN_IDS = ['YOUR_ADMIN_TELEGRAM_ID']; 
+// Admin Telegram User IDs
+const ADMIN_IDS = ['6806028116']; 
 
 const isAdmin = (ctx) => {
   return ADMIN_IDS.includes(ctx.from.id.toString()) || ADMIN_IDS.length === 0;
