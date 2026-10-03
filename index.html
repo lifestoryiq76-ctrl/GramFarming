@@ -246,7 +246,7 @@
         <div>
           <b data-i18n="flexTitle">Flexible Staking</b><br>
           <small style="color:var(--text-muted);" data-i18n="flexDesc">Unstake anytime with zero locking period.</small><br>
-          <span style="color: var(--accent); font-size: 13px; font-weight: bold;">4% APY</span>
+          <span style="color: var(--accent); font-size: 13px; font-weight: bold;"><span id="displayFlexApy">4</span>% APY</span>
         </div>
         <button class="btn" style="width: auto;" onclick="stake('Flexible', 0, 4)" data-i18n="stakeBtn">Stake</button>
       </div>
@@ -255,31 +255,31 @@
     <h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;" data-i18n="fixedHeader">2. Fixed Staking (Up to 20% APY)</h4>
     <div class="grid-cards">
       <div class="card" style="text-align:center; margin:0;">
-        <b>7 Days</b><br><span style="color: var(--accent);">3% APY</span><br>
+        <b>7 Days</b><br><span style="color: var(--accent);"><span id="displayApy7">3</span>% APY</span><br>
         <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, 3)">Lock</button>
       </div>
       <div class="card" style="text-align:center; margin:0;">
-        <b>15 Days</b><br><span style="color: var(--accent);">4.5% APY</span><br>
+        <b>15 Days</b><br><span style="color: var(--accent);"><span id="displayApy15">4.5</span>% APY</span><br>
         <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, 4.5)">Lock</button>
       </div>
       <div class="card" style="text-align:center; margin:0;">
-        <b>30 Days</b><br><span style="color: var(--accent);">6.25% APY</span><br>
+        <b>30 Days</b><br><span style="color: var(--accent);"><span id="displayApy30">6.25</span>% APY</span><br>
         <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, 6.25)">Lock</button>
       </div>
       <div class="card" style="text-align:center; margin:0;">
-        <b>60 Days</b><br><span style="color: var(--accent);">8% APY</span><br>
+        <b>60 Days</b><br><span style="color: var(--accent);"><span id="displayApy60">8</span>% APY</span><br>
         <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, 8)">Lock</button>
       </div>
       <div class="card" style="text-align:center; margin:0;">
-        <b>90 Days</b><br><span style="color: var(--accent);">11.25% APY</span><br>
+        <b>90 Days</b><br><span style="color: var(--accent);"><span id="displayApy90">11.25</span>% APY</span><br>
         <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (90 Days)', 90, 11.25)">Lock</button>
       </div>
       <div class="card" style="text-align:center; margin:0;">
-        <b>120 Days</b><br><span style="color: var(--accent);">14.5% APY</span><br>
+        <b>120 Days</b><br><span style="color: var(--accent);"><span id="displayApy120">14.5</span>% APY</span><br>
         <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (120 Days)', 120, 14.5)">Lock</button>
       </div>
       <div class="card" style="text-align:center; margin:0; grid-column: span 2;">
-        <b>365 Days</b><br><span style="color: var(--accent);">20% APY</span><br>
+        <b>365 Days</b><br><span style="color: var(--accent);"><span id="displayApy365">20</span>% APY</span><br>
         <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (365 Days)', 365, 20)">Lock</button>
       </div>
     </div>
@@ -501,6 +501,25 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    // --- ADMIN LIVE SETTINGS LISTENER ---
+    function fetchAdminSettings() {
+      db.ref('settings').on('value', (snapshot) => {
+        const settings = snapshot.val();
+        if (settings) {
+          // Staking APY values update karein agar admin ne change ki hain
+          if (settings.flexibleApy) document.getElementById('displayFlexApy').innerText = settings.flexibleApy;
+          if (settings.apy7) document.getElementById('displayApy7').innerText = settings.apy7;
+          if (settings.apy15) document.getElementById('displayApy15').innerText = settings.apy15;
+          if (settings.apy30) document.getElementById('displayApy30').innerText = settings.apy30;
+          if (settings.apy60) document.getElementById('displayApy60').innerText = settings.apy60;
+          if (settings.apy90) document.getElementById('displayApy90').innerText = settings.apy90;
+          if (settings.apy120) document.getElementById('displayApy120').innerText = settings.apy120;
+          if (settings.apy365) document.getElementById('displayApy365').innerText = settings.apy365;
+        }
+      });
+    }
+    fetchAdminSettings();
 
     const translations = {
       en: { 
