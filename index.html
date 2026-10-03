@@ -1067,7 +1067,6 @@
       if (method === 'faucetpay') {
         if(!dest) { alert("Please enter FaucetPay email address."); return; }
         
-        // Float precision fix for USDT balance check
         if(parseFloat(usdtBalance.toFixed(4)) < parseFloat(rawAmt.toFixed(4))) { 
           alert("Insufficient USDT balance for withdrawal!"); 
           return; 
@@ -1102,9 +1101,6 @@
           alert("Network error while connecting to FaucetPay API server.");
         }
       } else {
-        // --- TON MANUAL WITHDRAWAL (SAVING TO FIREBASE WITHDRAWALS COLLECTION) ---
-        
-        // Float precision fix for TON balance check
         if(parseFloat(tonBalance.toFixed(4)) < parseFloat(rawAmt.toFixed(4))) { 
           alert("Insufficient TON balance!"); 
           return; 
