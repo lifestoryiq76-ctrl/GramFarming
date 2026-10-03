@@ -55,7 +55,8 @@ adminBot.command(['start', 'admin'], async (ctx) => {
         ...Markup.inlineKeyboard([
             [Markup.button.callback('👥 Total Users Check', 'check_users')],
             [Markup.button.callback('💸 Pending Withdrawals', 'check_withdrawals')],
-            [Markup.button.callback('📢 Broadcast Message', 'start_broadcast')]
+            [Markup.button.callback('📢 Broadcast Message', 'start_broadcast')],
+            [Markup.button.webApp('🚀 Open', 'https://gramfarming-api.onrender.com')]
         ])
     });
 });
@@ -162,7 +163,8 @@ adminBot.action('admin_home', async (ctx) => {
         ...Markup.inlineKeyboard([
             [Markup.button.callback('👥 Total Users Check', 'check_users')],
             [Markup.button.callback('💸 Pending Withdrawals', 'check_withdrawals')],
-            [Markup.button.callback('📢 Broadcast Message', 'start_broadcast')]
+            [Markup.button.callback('📢 Broadcast Message', 'start_broadcast')],
+            [Markup.button.webApp('🚀 Open', 'https://gramfarming-api.onrender.com')]
         ])
     });
 });
