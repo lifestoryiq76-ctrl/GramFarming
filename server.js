@@ -45,6 +45,8 @@ const verifyFirebaseToken = async (req, res, next) => {
 };
 
 // --- 2. API Routes ---
+
+// Withdraw Route
 app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
   const userId = req.user.uid;
   const { amount, payout_method, destination } = req.body; 
@@ -122,6 +124,47 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
 
   } catch (error) {
     console.error('Withdrawal System Error:', error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error', error: error.message });
+  }
+});
+
+// Ad Reward Route (Aapki di gayi lines yahan transaction ke andar add kar di gayi hain)
+app.post('/api/complete-ad', verifyFirebaseToken, async (req, res) => {
+  const userId = req.user.uid;
+  const { reward, limitKey, currentLimit } = req.body;
+
+  try {
+    if (typeof reward !== 'number' || reward <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid reward amount' });
+    }
+
+    if (!limitKey) {
+      return res.status(400).json({ success: false, message: 'Missing limitKey' });
+    }
+
+    const userRef = db.collection('users').doc(userId);
+
+    await db.runTransaction(async (transaction) => {
+      const doc = await transaction.get(userRef);
+      if (!doc.exists) {
+        throw new Error('User not found');
+      }
+
+      const userData = doc.data();
+      const currentBalance = userData.balance || 0;
+      const balance = currentBalance + reward;
+
+      // Firebase me ad limit aur balance save karne ke liye
+      let updateObj = { balance: balance };
+      updateObj[limitKey] = currentLimit;
+      
+      transaction.update(userRef, updateObj);
+    });
+
+    return res.status(200).json({ success: true, message: 'Ad reward added successfully!' });
+
+  } catch (error) {
+    console.error('Ad Reward System Error:', error);
     return res.status(500).json({ success: false, message: 'Internal Server Error', error: error.message });
   }
 });
