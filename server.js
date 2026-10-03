@@ -44,7 +44,7 @@ const verifyFirebaseToken = async (req, res, next) => {
   }
 };
 
-// --- 2. API Routes (Inhe Hamesha Static/Fallback se Pehle Rakhein) ---
+// --- 2. API Routes ---
 app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
   const userId = req.user.uid;
   const { amount, payout_method, destination } = req.body; 
@@ -126,16 +126,16 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
   }
 });
 
-// --- 3. Static Files & Frontend Routing ---
-app.use(express.static(path.join(__dirname, 'public')));
+// --- 3. Static Files & Frontend Routing (Root Directory) ---
+app.use(express.static(__dirname));
 
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// Fallback route to serve frontend index.html for Telegram WebApp
+// Fallback route to serve index.html for Telegram WebApp
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
