@@ -526,11 +526,10 @@
     let liveTonPrice = 1.50;
     let referralPercentage = 20;
     
-    // Admin Dynamic Settings (Ab sab kuch yahan se control hoga)
     let dynamicAdReward = 0.05; 
-    let requiredAdsForMining = 20; // Admin panel se change ho sakega
-    let miningDurationSeconds = 21600; // Default 6 hours (6 * 3600), admin se control hoga
-    let miningRewardCoins = 1.00; // Mining complete hone par reward
+    let requiredAdsForMining = 20; 
+    let miningDurationSeconds = 21600; 
+    let miningRewardCoins = 1.00; 
 
     let adLimits = {
       homeAdsgramLimit: 40,
@@ -571,7 +570,6 @@
           document.getElementById('refPercentText').innerText = `Get ${referralPercentage}%`;
         }
         
-        // Ad & Mining Dynamic Settings from Admin Panel
         if (data.rewardPerAd !== undefined || data.adReward !== undefined) {
           dynamicAdReward = parseFloat(data.rewardPerAd !== undefined ? data.rewardPerAd : data.adReward);
           document.querySelectorAll('.dynamic-reward-text').forEach(el => {
@@ -806,7 +804,6 @@
       let availVal = (method === 'ton') ? tonBalance : usdtBalance;
       document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
 
-      // Update tree limits UI dynamically based on admin settings
       for(let i=0; i<4; i++) {
         let limEl = document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][i]);
         if(limEl && treeStates[i]) {
@@ -846,7 +843,6 @@
       }
     }
 
-    // --- AD NETWORKS INITIALIZATION & LOADERS ---
     let AdController = null;
     try { 
       if(window.Adsgram) {
@@ -949,7 +945,6 @@
       }
     }
 
-    // --- DYNAMIC MINING SYSTEM ---
     const treeStates = [
       { adsWatched: 0, limit: 20, status: 'ads' },
       { adsWatched: 0, limit: 20, status: 'ads' },
@@ -995,7 +990,6 @@
       state.limit--;
       limitEl.innerText = `${state.limit} left`;
 
-      // Ab yeh admin panel ke 'requiredAdsForMining' ke hisab se dynamically chalega
       if (state.adsWatched < requiredAdsForMining) {
         statusEl.innerHTML = `Watched ${state.adsWatched}/${requiredAdsForMining} Ads`;
         let cooldown = 5;
@@ -1023,7 +1017,7 @@
       let progFill = document.getElementById(`treeProg-${index}`);
 
       btn.disabled = true;
-      let timeLeft = miningDurationSeconds; // Admin panel se set duration yahan use hoga
+      let timeLeft = miningDurationSeconds; 
       iconEl.innerText = "🌿"; 
 
       let timer = setInterval(() => {
@@ -1057,7 +1051,7 @@
     }
 
     function claimTreeReward(index, treeName) {
-      addEarningsWithReferral(miningRewardCoins); // Admin panel ka mining reward yahan add hoga
+      addEarningsWithReferral(miningRewardCoins); 
       let btn = document.getElementById(`treeBtn-${index}`);
       let statusEl = document.getElementById(`treeStatus-${index}`);
       let iconEl = document.getElementById(`treeIcon-${index}`);
