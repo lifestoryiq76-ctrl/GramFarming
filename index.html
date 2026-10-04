@@ -502,16 +502,18 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- ADMIN LIVE SETTINGS LISTENER (Updated Path) ---
+    // --- ADMIN LIVE SETTINGS LISTENER (FIXED PATH) ---
     function fetchAdminSettings() {
-      db.ref('adminSettings/general').on('value', (snapshot) => {
+      db.ref('adminSettings').on('value', (snapshot) => {
         const settings = snapshot.val();
         if (settings) {
-          if (settings.coinUsdtValue !== undefined) {
-            coinUsdtValue = parseFloat(settings.coinUsdtValue);
+          const data = settings.general || settings;
+          
+          if (data.coinUsdtValue !== undefined) {
+            coinUsdtValue = parseFloat(data.coinUsdtValue);
           }
-          if (settings.dailyBonus !== undefined) {
-            document.getElementById('dailyBonusDisplay').innerText = parseFloat(settings.dailyBonus).toFixed(2);
+          if (data.dailyBonus !== undefined) {
+            document.getElementById('dailyBonusDisplay').innerText = parseFloat(data.dailyBonus).toFixed(2);
           }
           renderUIValues();
           calculateExchange();
@@ -1250,7 +1252,7 @@
     }
     
     function completeTask(r, n) { 
-      addEarningsWithReferral(r); 
+      addEarningsWithReferrial(r); 
       alert(`Task completed! +${r} Coins added.`); 
     }
   </script>
