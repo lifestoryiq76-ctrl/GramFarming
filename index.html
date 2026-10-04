@@ -457,6 +457,17 @@
     <div class="nav-item" onclick="switchTab('leaderboard')">🏆<br><span data-i18n="navRank">Rank</span></div>
   </div>
 
+  <!-- ANNOUNCEMENT POPUP MODAL HTML -->
+  <div id="announcementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
+      <div style="background:#1e293b; border:1px solid #334155; padding:20px; border-radius:14px; max-width:400px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+          <h3 style="color:#22c55e; margin-top:0; margin-bottom:12px;">📢 Important Notice</h3>
+          <div id="announcementMessage" style="font-size:14px; color:#cbd5e1; margin-bottom:20px; line-height:1.5; word-break:break-word;">
+              <!-- Firebase se announcement message yahan load hoga -->
+          </div>
+          <button onclick="closeAnnouncement()" style="background:#22c55e; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%;">Got It / Close</button>
+      </div>
+  </div>
+
   <!-- FIREBASE & APP SCRIPT LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -479,7 +490,7 @@
                 <div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                   <h2 style="color: #ef4444; margin-top: 0;">⚠️ Multiple Instances Restricted</h2>
                   <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
-                    Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt me sirf ek hi instance open kar sakte hain!
+                    Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt me sirf ek hi instance open kar سکتے hain!
                   </p>
                   <button onclick="location.reload()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%;">Retry / Refresh</button>
                 </div>
@@ -530,6 +541,18 @@
       taskMonetagLimit: 40,
       taskGigapubLimit: 40
     };
+
+    // --- ANNOUNCEMENT LISTENER (FIREBASE SYNC) ---
+    onValue(ref(db, 'adminSettings/announcement'), (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        // Agar message available hai aur active hai
+        if (data.message && data.active === true) {
+          document.getElementById('announcementMessage').innerText = data.message;
+          document.getElementById('announcementModal').style.display = 'flex';
+        }
+      }
+    });
 
     onValue(ref(db, 'adminSettings/general'), (snapshot) => {
       if (snapshot.exists()) {
@@ -681,6 +704,11 @@
       });
     }
 
+    // --- ANNOUNCEMENT CLOSE FUNCTION ---
+    window.closeAnnouncement = function() {
+      document.getElementById('announcementModal').style.display = 'none';
+    }
+
     window.saveTonAddress = function() {
       let addrInput = document.getElementById('manualTonAddress').value.trim();
       if (!addrInput || addrInput.length < 15) {
@@ -825,13 +853,11 @@
               if (btn) btn.disabled = false;
             });
           } else {
-            // Fallback agar Adsgram SDK load na ho
             setTimeout(() => completeAdReward(reward, limitKey, btn, currentLimit), 1500);
           }
         } 
         else if (adName === 'Monetag') {
-          // Monetag Interstitial / Rewarded Pop implementation trigger
-          if (typeof show_889922 === 'function') { // Example Monetag callback/function trigger
+          if (typeof show_889922 === 'function') { 
             show_889922().then(() => {
               completeAdReward(reward, limitKey, btn, currentLimit);
             }).catch(() => {
@@ -839,12 +865,10 @@
               if (btn) btn.disabled = false;
             });
           } else {
-            // Direct safe fallback execution for demo/testing
             setTimeout(() => completeAdReward(reward, limitKey, btn, currentLimit), 1500);
           }
         } 
         else if (adName === 'Gigapub') {
-          // Gigapub ad integration hook
           setTimeout(() => {
             completeAdReward(reward, limitKey, btn, currentLimit);
           }, 1500);
@@ -924,7 +948,6 @@
               btn.disabled = false;
             });
           } else {
-            // Monetag / Gigapub / Fallback trigger for Trees
             setTimeout(() => {
               processTreeAdStep(index, treeName, adType, totalDurationSec);
             }, 1000);
@@ -1177,7 +1200,7 @@
             userId: userId,
             userName: displayName,
             method: 'TON',
-            amount: finalReceive_Amt = finalReceiveAmt,
+            amount: finalReceiveAmt,
             destination: savedTonAddress,
             status: 'Pending (24 Hours Processing)',
             timestamp: serverTimestamp()
