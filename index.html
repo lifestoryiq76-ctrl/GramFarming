@@ -121,11 +121,11 @@
           <div>
             <b style="font-size:13px;">🌲 Pine Tree (Monetag)</b><br>
             <span class="tree-icon" id="treeIcon-0">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-0">Watch 20 Ads to Start</div>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-0">Watch Ads to Start</div>
           </div>
           <div>
             <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-0"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(0, 'Pine Tree', 'Monetag', 21600)" id="treeBtn-0">Watch Ad (1/20)</button>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(0, 'Pine Tree', 'Monetag')" id="treeBtn-0">Watch Ad (1)</button>
           </div>
         </div>
 
@@ -134,11 +134,11 @@
           <div>
             <b style="font-size:13px;">🍎 Apple Tree (Adsgram)</b><br>
             <span class="tree-icon" id="treeIcon-1">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-1">Watch 20 Ads to Start</div>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-1">Watch Ads to Start</div>
           </div>
           <div>
             <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-1"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(1, 'Apple Tree', 'Adsgram', 21600)" id="treeBtn-1">Watch Ad (1/20)</button>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(1, 'Apple Tree', 'Adsgram')" id="treeBtn-1">Watch Ad (1)</button>
           </div>
         </div>
 
@@ -147,11 +147,11 @@
           <div>
             <b style="font-size:13px;">🌸 Sakura Tree (Gigapub)</b><br>
             <span class="tree-icon" id="treeIcon-2">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-2">Watch 20 Ads to Start</div>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-2">Watch Ads to Start</div>
           </div>
           <div>
             <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-2"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(2, 'Sakura Tree', 'Gigapub', 21600)" id="treeBtn-2">Watch Ad (1/20)</button>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(2, 'Sakura Tree', 'Gigapub')" id="treeBtn-2">Watch Ad (1)</button>
           </div>
         </div>
 
@@ -160,11 +160,11 @@
           <div>
             <b style="font-size:13px;">💎 Crystal Tree (Adsgram)</b><br>
             <span class="tree-icon" id="treeIcon-3">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-3">Watch 20 Ads to Start</div>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-3">Watch Ads to Start</div>
           </div>
           <div>
             <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-3"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(3, 'Crystal Tree', 'Adsgram', 21600)" id="treeBtn-3">Watch Ad (1/20)</button>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(3, 'Crystal Tree', 'Adsgram')" id="treeBtn-3">Watch Ad (1)</button>
           </div>
         </div>
       </div>
@@ -525,7 +525,12 @@
     let minWithdrawalAmt = 0.05;
     let liveTonPrice = 1.50;
     let referralPercentage = 20;
-    let dynamicAdReward = 0.05; // Default reward per ad
+    
+    // Admin Dynamic Settings (Ab sab kuch yahan se control hoga)
+    let dynamicAdReward = 0.05; 
+    let requiredAdsForMining = 20; // Admin panel se change ho sakega
+    let miningDurationSeconds = 21600; // Default 6 hours (6 * 3600), admin se control hoga
+    let miningRewardCoins = 1.00; // Mining complete hone par reward
 
     let adLimits = {
       homeAdsgramLimit: 40,
@@ -565,13 +570,24 @@
           referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
           document.getElementById('refPercentText').innerText = `Get ${referralPercentage}%`;
         }
-        // Admin panel se reward fetch karein (rewardPerAd ya adReward)
+        
+        // Ad & Mining Dynamic Settings from Admin Panel
         if (data.rewardPerAd !== undefined || data.adReward !== undefined) {
           dynamicAdReward = parseFloat(data.rewardPerAd !== undefined ? data.rewardPerAd : data.adReward);
           document.querySelectorAll('.dynamic-reward-text').forEach(el => {
             el.innerText = `+${dynamicAdReward} Coin`;
           });
         }
+        if (data.requiredAdsForMining !== undefined) {
+          requiredAdsForMining = parseInt(data.requiredAdsForMining);
+        }
+        if (data.miningDurationSeconds !== undefined) {
+          miningDurationSeconds = parseInt(data.miningDurationSeconds);
+        }
+        if (data.miningRewardCoins !== undefined) {
+          miningRewardCoins = parseFloat(data.miningRewardCoins);
+        }
+
         renderUIValues();
         calculateExchange();
       }
@@ -789,6 +805,14 @@
       let method = document.getElementById('withdrawMethod').value;
       let availVal = (method === 'ton') ? tonBalance : usdtBalance;
       document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
+
+      // Update tree limits UI dynamically based on admin settings
+      for(let i=0; i<4; i++) {
+        let limEl = document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][i]);
+        if(limEl && treeStates[i]) {
+          limEl.innerText = `${treeStates[i].limit} left`;
+        }
+      }
     }
     
     fetchLiveTonPrice();
@@ -925,6 +949,7 @@
       }
     }
 
+    // --- DYNAMIC MINING SYSTEM ---
     const treeStates = [
       { adsWatched: 0, limit: 20, status: 'ads' },
       { adsWatched: 0, limit: 20, status: 'ads' },
@@ -932,7 +957,7 @@
       { adsWatched: 0, limit: 20, status: 'ads' }
     ];
 
-    window.handleTreeAction = function(index, treeName, adType, totalDurationSec) {
+    window.handleTreeAction = function(index, treeName, adType) {
       let state = treeStates[index];
       let btn = document.getElementById(`treeBtn-${index}`);
       
@@ -941,14 +966,14 @@
         let playAd = () => {
           if (adType === 'Adsgram' && AdController) {
             AdController.show().then(() => {
-              processTreeAdStep(index, treeName, adType, totalDurationSec);
+              processTreeAdStep(index, treeName, adType);
             }).catch(() => {
               alert("Ad skipped.");
               btn.disabled = false;
             });
           } else {
             setTimeout(() => {
-              processTreeAdStep(index, treeName, adType, totalDurationSec);
+              processTreeAdStep(index, treeName, adType);
             }, 1000);
           }
         };
@@ -956,22 +981,23 @@
       } else if (state.status === 'mining') {
         alert("Mining is already in progress!");
       } else if (state.status === 'claim') {
-        claimTreeReward(index, treeName, totalDurationSec);
+        claimTreeReward(index, treeName);
       }
     }
 
-    function processTreeAdStep(index, treeName, adType, totalDurationSec) {
+    function processTreeAdStep(index, treeName, adType) {
       let state = treeStates[index];
       let btn = document.getElementById(`treeBtn-${index}`);
       let statusEl = document.getElementById(`treeStatus-${index}`);
-      let limitEl = document.getElementById([`pineLimit`, `appleLimit`, `sakuraLimit`, `crystalLimit`][index]);
+      let limitEl = document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][index]);
 
       state.adsWatched++;
       state.limit--;
       limitEl.innerText = `${state.limit} left`;
 
-      if (state.adsWatched < 20) {
-        statusEl.innerHTML = `Watched ${state.adsWatched}/20 Ads`;
+      // Ab yeh admin panel ke 'requiredAdsForMining' ke hisab se dynamically chalega
+      if (state.adsWatched < requiredAdsForMining) {
+        statusEl.innerHTML = `Watched ${state.adsWatched}/${requiredAdsForMining} Ads`;
         let cooldown = 5;
         btn.innerText = `Wait ${cooldown}s`;
         let tInterval = setInterval(() => {
@@ -979,31 +1005,31 @@
           btn.innerText = `Wait ${cooldown}s`;
           if (cooldown <= 0) {
             clearInterval(tInterval);
-            btn.innerText = `Watch Ad (${state.adsWatched + 1}/20)`;
+            btn.innerText = `Watch Ad (${state.adsWatched + 1}/${requiredAdsForMining})`;
             btn.disabled = false;
           }
         }, 1000);
       } else {
         state.status = 'mining';
         statusEl.innerHTML = `Starting Mining...`;
-        startTreeMiningTimer(index, treeName, totalDurationSec);
+        startTreeMiningTimer(index, treeName);
       }
     }
 
-    function startTreeMiningTimer(index, treeName, totalDurationSec) {
+    function startTreeMiningTimer(index, treeName) {
       let btn = document.getElementById(`treeBtn-${index}`);
       let statusEl = document.getElementById(`treeStatus-${index}`);
       let iconEl = document.getElementById(`treeIcon-${index}`);
       let progFill = document.getElementById(`treeProg-${index}`);
 
       btn.disabled = true;
-      let timeLeft = totalDurationSec;
+      let timeLeft = miningDurationSeconds; // Admin panel se set duration yahan use hoga
       iconEl.innerText = "🌿"; 
 
       let timer = setInterval(() => {
         timeLeft--;
-        let elapsed = totalDurationSec - timeLeft;
-        let percent = (elapsed / totalDurationSec) * 100;
+        let elapsed = miningDurationSeconds - timeLeft;
+        let percent = (elapsed / miningDurationSeconds) * 100;
         progFill.style.width = `${percent}%`;
 
         let hoursLeft = Math.floor(timeLeft / 3600);
@@ -1022,7 +1048,7 @@
           iconEl.innerText = "✨🌳✨";
           statusEl.innerHTML = `🎉 Ready to Claim!`;
           treeStates[index].status = 'claim';
-          btn.innerText = "🎁 Claim 1 Coin";
+          btn.innerText = `🎁 Claim ${miningRewardCoins} Coin`;
           btn.style.background = "#eab308";
           btn.style.color = "#000";
           btn.disabled = false;
@@ -1030,23 +1056,23 @@
       }, 1000);
     }
 
-    function claimTreeReward(index, treeName, totalDurationSec) {
-      addEarningsWithReferral(1.00);
+    function claimTreeReward(index, treeName) {
+      addEarningsWithReferral(miningRewardCoins); // Admin panel ka mining reward yahan add hoga
       let btn = document.getElementById(`treeBtn-${index}`);
       let statusEl = document.getElementById(`treeStatus-${index}`);
       let iconEl = document.getElementById(`treeIcon-${index}`);
       let progFill = document.getElementById(`treeProg-${index}`);
 
       treeStates[index] = { adsWatched: 0, limit: 20, status: 'ads' };
-      document.getElementById([`pineLimit`, `appleLimit`, `sakuraLimit`, `crystalLimit`][index]).innerText = `20 left`;
+      document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][index]).innerText = `20 left`;
 
       progFill.style.width = "0%";
       iconEl.innerText = "🌱";
-      statusEl.innerHTML = `Watch 20 Ads to Start`;
-      btn.innerText = "Watch Ad (1/20)";
+      statusEl.innerHTML = `Watch Ads to Start`;
+      btn.innerText = "Watch Ad (1)";
       btn.style.background = "#22c55e";
       btn.style.color = "#fff";
-      alert(`🎉 Success! You claimed +1.00 Coin from ${treeName}!`);
+      alert(`🎉 Success! You claimed +${miningRewardCoins} Coin from ${treeName}!`);
     }
 
     window.calculateStakeRewards = function() {
