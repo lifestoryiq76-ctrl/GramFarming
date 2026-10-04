@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gram Farming Mini App - Pro Mining</title>
+  <title>Gram Farming Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Adsgram SDK -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -11,42 +11,45 @@
   <script src="https://alwingulla.com/88/tag.min.js" data-zone="YOUR_MONETAG_ZONE_ID" async data-cfasync="false"></script>
   <style>
     :root {
-      --bg-color: #090d16;
-      --card-bg: #111827;
-      --accent: #22c55e;
-      --accent-hover: #16a34a;
-      --yellow: #eab308;
+      --bg-color: #0b0f19;
+      --card-bg: #131c31;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --yellow: #f59e0b;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --border: #1e293b;
-      --glow-accent: rgba(34, 197, 94, 0.25);
+      --glow: rgba(16, 185, 129, 0.2);
     }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 85px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-    .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; animation: pulse 1.5s infinite; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 90px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+    .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-    .card { background: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); border: 1px solid var(--border); position: relative; }
-    .btn { background: var(--accent); color: #fff; border: none; padding: 11px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; box-shadow: 0 4px 12px var(--glow-accent); }
+    .card { background: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); border: 1px solid var(--border); position: relative; }
+    .btn { background: var(--accent); color: #fff; border: none; padding: 12px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; box-shadow: 0 4px 12px var(--glow); }
     .btn:active { transform: scale(0.96); }
     .btn:disabled { background: #334155; cursor: not-allowed; box-shadow: none; color: #64748b; }
-    .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; box-shadow: 0 4px 12px rgba(234, 179, 8, 0.25); }
-    .btn-red { background: #ef4444; color: #fff; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); }
+    .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25); }
+    .btn-red { background: #ef4444; color: #fff; }
     .flex-between { display: flex; justify-content: space-between; align-items: center; }
     .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #070a12; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; backdrop-filter: blur(12px); }
-    .nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; transition: 0.2s; }
-    .nav-item.active { color: var(--accent); text-shadow: 0 0 10px var(--glow-accent); }
+    .nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; }
+    .nav-item.active { color: var(--accent); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    input, select { width: 100%; padding: 11px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 10px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
+    input, select { width: 100%; padding: 12px; margin-top: 6px; background: #0b0f19; border: 1px solid var(--border); color: #fff; border-radius: 10px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
     input:focus, select:focus { border-color: var(--accent); }
-    .mining-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
-    .mining-pro-box { background: linear-gradient(135deg, #111827 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 14px; padding: 16px; position: relative; box-shadow: inset 0 1px 3px rgba(255,255,255,0.05); }
-    .mining-pro-box.active-mining { border-color: var(--accent); box-shadow: 0 0 15px var(--glow-accent); }
-    .tree-icon-pro { font-size: 38px; text-align: center; margin: 8px 0; display: block; transition: transform 0.3s ease; }
-    .tree-progress-bar { width: 100%; background: #1e293b; height: 8px; border-radius: 4px; margin: 10px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-    .tree-progress-fill { background: linear-gradient(90deg, var(--accent), #4ade80); height: 100%; width: 0%; transition: width 0.5s ease; box-shadow: 0 0 8px var(--accent); }
-    .limit-badge { position: absolute; top: 12px; right: 14px; background: rgba(2, 132, 199, 0.2); color: #38bdf8; border: 1px solid #0284c7; font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 6px; }
+    
+    /* PRO MINING STYLES */
+    .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .mining-box { background: linear-gradient(135deg, #131c31 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+    .mining-box.active-mining { border-color: var(--accent); box-shadow: 0 0 15px rgba(16, 185, 129, 0.15); }
+    .tree-icon { font-size: 38px; transition: transform 0.3s ease; margin: 8px 0; display: inline-block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+    .tree-progress-bar { width: 100%; background: #1e293b; height: 8px; border-radius: 4px; margin: 10px 0; overflow: hidden; position: relative; }
+    .tree-progress-fill { background: linear-gradient(90deg, var(--accent), #34d399); height: 100%; width: 0%; transition: width 0.5s ease; }
+    .limit-badge { position: absolute; top: 10px; right: 12px; background: rgba(2, 132, 199, 0.2); color: #38bdf8; border: 1px solid #0284c7; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 6px; }
+    .timer-display { font-family: monospace; font-size: 13px; color: var(--yellow); font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 6px; margin: 6px 0; display: inline-block; border: 1px solid rgba(245, 158, 11, 0.3); }
     #miningBoxesSection { display: none; }
     #miningBoxesSection.show { display: block; }
   </style>
@@ -55,7 +58,7 @@
 
   <div class="header">
     <div style="display: flex; align-items: center; gap: 8px;">
-      <h3 style="margin:0; color: var(--accent); text-shadow: 0 0 10px var(--glow-accent);">🌱 Gram Farming Pro</h3>
+      <h3 style="margin:0; color: var(--accent);">🌱 Gram Farming Pro</h3>
       <span class="live-badge">🔴 LIVE</span>
     </div>
     <select id="langSelect" onchange="changeLanguage(this.value)" style="width: auto; padding: 6px 12px;">
@@ -70,8 +73,8 @@
     <div class="card">
       <div class="flex-between" style="align-items: flex-start;">
         <div>
-          <span style="font-size: 13px; color: var(--text-muted);" data-i18n="homeTitle">🏠 Home Dashboard</span><br><br>
-          <span style="font-size: 16px; font-weight: bold;">🪙 <span data-i18n="balanceText">Balance</span>: <strong id="userBalance" style="color: var(--accent); font-size: 20px;">0.00</strong> Coin</span>
+          <span style="font-size: 14px; color: var(--text-muted);" data-i18n="homeTitle">🏠 Home</span><br><br>
+          <span style="font-size: 16px; font-weight: bold;">🪙 <span data-i18n="balanceText">Balance</span>: <strong id="userBalance" style="color: var(--accent);">0.00</strong> Coin</span>
         </div>
         <div style="text-align: right;">
           <small style="color: var(--text-muted);" data-i18n="coinVolume">Coin Volume</small><br>
@@ -79,119 +82,131 @@
         </div>
       </div>
       <br>
-      <div class="flex-between" style="background:#090d16; padding:10px; border-radius:12px; border: 1px solid var(--border);">
-        <button class="btn" onclick="switchTab('tasks')" style="margin-right: 6px;" data-i18n="earnBtn">⚡ Earn Ads</button>
-        <button class="btn" onclick="switchTab('wallet')" style="margin-left: 6px; background: #0284c7; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);" data-i18n="withdrawNavBtn">🪙 Withdraw</button>
+      <div class="flex-between" style="background:#0b0f19; padding:10px; border-radius:12px; border: 1px solid var(--border);">
+        <button class="btn" onclick="switchTab('tasks')" style="margin-right: 6px;" data-i18n="earnBtn">⚡ Earn</button>
+        <button class="btn" onclick="switchTab('wallet')" style="margin-left: 6px; background: #0284c7;" data-i18n="withdrawNavBtn">🪙 Withdraw</button>
       </div>
     </div>
 
     <!-- Daily Bonus Card -->
     <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
-      <span style="font-size: 14px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad 5s)</span>
-      <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Claim Now!</span>
+      <span style="font-size: 15px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad)</span>
+      <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
     </div>
 
     <div class="card flex-between">
-      <span class="limit-badge" id="homeAdsgramLimit">25 left</span>
+      <span class="limit-badge" id="homeAdsgramLimit">40 left</span>
       <div>
-        <div style="font-weight: bold;">Adsgram Pro Task</div>
-        <small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span> (5s Ad)</small>
+        <div style="font-weight: bold;">Adsgram</div>
+        <small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small>
       </div>
-      <button class="btn" id="homeAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('homeAdsgramLimit', 'homeAdsgramBtn', 'Adsgram')">Watch (5s)</button>
+      <button class="btn" id="homeAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('homeAdsgramLimit', 'homeAdsgramBtn', 'Adsgram')">Watch</button>
     </div>
 
-    <!-- ⚡ ADVANCED MINING SECTION (PRO) -->
-    <div class="card" style="background:var(--card-bg); border:1px solid var(--accent); cursor: pointer; box-shadow: 0 0 20px var(--glow-accent);" onclick="toggleMiningBoxes()">
+    <!-- ADVANCED MINING TOGGLE -->
+    <div class="card" style="background:var(--card-bg); border:1px solid var(--accent); cursor: pointer;" onclick="toggleMiningBoxes()">
       <div class="flex-between">
-        <div>
-          <h4 style="margin:0; color: var(--accent); font-size: 16px;">🚀 Pro Advanced Mining System</h4>
-          <small style="color: var(--text-muted);">Path 1 (Live Coins) & Path 2 (6h Timer)</small>
-        </div>
+        <h4 style="margin:0; color: var(--accent);">⛏️ Pro Advanced Mining (2 Paths)</h4>
         <span id="miningArrow" style="font-size: 16px; color: var(--accent); font-weight: bold;">▼</span>
       </div>
     </div>
 
     <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
-      <h4 style="margin:0.2rem 0 12px 0; color: var(--accent); text-align: center;">🌲 Choose Mining Path & Start</h4>
+      <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🌲 Professional Mining Nodes</h4>
+      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Har mining node ke liye 25 ads complete karein. Path 1 mein live coins add honge aur Path 2 mein advanced HH:MM:SS timer chalega!</p>
       
       <div class="mining-grid">
-        <!-- MINING PATH 1: LIVE COIN SHOW -->
-        <div class="mining-pro-box" id="mBox-path1">
-          <span class="limit-badge" id="miningPath1Limit">25 left</span>
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 28px;">⚡</span>
-            <div>
-              <b style="font-size:14px; color: var(--accent);">Path 1: Live Coin Counter Mining</b><br>
-              <small style="color:var(--text-muted);">Coins continuously increase in real-time for 6 Hours.</small>
-            </div>
+        <!-- Node 0: Pine Tree -->
+        <div class="mining-box" id="mBox-0">
+          <span class="limit-badge" id="pineLimit">25 left</span>
+          <div>
+            <b style="font-size:13px;">🌲 Pine Tree (Live Coins)</b><br>
+            <span class="tree-icon" id="treeIcon-0">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-0">Watch Ads (0/25)</div>
+            <div class="timer-display" id="treeTimer-0" style="display:none;">00:00:00</div>
           </div>
-          <span class="tree-icon-pro" id="treeIcon-path1">🪙⛏️</span>
-          <div style="background: #090d16; padding: 10px; border-radius: 8px; text-align: center; margin: 8px 0; border: 1px solid var(--border);">
-            <small style="color: var(--text-muted);">Mined Balance (Live):</small><br>
-            <strong id="liveMinedCoinsDisplay" style="color: var(--yellow); font-size: 18px;">0.0000</strong> <span style="color: var(--yellow);">Coins</span>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-0"></div></div>
+            <button class="btn" style="padding:8px; font-size:11px;" onclick="handleTreeAction(0, 'Pine Tree', 'Monetag')" id="treeBtn-0">Watch Ad (1/25)</button>
           </div>
-          <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-path1"></div></div>
-          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
-            <span id="treeStatus-path1">Watch 25 Ads (5s each) to Unlock</span>
-            <span id="treeTimer-path1">06:00:00</span>
-          </div>
-          <button class="btn" onclick="handleProMiningAction('path1')" id="treeBtn-path1">Watch Ad (1/25 - 5s)</button>
         </div>
 
-        <!-- MINING PATH 2: LIVE TIMER (HOURS:MIN:SEC) -->
-        <div class="mining-pro-box" id="mBox-path2">
-          <span class="limit-badge" id="miningPath2Limit">25 left</span>
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 28px;">⏳</span>
-            <div>
-              <b style="font-size:14px; color: var(--yellow);">Path 2: 6 Hours Precision Timer</b><br>
-              <small style="color:var(--text-muted);">Active countdown with exact Hours.Min.Sec display.</small>
-            </div>
+        <!-- Node 1: Apple Tree -->
+        <div class="mining-box" id="mBox-1">
+          <span class="limit-badge" id="appleLimit">25 left</span>
+          <div>
+            <b style="font-size:13px;">🍎 Apple Tree (Timer)</b><br>
+            <span class="tree-icon" id="treeIcon-1">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-1">Watch Ads (0/25)</div>
+            <div class="timer-display" id="treeTimer-1" style="display:none;">00:00:00</div>
           </div>
-          <span class="tree-icon-pro" id="treeIcon-path2">🌳⏱️</span>
-          <div style="background: #090d16; padding: 10px; border-radius: 8px; text-align: center; margin: 8px 0; border: 1px solid var(--border);">
-            <small style="color: var(--text-muted);">Live Countdown (H : M : S):</small><br>
-            <strong id="liveHmsDisplay" style="color: var(--accent); font-size: 20px; letter-spacing: 1px;">06 : 00 : 00</strong>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-1"></div></div>
+            <button class="btn" style="padding:8px; font-size:11px;" onclick="handleTreeAction(1, 'Apple Tree', 'Adsgram')" id="treeBtn-1">Watch Ad (1/25)</button>
           </div>
-          <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-path2"></div></div>
-          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
-            <span id="treeStatus-path2">Watch 25 Ads (5s each) to Unlock</span>
-            <span>Reward: 10.00 Coins</span>
+        </div>
+
+        <!-- Node 2: Sakura Tree -->
+        <div class="mining-box" id="mBox-2">
+          <span class="limit-badge" id="sakuraLimit">25 left</span>
+          <div>
+            <b style="font-size:13px;">🌸 Sakura Tree (Live Coins)</b><br>
+            <span class="tree-icon" id="treeIcon-2">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-2">Watch Ads (0/25)</div>
+            <div class="timer-display" id="treeTimer-2" style="display:none;">00:00:00</div>
           </div>
-          <button class="btn btn-yellow" onclick="handleProMiningAction('path2')" id="treeBtn-path2">Watch Ad (1/25 - 5s)</button>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-2"></div></div>
+            <button class="btn" style="padding:8px; font-size:11px;" onclick="handleTreeAction(2, 'Sakura Tree', 'Gigapub')" id="treeBtn-2">Watch Ad (1/25)</button>
+          </div>
+        </div>
+
+        <!-- Node 3: Crystal Tree -->
+        <div class="mining-box" id="mBox-3">
+          <span class="limit-badge" id="crystalLimit">25 left</span>
+          <div>
+            <b style="font-size:13px;">💎 Crystal Tree (Timer)</b><br>
+            <span class="tree-icon" id="treeIcon-3">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-3">Watch Ads (0/25)</div>
+            <div class="timer-display" id="treeTimer-3" style="display:none;">00:00:00</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-3"></div></div>
+            <button class="btn" style="padding:8px; font-size:11px;" onclick="handleTreeAction(3, 'Crystal Tree', 'Adsgram')" id="treeBtn-3">Watch Ad (1/25)</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 📋 TASKS PAGE (25 ADS & 5s COUNTDOWN) -->
+  <!-- 📋 TASKS PAGE -->
   <div id="tasks" class="tab-content">
-    <h3 data-i18n="tasksOffers">📋 Tasks & 25 Ads (5s Countdown)</h3>
+    <h3 data-i18n="tasksOffers">📋 Tasks & Offers</h3>
     <div style="display:flex; gap:10px; margin-bottom:12px;">
-      <button class="btn" onclick="toggleTaskTab('adsTasks')" style="flex:1;" data-i18n="adsTasksTab">Ads Tasks (25 Limit)</button>
+      <button class="btn" onclick="toggleTaskTab('adsTasks')" style="flex:1;" data-i18n="adsTasksTab">Ads Tasks</button>
       <button class="btn" onclick="toggleTaskTab('userTasks')" style="flex:1; background:#1e293b;" data-i18n="userTasksTab">User Tasks</button>
     </div>
 
     <div id="adsTasks">
       <div class="card flex-between">
-        <span class="limit-badge" id="taskAdsgramLimit">25 left</span>
-        <div><b>Adsgram (5s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
-        <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsgramLimit', 'taskAdsgramBtn', 'Adsgram')">Watch (5s)</button>
+        <span class="limit-badge" id="taskAdsgramLimit">40 left</span>
+        <div><b>Adsgram</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span> (60s Countdown)</small></div>
+        <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsgramLimit', 'taskAdsgramBtn', 'Adsgram')">Watch</button>
       </div>
       <div class="card flex-between">
-        <span class="limit-badge" id="taskMonetagLimit">25 left</span>
-        <div><b>Monetag (5s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
-        <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag')">Watch (5s)</button>
+        <span class="limit-badge" id="taskMonetagLimit">40 left</span>
+        <div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span> (60s Countdown)</small></div>
+        <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag')">Watch</button>
       </div>
       <div class="card flex-between">
-        <span class="limit-badge" id="taskGigapubLimit">25 left</span>
-        <div><b>Gigapub (5s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
-        <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub')">Watch (5s)</button>
+        <span class="limit-badge" id="taskGigapubLimit">40 left</span>
+        <div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span> (60s Countdown)</small></div>
+        <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub')">Watch</button>
       </div>
     </div>
 
     <div id="userTasks" style="display:none;">
-      <div class="card" style="background:#0f172a; border: 1px dashed var(--accent); text-align: center;">
+      <div class="card" style="background:#0b0f19; border: 1px dashed var(--accent); text-align: center;">
         <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="addYourTask">➕ Add Your Task</h4>
         <input type="text" id="customTaskTitle" placeholder="Task Name (e.g., Join Channel)">
         <input type="text" id="customTaskLink" placeholder="Your Link (https://t.me/...)">
@@ -211,7 +226,7 @@
   <div id="staking" class="tab-content">
     <h3 data-i18n="stakingOptions">💎 Staking Options</h3>
     
-    <div class="card" style="background:#0f172a; border:1px solid var(--accent);">
+    <div class="card" style="background:#0b0f19; border:1px solid var(--accent);">
       <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="stakingCalc">🧮 Staking Calculator & Preview</h4>
       <label style="font-size:13px; color:var(--text-muted);" data-i18n="enterStakingCoins">Enter Staking Coins:</label>
       <input type="number" id="stakeCalcInput" placeholder="e.g. 100" oninput="calculateStakeRewards()">
@@ -228,7 +243,7 @@
         <option value="365|20">Fixed (365 Days - 20% APY)</option>
       </select>
 
-      <div style="margin-top:10px; padding:10px; background:#070a12; border-radius:8px; font-size:13px; border:1px solid var(--border);">
+      <div style="margin-top:10px; padding:10px; background:#131c31; border-radius:8px; font-size:13px; border:1px solid var(--border);">
         <div>☀ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
         <div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
       </div>
@@ -321,12 +336,12 @@
     <div class="card">
       <div class="flex-between" style="margin-bottom: 10px;">
         <h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange Coin (Live Rate)</h4>
-        <span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
+        <span style="background: rgba(245, 158, 11, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
           🪙 Balance: <span id="walletCoinDisplay">0.00</span>
         </span>
       </div>
       
-      <div style="background:#070a12; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
+      <div style="background:#0b0f19; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
         <div>💎 TON Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong> TON</div>
         <div>💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">0.00</strong> USDT</div>
         <div style="margin-top:4px; font-size:11px; color:var(--text-muted);" id="liveRateStatus">📡 Fetching Live TON Rate...</div>
@@ -347,7 +362,7 @@
     </div>
 
     <!-- Manual Wallet Address Card -->
-    <div class="card" style="background:#0f172a; border: 1px solid var(--accent); text-align: center;">
+    <div class="card" style="background:#131c31; border: 1px solid var(--accent); text-align: center;">
       <h4 style="margin:0 0 8px 0; color: var(--accent);">⚡ Manual Wallet Address</h4>
       <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;">Apna TON wallet address manually yahan save karein.</p>
       <div style="text-align: left;">
@@ -361,10 +376,10 @@
     </div>
 
     <!-- Withdraw Funds Section -->
-    <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
+    <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);">
       <div class="flex-between" style="margin-bottom: 8px;">
         <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON manual payout (24h)</h4>
-        <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
+        <span style="background: rgba(16, 185, 129, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
       </div>
       
       <label data-i18n="withdrawMethod">Withdrawal Method:</label>
@@ -391,11 +406,11 @@
       <label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
       <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
       
-      <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
+      <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
     </div>
 
     <!-- TRANSACTION HISTORY SECTION -->
-    <div class="card" style="background: #070a12; border: 1px solid var(--border);">
+    <div class="card" style="background: #131c31; border: 1px solid var(--border);">
       <div class="flex-between" style="margin-bottom: 8px;">
         <h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
         <span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
@@ -417,13 +432,13 @@
       <div style="font-size:12px; color:var(--text-muted); margin-bottom: 5px;" data-i18n="liveRankingStats">Your live ranking and stats</div>
     </div>
 
-    <div class="card flex-between" style="background:#070a12; padding: 12px; margin-bottom: 12px;">
+    <div class="card flex-between" style="background:#131c31; padding: 12px; margin-bottom: 12px;">
       <span style="font-size:13px; color:var(--text-muted);" data-i18n="yourRank">Your Rank:</span>
       <span style="background:var(--accent); color:#fff; padding: 4px 10px; border-radius:6px; font-size:12px; font-weight:bold;" data-i18n="rankPlace">#1 place</span>
     </div>
 
     <div id="rankListContainer">
-      <div class="card" style="margin-bottom:8px; padding: 14px; background:#070a12;">
+      <div class="card" style="margin-bottom:8px; padding: 14px; background:#131c31;">
         <div class="flex-between" style="margin-bottom: 8px;">
           <span style="font-weight:bold; font-size:14px; color:var(--yellow);" id="telegramUserName">👑 Loading User...</span>
         </div>
@@ -444,11 +459,11 @@
   </div>
 
   <!-- ANNOUNCEMENT MODAL -->
-  <div id="announcementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
-      <div style="background:#111827; border:1px solid #1e293b; padding:20px; border-radius:16px; max-width:400px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 30px rgba(0,0,0,0.6);">
-          <h3 style="color:#22c55e; margin-top:0; margin-bottom:12px;">📢 Important Notice</h3>
+  <div id="announcementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
+      <div style="background:#131c31; border:1px solid #1e293b; padding:20px; border-radius:16px; max-width:400px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+          <h3 style="color:#10b981; margin-top:0; margin-bottom:12px;">📢 Important Notice</h3>
           <div id="announcementMessage" style="font-size:14px; color:#cbd5e1; margin-bottom:20px; line-height:1.5; word-break:break-word;"></div>
-          <button onclick="closeAnnouncement()" style="background:#22c55e; color:#fff; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; width:100%; box-shadow: 0 4px 12px var(--glow-accent);">Got It / Close</button>
+          <button onclick="closeAnnouncement()" style="background:#10b981; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%;">Got It / Close</button>
       </div>
   </div>
 
@@ -470,13 +485,13 @@
           const sessionData = JSON.parse(activeSession);
           if (currentTime - sessionData.timestamp < 5000 && sessionData.token !== currentSessionToken) {
             document.body.innerHTML = `
-              <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #090d16; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;">
-                <div style="background: #111827; padding: 30px; border-radius: 16px; border: 1px solid #1e293b; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+              <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0b0f19; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;">
+                <div style="background: #131c31; padding: 30px; border-radius: 16px; border: 1px solid #1e293b; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                   <h2 style="color: #ef4444; margin-top: 0;">⚠️ Multiple Instances Restricted</h2>
                   <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
                     Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt me sirf ek hi instance open kar sakte hain!
                   </p>
-                  <button onclick="location.reload()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%;">Retry / Refresh</button>
+                  <button onclick="location.reload()" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%;">Retry / Refresh</button>
                 </div>
               </div>
             `;
@@ -520,15 +535,15 @@
     let referralPercentage = 20;
     
     let dynamicAdReward = 0.05; 
-    let requiredAdsForMining = 25; 
-    let miningDurationSeconds = 21600; // 6 Hours (6 * 3600)
-    let miningRewardCoins = 10.00; 
+    let requiredAdsForMining = 25; // Updated to 25 Ads
+    let miningDurationSeconds = 21600; // 6 Hours
+    let miningRewardCoins = 1.00; // 1 Coin reward
 
     let adLimits = {
-      homeAdsgramLimit: 25,
-      taskAdsgramLimit: 25,
-      taskMonetagLimit: 25,
-      taskGigapubLimit: 25
+      homeAdsgramLimit: 40,
+      taskAdsgramLimit: 40,
+      taskMonetagLimit: 40,
+      taskGigapubLimit: 40
     };
 
     // --- REAL-TIME LISTENERS FOR ADMIN SETTINGS ---
@@ -561,6 +576,9 @@
             el.innerText = `+${dynamicAdReward} Coin`;
           });
         }
+        if (data.requiredAdsForMining !== undefined) requiredAdsForMining = parseInt(data.requiredAdsForMining);
+        if (data.miningDurationSeconds !== undefined) miningDurationSeconds = parseInt(data.miningDurationSeconds);
+        if (data.miningRewardCoins !== undefined) miningRewardCoins = parseFloat(data.miningRewardCoins);
 
         renderUIValues();
         calculateExchange();
@@ -569,9 +587,9 @@
 
     const translations = {
       en: { 
-        homeTitle: "🏠 Home Dashboard", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn Ads", withdrawNavBtn: "🪙 Withdraw", 
-        clickToClaim: "Claim Now!", watchBtn: "Watch (5s)", 
-        tasksOffers: "📋 Tasks & 25 Ads (5s)", adsTasksTab: "Ads Tasks (25 Limit)", userTasksTab: "User Tasks", 
+        homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
+        clickToClaim: "Click to Claim!", watchBtn: "Watch", 
+        tasksOffers: "📋 Tasks & Offers", adsTasksTab: "Ads Tasks", userTasksTab: "User Tasks", 
         addYourTask: "➕ Add Your Task", publishTaskBtn: "Publish Task (-10 Coin)", joinTelegram: "📢 Join Telegram Channel", reward10Coins: "Reward: +10 Coin", completeBtn: "Complete", 
         stakingOptions: "💎 Staking Options", stakingCalc: "🧮 Staking Calculator & Preview", enterStakingCoins: "Enter Staking Coins:", 
         selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking", 
@@ -580,13 +598,15 @@
         minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get bonus from all 🪙 earned by your invited friends.", 
         copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", 
         convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
+        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "Amount:", tonAddressLabel: "TON Wallet Address:", submitWithdrawBtn: "Submit Withdraw", 
         topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
         navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" 
       },
       hi: { 
-        homeTitle: "🏠 होम डैशबोर्ड", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", 
-        clickToClaim: "क्लेम करें!", watchBtn: "देखें (5s)", 
-        tasksOffers: "📋 टास्क और 25 एड्स (5s)", adsTasksTab: "एड्स टास्क (25 लिमिट)", userTasksTab: "यूजर टास्क", 
+        homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", 
+        clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", 
+        tasksOffers: "📋 टास्क और ऑफर्स", adsTasksTab: "एड्स टास्क", userTasksTab: "यूजर टास्क", 
         addYourTask: "➕ अपना टास्क जोड़ें", publishTaskBtn: "टास्क पब्लिश करें (-10 कॉइन)", joinTelegram: "📢 टेलीग्राम चैनल ज्वाइन करें", reward10Coins: "इनाम: +10 कॉइन", completeBtn: "पूरा करें", 
         stakingOptions: "💎 स्टेकिंग विकल्प", stakingCalc: "🧮 स्टेकिंग कैलकुलेटर और पूर्वावलोकन", enterStakingCoins: "स्टेकिंग कॉइन दर्ज करें:", 
         selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
@@ -595,13 +615,15 @@
         minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से बोनस पाएं।", 
         copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", 
         convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
+        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "मात्रा:", tonAddressLabel: "TON Wallet पता:", submitWithdrawBtn: "निकासी सबमिट करें", 
         topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
         navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" 
       },
       ru: { 
         homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", 
-        clickToClaim: "Забрать!", watchBtn: "Смотреть (5s)", 
-        tasksOffers: "📋 Задания (25 Реклам)", adsTasksTab: "Реклама (25)", userTasksTab: "Пользовательские", 
+        clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", 
+        tasksOffers: "📋 Задания", adsTasksTab: "Реклама", userTasksTab: "Пользовательские", 
         addYourTask: "➕ Добавить", publishTaskBtn: "Опубликовать", joinTelegram: "📢 Подписаться", reward10Coins: "Награда: +10", completeBtn: "Выполнить", 
         stakingOptions: "💎 Стейкинг", stakingCalc: "🧮 Калькулятор", enterStakingCoins: "Введите монеты:", 
         selectPlan: "План:", dailyReward: "Дневная", totalPeriodReward: "Общая", flexHeader: "1. Гибкий", 
@@ -610,6 +632,8 @@
         minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус от рефералов.", 
         copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", 
         convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
+        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "Сумма:", tonAddressLabel: "Адрес TON Wallet:", submitWithdrawBtn: "Вывести", 
         topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
         navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" 
       }
@@ -639,7 +663,6 @@
 
     const userRef = ref(db, 'users/' + userId);
     
-    // --- REAL-TIME LISTENERS FOR USER DATA ---
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -663,10 +686,10 @@
           refReward: 0.00,
           totalInvited: 0,
           savedTonAddress: "",
-          homeAdsgramLimit: 25,
-          taskAdsgramLimit: 25,
-          taskMonetagLimit: 25,
-          taskGigapubLimit: 25
+          homeAdsgramLimit: 40,
+          taskAdsgramLimit: 40,
+          taskMonetagLimit: 40,
+          taskGigapubLimit: 40
         });
       }
       renderUIValues();
@@ -775,8 +798,12 @@
       let availVal = (method === 'ton') ? tonBalance : usdtBalance;
       document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
 
-      document.getElementById('miningPath1Limit').innerText = `${proMiningStates.path1.limit} left`;
-      document.getElementById('miningPath2Limit').innerText = `${proMiningStates.path2.limit} left`;
+      for(let i=0; i<4; i++) {
+        let limEl = document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][i]);
+        if(limEl && treeStates[i]) {
+          limEl.innerText = `${treeStates[i].limit} left`;
+        }
+      }
     }
     
     fetchLiveTonPrice();
@@ -817,13 +844,13 @@
       }
     } catch(e) {}
 
-    // --- AD WATCH WITH 5 SECONDS COUNTDOWN & 25 LIMIT ---
+    // --- AD WATCH WITH 60 SECONDS COUNTDOWN ---
     window.watchAdWithTimer = function(limitElementId, btnElementId, adName) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
-      let currentLimit = adLimits[limitKey] !== undefined ? adLimits[limitKey] : 25;
+      let currentLimit = adLimits[limitKey] !== undefined ? adLimits[limitKey] : 40;
       
       if (currentLimit <= 0) {
-        alert("Daily ad limit (25 ads) reached for today!");
+        alert("Daily ad limit reached for today!");
         return;
       }
 
@@ -840,7 +867,7 @@
               if (btn) btn.disabled = false;
             });
           } else {
-            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1000);
+            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1500);
           }
         } 
         else if (adName === 'Monetag') {
@@ -852,13 +879,13 @@
               if (btn) btn.disabled = false;
             });
           } else {
-            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1000);
+            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1500);
           }
         } 
         else if (adName === 'Gigapub') {
           setTimeout(() => {
             completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
-          }, 1000);
+          }, 1500);
         } else {
           completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
         }
@@ -877,14 +904,14 @@
       alert(`+${reward} Coin added successfully!`);
 
       if (btn) {
-        let cooldown = 5; // 5 Seconds Countdown as requested
+        let cooldown = 60; // 60 seconds countdown as requested
         btn.innerText = `Wait ${cooldown}s`;
         let timerInterval = setInterval(() => {
           cooldown--;
           btn.innerText = `Wait ${cooldown}s`;
           if (cooldown <= 0) {
             clearInterval(timerInterval);
-            btn.innerText = "Watch (5s)";
+            btn.innerText = "Watch";
             btn.disabled = false;
           }
         }, 1000);
@@ -913,88 +940,99 @@
       }
     }
 
-    // --- PRO MINING TWO PATHS LOGIC ---
-    const proMiningStates = {
-      path1: { adsWatched: 0, limit: 25, status: 'ads' },
-      path2: { adsWatched: 0, limit: 25, status: 'ads' }
-    };
+    // --- 4 MINING NODES WITH 2 PATHS (PATH 1: LIVE COIN ADDITION, PATH 2: HH:MM:SS TIMER) ---
+    const treeStates = [
+      { adsWatched: 0, limit: 25, status: 'ads', pathType: 1 }, // Node 0: Path 1 (Coin Live Show)
+      { adsWatched: 0, limit: 25, status: 'ads', pathType: 2 }, // Node 1: Path 2 (Hours:Min:Sec Timer)
+      { adsWatched: 0, limit: 25, status: 'ads', pathType: 1 }, // Node 2: Path 1 (Coin Live Show)
+      { adsWatched: 0, limit: 25, status: 'ads', pathType: 2 }  // Node 3: Path 2 (Hours:Min:Sec Timer)
+    ];
 
-    window.handleProMiningAction = function(pathKey) {
-      let state = proMiningStates[pathKey];
-      let btn = document.getElementById(`treeBtn-${pathKey}`);
+    window.handleTreeAction = function(index, treeName, adType) {
+      let state = treeStates[index];
+      let btn = document.getElementById(`treeBtn-${index}`);
       
       if (state.status === 'ads') {
         btn.disabled = true;
         let playAd = () => {
-          if (AdController) {
+          if (adType === 'Adsgram' && AdController) {
             AdController.show().then(() => {
-              processProMiningAdStep(pathKey);
+              processTreeAdStep(index, treeName, adType);
             }).catch(() => {
               alert("Ad skipped.");
               btn.disabled = false;
             });
           } else {
             setTimeout(() => {
-              processProMiningAdStep(pathKey);
+              processTreeAdStep(index, treeName, adType);
             }, 1000);
           }
         };
         playAd();
       } else if (state.status === 'mining') {
-        alert("Mining is already in progress!");
+        alert("Mining is already in progress with active timer!");
       } else if (state.status === 'claim') {
-        claimProMiningReward(pathKey);
+        claimTreeReward(index, treeName);
       }
     }
 
-    function processProMiningAdStep(pathKey) {
-      let state = proMiningStates[pathKey];
-      let btn = document.getElementById(`treeBtn-${pathKey}`);
-      let statusEl = document.getElementById(`treeStatus-${pathKey}`);
-      let limitEl = document.getElementById(`miningPath%dLimit`.replace('%d', pathKey === 'path1' ? '1' : '2'));
+    function processTreeAdStep(index, treeName, adType) {
+      let state = treeStates[index];
+      let btn = document.getElementById(`treeBtn-${index}`);
+      let statusEl = document.getElementById(`treeStatus-${index}`);
+      let limitEl = document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][index]);
+      let progFill = document.getElementById(`treeProg-${index}`);
 
       state.adsWatched++;
       state.limit--;
       limitEl.innerText = `${state.limit} left`;
 
+      let progressPercent = (state.adsWatched / requiredAdsForMining) * 100;
+      progFill.style.width = `${progressPercent}%`;
+
+      // Path 1 feature: Coin live show / add as ads progress
+      if (state.pathType === 1) {
+        let liveCoinIncrement = 0.02;
+        addEarningsWithReferral(liveCoinIncrement);
+      }
+
       if (state.adsWatched < requiredAdsForMining) {
         statusEl.innerHTML = `Watched ${state.adsWatched}/${requiredAdsForMining} Ads`;
-        let cooldown = 5; // 5 Seconds countdown per ad step
+        let cooldown = 5;
         btn.innerText = `Wait ${cooldown}s`;
         let tInterval = setInterval(() => {
           cooldown--;
           btn.innerText = `Wait ${cooldown}s`;
           if (cooldown <= 0) {
             clearInterval(tInterval);
-            btn.innerText = `Watch Ad (${state.adsWatched + 1}/${requiredAdsForMining} - 5s)`;
+            btn.innerText = `Watch Ad (${state.adsWatched + 1}/${requiredAdsForMining})`;
             btn.disabled = false;
           }
         }, 1000);
       } else {
+        // Required 25 ads reached! Start Mining timer / status
         state.status = 'mining';
-        statusEl.innerHTML = `Mining Started (6 Hours)`;
-        document.getElementById(`mBox-${pathKey}`).classList.add('active-mining');
-        if (pathKey === 'path1') {
-          startPath1LiveCoinMining();
-        } else {
-          startPath2LiveTimerMining();
+        document.getElementById(`mBox-${index}`).classList.add('active-mining');
+        
+        if (state.pathType === 2) {
+          document.getElementById(`treeTimer-${index}`).style.display = 'inline-block';
         }
+        
+        statusEl.innerHTML = `⚡ Mining Active`;
+        startTreeMiningTimer(index, treeName);
       }
     }
 
-    // PATH 1: COIN LIVE SHOW HOTE JAYEGA (CONTINUOUS ACCUMULATION)
-    function startPath1LiveCoinMining() {
-      let btn = document.getElementById(`treeBtn-path1`);
-      let statusEl = document.getElementById(`treeStatus-path1`);
-      let iconEl = document.getElementById(`treeIcon-path1`);
-      let progFill = document.getElementById(`treeProg-path1`);
-      let liveCoinsDisplay = document.getElementById(`liveMinedCoinsDisplay`);
-      let timerDisplay = document.getElementById(`treeTimer-path1`);
+    function startTreeMiningTimer(index, treeName) {
+      let btn = document.getElementById(`treeBtn-${index}`);
+      let statusEl = document.getElementById(`treeStatus-${index}`);
+      let iconEl = document.getElementById(`treeIcon-${index}`);
+      let timerEl = document.getElementById(`treeTimer-${index}`);
+      let progFill = document.getElementById(`treeProg-${index}`);
 
       btn.disabled = true;
       let timeLeft = miningDurationSeconds; // 6 Hours
-      let minedAccumulated = 0.00;
-      let coinRatePerSec = miningRewardCoins / miningDurationSeconds;
+      iconEl.innerText = "🌿"; 
 
       let timer = setInterval(() => {
         timeLeft--;
@@ -1002,96 +1040,54 @@
         let percent = (elapsed / miningDurationSeconds) * 100;
         progFill.style.width = `${percent}%`;
 
-        minedAccumulated += coinRatePerSec;
-        liveCoinsDisplay.innerText = minedAccumulated.toFixed(4);
+        let hoursLeft = Math.floor(timeLeft / 3600);
+        let minsLeft = Math.floor((timeLeft % 3600) / 60);
+        let secsLeft = timeLeft % 60;
 
-        let h = Math.floor(timeLeft / 3600);
-        let m = Math.floor((timeLeft % 3600) / 60);
-        let s = timeLeft % 60;
-        timerDisplay.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        statusEl.innerHTML = `⚡ Live Mining Active...`;
-
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          iconEl.innerText = "✨🪙✨";
-          statusEl.innerHTML = `🎉 Ready to Claim!`;
-          proMiningStates.path1.status = 'claim';
-          btn.innerText = `🎁 Claim ${miningRewardCoins.toFixed(2)} Coins`;
-          btn.style.background = "#eab308";
-          btn.style.color = "#000";
-          btn.disabled = false;
-        }
-      }, 1000);
-    }
-
-    // PATH 2: TIMER CHALEGA (HOURS.MIN.SEC TINO DIKHNA CHAHIYE)
-    function startPath2LiveTimerMining() {
-      let btn = document.getElementById(`treeBtn-path2`);
-      let statusEl = document.getElementById(`treeStatus-path2`);
-      let iconEl = document.getElementById(`treeIcon-path2`);
-      let progFill = document.getElementById(`treeProg-path2`);
-      let hmsDisplay = document.getElementById(`liveHmsDisplay`);
-
-      btn.disabled = true;
-      let timeLeft = miningDurationSeconds; // 6 Hours
-
-      let timer = setInterval(() => {
-        timeLeft--;
-        let elapsed = miningDurationSeconds - timeLeft;
-        let percent = (elapsed / miningDurationSeconds) * 100;
-        progFill.style.width = `${percent}%`;
-
-        let hours = Math.floor(timeLeft / 3600);
-        let mins = Math.floor((timeLeft % 3600) / 60);
-        let secs = timeLeft % 60;
-
-        // Exact Hours.Min.Sec format display
-        hmsDisplay.innerText = `${String(hours).padStart(2, '0')} : ${String(mins).padStart(2, '0')} : ${String(secs).padStart(2, '0')}`;
-        statusEl.innerHTML = `⏳ Mining in progress...`;
+        // Format (Hours.min.sec) display for Path 2 / general timer
+        let formattedTime = `${String(hoursLeft).padStart(2, '0')}:${String(minsLeft).padStart(2, '0')}:${String(secsLeft).padStart(2, '0')}`;
+        timerEl.innerText = formattedTime;
 
         if (percent > 75) {
-          iconEl.innerText = "🌳💎"; 
+          iconEl.innerText = "🌳🍎"; 
+          statusEl.innerHTML = `🍎 Almost Ready`;
+        } else {
+          iconEl.innerText = "🌳"; 
+          statusEl.innerHTML = `⏳ Mining...`;
         }
 
         if (timeLeft <= 0) {
           clearInterval(timer);
           iconEl.innerText = "✨🌳✨";
           statusEl.innerHTML = `🎉 Ready to Claim!`;
-          proMiningStates.path2.status = 'claim';
-          btn.innerText = `🎁 Claim ${miningRewardCoins.toFixed(2)} Coins`;
-          btn.style.background = "#eab308";
+          timerEl.style.display = 'none';
+          treeStates[index].status = 'claim';
+          btn.innerText = `🎁 Claim ${miningRewardCoins} Coin`;
+          btn.style.background = "#f59e0b";
           btn.style.color = "#000";
           btn.disabled = false;
         }
       }, 1000);
     }
 
-    function claimProMiningReward(pathKey) {
-      addEarningsWithReferral(miningRewardCoins); 
-      let btn = document.getElementById(`treeBtn-${pathKey}`);
-      let statusEl = document.getElementById(`treeStatus-${pathKey}`);
-      let iconEl = document.getElementById(`treeIcon-${pathKey}`);
-      let progFill = document.getElementById(`treeProg-${pathKey}`);
+    function claimTreeReward(index, treeName) {
+      addEarningsWithReferral(miningRewardCoins); // +1 Coin Reward
+      let btn = document.getElementById(`treeBtn-${index}`);
+      let statusEl = document.getElementById(`treeStatus-${index}`);
+      let iconEl = document.getElementById(`treeIcon-${index}`);
+      let progFill = document.getElementById(`treeProg-${index}`);
 
-      proMiningStates[pathKey] = { adsWatched: 0, limit: 25, status: 'ads' };
-      document.getElementById(pathKey === 'path1' ? 'miningPath1Limit' : 'miningPath2Limit').innerText = `25 left`;
-      document.getElementById(`mBox-${pathKey}`).classList.remove('active-mining');
+      document.getElementById(`mBox-${index}`).classList.remove('active-mining');
+      treeStates[index] = { adsWatched: 0, limit: 25, status: 'ads', pathType: treeStates[index].pathType };
+      document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][index]).innerText = `25 left`;
 
       progFill.style.width = "0%";
-      if(pathKey === 'path1') {
-        iconEl.innerText = "🪙⛏️";
-        document.getElementById(`liveMinedCoinsDisplay`).innerText = "0.0000";
-        document.getElementById(`treeTimer-path1`).innerText = "06:00:00";
-      } else {
-        iconEl.innerText = "🌳⏱️️";
-        document.getElementById(`liveHmsDisplay`).innerText = "06 : 00 : 00";
-      }
-
-      statusEl.innerHTML = `Watch 25 Ads (5s each) to Unlock`;
-      btn.innerText = "Watch Ad (1/25 - 5s)";
-      btn.style.background = "#22c55e";
+      iconEl.innerText = "🌱";
+      statusEl.innerHTML = `Watch Ads (0/25)`;
+      btn.innerText = "Watch Ad (1/25)";
+      btn.style.background = "#10b981";
       btn.style.color = "#fff";
-      alert(`🎉 Success! You claimed +${miningRewardCoins} Coins from Pro Mining Path ${pathKey === 'path1' ? '1' : '2'}!`);
+      alert(`🎉 Success! You claimed +${miningRewardCoins} Coin from ${treeName}!`);
     }
 
     window.calculateStakeRewards = function() {
