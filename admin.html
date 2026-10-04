@@ -117,7 +117,7 @@
                 document.getElementById('refBonus').value = data.refBonus ?? 20;
                 document.getElementById('minWithdrawal').value = data.minWithdrawal ?? 0.05;
             }
-        });
+        }).catch((error) => console.error("Error loading settings:", error));
 
         // Load Withdrawals
         get(ref(db, 'withdrawals')).then((snapshot) => {
@@ -128,7 +128,7 @@
                     const id = childSnapshot.key;
                     const w = childSnapshot.val();
                     const statusText = w.status === 'Successful ✅' ? '<span style="color:#22c55e;">Successful ✅</span>' : `<button class="btn-success" onclick="markSuccess('${id}')">Approve ✅</button>`;
-                    tbody.innerHTML += `<tr><td>${w.userId \vert{}\vert{} 'N/A'}</td><td>${w.amount}</td><td>${w.walletDetails \vert{}\vert{} 'N/A'}</td><td>${statusText}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${w.userId || 'N/A'}</td><td>${w.amount}</td><td>${w.walletDetails || 'N/A'}</td><td>${statusText}</td></tr>`;
                 });
             } else {
                 tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No requests found.</td></tr>`;
@@ -138,7 +138,7 @@
         // Load Users
         get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = ``;
+            tbody.innerHTML = '';
             if (snapshot.exists()) {
                 snapshot.forEach((childSnapshot) => {
                     const u = childSnapshot.val();
@@ -166,8 +166,12 @@
         };
 
         set(ref(db, 'adminSettings/general'), settingsData)
-            .then(() => alert('Settings Saved Successfully! 🚀'))
-            .catch((error) => alert('Error: ' + error.message));
+            .then(() => {
+                alert('Settings Saved Successfully! 🚀');
+            })
+            .catch((error) => {
+                alert('Firebase Save Error: ' + error.message);
+            });
     };
 </script>
 
