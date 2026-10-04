@@ -121,7 +121,7 @@
             </div>
         </div>
         <div>
-            <label>⏱️ Task Ads Watch Cooldown Timer (Seconds after watching task ad):</label>
+            <label>⏱ Task Ads Watch Cooldown Timer (Seconds after watching task ad):</label>
             <input type="number" id="taskAdTimer" step="1" placeholder="e.g. 30 seconds">
         </div>
         <button type="button" onclick="saveSettings('adsAndTasks')">💾 Save Ads & Tasks Limits & Timers</button>
@@ -255,7 +255,7 @@
                     </tr>
                 </thead>
                 <tbody id="stakingTableBody">
-                    <tr><td colspan="3" style="text-align: center;">Loading...</td></tr>
+                    <tr><td colspan="3" style="text-align: center;">No stakings found.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -280,7 +280,6 @@
     const db = getDatabase(app);
 
     window.addEventListener('DOMContentLoaded', () => {
-        // Load Settings from Firebase
         get(ref(db, 'adminSettings')).then((snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
@@ -313,7 +312,7 @@
                     document.getElementById('announcementActive').value = String(data.announcement.active ?? false);
                 }
             }
-        });
+        }).catch(err => console.error("Load settings error:", err));
 
         // Load FaucetPay Withdrawals
         get(ref(db, 'withdrawals/faucetpay')).then((snapshot) => {
@@ -379,44 +378,62 @@
     });
 
     window.saveSettings = function(type) {
-        if (type === 'general') {
-            let data = {
-                coinUsdtValue: parseFloat(document.getElementById('coinUsdtValue').value),
-                dailyBonus: parseFloat(document.getElementById('dailyBonus').value),
-                refPercent: parseFloat(document.getElementById('refBonus').value),
-                minFaucetPay: parseFloat(document.getElementById('minFaucetPay').value),
-                minTon: parseFloat(document.getElementById('minTon').value)
-            };
-            set(ref(db, 'adminSettings/general'), data).then(() => alert('General Settings Saved Successfully!'));
-        } else if (type === 'mining') {
-            let hours = parseFloat(document.getElementById('miningDurationHours').value) || 6;
-            let data = {
-                mining1Reward: parseFloat(document.getElementById('mining1Reward').value),
-                mining2Reward: parseFloat(document.getElementById('mining2Reward').value),
-                mining3Reward: parseFloat(document.getElementById('mining3Reward').value),
-                mining4Reward: parseFloat(document.getElementById('mining4Reward').value),
-                durationHours: hours,
-                duration: hours * 3600,
-                requiredAds: parseInt(document.getElementById('miningRequiredAds').value),
-                adTimer: parseInt(document.getElementById('miningAdTimer').value)
-            };
-            set(ref(db, 'adminSettings/mining'), data).then(() => alert('Mining Controls & Timers Saved Successfully!'));
-        } else if (type === 'adsAndTasks') {
-            let data = {
-                adReward: parseFloat(document.getElementById('adReward').value),
-                dailyAdLimit: parseInt(document.getElementById('dailyAdLimit').value),
-                taskAdReward: parseFloat(document.getElementById('taskAdReward').value),
-                dailyTaskLimit: parseInt(document.getElementById('dailyTaskLimit').value),
-                taskAdTimer: parseInt(document.getElementById('taskAdTimer').value)
-            };
-            set(ref(db, 'adminSettings/adsAndTasks'), data).then(() => alert('Ads & Tasks Limits & Timers Saved Successfully!'));
+        console.log("Saving type:", type);
+        try {
+            if (type === 'general') {
+                let data = {
+                    'adminSettings/general/coinUsdtValue': parseFloat(document.getElementById('coinUsdtValue').value) || 0,
+                    'adminSettings/general/dailyBonus': parseFloat(document.getElementById('dailyBonus').value) || 0,
+                    'adminSettings/general/refPercent': parseFloat(document.getElementById('refBonus').value) || 0,
+                    'adminSettings/general/minFaucetPay': parseFloat(document.getElementById('minFaucetPay').value) || 0,
+                    'adminSettings/general/minTon': parseFloat(document.getElementById('minTon').value) || 0
+                };
+                update(ref(db), data)
+                    .then(() => alert('General Settings Saved Successfully!'))
+                    .catch((err) => { console.error(err); alert('Firebase Error: ' + err.message); });
+            } else if (type === 'mining') {
+                let hours = parseFloat(document.getElementById('miningDurationHours').value) || 6;
+                let data = {
+                    'adminSettings/mining/mining1Reward': parseFloat(document.getElementById('mining1Reward').value) || 0,
+                    'adminSettings/mining/mining2Reward': parseFloat(document.getElementById('mining2Reward').value) || 0,
+                    'adminSettings/mining/mining3Reward': parseFloat(document.getElementById('mining3Reward').value) || 0,
+                    'adminSettings/mining/mining4Reward': parseFloat(document.getElementById('mining4Reward').value) || 0,
+                    'adminSettings/mining/durationHours': hours,
+                    'adminSettings/mining/duration': hours * 3600,
+                    'adminSettings/mining/requiredAds': parseInt(document.getElementById('miningRequiredAds').value) || 0,
+                    'adminSettings/mining/adTimer': parseInt(document.getElementById('miningAdTimer').value) || 0
+                };
+                update(ref(db), data)
+                    .then(() => alert('Mining Controls & Timers Saved Successfully!'))
+                    .catch((err) => { console.error(err); alert('Firebase Error: ' + err.message); });
+            } else if (type === 'adsAndTasks') {
+                let data = {
+                    'adminSettings/adsAndTasks/adReward': parseFloat(document.getElementById('adReward').value) || 0,
+                    'adminSettings/adsAndTasks/dailyAdLimit': parseInt(document.getElementById('dailyAdLimit').value) || 0,
+                    'adminSettings/adsAndTasks/taskAdReward': parseFloat(document.getElementById('taskAdReward').value) || 0,
+                    'adminSettings/adsAndTasks/dailyTaskLimit': parseInt(document.getElementById('dailyTaskLimit').value) || 0,
+                    'adminSettings/adsAndTasks/taskAdTimer': parseInt(document.getElementById('taskAdTimer').value) || 0
+                };
+                update(ref(db), data)
+                    .then(() => alert('Ads & Tasks Limits & Timers Saved Successfully!'))
+                    .catch((err) => { console.error(err); alert('Firebase Error: ' + err.message); });
+            }
+        } catch (e) {
+            console.error("Catch Exception:", e);
+            alert("Script Exception: " + e.message);
         }
     };
 
     window.saveAnnouncement = function() {
         let text = document.getElementById('announcementText').value;
         let active = document.getElementById('announcementActive').value === 'true';
-        set(ref(db, 'adminSettings/announcement'), { text, active }).then(() => alert('Announcement Updated!'));
+        let data = {
+            'adminSettings/announcement/text': text,
+            'adminSettings/announcement/active': active
+        };
+        update(ref(db), data)
+            .then(() => alert('Announcement Updated!'))
+            .catch((err) => alert('Error: ' + err.message));
     };
 
     window.addNewTask = function() {
@@ -435,14 +452,14 @@
             document.getElementById('taskTitle').value = '';
             document.getElementById('taskReward').value = '';
             document.getElementById('taskLink').value = '';
-        });
+        }).catch((err) => alert('Error: ' + err.message));
     };
 
     window.approveWithdrawal = function(type, id) {
         update(ref(db, `withdrawals/${type}/` + id), { status: 'Successful ✅' }).then(() => {
             alert('Withdrawal Approved!');
             location.reload();
-        });
+        }).catch((err) => alert('Error: ' + err.message));
     };
 
     window.modifyUserBalance = function() {
@@ -461,7 +478,7 @@
             } else {
                 alert("User ID database me nahi mili!");
             }
-        });
+        }).catch((err) => alert('Error: ' + err.message));
     };
 </script>
 
