@@ -83,14 +83,6 @@
       </div>
     </div>
 
-    <!-- Live Market & Rules Card (Fixed Duplication & Dynamic Sync) -->
-    <div class="card" style="background: #111827; text-align: left;">
-      <h4 style="margin: 0 0 8px 0; color: var(--accent);">📊 Live Market & Rules</h4>
-      <p style="margin: 4px 0; font-size: 13px;">Coin Value: <strong id="lblCoinValue" style="color: #22c55e;">$0.01</strong></p>
-      <p style="margin: 4px 0; font-size: 13px;">Daily Bonus: <strong id="lblDailyBonus" style="color: #eab308;">2.00 Coins</strong></p>
-      <p style="margin: 4px 0; font-size: 13px;">Min. Withdrawal: <strong id="lblMinWithdraw" style="color: #f43f5e;">0.05 Coins</strong></p>
-    </div>
-
     <!-- Daily Bonus Card -->
     <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
       <span style="font-size: 15px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad)</span>
@@ -554,16 +546,13 @@
         const data = snapshot.val();
         if (data.coinUsdtValue !== undefined) {
           coinUsdtValue = parseFloat(data.coinUsdtValue);
-          document.getElementById('lblCoinValue').innerText = `$${coinUsdtValue}`;
         }
         if (data.dailyBonus !== undefined) {
           currentDailyBonus = parseFloat(data.dailyBonus);
-          document.getElementById('lblDailyBonus').innerText = `${currentDailyBonus.toFixed(2)} Coins`;
           document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
         }
         if (data.minWithdrawal !== undefined) {
           minWithdrawalAmt = parseFloat(data.minWithdrawal);
-          document.getElementById('lblMinWithdraw').innerText = `${minWithdrawalAmt} Coins`;
         }
         if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
           referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
@@ -790,11 +779,6 @@
       document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
       document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
-      
-      // Update Live Market & Rules UI values cleanly (Without duplicate text)
-      document.getElementById('lblCoinValue').innerText = `$${coinUsdtValue}`;
-      document.getElementById('lblDailyBonus').innerText = `${currentDailyBonus.toFixed(2)} Coins`;
-      document.getElementById('lblMinWithdraw').innerText = `${minWithdrawalAmt} Coins`;
       document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
       
       let manInput = document.getElementById('manualTonAddress');
