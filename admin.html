@@ -3,86 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gram Farming Admin Panel</title>
+    <title>Gram Farming Ultimate Admin Panel - Master Control</title>
     <style>
-        body { background: #0f172a; color: #f8fafc; font-family: sans-serif; padding: 15px; margin: 0; }
-        .container { max-width: 700px; margin: 0 auto; }
-        .card { background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
-        input { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; margin-bottom: 12px; box-sizing: border-box; }
-        label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 5px; }
-        button { background: #22c55e; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; }
-        .btn-success { background: #10b981; padding: 6px 12px; width: auto; font-size: 13px; }
+        :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --accent: #22c55e; --text: #f8fafc; --text-muted: #94a3b8; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; margin: 0; }
+        .container { max-width: 950px; margin: 0 auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        input, select, textarea { background: var(--bg); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-top: 6px; margin-bottom: 12px; box-sizing: border-box; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        label { font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 500; }
+        button { background: var(--accent); color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; transition: 0.2s; }
+        button:active { transform: scale(0.98); }
+        .btn-success { background: #10b981; padding: 6px 12px; width: auto; font-size: 13px; border-radius: 6px; }
+        .btn-blue { background: #0284c7; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        h2 { color: #22c55e; margin-top: 0; font-size: 18px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
-        h1 { font-size: 20px; text-align: center; color: #f8fafc; margin-bottom: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        @media(max-width: 768px) { .grid-4 { grid-template-columns: 1fr 1fr; } }
+        h2 { color: var(--accent); margin-top: 0; font-size: 17px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        h1 { font-size: 22px; text-align: center; color: var(--text); margin-bottom: 25px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { border: 1px solid #334155; padding: 8px; text-align: left; color: #f8fafc; word-break: break-all; }
-        th { background: #0f172a; color: #38bdf8; }
-        .table-container { overflow-x: auto; }
+        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; color: var(--text); word-break: break-all; }
+        th { background: var(--bg); color: #38bdf8; }
+        .table-container { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid var(--border); }
+        .badge-live { background: #ef4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; float: right; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>⚙️ Gram Farming Admin Panel</h1>
+    <h1>🌱 Gram Farming Ultimate Admin Panel <span class="badge-live">MASTER CONTROL</span></h1>
     
-    <!-- General Settings -->
+    <!-- 1. General & Economic Settings -->
     <div class="card">
-        <h2>🌐 General Settings</h2>
+        <h2>🌐 General & Economic Settings</h2>
         <div class="grid-2">
             <div>
                 <label>Coin USDT Value ($):</label>
-                <input type="number" id="coinUsdtValue" step="0.001" value="0.01">
+                <input type="number" id="coinUsdtValue" step="0.001">
             </div>
             <div>
                 <label>Daily Bonus Reward (Coins):</label>
-                <input type="number" id="dailyBonus" step="0.01" value="2.00">
+                <input type="number" id="dailyBonus" step="0.01">
             </div>
             <div>
                 <label>Referral Bonus (%):</label>
-                <input type="number" id="refBonus" step="0.1" value="20">
+                <input type="number" id="refBonus" step="0.1">
             </div>
             <div>
-                <label>Min. Withdrawal Limit:</label>
-                <input type="number" id="minWithdrawal" step="0.01" value="0.05">
+                <label>Min. FaucetPay Withdrawal:</label>
+                <input type="number" id="minFaucetPay" step="0.01">
+            </div>
+            <div>
+                <label>Min. TON Withdrawal:</label>
+                <input type="number" id="minTon" step="0.001">
             </div>
         </div>
-        <button type="button" onclick="saveSettings()">💾 Save Changes to Firebase</button>
+        <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
     </div>
 
-    <!-- Withdrawals Management -->
+    <!-- 2. 4-Types Mining Control Functions -->
     <div class="card">
-        <h2>💸 Withdrawal Requests</h2>
+        <h2>⛏️ 4-Types Mining Parameters Control</h2>
+        <div class="grid-4">
+            <div>
+                <label>Mining 1 Reward:</label>
+                <input type="number" id="mining1Reward" step="0.01">
+            </div>
+            <div>
+                <label>Mining 2 Reward:</label>
+                <input type="number" id="mining2Reward" step="0.01">
+            </div>
+            <div>
+                <label>Mining 3 Reward:</label>
+                <input type="number" id="mining3Reward" step="0.01">
+            </div>
+            <div>
+                <label>Mining 4 Reward:</label>
+                <input type="number" id="mining4Reward" step="0.01">
+            </div>
+        </div>
+        <div class="grid-2" style="margin-top: 10px;">
+            <div>
+                <label>⏱️ Mining Duration (Hours):</label>
+                <input type="number" id="miningDurationHours" step="0.5" placeholder="e.g. 6 hours">
+            </div>
+            <div>
+                <label>Required Ads to Unlock Mining:</label>
+                <input type="number" id="miningRequiredAds" step="1">
+            </div>
+        </div>
+        <div>
+            <label>⏱️ Mining Ads Watch Cooldown Timer (Seconds after watching ad):</label>
+            <input type="number" id="miningAdTimer" step="1" placeholder="e.g. 60 seconds">
+        </div>
+        <button type="button" onclick="saveSettings('mining')">💾 Save 4 Mining Controls & Timers</button>
+    </div>
+
+    <!-- 3. Ads Watch & Task Limits Functions -->
+    <div class="card">
+        <h2>📺 Ads Watch & Task System Settings</h2>
+        <div class="grid-2">
+            <div>
+                <label>Reward Per Ad Watch (Coins):</label>
+                <input type="number" id="adReward" step="0.01">
+            </div>
+            <div>
+                <label>Daily Ad Watch Limit Per User:</label>
+                <input type="number" id="dailyAdLimit" step="1">
+            </div>
+            <div>
+                <label>Task Ads Bonus Reward:</label>
+                <input type="number" id="taskAdReward" step="0.01">
+            </div>
+            <div>
+                <label>Max Daily Task Limit:</label>
+                <input type="number" id="dailyTaskLimit" step="1">
+            </div>
+        </div>
+        <div>
+            <label>⏱️ Task Ads Watch Cooldown Timer (Seconds after watching task ad):</label>
+            <input type="number" id="taskAdTimer" step="1" placeholder="e.g. 30 seconds">
+        </div>
+        <button type="button" onclick="saveSettings('adsAndTasks')">💾 Save Ads & Tasks Limits & Timers</button>
+    </div>
+
+    <!-- 4. Global Broadcast Announcement -->
+    <div class="card">
+        <h2>📢 App Announcement / Pop-up Notice</h2>
+        <div>
+            <label>Announcement Text (HTML supported):</label>
+            <textarea id="announcementText" rows="3" placeholder="Enter important message for users..."></textarea>
+        </div>
+        <div class="grid-2">
+            <div>
+                <label>Show Announcement Popup?</label>
+                <select id="announcementActive">
+                    <option value="true">Active (Show)</option>
+                    <option value="false">Inactive (Hide)</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" onclick="saveAnnouncement()">📢 Update Announcement</button>
+    </div>
+
+    <!-- 5. Task Creator -->
+    <div class="card">
+        <h2>📋 Add New Custom Task (Telegram/YouTube/Ads)</h2>
+        <div class="grid-2">
+            <div>
+                <label>Task Title:</label>
+                <input type="text" id="taskTitle" placeholder="e.g. Watch Ad & Earn / Join Channel">
+            </div>
+            <div>
+                <label>Reward Amount (Coins):</label>
+                <input type="number" id="taskReward" step="0.01" placeholder="e.g. 5.00">
+            </div>
+        </div>
+        <div>
+            <label>Task Link / Ad Script URL:</label>
+            <input type="text" id="taskLink" placeholder="https://t.me/... or Ad Link">
+        </div>
+        <button type="button" class="btn-blue" onclick="addNewTask()">➕ Create & Publish Task</button>
+    </div>
+
+    <!-- 6. User Balance Manual Manager -->
+    <div class="card" style="border: 1px solid var(--accent);">
+        <h2>⚡ User Balance Modifier</h2>
+        <div class="grid-2">
+            <div>
+                <label>Target Telegram User ID:</label>
+                <input type="text" id="targetUserId" placeholder="User ID">
+            </div>
+            <div>
+                <label>Amount (+ to Add, - to Deduct):</label>
+                <input type="number" id="targetAmount" step="0.01" placeholder="e.g. 10 or -5">
+            </div>
+        </div>
+        <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
+    </div>
+
+    <!-- 7A. FaucetPay Withdrawal Requests -->
+    <div class="card">
+        <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
                         <th>User</th>
                         <th>Amount</th>
-                        <th>Destination Wallet</th>
+                        <th>FaucetPay Email / Wallet</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="withdrawalsTableBody">
+                <tbody id="faucetpayTableBody">
                     <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Users List -->
+    <!-- 7B. TON Withdrawal Requests -->
     <div class="card">
-        <h2>👥 Users Details</h2>
+        <h2>💎 TON Withdrawal Requests</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>User Name / ID</th>
-                        <th>Invited</th>
-                        <th>Balance</th>
+                        <th>User</th>
+                        <th>Amount (TON)</th>
+                        <th>TON Destination Address</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tonTableBody">
+                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 8. Registered Users List -->
+    <div class="card">
+        <h2>👥 Registered Users</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID / Name</th>
+                        <th>Invites</th>
+                        <th>Coin Balance</th>
+                        <th>TON / USDT</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
+                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 9. Active Stakings List -->
+    <div class="card">
+        <h2>🔒 Active Stakings</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Staked Amount</th>
+                        <th>Duration / Plan</th>
+                    </tr>
+                </thead>
+                <tbody id="stakingTableBody">
                     <tr><td colspan="3" style="text-align: center;">Loading...</td></tr>
                 </tbody>
             </table>
@@ -92,7 +264,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg", 
@@ -108,30 +280,72 @@
     const db = getDatabase(app);
 
     window.addEventListener('DOMContentLoaded', () => {
-        // Load Settings
-        get(ref(db, 'adminSettings/general')).then((snapshot) => {
+        // Load Settings from Firebase
+        get(ref(db, 'adminSettings')).then((snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                document.getElementById('coinUsdtValue').value = data.coinUsdtValue ?? 0.01;
-                document.getElementById('dailyBonus').value = data.dailyBonus ?? 2.00;
-                document.getElementById('refBonus').value = data.refBonus ?? 20;
-                document.getElementById('minWithdrawal').value = data.minWithdrawal ?? 0.05;
+                if(data.general) {
+                    document.getElementById('coinUsdtValue').value = data.general.coinUsdtValue ?? 0.01;
+                    document.getElementById('dailyBonus').value = data.general.dailyBonus ?? 2.00;
+                    document.getElementById('refBonus').value = data.general.refPercent ?? 20;
+                    document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? 0.05;
+                    document.getElementById('minTon').value = data.general.minTon ?? 0.50;
+                }
+                if(data.mining) {
+                    document.getElementById('mining1Reward').value = data.mining.mining1Reward ?? 0.1;
+                    document.getElementById('mining2Reward').value = data.mining.mining2Reward ?? 0.2;
+                    document.getElementById('mining3Reward').value = data.mining.mining3Reward ?? 0.5;
+                    document.getElementById('mining4Reward').value = data.mining.mining4Reward ?? 1.0;
+                    let durHours = data.mining.durationHours ?? ((data.mining.duration ?? 21600) / 3600);
+                    document.getElementById('miningDurationHours').value = durHours;
+                    document.getElementById('miningRequiredAds').value = data.mining.requiredAds ?? 20;
+                    document.getElementById('miningAdTimer').value = data.mining.adTimer ?? 60;
+                }
+                if(data.adsAndTasks) {
+                    document.getElementById('adReward').value = data.adsAndTasks.adReward ?? 0.05;
+                    document.getElementById('dailyAdLimit').value = data.adsAndTasks.dailyAdLimit ?? 40;
+                    document.getElementById('taskAdReward').value = data.adsAndTasks.taskAdReward ?? 0.10;
+                    document.getElementById('dailyTaskLimit').value = data.adsAndTasks.dailyTaskLimit ?? 20;
+                    document.getElementById('taskAdTimer').value = data.adsAndTasks.taskAdTimer ?? 30;
+                }
+                if(data.announcement) {
+                    document.getElementById('announcementText').value = data.announcement.text ?? '';
+                    document.getElementById('announcementActive').value = String(data.announcement.active ?? false);
+                }
             }
-        }).catch((error) => console.error("Error loading settings:", error));
+        });
 
-        // Load Withdrawals
-        get(ref(db, 'withdrawals')).then((snapshot) => {
-            const tbody = document.getElementById('withdrawalsTableBody');
+        // Load FaucetPay Withdrawals
+        get(ref(db, 'withdrawals/faucetpay')).then((snapshot) => {
+            const tbody = document.getElementById('faucetpayTableBody');
             tbody.innerHTML = '';
             if (snapshot.exists()) {
-                snapshot.forEach((childSnapshot) => {
-                    const id = childSnapshot.key;
-                    const w = childSnapshot.val();
-                    const statusText = w.status === 'Successful ✅' ? '<span style="color:#22c55e;">Successful ✅</span>' : `<button class="btn-success" onclick="markSuccess('${id}')">Approve ✅</button>`;
-                    tbody.innerHTML += `<tr><td>${w.userName || w.userId || 'N/A'}</td><td>${w.amount} ${w.method || ''}</td><td>${w.destination || 'N/A'}</td><td>${statusText}</td></tr>`;
+                snapshot.forEach((child) => {
+                    let id = child.key;
+                    let w = child.val();
+                    let isSuccess = w.status && w.status.includes('Successful');
+                    let statusBtn = isSuccess ? '<span style="color:#22c55e;">Approved ✅</span>' : `<button class="btn-success" onclick="approveWithdrawal('faucetpay', '${id}')">Approve ✅</button>`;
+                    tbody.innerHTML += `<tr><td>${w.userName || w.userId || 'N/A'}</td><td>${w.amount}</td><td>${w.destination || 'N/A'}</td><td>${statusBtn}</td></tr>`;
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No requests found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No FaucetPay withdrawals found.</td></tr>`;
+            }
+        });
+
+        // Load TON Withdrawals
+        get(ref(db, 'withdrawals/ton')).then((snapshot) => {
+            const tbody = document.getElementById('tonTableBody');
+            tbody.innerHTML = '';
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    let id = child.key;
+                    let w = child.val();
+                    let isSuccess = w.status && w.status.includes('Successful');
+                    let statusBtn = isSuccess ? '<span style="color:#22c55e;">Approved ✅</span>' : `<button class="btn-success" onclick="approveWithdrawal('ton', '${id}')">Approve ✅</button>`;
+                    tbody.innerHTML += `<tr><td>${w.userName || w.userId || 'N/A'}</td><td>${w.amount}</td><td>${w.destination || 'N/A'}</td><td>${statusBtn}</td></tr>`;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No TON withdrawals found.</td></tr>`;
             }
         });
 
@@ -140,37 +354,114 @@
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
             if (snapshot.exists()) {
-                snapshot.forEach((childSnapshot) => {
-                    const u = childSnapshot.val();
-                    tbody.innerHTML += `<tr><td>${u.name || childSnapshot.key}</td><td>👥 ${u.totalInvited || 0}</td><td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td></tr>`;
+                snapshot.forEach((child) => {
+                    let u = child.val();
+                    tbody.innerHTML += `<tr><td>${u.name || child.key}</td><td>👥 ${u.totalInvited || 0}</td><td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td><td>TON: ${u.tonBalance ? u.tonBalance.toFixed(2) : '0.00'}<br>USDT: ${u.usdtBalance ? u.usdtBalance.toFixed(2) : '0.00'}</td></tr>`;
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No users found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No users found.</td></tr>`;
+            }
+        });
+
+        // Load Stakings
+        get(ref(db, 'stakings')).then((snapshot) => {
+            const tbody = document.getElementById('stakingTableBody');
+            tbody.innerHTML = '';
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    let s = child.val();
+                    tbody.innerHTML += `<tr><td>${s.userId || 'N/A'}</td><td>🪙 ${s.amount || 0}</td><td>⏳ ${s.duration || 'N/A'}</td></tr>`;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No stakings found.</td></tr>`;
             }
         });
     });
 
-    window.markSuccess = function(withdrawId) {
-        update(ref(db, 'withdrawals/' + withdrawId), { status: 'Successful ✅' })
-            .then(() => { alert('Approved!'); location.reload(); })
-            .catch((error) => alert('Error: ' + error.message));
+    window.saveSettings = function(type) {
+        if (type === 'general') {
+            let data = {
+                coinUsdtValue: parseFloat(document.getElementById('coinUsdtValue').value),
+                dailyBonus: parseFloat(document.getElementById('dailyBonus').value),
+                refPercent: parseFloat(document.getElementById('refBonus').value),
+                minFaucetPay: parseFloat(document.getElementById('minFaucetPay').value),
+                minTon: parseFloat(document.getElementById('minTon').value)
+            };
+            set(ref(db, 'adminSettings/general'), data).then(() => alert('General Settings Saved Successfully!'));
+        } else if (type === 'mining') {
+            let hours = parseFloat(document.getElementById('miningDurationHours').value) || 6;
+            let data = {
+                mining1Reward: parseFloat(document.getElementById('mining1Reward').value),
+                mining2Reward: parseFloat(document.getElementById('mining2Reward').value),
+                mining3Reward: parseFloat(document.getElementById('mining3Reward').value),
+                mining4Reward: parseFloat(document.getElementById('mining4Reward').value),
+                durationHours: hours,
+                duration: hours * 3600,
+                requiredAds: parseInt(document.getElementById('miningRequiredAds').value),
+                adTimer: parseInt(document.getElementById('miningAdTimer').value)
+            };
+            set(ref(db, 'adminSettings/mining'), data).then(() => alert('Mining Controls & Timers Saved Successfully!'));
+        } else if (type === 'adsAndTasks') {
+            let data = {
+                adReward: parseFloat(document.getElementById('adReward').value),
+                dailyAdLimit: parseInt(document.getElementById('dailyAdLimit').value),
+                taskAdReward: parseFloat(document.getElementById('taskAdReward').value),
+                dailyTaskLimit: parseInt(document.getElementById('dailyTaskLimit').value),
+                taskAdTimer: parseInt(document.getElementById('taskAdTimer').value)
+            };
+            set(ref(db, 'adminSettings/adsAndTasks'), data).then(() => alert('Ads & Tasks Limits & Timers Saved Successfully!'));
+        }
     };
 
-    window.saveSettings = function() {
-        const settingsData = {
-            coinUsdtValue: parseFloat(document.getElementById('coinUsdtValue').value),
-            dailyBonus: parseFloat(document.getElementById('dailyBonus').value),
-            refBonus: parseFloat(document.getElementById('refBonus').value),
-            minWithdrawal: parseFloat(document.getElementById('minWithdrawal').value)
-        };
+    window.saveAnnouncement = function() {
+        let text = document.getElementById('announcementText').value;
+        let active = document.getElementById('announcementActive').value === 'true';
+        set(ref(db, 'adminSettings/announcement'), { text, active }).then(() => alert('Announcement Updated!'));
+    };
 
-        set(ref(db, 'adminSettings/general'), settingsData)
-            .then(() => {
-                alert('Settings Saved Successfully! 🚀');
-            })
-            .catch((error) => {
-                alert('Firebase Save Error: ' + error.message);
-            });
+    window.addNewTask = function() {
+        let title = document.getElementById('taskTitle').value.trim();
+        let reward = parseFloat(document.getElementById('taskReward').value);
+        let link = document.getElementById('taskLink').value.trim();
+
+        if(!title || isNaN(reward) || !link) {
+            alert('Kripya sabhi task fields theek se bharein.');
+            return;
+        }
+
+        let newTaskRef = push(ref(db, 'tasks'));
+        set(newTaskRef, { title, reward, link }).then(() => {
+            alert('Task successfully create ho gaya!');
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskReward').value = '';
+            document.getElementById('taskLink').value = '';
+        });
+    };
+
+    window.approveWithdrawal = function(type, id) {
+        update(ref(db, `withdrawals/${type}/` + id), { status: 'Successful ✅' }).then(() => {
+            alert('Withdrawal Approved!');
+            location.reload();
+        });
+    };
+
+    window.modifyUserBalance = function() {
+        let uId = document.getElementById('targetUserId').value.trim();
+        let amt = parseFloat(document.getElementById('targetAmount').value);
+        if(!uId || isNaN(amt)) { alert("User ID aur Amount enter karein."); return; }
+
+        get(ref(db, 'users/' + uId)).then((snapshot) => {
+            if(snapshot.exists()) {
+                let currentBal = snapshot.val().balance || 0;
+                let newBal = currentBal + amt;
+                update(ref(db, 'users/' + uId), { balance: newBal }).then(() => {
+                    alert(`Balance updated! New Balance: ${newBal.toFixed(2)}`);
+                    location.reload();
+                });
+            } else {
+                alert("User ID database me nahi mili!");
+            }
+        });
     };
 </script>
 
