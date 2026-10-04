@@ -6,9 +6,6 @@
   <title>Gram Farming Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <!-- Firebase SDK Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -85,6 +82,14 @@
       </div>
     </div>
 
+    <!-- Live Market & Rules Card (Admin Sync) -->
+    <div class="card" style="background: #111827; text-align: left;">
+      <h4 style="margin: 0 0 8px 0; color: var(--accent);">📊 Live Market & Rules</h4>
+      <p style="margin: 4px 0; font-size: 13px;">Coin Value: <strong id="lblCoinValue" style="color: #22c55e;">$0.01</strong></p>
+      <p style="margin: 4px 0; font-size: 13px;">Daily Bonus: <strong id="lblDailyBonus" style="color: #eab308;">2.00</strong> Coins</p>
+      <p style="margin: 4px 0; font-size: 13px;">Min. Withdrawal: <strong id="lblMinWithdraw" style="color: #f43f5e;">0.05</strong> Coins</p>
+    </div>
+
     <!-- Daily Bonus with Adsgram Ad Integration -->
     <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
       <span style="font-size: 15px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad)</span>
@@ -111,7 +116,6 @@
       <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🌳 Advanced Tree Mining</h4>
       
       <div class="mining-grid">
-        <!-- Pine Tree: Monetag -->
         <div class="mining-box" id="mBox-0">
           <span class="limit-badge" id="pineLimit">20 left</span>
           <div>
@@ -125,7 +129,6 @@
           </div>
         </div>
 
-        <!-- Apple Tree: Adsgram -->
         <div class="mining-box" id="mBox-1">
           <span class="limit-badge" id="appleLimit">20 left</span>
           <div>
@@ -139,7 +142,6 @@
           </div>
         </div>
 
-        <!-- Sakura Tree: Gigapub -->
         <div class="mining-box" id="mBox-2">
           <span class="limit-badge" id="sakuraLimit">20 left</span>
           <div>
@@ -153,7 +155,6 @@
           </div>
         </div>
 
-        <!-- Crystal Tree: Adsgram -->
         <div class="mining-box" id="mBox-3">
           <span class="limit-badge" id="crystalLimit">20 left</span>
           <div>
@@ -370,7 +371,7 @@
       </div>
     </div>
 
-    <!-- 1. 📤 Withdraw Funds Section -->
+    <!-- Withdraw Funds Section -->
     <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
       <div class="flex-between" style="margin-bottom: 8px;">
         <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON manual payout (24h)</h4>
@@ -404,7 +405,7 @@
       <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
     </div>
 
-    <!-- 2. TRANSACTION HISTORY SECTION -->
+    <!-- TRANSACTION HISTORY SECTION -->
     <div class="card" style="background: #111827; border: 1px solid var(--border);">
       <div class="flex-between" style="margin-bottom: 8px;">
         <h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
@@ -453,7 +454,11 @@
     <div class="nav-item" onclick="switchTab('leaderboard')">🏆<br><span data-i18n="navRank">Rank</span></div>
   </div>
 
-  <script>
+  <!-- FIREBASE & APP SCRIPT LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
     // --- SINGLE DEVICE SESSION ENFORCEMENT ---
     const SESSION_KEY = 'gram_farming_active_session_lock';
     const currentSessionToken = 'sess_' + Math.random().toString(36).substring(2) + Date.now();
@@ -499,28 +504,51 @@
       appId: "1:113291680927:web:cb20c9f6b7914a546156aa"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-    // --- ADMIN LIVE SETTINGS LISTENER (FIXED PATH) ---
-    function fetchAdminSettings() {
-      db.ref('adminSettings').on('value', (snapshot) => {
-        const settings = snapshot.val();
-        if (settings) {
-          const data = settings.general || settings;
-          
-          if (data.coinUsdtValue !== undefined) {
-            coinUsdtValue = parseFloat(data.coinUsdtValue);
-          }
-          if (data.dailyBonus !== undefined) {
-            document.getElementById('dailyBonusDisplay').innerText = parseFloat(data.dailyBonus).toFixed(2);
-          }
-          renderUIValues();
-          calculateExchange();
+    // --- GLOBAL VARIABLES ---
+    let balance = 0.00;
+    let tonBalance = 0.00;
+    let usdtBalance = 0.00;
+    let refReward = 0.00;
+    let totalInvited = 0;
+    let savedTonAddress = "";
+    
+    let coinUsdtValue = 0.01; 
+    let currentDailyBonus = 2.00;
+    let minWithdrawalAmt = 0.05;
+    let liveTonPrice = 1.50;
+
+    const adLimits = {
+      homeAdsgramLimit: 40,
+      taskAdsgramLimit: 40,
+      taskMonetagLimit: 40,
+      taskGigapubLimit: 40
+    };
+
+    // --- LIVE ADMIN SETTINGS LISTENER (`adminSettings/general`) ---
+    onValue(ref(db, 'adminSettings/general'), (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        
+        if (data.coinUsdtValue !== undefined) {
+          coinUsdtValue = parseFloat(data.coinUsdtValue);
+          document.getElementById('lblCoinValue').innerText = `$${coinUsdtValue}`;
         }
-      });
-    }
-    fetchAdminSettings();
+        if (data.dailyBonus !== undefined) {
+          currentDailyBonus = parseFloat(data.dailyBonus);
+          document.getElementById('lblDailyBonus').innerText = `${currentDailyBonus} Coins`;
+          document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
+        }
+        if (data.minWithdrawal !== undefined) {
+          minWithdrawalAmt = parseFloat(data.minWithdrawal);
+          document.getElementById('lblMinWithdraw').innerText = `${minWithdrawalAmt} Coins`;
+        }
+        renderUIValues();
+        calculateExchange();
+      }
+    });
 
     const translations = {
       en: { 
@@ -576,7 +604,7 @@
       }
     };
 
-    function changeLanguage(lang) {
+    window.changeLanguage = function(lang) {
       const dict = translations[lang] || translations['en'];
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
@@ -598,26 +626,9 @@
     }
     document.getElementById('telegramUserName').innerText = displayName;
 
-    let balance = 0.00;
-    let tonBalance = 0.00;
-    let usdtBalance = 0.00;
-    let refReward = 0.00;
-    let totalInvited = 0;
-    let savedTonAddress = "";
-    
-    let coinUsdtValue = 0.01; 
-    let liveTonPrice = 1.50;
-
-    const adLimits = {
-      homeAdsgramLimit: 40,
-      taskAdsgramLimit: 40,
-      taskMonetagLimit: 40,
-      taskGigapubLimit: 40
-    };
-
     // --- LOAD USER DATA FROM FIREBASE ---
-    const userRef = db.ref('users/' + userId);
-    userRef.on('value', (snapshot) => {
+    const userRef = ref(db, 'users/' + userId);
+    onValue(userRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         balance = data.balance || 0.00;
@@ -627,25 +638,13 @@
         totalInvited = data.totalInvited || 0;
         savedTonAddress = data.savedTonAddress || "";
 
-        if (data.homeAdsgramLimit !== undefined) {
-          adLimits.homeAdsgramLimit = data.homeAdsgramLimit;
-          if(document.getElementById('homeAdsgramLimit')) document.getElementById('homeAdsgramLimit').innerText = `${adLimits.homeAdsgramLimit} left`;
-        }
-        if (data.taskAdsgramLimit !== undefined) {
-          adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
-          if(document.getElementById('taskAdsgramLimit')) document.getElementById('taskAdsgramLimit').innerText = `${adLimits.taskAdsgramLimit} left`;
-        }
-        if (data.taskMonetagLimit !== undefined) {
-          adLimits.taskMonetagLimit = data.taskMonetagLimit;
-          if(document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adLimits.taskMonetagLimit} left`;
-        }
-        if (data.taskGigapubLimit !== undefined) {
-          adLimits.taskGigapubLimit = data.taskGigapubLimit;
-          if(document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adLimits.taskGigapubLimit} left`;
-        }
+        if (data.homeAdsgramLimit !== undefined) adLimits.homeAdsgramLimit = data.homeAdsgramLimit;
+        if (data.taskAdsgramLimit !== undefined) adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
+        if (data.taskMonetagLimit !== undefined) adLimits.taskMonetagLimit = data.taskMonetagLimit;
+        if (data.taskGigapubLimit !== undefined) adLimits.taskGigapubLimit = data.taskGigapubLimit;
 
       } else {
-        userRef.set({
+        set(userRef, {
           name: displayName,
           balance: 0.00,
           tonBalance: 0.00,
@@ -664,7 +663,7 @@
     });
 
     function saveToFirebase() {
-      userRef.update({
+      update(userRef, {
         balance: balance,
         tonBalance: tonBalance,
         usdtBalance: usdtBalance,
@@ -678,32 +677,27 @@
       });
     }
 
-    function saveTonAddress() {
+    window.saveTonAddress = function() {
       let addrInput = document.getElementById('manualTonAddress').value.trim();
-
       if (!addrInput || addrInput.length < 15) {
         alert("Kripya ek valid TON wallet address enter karein.");
         return;
       }
       savedTonAddress = addrInput;
       saveToFirebase();
-
       document.getElementById('manualTonAddress').value = savedTonAddress;
       document.getElementById('manualTonAddress').readOnly = true;
-
       alert("✅ TON Wallet address successfully save ho gaya hai!");
       toggleWithdrawFields();
     }
 
-    function disconnectTonAddress() {
+    window.disconnectTonAddress = function() {
       if (confirm("Kya aap apna wallet address disconnect karna chahte hain?")) {
         savedTonAddress = "";
         saveToFirebase();
-
         document.getElementById('manualTonAddress').value = "";
         document.getElementById('manualTonAddress').readOnly = false;
-
-        alert("🔄 Wallet successfully disconnect ho gaya hai. Ab aap naya link laga sakte hain.");
+        alert("🔄 Wallet successfully disconnect ho gaya hai.");
         toggleWithdrawFields();
       }
     }
@@ -753,7 +747,6 @@
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
       
       let manInput = document.getElementById('manualTonAddress');
-
       if (savedTonAddress) {
         manInput.value = savedTonAddress;
         manInput.readOnly = true;
@@ -770,13 +763,13 @@
     fetchLiveTonPrice();
     setInterval(fetchLiveTonPrice, 60000);
 
-    function switchTab(tabId) {
+    window.switchTab = function(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
     }
 
-    function toggleTaskTab(subTab) {
+    window.toggleTaskTab = function(subTab) {
       if(subTab === 'adsTasks') {
         document.getElementById('adsTasks').style.display = 'block';
         document.getElementById('userTasks').style.display = 'none';
@@ -786,7 +779,7 @@
       }
     }
 
-    function toggleMiningBoxes() {
+    window.toggleMiningBoxes = function() {
       let section = document.getElementById('miningBoxesSection');
       let arrow = document.getElementById('miningArrow');
       if (section.classList.contains('show')) {
@@ -801,7 +794,7 @@
     let AdController = null;
     try { AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); } catch(e) {}
 
-    function watchAdWithTimer(reward, adName, limitElementId, btnElementId) {
+    window.watchAdWithTimer = function(reward, adName, limitElementId, btnElementId) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
       let currentLimit = adLimits[limitKey] !== undefined ? adLimits[limitKey] : 40;
       
@@ -825,7 +818,6 @@
           completeAdReward(reward, limitKey, btn, currentLimit);
         }
       };
-
       playAdLogic();
     }
 
@@ -854,19 +846,15 @@
       }
     }
 
-    function claimDailyBonus() {
+    window.claimDailyBonus = function() {
       let lastClaimDate = localStorage.getItem('last_bonus_date_' + userId);
       let todayStr = new Date().toDateString();
       if(lastClaimDate === todayStr) { alert("Daily bonus already claimed today!"); return; }
 
       let verifyAndClaim = () => {
         localStorage.setItem('last_bonus_date_' + userId, todayStr);
-        let bonusReward = 2.00;
-        let bonusEl = document.getElementById('dailyBonusDisplay');
-        if (bonusEl) bonusReward = parseFloat(bonusEl.innerText) || 2.00;
-        
-        addEarningsWithReferral(bonusReward);
-        alert(`🎁 Daily bonus claimed! +${bonusReward.toFixed(2)} Coins added.`);
+        addEarningsWithReferral(currentDailyBonus);
+        alert(`🎁 Daily bonus claimed! +${currentDailyBonus.toFixed(2)} Coins added.`);
       };
 
       if (AdController) {
@@ -887,7 +875,7 @@
       { adsWatched: 0, limit: 20, status: 'ads' }
     ];
 
-    function handleTreeAction(index, treeName, adType, totalDurationSec) {
+    window.handleTreeAction = function(index, treeName, adType, totalDurationSec) {
       let state = treeStates[index];
       let btn = document.getElementById(`treeBtn-${index}`);
       
@@ -925,7 +913,6 @@
 
       if (state.adsWatched < 20) {
         statusEl.innerHTML = `Watched ${state.adsWatched}/20 Ads`;
-        
         let cooldown = 5;
         btn.innerText = `Wait ${cooldown}s`;
         let tInterval = setInterval(() => {
@@ -975,7 +962,6 @@
           clearInterval(timer);
           iconEl.innerText = "✨🌳✨";
           statusEl.innerHTML = `🎉 Ready to Claim!`;
-          
           treeStates[index].status = 'claim';
           btn.innerText = "🎁 Claim 1 Coin";
           btn.style.background = "#eab308";
@@ -987,7 +973,6 @@
 
     function claimTreeReward(index, treeName, totalDurationSec) {
       addEarningsWithReferral(1.00);
-
       let btn = document.getElementById(`treeBtn-${index}`);
       let statusEl = document.getElementById(`treeStatus-${index}`);
       let iconEl = document.getElementById(`treeIcon-${index}`);
@@ -1002,11 +987,10 @@
       btn.innerText = "Watch Ad (1/20)";
       btn.style.background = "#22c55e";
       btn.style.color = "#fff";
-      
-      alert(`🎉 Success! You claimed +1.00 Coin from ${treeName}! New ads cycle available for mining.`);
+      alert(`🎉 Success! You claimed +1.00 Coin from ${treeName}!`);
     }
 
-    function calculateStakeRewards() {
+    window.calculateStakeRewards = function() {
       let coins = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
       let planVal = document.getElementById('stakeCalcPlan').value.split('|');
       let days = parseInt(planVal[0]);
@@ -1019,7 +1003,7 @@
       document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} Coin`;
     }
 
-    function calculateExchange() {
+    window.calculateExchange = function() {
       let amt = parseFloat(document.getElementById('exchangeAmount').value) || 0;
       let curr = document.getElementById('exchangeCurrency').value;
       let totalUsdtValue = amt * coinUsdtValue; 
@@ -1032,7 +1016,7 @@
       }
     }
 
-    function exchangeCoins() {
+    window.exchangeCoins = function() {
       let amt = parseFloat(document.getElementById('exchangeAmount').value);
       let curr = document.getElementById('exchangeCurrency').value;
       if(!amt || isNaN(amt) || amt <= 0) { alert("Please enter a valid amount."); return; }
@@ -1044,7 +1028,7 @@
       if(curr === 'TON') {
         let tonReceived = totalUsdtValue / liveTonPrice;
         tonBalance += tonReceived;
-        alert(`Successfully exchanged for ${tonReceived.toFixed(4)} TON (Live Rate: $${liveTonPrice})!`);
+        alert(`Successfully exchanged for ${tonReceived.toFixed(4)} TON!`);
       } else {
         usdtBalance += totalUsdtValue;
         alert(`Successfully exchanged for ${totalUsdtValue.toFixed(4)} USDT!`);
@@ -1054,7 +1038,7 @@
       calculateExchange();
     }
 
-    function toggleWithdrawFields() {
+    window.toggleWithdrawFields = function() {
       let method = document.getElementById('withdrawMethod').value;
       let headerTitle = document.getElementById('withdrawHeaderTitle');
       let label = document.getElementById('addressLabel');
@@ -1066,7 +1050,7 @@
         headerTitle.innerText = "⚡ TON Wallet Payout (Manual - 24 Hours Processing)";
         label.innerText = "Saved TON Wallet Address:";
         amountLabel.innerText = "Amount (TON):";
-        minLabel.innerText = "Min 0.05 TON";
+        minLabel.innerText = `Min ${minWithdrawalAmt} TON`;
         if (savedTonAddress) {
           input.value = savedTonAddress;
           input.readOnly = true;
@@ -1082,56 +1066,52 @@
         input.readOnly = false;
         input.value = "";
         amountLabel.innerText = "Amount (USDT):";
-        minLabel.innerText = "Min 0.05 USDT";
+        minLabel.innerText = `Min ${minWithdrawalAmt} USDT`;
       }
       renderUIValues();
     }
 
-    function setMaxWithdraw() {
+    window.setMaxWithdraw = function() {
       let method = document.getElementById('withdrawMethod').value;
       let maxVal = (method === 'ton') ? tonBalance : usdtBalance;
       document.getElementById('withdrawAmount').value = maxVal.toFixed(4);
       calculateWithdrawFee();
     }
 
-    function calculateWithdrawFee() {
+    window.calculateWithdrawFee = function() {
       let amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
       let fee = amt * 0.05;
       let netReceive = amt - fee;
       document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${netReceive.toFixed(4)}`;
     }
 
-    async function requestWithdrawal() {
+    window.requestWithdrawal = async function() {
       let rawAmt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
       let method = document.getElementById('withdrawMethod').value;
 
-      if(!rawAmt || isNaN(rawAmt) || rawAmt < 0.05) { alert("Minimum withdrawal limit is 0.05."); return; }
+      if(!rawAmt || isNaN(rawAmt) || rawAmt < minWithdrawalAmt) { 
+        alert(`Minimum withdrawal limit is ${minWithdrawalAmt}.`); 
+        return; 
+      }
       
       let fee = rawAmt * 0.05;
       let finalReceiveAmt = rawAmt - fee; 
 
       if (method === 'faucetpay') {
         if(!dest) { alert("Please enter FaucetPay email address."); return; }
-        
         if(parseFloat(usdtBalance.toFixed(4)) < parseFloat(rawAmt.toFixed(4))) { 
           alert("Insufficient USDT balance for withdrawal!"); 
           return; 
         }
 
         alert("Processing automated FaucetPay payout...");
-
         try {
           let response = await fetch('https://gramfarming-api.onrender.com/api/withdraw-faucetpay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: dest,
-              amount: finalReceiveAmt,
-              currency: 'USDT'
-            })
+            body: JSON.stringify({ email: dest, amount: finalReceiveAmt, currency: 'USDT' })
           });
-
           let result = await response.json();
 
           if (result.success) {
@@ -1139,12 +1119,11 @@
             saveToFirebase();
             renderUIValues();
             recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT to ${dest}`);
-            alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} USDT sent to ${dest}. (TxID: ${result.txId || 'N/A'})`);
+            alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} USDT sent to ${dest}.`);
           } else {
             alert(`Payout Failed: ${result.message}`);
           }
         } catch (err) {
-          console.error(err);
           alert("Network error while connecting to FaucetPay API server.");
         }
       } else {
@@ -1152,47 +1131,27 @@
           alert("Insufficient TON balance!"); 
           return; 
         }
-        
         if(!savedTonAddress) { alert("Pehle apna TON wallet address save karein!"); return; }
 
         alert("Processing TON withdrawal request...");
-
         try {
-          let withdrawRef = db.ref('withdrawals').push();
-          let withdrawData = {
+          let withdrawRef = push(ref(db, 'withdrawals'));
+          await set(withdrawRef, {
             userId: userId,
             userName: displayName,
             method: 'TON',
             amount: finalReceiveAmt,
             destination: savedTonAddress,
             status: 'Pending (24 Hours Processing)',
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-          };
-
-          await withdrawRef.set(withdrawData);
-
-          try {
-            await fetch('https://gramfarming-api.onrender.com/api/withdraw', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: userId,
-                userName: displayName,
-                amount: finalReceiveAmt,
-                currency: 'TON',
-                destination: savedTonAddress
-              })
-            });
-          } catch(e) {}
+            timestamp: serverTimestamp()
+          });
 
           tonBalance -= rawAmt;
           saveToFirebase();
           renderUIValues();
           recordTransactionHistory(`TON Withdrawal (Processing 24h): ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress}`);
-          alert(`🎉 TON Withdrawal Request Successful! Aapka request submit ho gaya hai, admin ko Firebase me turant dikhega aur 24 ghante ke andar process kar diya jayega.`);
-
+          alert(`🎉 TON Withdrawal Request Successful! Admin panel par update ho gaya hai.`);
         } catch (err) {
-          console.error(err);
           alert("Error while processing withdrawal request to Firebase.");
         }
       }
@@ -1209,28 +1168,23 @@
       }
     }
 
-    function loadTransactionHistory() {}
-
-    function stake(planName, days, apy) { alert(`${planName} Staked successfully!`); }
+    window.loadTransactionHistory = function() {}
+    window.stake = function(planName, days, apy) { alert(`${planName} Staked successfully!`); }
     
-    function copyRef() { 
+    window.copyRef = function() { 
       let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
       navigator.clipboard.writeText(refLink); 
       alert("Referral link copied: " + refLink); 
     }
 
-    function shareRef() {
+    window.shareRef = function() {
       let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
       let text = encodeURIComponent("🌱 Join Gram Farming and start earning coins & crypto instantly! Play now:\n" + refLink);
-      let telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
-      window.open(telegramShareUrl, '_blank');
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`, '_blank');
     }
 
-    function claimRefRewards() {
-      if (refReward < 1.00) {
-        alert("Minimum claim amount for referral rewards is 1 Coin.");
-        return;
-      }
+    window.claimRefRewards = function() {
+      if (refReward < 1.00) { alert("Minimum claim amount for referral rewards is 1 Coin."); return; }
       balance += refReward;
       let claimedAmount = refReward;
       refReward = 0.00;
@@ -1239,7 +1193,7 @@
       alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins to your main balance!`);
     }
 
-    function addNewTask() { 
+    window.addNewTask = function() { 
       let title = document.getElementById('customTaskTitle').value;
       let link = document.getElementById('customTaskLink').value;
       if(!title || !link) { alert("Please fill task details."); return; }
@@ -1251,8 +1205,8 @@
       alert("Task published successfully! -10 Coins deducted.");
     }
     
-    function completeTask(r, n) { 
-      addEarningsWithReferrial(r); 
+    window.completeTask = function(r, n) { 
+      addEarningsWithReferral(r); 
       alert(`Task completed! +${r} Coins added.`); 
     }
   </script>
