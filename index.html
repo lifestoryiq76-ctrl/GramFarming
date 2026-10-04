@@ -87,7 +87,7 @@
 
     <!-- Daily Bonus with Adsgram Ad Integration -->
     <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
-      <span style="font-size: 15px;">🎁 Daily Bonus (0.1 Coin - Watch Ad)</span>
+      <span style="font-size: 15px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad)</span>
       <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
     </div>
 
@@ -502,20 +502,19 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- ADMIN LIVE SETTINGS LISTENER ---
+    // --- ADMIN LIVE SETTINGS LISTENER (Updated Path) ---
     function fetchAdminSettings() {
-      db.ref('settings').on('value', (snapshot) => {
+      db.ref('adminSettings/general').on('value', (snapshot) => {
         const settings = snapshot.val();
         if (settings) {
-          // Staking APY values update karein agar admin ne change ki hain
-          if (settings.flexibleApy) document.getElementById('displayFlexApy').innerText = settings.flexibleApy;
-          if (settings.apy7) document.getElementById('displayApy7').innerText = settings.apy7;
-          if (settings.apy15) document.getElementById('displayApy15').innerText = settings.apy15;
-          if (settings.apy30) document.getElementById('displayApy30').innerText = settings.apy30;
-          if (settings.apy60) document.getElementById('displayApy60').innerText = settings.apy60;
-          if (settings.apy90) document.getElementById('displayApy90').innerText = settings.apy90;
-          if (settings.apy120) document.getElementById('displayApy120').innerText = settings.apy120;
-          if (settings.apy365) document.getElementById('displayApy365').innerText = settings.apy365;
+          if (settings.coinUsdtValue !== undefined) {
+            coinUsdtValue = parseFloat(settings.coinUsdtValue);
+          }
+          if (settings.dailyBonus !== undefined) {
+            document.getElementById('dailyBonusDisplay').innerText = parseFloat(settings.dailyBonus).toFixed(2);
+          }
+          renderUIValues();
+          calculateExchange();
         }
       });
     }
@@ -626,7 +625,6 @@
         totalInvited = data.totalInvited || 0;
         savedTonAddress = data.savedTonAddress || "";
 
-        // Firebase se ad limits load karein taaki refresh karne par na hate
         if (data.homeAdsgramLimit !== undefined) {
           adLimits.homeAdsgramLimit = data.homeAdsgramLimit;
           if(document.getElementById('homeAdsgramLimit')) document.getElementById('homeAdsgramLimit').innerText = `${adLimits.homeAdsgramLimit} left`;
@@ -678,7 +676,6 @@
       });
     }
 
-    // --- MANUAL TON ADDRESS SAVE & DISCONNECT LOGIC ---
     function saveTonAddress() {
       let addrInput = document.getElementById('manualTonAddress').value.trim();
 
@@ -862,9 +859,12 @@
 
       let verifyAndClaim = () => {
         localStorage.setItem('last_bonus_date_' + userId, todayStr);
-        let bonusReward = 0.10;
+        let bonusReward = 2.00;
+        let bonusEl = document.getElementById('dailyBonusDisplay');
+        if (bonusEl) bonusReward = parseFloat(bonusEl.innerText) || 2.00;
+        
         addEarningsWithReferral(bonusReward);
-        alert("🎁 Daily bonus claimed! +0.10 Coin added.");
+        alert(`🎁 Daily bonus claimed! +${bonusReward.toFixed(2)} Coins added.`);
       };
 
       if (AdController) {
@@ -1052,7 +1052,6 @@
       calculateExchange();
     }
 
-    // --- DYNAMIC WITHDRAWAL FIELDS LOGIC ---
     function toggleWithdrawFields() {
       let method = document.getElementById('withdrawMethod').value;
       let headerTitle = document.getElementById('withdrawHeaderTitle');
@@ -1100,7 +1099,6 @@
       document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${netReceive.toFixed(4)}`;
     }
 
-    // --- AUTOMATED FAUCETPAY & MANUAL 24H TON WITHDRAWAL REQUEST ---
     async function requestWithdrawal() {
       let rawAmt = parseFloat(document.getElementById('withdrawAmount').value);
       let dest = document.getElementById('withdrawDestination').value;
