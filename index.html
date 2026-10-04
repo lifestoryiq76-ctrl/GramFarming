@@ -1,270 +1,463 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gram Farming Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
+      --bg-color: #0f172a;
       --card-bg: #1e293b;
-      --border: #334155;
-      --text: #ffffff;
-      --text-muted: #94a3b8;
       --accent: #22c55e;
+      --accent-hover: #16a34a;
+      --yellow: #eab308;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
     }
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    .container {
-      padding: 15px;
-      max-width: 600px;
-      margin: 0 auto;
-      width: 100%;
-      box-sizing: border-box;
-      flex: 1;
-      padding-bottom: 80px;
-    }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 15px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    }
-    button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-    button:disabled {
-      background: #475569;
-      cursor: not-allowed;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: #0f172a;
-      color: white;
-      box-sizing: border-box;
-      margin-top: 5px;
-      margin-bottom: 15px;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 80px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 1px solid var(--border); position: relative; }
+    .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; }
+    .btn:active { transform: scale(0.96); }
+    .btn:disabled { background: #475569; cursor: not-allowed; }
+    .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
+    .btn-red { background: #ef4444; color: #fff; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; backdrop-filter: blur(10px); }
+    .nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; }
+    .nav-item.active { color: var(--accent); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    .nav-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--card-bg);
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      z-index: 1000;
-    }
-    .nav-item {
-      color: var(--text-muted);
-      text-align: center;
-      font-size: 12px;
-      cursor: pointer;
-      background: none;
-      border: none;
-      width: auto;
-      padding: 0;
-      margin: 0;
-    }
-    .nav-item.active { color: var(--accent); }
+    .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
+    input:focus, select:focus { border-color: var(--accent); }
+    
+    .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+    .tree-icon { font-size: 32px; transition: transform 0.3s ease; margin: 5px 0; display: inline-block; }
+    .tree-progress-bar { width: 100%; background: #334155; height: 6px; border-radius: 3px; margin: 8px 0; overflow: hidden; }
+    .tree-progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s ease; }
+    .limit-badge { position: absolute; top: 10px; right: 12px; background: #0284c7; color: #fff; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 6px; }
+    
+    #miningBoxesSection { display: none; }
+    #miningBoxesSection.show { display: block; }
   </style>
 </head>
 <body>
 
-  <!-- ERROR CATCHER DEBUGGER -->
-  <div id="errorLog" style="position:fixed; bottom:60px; left:0; right:0; background:rgba(239,68,68,0.95); color:white; padding:8px; font-size:11px; z-index:99999; max-height:100px; overflow-y:auto; display:none;"></div>
-  <script>
-    window.onerror = function(msg, url, line) {
-      let errDiv = document.getElementById('errorLog');
-      if(errDiv) {
-        errDiv.style.display = 'block';
-        errDiv.innerHTML += `<div>⚠️ ${msg} (Line: ${line})</div>`;
-      }
-    };
-  </script>
+  <div class="header">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <h3 style="margin:0; color: var(--accent);">🌱 Gram Farming</h3>
+      <span class="live-badge">🔴 LIVE</span>
+    </div>
+    <select id="langSelect" onchange="changeLanguage(this.value)" style="width: auto; padding: 6px 12px;">
+      <option value="en">🇬🇧 EN</option>
+      <option value="ru">🇷🇺 RU</option>
+      <option value="hi" selected>🇮🇳 HI</option>
+    </select>
+  </div>
 
-  <div class="container">
-    <!-- USER HEADER -->
-    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+  <!-- 🏠 HOME PAGE -->
+  <div id="home" class="tab-content active">
+    <div class="card">
+      <div class="flex-between" style="align-items: flex-start;">
+        <div>
+          <span style="font-size: 14px; color: var(--text-muted);" data-i18n="homeTitle">🏠 Home</span><br><br>
+          <span style="font-size: 16px; font-weight: bold;">🪙 <span data-i18n="balanceText">Balance</span>: <strong id="userBalance" style="color: var(--accent);">0.00</strong> Coin</span>
+        </div>
+        <div style="text-align: right;">
+          <small style="color: var(--text-muted);" data-i18n="coinVolume">Coin Volume</small><br>
+          <strong id="displayCoinVolume" style="color: var(--yellow); font-size: 15px;">1 Coin = $0.01</strong>
+        </div>
+      </div>
+      <br>
+      <div class="flex-between" style="background:#111827; padding:10px; border-radius:10px; border: 1px solid var(--border);">
+        <button class="btn" onclick="switchTab('tasks')" style="margin-right: 6px;" data-i18n="earnBtn">⚡ Earn</button>
+        <button class="btn" onclick="switchTab('wallet')" style="margin-left: 6px; background: #0284c7;" data-i18n="withdrawNavBtn">🪙 Withdraw</button>
+      </div>
+    </div>
+
+    <!-- Live Market & Rules Card (Admin Sync) -->
+    <div class="card" style="background: #111827; text-align: left;">
+      <h4 style="margin: 0 0 8px 0; color: var(--accent);">📊 Live Market & Rules</h4>
+      <p style="margin: 4px 0; font-size: 13px;">Coin Value: <strong id="lblCoinValue" style="color: #22c55e;">$0.01</strong></p>
+      <p style="margin: 4px 0; font-size: 13px;">Daily Bonus: <strong id="lblDailyBonus" style="color: #eab308;">2.00</strong> Coins</p>
+      <p style="margin: 4px 0; font-size: 13px;">Min. Withdrawal: <strong id="lblMinWithdraw" style="color: #f43f5e;">0.05</strong> Coins</p>
+    </div>
+
+    <!-- Daily Bonus with Adsgram Ad Integration -->
+    <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
+      <span style="font-size: 15px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad)</span>
+      <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
+    </div>
+
+    <div class="card flex-between">
+      <span class="limit-badge" id="homeAdsgramLimit">40 left</span>
       <div>
-        <div id="telegramUserName" style="font-weight: bold; font-size: 16px; color: var(--accent);">👑 Loading...</div>
-        <div style="font-size: 12px; color: var(--text-muted);" id="displayCoinVolume">1 Coin = $0.01</div>
+        <div style="font-weight: bold;">Adsgram</div>
+        <small style="color:var(--text-muted);">Reward: +0.05 Coin</small>
       </div>
-      <div style="text-align: right;">
-        <div style="font-size: 14px; color: var(--text-muted);" data-i18n="balanceText">Balance</div>
-        <div style="font-size: 20px; font-weight: bold;" id="userBalance">0.00</div>
+      <button class="btn" id="homeAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Adsgram', 'homeAdsgramLimit', 'homeAdsgramBtn')">Watch</button>
+    </div>
+
+    <div class="card" style="background:var(--card-bg); border:1px solid var(--accent); cursor: pointer;" onclick="toggleMiningBoxes()">
+      <div class="flex-between">
+        <h4 style="margin:0; color: var(--accent);">⛏️ Advanced Tree Mining</h4>
+        <span id="miningArrow" style="font-size: 16px; color: var(--accent); font-weight: bold;">▼</span>
       </div>
     </div>
 
-    <!-- HOME TAB -->
-    <div id="homeTab" class="tab-content active">
-      <div class="card">
-        <h3 style="margin-top:0;" data-i18n="homeTitle">🏠 Home</h3>
-        <p style="color: var(--text-muted); font-size: 14px;" data-i18n="clickToClaim">Click to Claim!</p>
-        <button onclick="claimDailyBonus()">🎁 Claim Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins)</button>
-      </div>
-
-      <div class="card">
-        <h3 style="margin-top:0;">⚡ Earn Coins (Adsgram)</h3>
-        <p style="color: var(--text-muted); font-size: 14px;">Watch ads to boost your earnings.</p>
-        <button id="homeWatchBtn" onclick="watchAdWithTimer(0.5, 'Adsgram', 'homeAdsgramLimit', 'homeWatchBtn')">
-          Watch Ad (+0.5 Coin) [<span id="homeAdsgramLimit">40</span> left]
-        </button>
-      </div>
-    </div>
-
-    <!-- TASKS TAB -->
-    <div id="tasksTab" class="tab-content">
-      <div class="card">
-        <h3 style="margin-top:0;" data-i18n="tasksOffers">📋 Tasks & Offers</h3>
-        <button onclick="completeTask(10, 'Telegram Join')">📢 Join Telegram Channel (+10 Coins)</button>
-      </div>
-    </div>
-
-    <!-- STAKING TAB -->
-    <div id="stakingTab" class="tab-content">
-      <div class="card">
-        <h3 style="margin-top:0;" data-i18n="stakingOptions">💎 Staking Options</h3>
-        <p style="color: var(--text-muted); font-size: 14px;">Stake your coins and earn passive rewards daily.</p>
-        <button onclick="stake('Flexible', 0, 10)">Stake Now (10% APY)</button>
-      </div>
-    </div>
-
-    <!-- REFERRALS TAB -->
-    <div id="referralsTab" class="tab-content">
-      <div class="card">
-        <h3 style="margin-top:0;" data-i18n="referralProgram">👥 REFERRAL PROGRAM</h3>
-        <p style="color: var(--text-muted); font-size: 14px;" data-i18n="inviteDesc">Get bonus from all 🪙 earned by your invited friends.</p>
-        <div style="margin: 15px 0;">
-          <div>Total Invited: <span id="totalInvitedCount" style="color: var(--accent); font-weight: bold;">0 USERS</span></div>
-          <div>Rewards: <span id="refRewardBalance" style="color: var(--accent); font-weight: bold;">+0.00 🪙</span></div>
-        </div>
-        <button onclick="copyRef()">📋 Copy Referral Link</button>
-        <button onclick="shareRef()" style="background: #2563eb; margin-top: 8px;">🚀 Share on Telegram</button>
-        <button onclick="claimRefRewards()" style="background: #eab308; color: #000; margin-top: 8px;">🎁 Claim Referral Rewards</button>
-      </div>
-    </div>
-
-    <!-- WALLET & EXCHANGE TAB -->
-    <div id="walletTab" class="tab-content">
-      <div class="card">
-        <h3 style="margin-top:0;" data-i18n="walletExchange">💼 Wallet & Exchange</h3>
-        <div>Coins Balance: <span id="walletCoinDisplay" style="font-weight: bold; color: var(--accent);">0.00</span></div>
-        <div>TON Balance: <span id="tonBalance" style="font-weight: bold;">0.0000</span> TON</div>
-        <div>USDT Balance: <span id="usdtBalance" style="font-weight: bold;">0.0000</span> USDT</div>
-
-        <hr style="border-color: var(--border); margin: 20px 0;">
-
-        <h4 style="margin-bottom: 5px;">🔄 Exchange Coins</h4>
-        <div id="liveRateStatus" style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">📡 Live TON Rate: Loading...</div>
-        
-        <label style="font-size: 13px;">Convert Coin to:</label>
-        <select id="exchangeCurrency" onchange="calculateExchange()" style="width:100%; padding:10px; border-radius:10px; background:#0f172a; color:white; border:1px solid var(--border); margin-top:5px; margin-bottom:10px;">
-          <option value="USDT">USDT</option>
-          <option value="TON">TON</option>
-        </select>
-
-        <label style="font-size: 13px;">Coin Amount to Exchange:</label>
-        <input type="number" id="exchangeAmount" placeholder="Enter coins" oninput="calculateExchange()">
-        <div style="font-size: 13px; margin-bottom: 10px; color: var(--text-muted);">You will get: <span id="previewExchange" style="color: var(--accent); font-weight: bold;">0.00</span></div>
-        <button onclick="exchangeCoins()">Exchange Now</button>
-
-        <hr style="border-color: var(--border); margin: 20px 0;">
-
-        <h4 id="withdrawHeaderTitle" style="margin-bottom: 5px;">📤 Withdraw Funds</h4>
-        <label style="font-size: 13px;" data-i18n="withdrawMethod">Withdrawal Method:</label>
-        <select id="withdrawMethod" onchange="toggleWithdrawFields()" style="width:100%; padding:10px; border-radius:10px; background:#0f172a; color:white; border:1px solid var(--border); margin-top:5px; margin-bottom:10px;">
-          <option value="ton">TON Wallet Address</option>
-          <option value="faucetpay">Faucetpay email id</option>
-        </select>
-
-        <label style="font-size: 13px;" id="addressLabel">TON Wallet Address:</label>
-        <div style="display: flex; gap: 5px;">
-          <input type="text" id="manualTonAddress" placeholder="Enter TON address or save below">
-        </div>
-        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-          <button onclick="saveTonAddress()" style="background: #2563eb; margin-top: 0; font-size: 13px; padding: 8px;">Save Address</button>
-          <button onclick="disconnectTonAddress()" style="background: #ef4444; margin-top: 0; font-size: 13px; padding: 8px;">Disconnect</button>
+    <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
+      <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🌳 Advanced Tree Mining</h4>
+      
+      <div class="mining-grid">
+        <div class="mining-box" id="mBox-0">
+          <span class="limit-badge" id="pineLimit">20 left</span>
+          <div>
+            <b style="font-size:13px;">🌲 Pine Tree (Monetag)</b><br>
+            <span class="tree-icon" id="treeIcon-0">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-0">Watch 20 Ads to Start</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-0"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(0, 'Pine Tree', 'Monetag', 21600)" id="treeBtn-0">Watch Ad (1/20)</button>
+          </div>
         </div>
 
-        <label style="font-size: 13px;" id="withdrawAmountLabel">Amount (TON):</label>
-        <div style="display: flex; gap: 5px; align-items: center;">
-          <input type="number" id="withdrawAmount" placeholder="0.00" oninput="calculateWithdrawFee()" style="margin-bottom: 0;">
-          <button onclick="setMaxWithdraw()" style="width: 80px; margin-top: 0; background: #334155; font-size: 13px; padding: 12px 5px;">MAX</button>
+        <div class="mining-box" id="mBox-1">
+          <span class="limit-badge" id="appleLimit">20 left</span>
+          <div>
+            <b style="font-size:13px;">🍎 Apple Tree (Adsgram)</b><br>
+            <span class="tree-icon" id="treeIcon-1">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-1">Watch 20 Ads to Start</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-1"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(1, 'Apple Tree', 'Adsgram', 21600)" id="treeBtn-1">Watch Ad (1/20)</button>
+          </div>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 5px; margin-bottom: 10px;">
-          <span id="availableWithdrawBalance">Available: 0.0000</span>
-          <span id="withdrawMinLabel">Min 0.05 TON</span>
+
+        <div class="mining-box" id="mBox-2">
+          <span class="limit-badge" id="sakuraLimit">20 left</span>
+          <div>
+            <b style="font-size:13px;">🌸 Sakura Tree (Gigapub)</b><br>
+            <span class="tree-icon" id="treeIcon-2">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-2">Watch 20 Ads to Start</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-2"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(2, 'Sakura Tree', 'Gigapub', 21600)" id="treeBtn-2">Watch Ad (1/20)</button>
+          </div>
         </div>
-        <div id="withdrawFeePreview" style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Fee (5%): 0.00 | You will receive: 0.00</div>
-        <button onclick="requestWithdrawal()">Submit Withdraw</button>
 
-        <div id="transactionHistoryList" style="margin-top: 15px; font-size: 12px; color: var(--text-muted);">No recent withdrawals.</div>
-      </div>
-    </div>
-
-    <!-- RANK TAB -->
-    <div id="rankTab" class="tab-content">
-      <div class="card">
-        <h3 style="margin-top:0;" data-i18n="topEarnersRank">Top Earners Rank</h3>
-        <p style="color: var(--text-muted); font-size: 14px;" data-i18n="liveRankingStats">Your live ranking and stats</p>
-        <div>Your Balance: <span id="rankBalance" style="color: var(--accent); font-weight: bold;">0.00</span> Coins</div>
+        <div class="mining-box" id="mBox-3">
+          <span class="limit-badge" id="crystalLimit">20 left</span>
+          <div>
+            <b style="font-size:13px;">💎 Crystal Tree (Adsgram)</b><br>
+            <span class="tree-icon" id="treeIcon-3">🌱</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-3">Watch 20 Ads to Start</div>
+          </div>
+          <div>
+            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-3"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(3, 'Crystal Tree', 'Adsgram', 21600)" id="treeBtn-3">Watch Ad (1/20)</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- NAVIGATION BAR -->
+  <!-- 📋 TASKS PAGE -->
+  <div id="tasks" class="tab-content">
+    <h3 data-i18n="tasksOffers">📋 Tasks & Offers</h3>
+    <div style="display:flex; gap:10px; margin-bottom:12px;">
+      <button class="btn" onclick="toggleTaskTab('adsTasks')" style="flex:1;" data-i18n="adsTasksTab">Ads Tasks</button>
+      <button class="btn" onclick="toggleTaskTab('userTasks')" style="flex:1; background:#334155;" data-i18n="userTasksTab">User Tasks</button>
+    </div>
+
+    <div id="adsTasks">
+      <div class="card flex-between">
+        <span class="limit-badge" id="taskAdsgramLimit">40 left</span>
+        <div><b>Adsgram</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
+        <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Adsgram', 'taskAdsgramLimit', 'taskAdsgramBtn')">Watch</button>
+      </div>
+      <div class="card flex-between">
+        <span class="limit-badge" id="taskMonetagLimit">40 left</span>
+        <div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
+        <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Monetag', 'taskMonetagLimit', 'taskMonetagBtn')">Watch</button>
+      </div>
+      <div class="card flex-between">
+        <span class="limit-badge" id="taskGigapubLimit">40 left</span>
+        <div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
+        <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Gigapub', 'taskGigapubLimit', 'taskGigapubBtn')">Watch</button>
+      </div>
+    </div>
+
+    <div id="userTasks" style="display:none;">
+      <div class="card" style="background:#0f172a; border: 1px dashed var(--accent); text-align: center;">
+        <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="addYourTask">➕ Add Your Task</h4>
+        <input type="text" id="customTaskTitle" placeholder="Task Name (e.g., Join Channel)">
+        <input type="text" id="customTaskLink" placeholder="Your Link (https://t.me/...)">
+        <button class="btn" style="margin-top:10px;" onclick="addNewTask()" data-i18n="publishTaskBtn">Publish Task (-10 Coin)</button>
+      </div>
+
+      <div id="dynamicTasksList">
+        <div class="card flex-between">
+          <div><span data-i18n="joinTelegram">📢 Join Telegram Channel</span><br><small style="color:var(--text-muted);" data-i18n="reward10Coins">Reward: +10 Coin</small></div>
+          <button class="btn" style="width: auto;" onclick="completeTask(10, 'Telegram Channel')" data-i18n="completeBtn">Complete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 💎 STAKING PAGE -->
+  <div id="staking" class="tab-content">
+    <h3 data-i18n="stakingOptions">💎 Staking Options</h3>
+    
+    <div class="card" style="background:#111827; border:1px solid var(--accent);">
+      <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="stakingCalc">🧮 Staking Calculator & Preview</h4>
+      <label style="font-size:13px; color:var(--text-muted);" data-i18n="enterStakingCoins">Enter Staking Coins:</label>
+      <input type="number" id="stakeCalcInput" placeholder="e.g. 100" oninput="calculateStakeRewards()">
+      
+      <label style="font-size:13px; color:var(--text-muted); margin-top:8px; display:block;" data-i18n="selectPlan">Select Plan:</label>
+      <select id="stakeCalcPlan" onchange="calculateStakeRewards()">
+        <option value="0|4">Flexible (0 Days - 4% APY)</option>
+        <option value="7|3">Fixed (7 Days - 3% APY)</option>
+        <option value="15|4.5">Fixed (15 Days - 4.5% APY)</option>
+        <option value="30|6.25">Fixed (30 Days - 6.25% APY)</option>
+        <option value="60|8">Fixed (60 Days - 8% APY)</option>
+        <option value="90|11.25">Fixed (90 Days - 11.25% APY)</option>
+        <option value="120|14.5">Fixed (120 Days - 14.5% APY)</option>
+        <option value="365|20">Fixed (365 Days - 20% APY)</option>
+      </select>
+
+      <div style="margin-top:10px; padding:10px; background:#0f172a; border-radius:8px; font-size:13px; border:1px solid var(--border);">
+        <div>☀ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
+        <div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
+      </div>
+    </div>
+
+    <h4 style="color: var(--accent); margin-bottom: 8px;" data-i18n="flexHeader">1. Flexible Staking</h4>
+    <div class="card">
+      <div class="flex-between">
+        <div>
+          <b data-i18n="flexTitle">Flexible Staking</b><br>
+          <small style="color:var(--text-muted);" data-i18n="flexDesc">Unstake anytime with zero locking period.</small><br>
+          <span style="color: var(--accent); font-size: 13px; font-weight: bold;"><span id="displayFlexApy">4</span>% APY</span>
+        </div>
+        <button class="btn" style="width: auto;" onclick="stake('Flexible', 0, 4)" data-i18n="stakeBtn">Stake</button>
+      </div>
+    </div>
+
+    <h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;" data-i18n="fixedHeader">2. Fixed Staking (Up to 20% APY)</h4>
+    <div class="grid-cards">
+      <div class="card" style="text-align:center; margin:0;">
+        <b>7 Days</b><br><span style="color: var(--accent);"><span id="displayApy7">3</span>% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, 3)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>15 Days</b><br><span style="color: var(--accent);"><span id="displayApy15">4.5</span>% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, 4.5)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>30 Days</b><br><span style="color: var(--accent);"><span id="displayApy30">6.25</span>% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, 6.25)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>60 Days</b><br><span style="color: var(--accent);"><span id="displayApy60">8</span>% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, 8)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>90 Days</b><br><span style="color: var(--accent);"><span id="displayApy90">11.25</span>% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (90 Days)', 90, 11.25)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0;">
+        <b>120 Days</b><br><span style="color: var(--accent);"><span id="displayApy120">14.5</span>% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (120 Days)', 120, 14.5)">Lock</button>
+      </div>
+      <div class="card" style="text-align:center; margin:0; grid-column: span 2;">
+        <b>365 Days</b><br><span style="color: var(--accent);"><span id="displayApy365">20</span>% APY</span><br>
+        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (365 Days)', 365, 20)">Lock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 👥 REFERRALS PAGE -->
+  <div id="referrals" class="tab-content">
+    <h3 data-i18n="referralProgram">👥 REFERRAL PROGRAM</h3>
+    
+    <div class="grid-cards" style="margin-bottom: 12px;">
+      <div class="card" style="margin:0;">
+        <div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+          <span>👤</span> <b data-i18n="friendsTitle">Friends</b>
+        </div>
+        <small style="color:var(--text-muted); font-size:11px;" data-i18n="totalInvited">Total invited</small>
+        <div style="margin-top:12px; font-size:18px; font-weight:bold; color:var(--text-main);" id="totalInvitedCount">0 USERS</div>
+      </div>
+
+      <div class="card" style="margin:0;">
+        <div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+          <span>🎁</span> <b data-i18n="rewardsTitle">Rewards</b>
+        </div>
+        <small style="color:var(--text-muted); font-size:11px;" data-i18n="minClaim1Coin">Min. claim 1 Coin</small>
+        <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:16px; font-weight:bold; color:var(--yellow);" id="refRewardBalance">+0.00 🪙</span>
+          <button class="btn" style="width: auto; padding: 6px 12px; font-size:12px; background:var(--accent);" onclick="claimRefRewards()" data-i18n="claimBtn">Claim</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px; font-weight:bold; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+        <span>🔗</span> <span data-i18n="inviteEarn">Invite & Earn</span>
+      </div>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;" data-i18n="inviteDesc">Get 20% bonus from all 🪙 earned by your invited friends.</p>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" style="background:#334155; flex:1;" onclick="copyRef()" data-i18n="copyLinkBtn">Copy Link</button>
+        <button class="btn" style="background:#0284c7; flex:1;" onclick="shareRef()" data-i18n="shareBtn">Share</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 💼 WALLET PAGE -->
+  <div id="wallet" class="tab-content">
+    <h3 data-i18n="walletExchange">💼 Wallet & Exchange</h3>
+    
+    <div class="card">
+      <div class="flex-between" style="margin-bottom: 10px;">
+        <h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange Coin (Live Rate)</h4>
+        <span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
+          🪙 Balance: <span id="walletCoinDisplay">0.00</span>
+        </span>
+      </div>
+      
+      <div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
+        <div>💎 TON Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong> TON</div>
+        <div>💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">0.00</strong> USDT</div>
+        <div style="margin-top:4px; font-size:11px; color:var(--text-muted);" id="liveRateStatus">📡 Fetching Live TON Rate...</div>
+      </div>
+
+      <label data-i18n="convertCoinTo">Convert Coin to:</label>
+      <select id="exchangeCurrency" onchange="calculateExchange()">
+        <option value="USDT">USDT (1 Coin = $0.01)</option>
+        <option value="TON">TON (Based on Live TON Price)</option>
+      </select>
+      
+      <label style="margin-top:8px; display:block;" data-i18n="coinAmountExchange">Coin Amount to Exchange:</label>
+      <input type="number" id="exchangeAmount" placeholder="Enter coins" oninput="calculateExchange()">
+      
+      <p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
+      
+      <button class="btn" style="margin-top:10px; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
+    </div>
+
+    <!-- Manual Saved Wallet Address Card -->
+    <div class="card" style="background:#111827; border: 1px solid var(--accent); text-align: center;">
+      <h4 style="margin:0 0 8px 0; color: var(--accent);">⚡ Manual Wallet Address</h4>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;">Apna TON wallet address manually yahan save karein.</p>
+
+      <div style="text-align: left;">
+        <label style="font-size: 13px; color: var(--text-muted);">Saved TON Wallet Address:</label>
+        <input type="text" id="manualTonAddress" placeholder="UQ... ya EQ... apna address daalein">
+
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button class="btn" style="background: var(--accent); flex: 1;" onclick="saveTonAddress()">Save Address</button>
+          <button class="btn btn-red" style="flex: 1;" onclick="disconnectTonAddress()">Disconnect</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Withdraw Funds Section -->
+    <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
+      <div class="flex-between" style="margin-bottom: 8px;">
+        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON manual payout (24h)</h4>
+        <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
+      </div>
+      
+      <label data-i18n="withdrawMethod">Withdrawal Method:</label>
+      <select id="withdrawMethod" onchange="toggleWithdrawFields()">
+        <option value="faucetpay">FaucetPay Email ID (Instant)</option>
+        <option value="ton">TON Wallet Address (Manual - 24 Hours Processing)</option>
+      </select>
+      
+      <label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT):</label>
+      <input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001" oninput="calculateWithdrawFee()">
+      
+      <div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
+        <span id="withdrawMinLabel">Min 0.05</span>
+        <div>
+          <span id="availableWithdrawBalance" style="color:var(--text-muted); margin-right:8px;">Available: 0.0000</span>
+          <button onclick="setMaxWithdraw()" style="background:none; border:none; color:var(--accent); font-weight:bold; cursor:pointer;">MAX</button>
+        </div>
+      </div>
+      
+      <div style="margin-top:4px; font-size:12px; color:var(--yellow);" id="withdrawFeePreview">
+        Fee (5%): 0.00 | You will receive: 0.00
+      </div>
+      
+      <label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
+      <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
+      
+      <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
+    </div>
+
+    <!-- TRANSACTION HISTORY SECTION -->
+    <div class="card" style="background: #111827; border: 1px solid var(--border);">
+      <div class="flex-between" style="margin-bottom: 8px;">
+        <h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
+        <span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
+      </div>
+      <div id="transactionHistoryList" style="font-size: 12px; color: var(--text-muted); min-height: 40px; display: flex; align-items: center;">
+        No recent withdrawals yet.
+      </div>
+    </div>
+  </div>
+
+  <!-- 🏆 RANK PAGE -->
+  <div id="leaderboard" class="tab-content">
+    <div class="card" style="background:var(--card-bg); border:1px solid var(--border); padding: 14px; margin-bottom: 12px;">
+      <div class="flex-between" style="margin-bottom: 10px;">
+        <div style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:16px;">
+          <span>🏆</span> <span data-i18n="topEarnersRank">Top Earners Rank</span>
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom: 5px;" data-i18n="liveRankingStats">Your live ranking and stats</div>
+    </div>
+
+    <div class="card flex-between" style="background:#111827; padding: 12px; margin-bottom: 12px;">
+      <span style="font-size:13px; color:var(--text-muted);" data-i18n="yourRank">Your Rank:</span>
+      <span style="background:var(--accent); color:#fff; padding: 4px 10px; border-radius:6px; font-size:12px; font-weight:bold;" data-i18n="rankPlace">#1 place</span>
+    </div>
+
+    <div id="rankListContainer">
+      <div class="card" style="margin-bottom:8px; padding: 14px; background:#111827;">
+        <div class="flex-between" style="margin-bottom: 8px;">
+          <span style="font-weight:bold; font-size:14px; color:var(--yellow);" id="telegramUserName">👑 Loading User...</span>
+        </div>
+        <div class="flex-between" style="font-size:12px; border-top:1px solid var(--border); padding-top:8px; margin-top:6px;">
+          <span style="color:var(--text-muted); display:flex; align-items:center; gap:4px;">🪙 BALANCE: <b id="rankBalance" style="color:var(--yellow);">0.00</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="nav-bar">
-    <button class="nav-item active" onclick="switchTab('homeTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
-      🏠 <div data-i18n="navHome">Home</div>
-    </button>
-    <button class="nav-item" onclick="switchTab('tasksTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
-      📋 <div data-i18n="navTasks">Tasks</div>
-    </button>
-    <button class="nav-item" onclick="switchTab('stakingTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
-      💎 <div data-i18n="navStaking">Staking</div>
-    </button>
-    <button class="nav-item" onclick="switchTab('referralsTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
-      👥 <div data-i18n="navReferrals">Referrals</div>
-    </button>
-    <button class="nav-item" onclick="switchTab('walletTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
-      💼 <div data-i18n="navWallet">Wallet</div>
-    </button>
-    <button class="nav-item" onclick="switchTab('rankTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
-      🏆 <div data-i18n="navRank">Rank</div>
-    </button>
+    <div class="nav-item active" onclick="switchTab('home')">🏠<br><span data-i18n="navHome">Home</span></div>
+    <div class="nav-item" onclick="switchTab('tasks')">📋<br><span data-i18n="navTasks">Tasks</span></div>
+    <div class="nav-item" onclick="switchTab('staking')">💎<br><span data-i18n="navStaking">Staking</span></div>
+    <div class="nav-item" onclick="switchTab('referrals')">👥<br><span data-i18n="navReferrals">Referrals</span></div>
+    <div class="nav-item" onclick="switchTab('wallet')">💼<br><span data-i18n="navWallet">Wallet</span></div>
+    <div class="nav-item" onclick="switchTab('leaderboard')">🏆<br><span data-i18n="navRank">Rank</span></div>
   </div>
 
   <!-- FIREBASE & APP SCRIPT LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, update, set, push, serverTimestamp, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, onValue, update, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     // --- SINGLE DEVICE SESSION ENFORCEMENT ---
     const SESSION_KEY = 'gram_farming_active_session_lock';
@@ -326,99 +519,115 @@
     let currentDailyBonus = 2.00;
     let minWithdrawalAmt = 0.05;
     let liveTonPrice = 1.50;
-    let currentRefBonusPercent = 20;
 
     const adLimits = {
-      homeAdsgramLimit: 40
+      homeAdsgramLimit: 40,
+      taskAdsgramLimit: 40,
+      taskMonetagLimit: 40,
+      taskGigapubLimit: 40
     };
 
-    // --- LIVE ADMIN SETTINGS LISTENER ---
+    // --- LIVE ADMIN SETTINGS LISTENER (`adminSettings/general`) ---
     onValue(ref(db, 'adminSettings/general'), (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
+        
         if (data.coinUsdtValue !== undefined) {
           coinUsdtValue = parseFloat(data.coinUsdtValue);
-          let el = document.getElementById('lblCoinValue');
-          if (el) el.innerText = `$${coinUsdtValue}`;
+          document.getElementById('lblCoinValue').innerText = `$${coinUsdtValue}`;
         }
         if (data.dailyBonus !== undefined) {
           currentDailyBonus = parseFloat(data.dailyBonus);
-          let bonusDisp = document.getElementById('dailyBonusDisplay');
-          if (bonusDisp) bonusDisp.innerText = currentDailyBonus.toFixed(2);
+          document.getElementById('lblDailyBonus').innerText = `${currentDailyBonus} Coins`;
+          document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
         }
         if (data.minWithdrawal !== undefined) {
           minWithdrawalAmt = parseFloat(data.minWithdrawal);
-        }
-        if (data.refBonus !== undefined) {
-          currentRefBonusPercent = parseFloat(data.refBonus);
+          document.getElementById('lblMinWithdraw').innerText = `${minWithdrawalAmt} Coins`;
         }
         renderUIValues();
         calculateExchange();
       }
     });
 
-    // --- SAFE TELEGRAM INITIALIZATION ---
-    let tg = null;
-    try {
-      if (window.Telegram && window.Telegram.WebApp) {
-        tg = window.Telegram.WebApp;
-        tg.expand();
+    const translations = {
+      en: { 
+        homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
+        clickToClaim: "Click to Claim!", watchBtn: "Watch", 
+        tasksOffers: "📋 Tasks & Offers", adsTasksTab: "Ads Tasks", userTasksTab: "User Tasks", 
+        addYourTask: "➕ Add Your Task", publishTaskBtn: "Publish Task (-10 Coin)", joinTelegram: "📢 Join Telegram Channel", reward10Coins: "Reward: +10 Coin", completeBtn: "Complete", 
+        stakingOptions: "💎 Staking Options", stakingCalc: "🧮 Staking Calculator & Preview", enterStakingCoins: "Enter Staking Coins:", 
+        selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking", 
+        flexTitle: "Flexible Staking", flexDesc: "Unstake anytime with zero locking period.", stakeBtn: "Stake", fixedHeader: "2. Fixed Staking (Up to 20% APY)",
+        referralProgram: "👥 REFERRAL PROGRAM", friendsTitle: "Friends", totalInvited: "Total invited", rewardsTitle: "Rewards", 
+        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get 20% bonus from all 🪙 earned by your invited friends.", 
+        copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", 
+        convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
+        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "Amount:", tonAddressLabel: "TON Wallet Address:", submitWithdrawBtn: "Submit Withdraw", 
+        topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
+        navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" 
+      },
+      hi: { 
+        homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", 
+        clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", 
+        tasksOffers: "📋 टास्क और ऑफर्स", adsTasksTab: "एड्स टास्क", userTasksTab: "यूजर टास्क", 
+        addYourTask: "➕ अपना टास्क जोड़ें", publishTaskBtn: "टास्क पब्लिश करें (-10 कॉइन)", joinTelegram: "📢 टेलीग्राम चैनल ज्वाइन करें", reward10Coins: "इनाम: +10 कॉइन", completeBtn: "पूरा करें", 
+        stakingOptions: "💎 स्टेकिंग विकल्प", stakingCalc: "🧮 स्टेकिंग कैलकुलेटर और पूर्वावलोकन", enterStakingCoins: "स्टेकिंग कॉइन दर्ज करें:", 
+        selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
+        flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
+        referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम", 
+        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 20% बोनस पाएं।", 
+        copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", 
+        convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
+        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "मात्रा:", tonAddressLabel: "TON Wallet पता:", submitWithdrawBtn: "निकासी सबमिट करें", 
+        topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
+        navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" 
+      },
+      ru: { 
+        homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", 
+        clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", 
+        tasksOffers: "📋 Задания", adsTasksTab: "Реклама", userTasksTab: "Пользовательские", 
+        addYourTask: "➕ Добавить", publishTaskBtn: "Опубликовать", joinTelegram: "📢 Подписаться", reward10Coins: "Награда: +10", completeBtn: "Выполнить", 
+        stakingOptions: "💎 Стейкинг", stakingCalc: "🧮 Калькулятор", enterStakingCoins: "Введите монеты:", 
+        selectPlan: "План:", dailyReward: "Дневная", totalPeriodReward: "Общая", flexHeader: "1. Гибкий", 
+        flexTitle: "Гибкий стейкинг", flexDesc: "Без лока.", stakeBtn: "В стейкинг", fixedHeader: "2. Фиксированный стейкинг",
+        referralProgram: "👥 РЕФЕРАЛЫ", friendsTitle: "Друзья", totalInvited: "Приглашено", rewardsTitle: "Награды", 
+        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус 20%", 
+        copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", 
+        convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
+        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
+        amountLabel: "Сумма:", tonAddressLabel: "Адрес TON Wallet:", submitWithdrawBtn: "Вывести", 
+        topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
+        navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" 
       }
-    } catch(e) {}
+    };
+
+    window.changeLanguage = function(lang) {
+      const dict = translations[lang] || translations['en'];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.innerText = dict[key];
+      });
+      toggleWithdrawFields();
+    }
+
+    const tg = window.Telegram.WebApp;
+    tg.expand();
 
     let displayName = "👑 My Account";
     let userId = "12345";
-    let startParam = "";
-
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
       let user = tg.initDataUnsafe.user;
       let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
       userId = String(user.id);
     }
+    document.getElementById('telegramUserName').innerText = displayName;
 
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
-      startParam = tg.initDataUnsafe.start_param;
-    }
-
-    let userEl = document.getElementById('telegramUserName');
-    if (userEl) userEl.innerText = displayName;
-
-    // --- LOAD USER DATA & HANDLE REFERRAL ---
+    // --- LOAD USER DATA FROM FIREBASE ---
     const userRef = ref(db, 'users/' + userId);
-    
-    get(child(ref(db), 'users/' + userId)).then((snapshot) => {
-      if (!snapshot.exists()) {
-        let referrerId = null;
-        if (startParam && startParam.startsWith('ref_')) {
-          referrerId = startParam.replace('ref_', '');
-        }
-
-        if (referrerId && referrerId !== userId) {
-          const inviterRef = ref(db, 'users/' + referrerId);
-          get(inviterRef).then((invSnapshot) => {
-            if (invSnapshot.exists()) {
-              let invData = invSnapshot.val();
-              let newInvitedCount = (invData.totalInvited || 0) + 1;
-              update(inviterRef, { totalInvited: newInvitedCount });
-            }
-          });
-        }
-
-        set(userRef, {
-          name: displayName,
-          balance: 0.00,
-          tonBalance: 0.00,
-          usdtBalance: 0.00,
-          refReward: 0.00,
-          totalInvited: 0,
-          savedTonAddress: "",
-          referredBy: referrerId || "none",
-          homeAdsgramLimit: 40
-        });
-      }
-    });
-
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -430,6 +639,24 @@
         savedTonAddress = data.savedTonAddress || "";
 
         if (data.homeAdsgramLimit !== undefined) adLimits.homeAdsgramLimit = data.homeAdsgramLimit;
+        if (data.taskAdsgramLimit !== undefined) adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
+        if (data.taskMonetagLimit !== undefined) adLimits.taskMonetagLimit = data.taskMonetagLimit;
+        if (data.taskGigapubLimit !== undefined) adLimits.taskGigapubLimit = data.taskGigapubLimit;
+
+      } else {
+        set(userRef, {
+          name: displayName,
+          balance: 0.00,
+          tonBalance: 0.00,
+          usdtBalance: 0.00,
+          refReward: 0.00,
+          totalInvited: 0,
+          savedTonAddress: "",
+          homeAdsgramLimit: 40,
+          taskAdsgramLimit: 40,
+          taskMonetagLimit: 40,
+          taskGigapubLimit: 40
+        });
       }
       renderUIValues();
       toggleWithdrawFields();
@@ -443,44 +670,23 @@
         refReward: refReward,
         totalInvited: totalInvited,
         savedTonAddress: savedTonAddress,
-        homeAdsgramLimit: adLimits.homeAdsgramLimit
+        homeAdsgramLimit: adLimits.homeAdsgramLimit,
+        taskAdsgramLimit: adLimits.taskAdsgramLimit,
+        taskMonetagLimit: adLimits.taskMonetagLimit,
+        taskGigapubLimit: adLimits.taskGigapubLimit
       });
-    }
-
-    // --- DYNAMIC REFERRAL COMMISSION ---
-    function addEarningsWithReferral(earnedAmount) {
-      balance += earnedAmount;
-      
-      get(userRef).then((snapshot) => {
-        if (snapshot.exists() && snapshot.val().referredBy && snapshot.val().referredBy !== "none") {
-          let inviterId = snapshot.val().referredBy;
-          let inviterRef = ref(db, 'users/' + inviterId);
-          get(inviterRef).then((invSnap) => {
-            if (invSnap.exists()) {
-              let currentRefReward = invSnap.val().refReward || 0;
-              let commission = earnedAmount * (currentRefBonusPercent / 100);
-              update(inviterRef, { refReward: currentRefReward + commission });
-            }
-          });
-        }
-      });
-
-      saveToFirebase();
-      renderUIValues();
     }
 
     window.saveTonAddress = function() {
-      let addrInput = document.getElementById('manualTonAddress');
-      if (!addrInput) return;
-      let addrVal = addrInput.value.trim();
-      if (!addrVal || addrVal.length < 15) {
+      let addrInput = document.getElementById('manualTonAddress').value.trim();
+      if (!addrInput || addrInput.length < 15) {
         alert("Kripya ek valid TON wallet address enter karein.");
         return;
       }
-      savedTonAddress = addrVal;
+      savedTonAddress = addrInput;
       saveToFirebase();
-      addrInput.value = savedTonAddress;
-      addrInput.readOnly = true;
+      document.getElementById('manualTonAddress').value = savedTonAddress;
+      document.getElementById('manualTonAddress').readOnly = true;
       alert("✅ TON Wallet address successfully save ho gaya hai!");
       toggleWithdrawFields();
     }
@@ -489,14 +695,19 @@
       if (confirm("Kya aap apna wallet address disconnect karna chahte hain?")) {
         savedTonAddress = "";
         saveToFirebase();
-        let addrInput = document.getElementById('manualTonAddress');
-        if (addrInput) {
-          addrInput.value = "";
-          addrInput.readOnly = false;
-        }
+        document.getElementById('manualTonAddress').value = "";
+        document.getElementById('manualTonAddress').readOnly = false;
         alert("🔄 Wallet successfully disconnect ho gaya hai.");
         toggleWithdrawFields();
       }
+    }
+
+    function addEarningsWithReferral(earnedAmount) {
+      balance += earnedAmount;
+      let refCommission = earnedAmount * 0.20;
+      refReward += refCommission;
+      saveToFirebase();
+      renderUIValues();
     }
 
     async function fetchLiveTonPrice() {
@@ -505,8 +716,7 @@
         let data = await response.json();
         if(data && data['the-open-network'] && data['the-open-network'].usd) {
           liveTonPrice = data['the-open-network'].usd;
-          let rateStatus = document.getElementById('liveRateStatus');
-          if (rateStatus) rateStatus.innerText = `📡 Live TON Rate: $${liveTonPrice} USDT (Real-time)`;
+          document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice} USDT (Real-time)`;
           calculateExchange();
           return;
         }
@@ -517,44 +727,37 @@
         let backupData = await backupResponse.json();
         if(backupData && backupData.price) {
           liveTonPrice = parseFloat(backupData.price);
-          let rateStatus = document.getElementById('liveRateStatus');
-          if (rateStatus) rateStatus.innerText = `📡 Live TON Rate: $${liveTonPrice.toFixed(2)} USDT (Binance)`;
+          document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice.toFixed(2)} USDT (Binance)`;
           calculateExchange();
           return;
         }
       } catch (error) {
-        let rateStatus = document.getElementById('liveRateStatus');
-        if (rateStatus) rateStatus.innerText = `📡 TON Rate: $${liveTonPrice} USDT (Fallback)`;
+        document.getElementById('liveRateStatus').innerText = `📡 TON Rate: $${liveTonPrice} USDT (Fallback)`;
       }
     }
 
     function renderUIValues() {
-      const setElText = (id, text) => { let el = document.getElementById(id); if(el) el.innerText = text; };
-
-      setElText('userBalance', balance.toFixed(2));
-      setElText('walletCoinDisplay', balance.toFixed(2));
-      setElText('tonBalance', tonBalance.toFixed(4));
-      setElText('usdtBalance', usdtBalance.toFixed(4));
-      setElText('refRewardBalance', `+${refReward.toFixed(2)} 🪙`);
-      setElText('totalInvitedCount', `${totalInvited} USERS`);
-      setElText('rankBalance', `${balance.toFixed(2)}`);
-      setElText('displayCoinVolume', `1 Coin = $${coinUsdtValue}`);
+      document.getElementById('userBalance').innerText = balance.toFixed(2);
+      document.getElementById('walletCoinDisplay').innerText = balance.toFixed(2);
+      document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
+      document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4);
+      document.getElementById('refRewardBalance').innerText = `+${refReward.toFixed(2)} 🪙`;
+      document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
+      document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
+      document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
       
       let manInput = document.getElementById('manualTonAddress');
-      if (manInput) {
-        if (savedTonAddress) {
-          manInput.value = savedTonAddress;
-          manInput.readOnly = true;
-        } else {
-          manInput.value = "";
-          manInput.readOnly = false;
-        }
+      if (savedTonAddress) {
+        manInput.value = savedTonAddress;
+        manInput.readOnly = true;
+      } else {
+        manInput.value = "";
+        manInput.readOnly = false;
       }
 
-      let methodEl = document.getElementById('withdrawMethod');
-      let method = methodEl ? methodEl.value : 'ton';
+      let method = document.getElementById('withdrawMethod').value;
       let availVal = (method === 'ton') ? tonBalance : usdtBalance;
-      setElText('availableWithdrawBalance', `Available: ${availVal.toFixed(4)}`);
+      document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
     }
     
     fetchLiveTonPrice();
@@ -562,16 +765,34 @@
 
     window.switchTab = function(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      let targetTab = document.getElementById(tabId);
-      if (targetTab) targetTab.classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    window.toggleTaskTab = function(subTab) {
+      if(subTab === 'adsTasks') {
+        document.getElementById('adsTasks').style.display = 'block';
+        document.getElementById('userTasks').style.display = 'none';
+      } else {
+        document.getElementById('adsTasks').style.display = 'none';
+        document.getElementById('userTasks').style.display = 'block';
+      }
+    }
+
+    window.toggleMiningBoxes = function() {
+      let section = document.getElementById('miningBoxesSection');
+      let arrow = document.getElementById('miningArrow');
+      if (section.classList.contains('show')) {
+        section.classList.remove('show');
+        arrow.innerText = '▼';
+      } else {
+        section.classList.add('show');
+        arrow.innerText = '▲';
+      }
     }
 
     let AdController = null;
-    try { 
-      if (window.Adsgram) {
-        AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); 
-      }
-    } catch(e) {}
+    try { AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); } catch(e) {}
 
     window.watchAdWithTimer = function(reward, adName, limitElementId, btnElementId) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
@@ -605,8 +826,9 @@
       currentLimit--;
       adLimits[limitKey] = currentLimit;
       saveToFirebase();
-      let limitEl = document.getElementById(limitKey);
-      if (limitEl) limitEl.innerText = `${currentLimit} left`;
+      if (document.getElementById(limitKey)) {
+        document.getElementById(limitKey).innerText = `${currentLimit} left`;
+      }
       alert(`+${reward} Coin added successfully!`);
 
       if (btn) {
@@ -617,7 +839,7 @@
           btn.innerText = `Wait ${cooldown}s`;
           if (cooldown <= 0) {
             clearInterval(timerInterval);
-            btn.innerText = "Watch Ad (+0.5 Coin)";
+            btn.innerText = "Watch";
             btn.disabled = false;
           }
         }, 1000);
@@ -646,31 +868,157 @@
       }
     }
 
+    const treeStates = [
+      { adsWatched: 0, limit: 20, status: 'ads' },
+      { adsWatched: 0, limit: 20, status: 'ads' },
+      { adsWatched: 0, limit: 20, status: 'ads' },
+      { adsWatched: 0, limit: 20, status: 'ads' }
+    ];
+
+    window.handleTreeAction = function(index, treeName, adType, totalDurationSec) {
+      let state = treeStates[index];
+      let btn = document.getElementById(`treeBtn-${index}`);
+      
+      if (state.status === 'ads') {
+        btn.disabled = true;
+        let playAd = () => {
+          if (adType === 'Adsgram' && AdController) {
+            AdController.show().then(() => {
+              processTreeAdStep(index, treeName, adType, totalDurationSec);
+            }).catch(() => {
+              alert("Ad skipped.");
+              btn.disabled = false;
+            });
+          } else {
+            processTreeAdStep(index, treeName, adType, totalDurationSec);
+          }
+        };
+        playAd();
+      } else if (state.status === 'mining') {
+        alert("Mining is already in progress!");
+      } else if (state.status === 'claim') {
+        claimTreeReward(index, treeName, totalDurationSec);
+      }
+    }
+
+    function processTreeAdStep(index, treeName, adType, totalDurationSec) {
+      let state = treeStates[index];
+      let btn = document.getElementById(`treeBtn-${index}`);
+      let statusEl = document.getElementById(`treeStatus-${index}`);
+      let limitEl = document.getElementById([`pineLimit`, `appleLimit`, `sakuraLimit`, `crystalLimit`][index]);
+
+      state.adsWatched++;
+      state.limit--;
+      limitEl.innerText = `${state.limit} left`;
+
+      if (state.adsWatched < 20) {
+        statusEl.innerHTML = `Watched ${state.adsWatched}/20 Ads`;
+        let cooldown = 5;
+        btn.innerText = `Wait ${cooldown}s`;
+        let tInterval = setInterval(() => {
+          cooldown--;
+          btn.innerText = `Wait ${cooldown}s`;
+          if (cooldown <= 0) {
+            clearInterval(tInterval);
+            btn.innerText = `Watch Ad (${state.adsWatched + 1}/20)`;
+            btn.disabled = false;
+          }
+        }, 1000);
+      } else {
+        state.status = 'mining';
+        statusEl.innerHTML = `Starting Mining...`;
+        startTreeMiningTimer(index, treeName, totalDurationSec);
+      }
+    }
+
+    function startTreeMiningTimer(index, treeName, totalDurationSec) {
+      let btn = document.getElementById(`treeBtn-${index}`);
+      let statusEl = document.getElementById(`treeStatus-${index}`);
+      let iconEl = document.getElementById(`treeIcon-${index}`);
+      let progFill = document.getElementById(`treeProg-${index}`);
+
+      btn.disabled = true;
+      let timeLeft = totalDurationSec;
+      iconEl.innerText = "🌿"; 
+
+      let timer = setInterval(() => {
+        timeLeft--;
+        let elapsed = totalDurationSec - timeLeft;
+        let percent = (elapsed / totalDurationSec) * 100;
+        progFill.style.width = `${percent}%`;
+
+        let hoursLeft = Math.floor(timeLeft / 3600);
+        let minsLeft = Math.floor((timeLeft % 3600) / 60);
+
+        if (percent > 75) {
+          iconEl.innerText = "🌳🍎"; 
+          statusEl.innerHTML = `🍎 Almost Ready`;
+        } else {
+          iconEl.innerText = "🌳"; 
+          statusEl.innerHTML = `⏳ Mining: ${hoursLeft}h ${minsLeft}m`;
+        }
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          iconEl.innerText = "✨🌳✨";
+          statusEl.innerHTML = `🎉 Ready to Claim!`;
+          treeStates[index].status = 'claim';
+          btn.innerText = "🎁 Claim 1 Coin";
+          btn.style.background = "#eab308";
+          btn.style.color = "#000";
+          btn.disabled = false;
+        }
+      }, 1000);
+    }
+
+    function claimTreeReward(index, treeName, totalDurationSec) {
+      addEarningsWithReferral(1.00);
+      let btn = document.getElementById(`treeBtn-${index}`);
+      let statusEl = document.getElementById(`treeStatus-${index}`);
+      let iconEl = document.getElementById(`treeIcon-${index}`);
+      let progFill = document.getElementById(`treeProg-${index}`);
+
+      treeStates[index] = { adsWatched: 0, limit: 20, status: 'ads' };
+      document.getElementById([`pineLimit`, `appleLimit`, `sakuraLimit`, `crystalLimit`][index]).innerText = `20 left`;
+
+      progFill.style.width = "0%";
+      iconEl.innerText = "🌱";
+      statusEl.innerHTML = `Watch 20 Ads to Start`;
+      btn.innerText = "Watch Ad (1/20)";
+      btn.style.background = "#22c55e";
+      btn.style.color = "#fff";
+      alert(`🎉 Success! You claimed +1.00 Coin from ${treeName}!`);
+    }
+
+    window.calculateStakeRewards = function() {
+      let coins = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
+      let planVal = document.getElementById('stakeCalcPlan').value.split('|');
+      let days = parseInt(planVal[0]);
+      let apy = parseFloat(planVal[1]);
+      
+      let totalRev = (coins * (apy / 100) * (days === 0 ? 1 : days / 365));
+      let dailyRev = days > 0 ? totalRev / days : totalRev / 365;
+      
+      document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)} Coin`;
+      document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} Coin`;
+    }
+
     window.calculateExchange = function() {
-      let amtEl = document.getElementById('exchangeAmount');
-      let currEl = document.getElementById('exchangeCurrency');
-      if (!amtEl || !currEl) return;
-      let amt = parseFloat(amtEl.value) || 0;
-      let curr = currEl.value;
+      let amt = parseFloat(document.getElementById('exchangeAmount').value) || 0;
+      let curr = document.getElementById('exchangeCurrency').value;
       let totalUsdtValue = amt * coinUsdtValue; 
       
-      let prevEx = document.getElementById('previewExchange');
-      if (!prevEx) return;
-
       if(curr === 'USDT') {
-        prevEx.innerText = `${totalUsdtValue.toFixed(4)} USDT`;
+        document.getElementById('previewExchange').innerText = `${totalUsdtValue.toFixed(4)} USDT`;
       } else {
         let tonReceived = totalUsdtValue / liveTonPrice; 
-        prevEx.innerText = `${tonReceived.toFixed(4)} TON (Worth $${totalUsdtValue.toFixed(2)})`;
+        document.getElementById('previewExchange').innerText = `${tonReceived.toFixed(4)} TON (Worth $${totalUsdtValue.toFixed(2)})`;
       }
     }
 
     window.exchangeCoins = function() {
-      let amtEl = document.getElementById('exchangeAmount');
-      let currEl = document.getElementById('exchangeCurrency');
-      if (!amtEl || !currEl) return;
-      let amt = parseFloat(amtEl.value);
-      let curr = currEl.value;
+      let amt = parseFloat(document.getElementById('exchangeAmount').value);
+      let curr = document.getElementById('exchangeCurrency').value;
       if(!amt || isNaN(amt) || amt <= 0) { alert("Please enter a valid amount."); return; }
       if(balance < amt) { alert("Insufficient coin balance!"); return; }
 
@@ -691,57 +1039,56 @@
     }
 
     window.toggleWithdrawFields = function() {
-      let methodEl = document.getElementById('withdrawMethod');
+      let method = document.getElementById('withdrawMethod').value;
       let headerTitle = document.getElementById('withdrawHeaderTitle');
       let label = document.getElementById('addressLabel');
       let input = document.getElementById('withdrawDestination');
       let amountLabel = document.getElementById('withdrawAmountLabel');
       let minLabel = document.getElementById('withdrawMinLabel');
       
-      if (!methodEl || !headerTitle || !label) return;
-      let method = methodEl.value;
-
       if(method === 'ton') {
-        headerTitle.innerText = "⚡ TON Wallet Payout (Manual)";
+        headerTitle.innerText = "⚡ TON Wallet Payout (Manual - 24 Hours Processing)";
         label.innerText = "Saved TON Wallet Address:";
-        if (amountLabel) amountLabel.innerText = "Amount (TON):";
-        if (minLabel) minLabel.innerText = `Min ${minWithdrawalAmt} TON`;
+        amountLabel.innerText = "Amount (TON):";
+        minLabel.innerText = `Min ${minWithdrawalAmt} TON`;
+        if (savedTonAddress) {
+          input.value = savedTonAddress;
+          input.readOnly = true;
+        } else {
+          input.value = "";
+          input.placeholder = "Pehle upar address save karein";
+          input.readOnly = true;
+        }
       } else {
         headerTitle.innerText = "⚡ FaucetPay instant (USDT)";
         label.innerText = "FaucetPay Email ID:";
-        if (amountLabel) amountLabel.innerText = "Amount (USDT):";
-        if (minLabel) minLabel.innerText = `Min ${minWithdrawalAmt} USDT`;
+        input.placeholder = "Enter FaucetPay email address";
+        input.readOnly = false;
+        input.value = "";
+        amountLabel.innerText = "Amount (USDT):";
+        minLabel.innerText = `Min ${minWithdrawalAmt} USDT`;
       }
       renderUIValues();
     }
 
     window.setMaxWithdraw = function() {
-      let methodEl = document.getElementById('withdrawMethod');
-      let amtInput = document.getElementById('withdrawAmount');
-      if (!methodEl || !amtInput) return;
-      let method = methodEl.value;
+      let method = document.getElementById('withdrawMethod').value;
       let maxVal = (method === 'ton') ? tonBalance : usdtBalance;
-      amtInput.value = maxVal.toFixed(4);
+      document.getElementById('withdrawAmount').value = maxVal.toFixed(4);
       calculateWithdrawFee();
     }
 
     window.calculateWithdrawFee = function() {
-      let amtInput = document.getElementById('withdrawAmount');
-      let feePrev = document.getElementById('withdrawFeePreview');
-      if (!amtInput || !feePrev) return;
-      let amt = parseFloat(amtInput.value) || 0;
+      let amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
       let fee = amt * 0.05;
       let netReceive = amt - fee;
-      feePrev.innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${netReceive.toFixed(4)}`;
+      document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${netReceive.toFixed(4)}`;
     }
 
     window.requestWithdrawal = async function() {
-      let amtInput = document.getElementById('withdrawAmount');
-      let methodEl = document.getElementById('withdrawMethod');
-      if (!amtInput || !methodEl) return;
-
-      let rawAmt = parseFloat(amtInput.value);
-      let method = methodEl.value;
+      let rawAmt = parseFloat(document.getElementById('withdrawAmount').value);
+      let dest = document.getElementById('withdrawDestination').value;
+      let method = document.getElementById('withdrawMethod').value;
 
       if(!rawAmt || isNaN(rawAmt) || rawAmt < minWithdrawalAmt) { 
         alert(`Minimum withdrawal limit is ${minWithdrawalAmt}.`); 
@@ -752,6 +1099,7 @@
       let finalReceiveAmt = rawAmt - fee; 
 
       if (method === 'faucetpay') {
+        if(!dest) { alert("Please enter FaucetPay email address."); return; }
         if(parseFloat(usdtBalance.toFixed(4)) < parseFloat(rawAmt.toFixed(4))) { 
           alert("Insufficient USDT balance for withdrawal!"); 
           return; 
@@ -762,7 +1110,7 @@
           let response = await fetch('https://gramfarming-api.onrender.com/api/withdraw-faucetpay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: finalReceiveAmt, currency: 'USDT' })
+            body: JSON.stringify({ email: dest, amount: finalReceiveAmt, currency: 'USDT' })
           });
           let result = await response.json();
 
@@ -770,8 +1118,8 @@
             usdtBalance -= rawAmt;
             saveToFirebase();
             renderUIValues();
-            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT`);
-            alert(`⚡ FaucetPay Success!`);
+            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT to ${dest}`);
+            alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} USDT sent to ${dest}.`);
           } else {
             alert(`Payout Failed: ${result.message}`);
           }
@@ -801,8 +1149,8 @@
           tonBalance -= rawAmt;
           saveToFirebase();
           renderUIValues();
-          recordTransactionHistory(`TON Withdrawal: ${finalReceiveAmt.toFixed(4)} TON`);
-          alert(`🎉 TON Withdrawal Request Successful!`);
+          recordTransactionHistory(`TON Withdrawal (Processing 24h): ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress}`);
+          alert(`🎉 TON Withdrawal Request Successful! Admin panel par update ho gaya hai.`);
         } catch (err) {
           alert("Error while processing withdrawal request to Firebase.");
         }
@@ -811,7 +1159,6 @@
 
     function recordTransactionHistory(details) {
       let historyList = document.getElementById('transactionHistoryList');
-      if (!historyList) return;
       let timeStr = new Date().toLocaleTimeString();
       let newItem = `<div style="padding: 6px 0; border-bottom: 1px solid var(--border); width: 100%;">✅ [${timeStr}] ${details}</div>`;
       if(historyList.innerText.includes("No recent withdrawals")) {
@@ -821,6 +1168,7 @@
       }
     }
 
+    window.loadTransactionHistory = function() {}
     window.stake = function(planName, days, apy) { alert(`${planName} Staked successfully!`); }
     
     window.copyRef = function() { 
@@ -843,6 +1191,18 @@
       saveToFirebase();
       renderUIValues();
       alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins to your main balance!`);
+    }
+
+    window.addNewTask = function() { 
+      let title = document.getElementById('customTaskTitle').value;
+      let link = document.getElementById('customTaskLink').value;
+      if(!title || !link) { alert("Please fill task details."); return; }
+      if(balance < 10) { alert("Insufficient balance! You need 10 coins to publish a task."); return; }
+      
+      balance -= 10;
+      saveToFirebase();
+      renderUIValues();
+      alert("Task published successfully! -10 Coins deducted.");
     }
     
     window.completeTask = function(r, n) { 
