@@ -101,9 +101,9 @@
       <span class="limit-badge" id="homeAdsgramLimit">40 left</span>
       <div>
         <div style="font-weight: bold;">Adsgram</div>
-        <small style="color:var(--text-muted);">Reward: +0.05 Coin</small>
+        <small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small>
       </div>
-      <button class="btn" id="homeAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Adsgram', 'homeAdsgramLimit', 'homeAdsgramBtn')">Watch</button>
+      <button class="btn" id="homeAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('homeAdsgramLimit', 'homeAdsgramBtn', 'Adsgram')">Watch</button>
     </div>
 
     <div class="card" style="background:var(--card-bg); border:1px solid var(--accent); cursor: pointer;" onclick="toggleMiningBoxes()">
@@ -182,18 +182,18 @@
     <div id="adsTasks">
       <div class="card flex-between">
         <span class="limit-badge" id="taskAdsgramLimit">40 left</span>
-        <div><b>Adsgram</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
-        <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Adsgram', 'taskAdsgramLimit', 'taskAdsgramBtn')">Watch</button>
+        <div><b>Adsgram</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
+        <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsgramLimit', 'taskAdsgramBtn', 'Adsgram')">Watch</button>
       </div>
       <div class="card flex-between">
         <span class="limit-badge" id="taskMonetagLimit">40 left</span>
-        <div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
-        <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Monetag', 'taskMonetagLimit', 'taskMonetagBtn')">Watch</button>
+        <div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
+        <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag')">Watch</button>
       </div>
       <div class="card flex-between">
         <span class="limit-badge" id="taskGigapubLimit">40 left</span>
-        <div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
-        <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Gigapub', 'taskGigapubLimit', 'taskGigapubBtn')">Watch</button>
+        <div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
+        <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub')">Watch</button>
       </div>
     </div>
 
@@ -525,6 +525,7 @@
     let minWithdrawalAmt = 0.05;
     let liveTonPrice = 1.50;
     let referralPercentage = 20;
+    let dynamicAdReward = 0.05; // Default reward per ad
 
     let adLimits = {
       homeAdsgramLimit: 40,
@@ -563,6 +564,13 @@
         if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
           referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
           document.getElementById('refPercentText').innerText = `Get ${referralPercentage}%`;
+        }
+        // Admin panel se reward fetch karein (rewardPerAd ya adReward)
+        if (data.rewardPerAd !== undefined || data.adReward !== undefined) {
+          dynamicAdReward = parseFloat(data.rewardPerAd !== undefined ? data.rewardPerAd : data.adReward);
+          document.querySelectorAll('.dynamic-reward-text').forEach(el => {
+            el.innerText = `+${dynamicAdReward} Coin`;
+          });
         }
         renderUIValues();
         calculateExchange();
@@ -822,7 +830,7 @@
       }
     } catch(e) {}
 
-    window.watchAdWithTimer = function(reward, adName, limitElementId, btnElementId) {
+    window.watchAdWithTimer = function(limitElementId, btnElementId, adName) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
       let currentLimit = adLimits[limitKey] !== undefined ? adLimits[limitKey] : 40;
       
@@ -838,33 +846,33 @@
         if (adName === 'Adsgram') {
           if (AdController) {
             AdController.show().then(() => {
-              completeAdReward(reward, limitKey, btn, currentLimit);
+              completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
             }).catch(() => { 
               alert("Ad skipped."); 
               if (btn) btn.disabled = false;
             });
           } else {
-            setTimeout(() => completeAdReward(reward, limitKey, btn, currentLimit), 1500);
+            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1500);
           }
         } 
         else if (adName === 'Monetag') {
           if (typeof show_889922 === 'function') { 
             show_889922().then(() => {
-              completeAdReward(reward, limitKey, btn, currentLimit);
+              completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
             }).catch(() => {
               alert("Ad skipped or failed to load.");
               if (btn) btn.disabled = false;
             });
           } else {
-            setTimeout(() => completeAdReward(reward, limitKey, btn, currentLimit), 1500);
+            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1500);
           }
         } 
         else if (adName === 'Gigapub') {
           setTimeout(() => {
-            completeAdReward(reward, limitKey, btn, currentLimit);
+            completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
           }, 1500);
         } else {
-          completeAdReward(reward, limitKey, btn, currentLimit);
+          completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
         }
       };
       playAdLogic();
