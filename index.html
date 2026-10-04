@@ -315,7 +315,7 @@
       <div style="font-size:14px; font-weight:bold; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
         <span>🔗</span> <span data-i18n="inviteEarn">Invite & Earn</span>
       </div>
-      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;" data-i18n="inviteDesc">Get 20% bonus from all 🪙 earned by your invited friends.</p>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;"><span id="refPercentText">Get 20%</span> bonus from all 🪙 earned by your invited friends.</p>
       <div style="display:flex; gap:8px;">
         <button class="btn" style="background:#334155; flex:1;" onclick="copyRef()" data-i18n="copyLinkBtn">Copy Link</button>
         <button class="btn" style="background:#0284c7; flex:1;" onclick="shareRef()" data-i18n="shareBtn">Share</button>
@@ -519,6 +519,7 @@
     let currentDailyBonus = 2.00;
     let minWithdrawalAmt = 0.05;
     let liveTonPrice = 1.50;
+    let referralPercentage = 20; // Default 20%
 
     const adLimits = {
       homeAdsgramLimit: 40,
@@ -545,6 +546,11 @@
           minWithdrawalAmt = parseFloat(data.minWithdrawal);
           document.getElementById('lblMinWithdraw').innerText = `${minWithdrawalAmt} Coins`;
         }
+        // Referral percentage fix
+        if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
+          referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
+          document.getElementById('refPercentText').innerText = `Get ${referralPercentage}%`;
+        }
         renderUIValues();
         calculateExchange();
       }
@@ -560,7 +566,7 @@
         selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking", 
         flexTitle: "Flexible Staking", flexDesc: "Unstake anytime with zero locking period.", stakeBtn: "Stake", fixedHeader: "2. Fixed Staking (Up to 20% APY)",
         referralProgram: "👥 REFERRAL PROGRAM", friendsTitle: "Friends", totalInvited: "Total invited", rewardsTitle: "Rewards", 
-        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get 20% bonus from all 🪙 earned by your invited friends.", 
+        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get bonus from all 🪙 earned by your invited friends.", 
         copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", 
         convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
         withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
@@ -577,7 +583,7 @@
         selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
         flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
         referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम", 
-        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 20% बोनस पाएं।", 
+        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से बोनस पाएं।", 
         copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", 
         convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
         withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
@@ -594,7 +600,7 @@
         selectPlan: "План:", dailyReward: "Дневная", totalPeriodReward: "Общая", flexHeader: "1. Гибкий", 
         flexTitle: "Гибкий стейкинг", flexDesc: "Без лока.", stakeBtn: "В стейкинг", fixedHeader: "2. Фиксированный стейкинг",
         referralProgram: "👥 РЕФЕРАЛЫ", friendsTitle: "Друзья", totalInvited: "Приглашено", rewardsTitle: "Награды", 
-        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус 20%", 
+        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус от рефералов.", 
         copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", 
         convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
         withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
@@ -704,7 +710,8 @@
 
     function addEarningsWithReferral(earnedAmount) {
       balance += earnedAmount;
-      let refCommission = earnedAmount * 0.20;
+      // Fixed: Using dynamic referralPercentage instead of hardcoded 0.20
+      let refCommission = earnedAmount * (referralPercentage / 100);
       refReward += refCommission;
       saveToFirebase();
       renderUIValues();
