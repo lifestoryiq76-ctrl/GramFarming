@@ -526,7 +526,7 @@
     let liveTonPrice = 1.50;
     let referralPercentage = 20;
 
-    const adLimits = {
+    let adLimits = {
       homeAdsgramLimit: 40,
       taskAdsgramLimit: 40,
       taskMonetagLimit: 40,
@@ -646,6 +646,8 @@
     document.getElementById('telegramUserName').innerText = displayName;
 
     const userRef = ref(db, 'users/' + userId);
+    
+    // --- DYNAMIC FIREBASE LISTENER FOR USER DATA ---
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
