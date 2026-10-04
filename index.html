@@ -533,7 +533,7 @@
       taskGigapubLimit: 40
     };
 
-    // --- ANNOUNCEMENT LISTENER ---
+    // --- REAL-TIME LISTENERS FOR ADMIN SETTINGS ---
     onValue(ref(db, 'adminSettings/announcement'), (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
