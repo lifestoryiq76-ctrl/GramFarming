@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gram Farming Ultimate Admin Panel</title>
+    <title>Gram Farming Admin Panel</title>
     <style>
         body { background: #0f172a; color: #f8fafc; font-family: sans-serif; padding: 15px; margin: 0; }
         .container { max-width: 700px; margin: 0 auto; }
-        .card { background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        input { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; margin-bottom: 12px; box-sizing: border-box; font-size: 14px; }
-        label { font-size: 13px; color: #94a3b8; display: block; font-weight: 500; }
+        .card { background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
+        input { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; margin-bottom: 12px; box-sizing: border-box; }
+        label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 5px; }
         button { background: #22c55e; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; }
         .btn-success { background: #10b981; padding: 6px 12px; width: auto; font-size: 13px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         h2 { color: #22c55e; margin-top: 0; font-size: 18px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
         h1 { font-size: 20px; text-align: center; color: #f8fafc; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
@@ -26,204 +24,72 @@
 <body>
 
 <div class="container">
-    <h1>⚙️ Gram Farming Ultimate Admin Panel</h1>
+    <h1>⚙️ Gram Farming Admin Panel</h1>
     
-    <form id="adminForm">
-        <!-- 1. General & Rate Settings -->
-        <div class="card">
-            <h2>🌐 General & Rate Settings</h2>
-            <div class="grid-2">
-                <div>
-                    <label>Coin USDT Value ($):</label>
-                    <input type="number" id="coinUsdtValue" step="0.001" value="0.01">
-                </div>
-                <div>
-                    <label>Daily Bonus Reward (Coins):</label>
-                    <input type="number" id="dailyBonus" step="0.01" value="2.00">
-                </div>
-                <div>
-                    <label>Referral Bonus (%):</label>
-                    <input type="number" id="refBonus" step="0.1" value="20">
-                </div>
-                <div>
-                    <label>Min. Withdrawal Limit:</label>
-                    <input type="number" id="minWithdrawal" step="0.01" value="0.05">
-                </div>
-                <div>
-                    <label>🎁 Rewards Min. Claim Coin:</label>
-                    <input type="number" id="minClaimCoin" step="1" value="10">
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. Mining Trees Configuration -->
-        <div class="card">
-            <h2>🌲 Mining Trees Configuration</h2>
-            <div style="margin-bottom: 15px;">
-                <label>Pine Tree (Reward | Mining Time | Req. Ads | Ads Interval):</label>
-                <div class="grid-4">
-                    <input type="number" id="pineReward" value="10">
-                    <input type="number" id="pineTime" value="30">
-                    <input type="number" id="pineReqAds" value="1">
-                    <input type="number" id="pineInterval" value="60">
-                </div>
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label>Apple Tree (Reward | Mining Time | Req. Ads | Ads Interval):</label>
-                <div class="grid-4">
-                    <input type="number" id="appleReward" value="25">
-                    <input type="number" id="appleTime" value="60">
-                    <input type="number" id="appleReqAds" value="2">
-                    <input type="number" id="appleInterval" value="60">
-                </div>
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label>Sakura Tree (Reward | Mining Time | Req. Ads | Ads Interval):</label>
-                <div class="grid-4">
-                    <input type="number" id="sakuraReward" value="50">
-                    <input type="number" id="sakuraTime" value="120">
-                    <input type="number" id="sakuraReqAds" value="3">
-                    <input type="number" id="sakuraInterval" value="60">
-                </div>
-            </div>
-
+    <!-- General Settings -->
+    <div class="card">
+        <h2>🌐 General Settings</h2>
+        <div class="grid-2">
             <div>
-                <label>Crystal Tree (Reward | Mining Time | Req. Ads | Ads Interval):</label>
-                <div class="grid-4">
-                    <input type="number" id="crystalReward" value="100">
-                    <input type="number" id="crystalTime" value="300">
-                    <input type="number" id="crystalReqAds" value="5">
-                    <input type="number" id="crystalInterval" value="60">
-                </div>
+                <label>Coin USDT Value ($):</label>
+                <input type="number" id="coinUsdtValue" step="0.001" value="0.01">
             </div>
-        </div>
-
-        <!-- 3. Ads Rewards Configuration & Countdown Timer -->
-        <div class="card">
-            <h2>🎟️ Ads Rewards, Countdown Timer & Daily Limit</h2>
-            
-            <div style="margin-bottom: 15px;">
-                <label>Home Sponsored Ad (Reward | Timer Sec | Daily Limit):</label>
-                <div class="grid-3">
-                    <input type="number" id="homeAdReward" value="5">
-                    <input type="number" id="homeAdTimer" value="60">
-                    <input type="number" id="homeAdLimit" value="10">
-                </div>
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label>Adsgram (Reward | Time Sec | Daily Limit):</label>
-                <div class="grid-3">
-                    <input type="number" id="adsgramReward" value="5">
-                    <input type="number" id="adsgramTimer" value="15">
-                    <input type="number" id="adsgramLimit" value="20">
-                </div>
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label>Monetag (Reward | Time Sec | Daily Limit):</label>
-                <div class="grid-3">
-                    <input type="number" id="monetagReward" value="4">
-                    <input type="number" id="monetagTimer" value="15">
-                    <input type="number" id="monetagLimit" value="20">
-                </div>
-            </div>
-
             <div>
-                <label>Gigapub (Reward | Time Sec | Daily Limit):</label>
-                <div class="grid-3">
-                    <input type="number" id="gigapubReward" value="3">
-                    <input type="number" id="gigapubTimer" value="15">
-                    <input type="number" id="gigapubLimit" value="20">
-                </div>
+                <label>Daily Bonus Reward (Coins):</label>
+                <input type="number" id="dailyBonus" step="0.01" value="2.00">
+            </div>
+            <div>
+                <label>Referral Bonus (%):</label>
+                <input type="number" id="refBonus" step="0.1" value="20">
+            </div>
+            <div>
+                <label>Min. Withdrawal Limit:</label>
+                <input type="number" id="minWithdrawal" step="0.01" value="0.05">
             </div>
         </div>
+        <button type="button" onclick="saveSettings()">💾 Save Changes to Firebase</button>
+    </div>
 
-        <!-- 4. Staking APY Percentages -->
-        <div class="card">
-            <h2>💎 Staking APY Percentages</h2>
-            <div class="grid-2">
-                <div>
-                    <label>Flexible Staking APY (%):</label>
-                    <input type="number" id="stakeFlex" step="0.1" value="4">
-                </div>
-                <div>
-                    <label>7 Days Fixed APY (%):</label>
-                    <input type="number" id="stake7d" step="0.1" value="3">
-                </div>
-                <div>
-                    <label>15 Days Fixed APY (%):</label>
-                    <input type="number" id="stake15d" step="0.1" value="4.5">
-                </div>
-                <div>
-                    <label>30 Days Fixed APY (%):</label>
-                    <input type="number" id="stake30d" step="0.1" value="6.25">
-                </div>
-                <div>
-                    <label>60 Days Fixed APY (%):</label>
-                    <input type="number" id="stake60d" step="0.1" value="8">
-                </div>
-                <div>
-                    <label>90 Days Fixed APY (%):</label>
-                    <input type="number" id="stake90d" step="0.1" value="11.25">
-                </div>
-                <div>
-                    <label>120 Days Fixed APY (%):</label>
-                    <input type="number" id="stake120d" step="0.1" value="14.5">
-                </div>
-                <div>
-                    <label>365 Days Fixed APY (%):</label>
-                    <input type="number" id="stake365d" step="0.1" value="20">
-                </div>
-            </div>
-        </div>
-
-        <button type="button" onclick="saveSettings()">💾 Save All Changes to Firebase</button>
-    </form>
-
-    <!-- 5. Instant Withdrawals Management Section -->
-    <div class="card" style="margin-top: 25px;">
-        <h2>💸 Instant Withdrawal Requests</h2>
+    <!-- Withdrawals Management -->
+    <div class="card">
+        <h2>💸 Withdrawal Requests</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>User ID / Details</th>
+                        <th>User ID</th>
                         <th>Amount</th>
-                        <th>Wallet Details</th>
-                        <th>Status / Action</th>
+                        <th>Wallet</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="withdrawalsTableBody">
-                    <tr><td colspan="4" style="text-align: center;">Loading requests...</td></tr>
+                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- 6. Users List & Staking Monitoring Section -->
-    <div class="card" style="margin-top: 25px;">
-        <h2>👥 Users, Referrals & Staking Details</h2>
+    <!-- Users List -->
+    <div class="card">
+        <h2>👥 Users & Staking Details</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
                         <th>User Details</th>
-                        <th>Invited Users (Refs)</th>
-                        <th>Staking Info (Coins & Plan)</th>
+                        <th>Referrals</th>
+                        <th>Staking Info</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
-                    <tr><td colspan="3" style="text-align: center;">Loading users...</td></tr>
+                    <tr><td colspan="3" style="text-align: center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- Firebase App & Realtime Database CDN scripts -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -241,89 +107,19 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Load all settings & user tables on startup
     window.addEventListener('DOMContentLoaded', () => {
-        // Load Settings from Firebase
-        get(ref(db, 'adminSettings')).then((snapshot) => {
+        // Load Settings
+        get(ref(db, 'adminSettings/general')).then((snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                
-                // 1. General Settings
-                if(data.general) {
-                    document.getElementById('coinUsdtValue').value = data.general.coinUsdtValue ?? 0.01;
-                    document.getElementById('dailyBonus').value = data.general.dailyBonus ?? 2.00;
-                    document.getElementById('refBonus').value = data.general.refBonus ?? 20;
-                    document.getElementById('minWithdrawal').value = data.general.minWithdrawal ?? 0.05;
-                    document.getElementById('minClaimCoin').value = data.general.minClaimCoin ?? 10;
-                }
-
-                // 2. Trees Configuration
-                if(data.trees) {
-                    if(data.trees.pine) {
-                        document.getElementById('pineReward').value = data.trees.pine.reward ?? 10;
-                        document.getElementById('pineTime').value = data.trees.pine.time ?? 30;
-                        document.getElementById('pineReqAds').value = data.trees.pine.reqAds ?? 1;
-                        document.getElementById('pineInterval').value = data.trees.pine.interval ?? 60;
-                    }
-                    if(data.trees.apple) {
-                        document.getElementById('appleReward').value = data.trees.apple.reward ?? 25;
-                        document.getElementById('appleTime').value = data.trees.apple.time ?? 60;
-                        document.getElementById('appleReqAds').value = data.trees.apple.reqAds ?? 2;
-                        document.getElementById('appleInterval').value = data.trees.apple.interval ?? 60;
-                    }
-                    if(data.trees.sakura) {
-                        document.getElementById('sakuraReward').value = data.trees.sakura.reward ?? 50;
-                        document.getElementById('sakuraTime').value = data.trees.sakura.time ?? 120;
-                        document.getElementById('sakuraReqAds').value = data.trees.sakura.reqAds ?? 3;
-                        document.getElementById('sakuraInterval').value = data.trees.sakura.interval ?? 60;
-                    }
-                    if(data.trees.crystal) {
-                        document.getElementById('crystalReward').value = data.trees.crystal.reward ?? 100;
-                        document.getElementById('crystalTime').value = data.trees.crystal.time ?? 300;
-                        document.getElementById('crystalReqAds').value = data.trees.crystal.reqAds ?? 5;
-                        document.getElementById('crystalInterval').value = data.trees.crystal.interval ?? 60;
-                    }
-                }
-
-                // 3. Ads Configuration
-                if(data.ads) {
-                    if(data.ads.homeAd) {
-                        document.getElementById('homeAdReward').value = data.ads.homeAd.reward ?? 5;
-                        document.getElementById('homeAdTimer').value = data.ads.homeAd.timer ?? 60;
-                        document.getElementById('homeAdLimit').value = data.ads.homeAd.limit ?? 10;
-                    }
-                    if(data.ads.adsgram) {
-                        document.getElementById('adsgramReward').value = data.ads.adsgram.reward ?? 5;
-                        document.getElementById('adsgramTimer').value = data.ads.adsgram.timer ?? 15;
-                        document.getElementById('adsgramLimit').value = data.ads.adsgram.limit ?? 20;
-                    }
-                    if(data.ads.monetag) {
-                        document.getElementById('monetagReward').value = data.ads.monetag.reward ?? 4;
-                        document.getElementById('monetagTimer').value = data.ads.monetag.timer ?? 15;
-                        document.getElementById('monetagLimit').value = data.ads.monetag.limit ?? 20;
-                    }
-                    if(data.ads.gigapub) {
-                        document.getElementById('gigapubReward').value = data.ads.gigapub.reward ?? 3;
-                        document.getElementById('gigapubTimer').value = data.ads.gigapub.timer ?? 15;
-                        document.getElementById('gigapubLimit').value = data.ads.gigapub.limit ?? 20;
-                    }
-                }
-
-                // 4. Staking APY Percentages
-                if(data.staking) {
-                    document.getElementById('stakeFlex').value = data.staking.flex ?? 4;
-                    document.getElementById('stake7d').value = data.staking.d7 ?? 3;
-                    document.getElementById('stake15d').value = data.staking.d15 ?? 4.5;
-                    document.getElementById('stake30d').value = data.staking.d30 ?? 6.25;
-                    document.getElementById('stake60d').value = data.staking.d60 ?? 8;
-                    document.getElementById('stake90d').value = data.staking.d90 ?? 11.25;
-                    document.getElementById('stake120d').value = data.staking.d120 ?? 14.5;
-                    document.getElementById('stake365d').value = data.staking.d365 ?? 20;
-                }
+                document.getElementById('coinUsdtValue').value = data.coinUsdtValue ?? 0.01;
+                document.getElementById('dailyBonus').value = data.dailyBonus ?? 2.00;
+                document.getElementById('refBonus').value = data.refBonus ?? 20;
+                document.getElementById('minWithdrawal').value = data.minWithdrawal ?? 0.05;
             }
         });
 
-        // Load Withdrawal Requests
+        // Load Withdrawals
         get(ref(db, 'withdrawals')).then((snapshot) => {
             const tbody = document.getElementById('withdrawalsTableBody');
             tbody.innerHTML = '';
@@ -331,135 +127,47 @@
                 snapshot.forEach((childSnapshot) => {
                     const id = childSnapshot.key;
                     const w = childSnapshot.val();
-                    const statusText = w.status === 'Successful ✅' ? '<span style="color:#22c55e;">Successful ✅</span>' : `<button class="btn-success" onclick="markSuccess('${id}')">Mark Successful ✅</button>`;
-                    
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${w.username || w.userId || 'User'}</td>
-                            <td>${w.amount}</td>
-                            <td>${w.walletDetails || w.wallet || 'N/A'}</td>
-                            <td>${statusText}</td>
-                        </tr>
-                    `;
+                    const statusText = w.status === 'Successful ✅' ? '<span style="color:#22c55e;">Successful ✅</span>' : `<button class="btn-success" onclick="markSuccess('${id}')">Approve ✅</button>`;
+                    tbody.innerHTML += `<tr><td>${w.userId \vert{}\vert{} 'N/A'}</td><td>${w.amount}</td><td>${w.walletDetails \vert{}\vert{} 'N/A'}</td><td>${statusText}</td></tr>`;
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No withdrawal requests found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No requests found.</td></tr>`;
             }
         });
 
-        // Load Users List, Referrals & Staking
+        // Load Users
         get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '';
+            tbody.innerHTML = ``;
             if (snapshot.exists()) {
                 snapshot.forEach((childSnapshot) => {
                     const u = childSnapshot.val();
-                    const refCount = u.referrals ? Object.keys(u.referrals).length : (u.invitedCount || 0);
-                    const stakingInfo = u.staking ? `${u.staking.amount || 0} Coins (${u.staking.plan || 'Flexible'})` : 'No Active Staking';
-
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${u.name || u.username || childSnapshot.key}</td>
-                            <td>👥 ${refCount} Users</td>
-                            <td>💎 ${stakingInfo}</td>
-                        </tr>
-                    `;
+                    const refCount = u.referrals ? Object.keys(u.referrals).length : 0;
+                    tbody.innerHTML += `<tr><td>${u.name || u.username || childSnapshot.key}</td><td>👥 ${refCount}</td><td>💎 ${u.staking ? 'Active' : 'None'}</td></tr>`;
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No users registered yet.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No users found.</td></tr>`;
             }
         });
     });
 
-    // Mark Withdrawal as Successful
     window.markSuccess = function(withdrawId) {
         update(ref(db, 'withdrawals/' + withdrawId), { status: 'Successful ✅' })
-            .then(() => {
-                alert('Marked as Successful ✅');
-                location.reload();
-            })
-            .catch((error) => {
-                alert('Error: ' + error.message);
-            });
+            .then(() => { alert('Approved!'); location.reload(); })
+            .catch((error) => alert('Error: ' + error.message));
     };
 
-    // Save configuration function (All Sections)
     window.saveSettings = function() {
         const settingsData = {
-            general: {
-                coinUsdtValue: parseFloat(document.getElementById('coinUsdtValue').value),
-                dailyBonus: parseFloat(document.getElementById('dailyBonus').value),
-                refBonus: parseFloat(document.getElementById('refBonus').value),
-                minWithdrawal: parseFloat(document.getElementById('minWithdrawal').value),
-                minClaimCoin: parseFloat(document.getElementById('minClaimCoin').value)
-            },
-            trees: {
-                pine: {
-                    reward: parseFloat(document.getElementById('pineReward').value),
-                    time: parseFloat(document.getElementById('pineTime').value),
-                    reqAds: parseFloat(document.getElementById('pineReqAds').value),
-                    interval: parseFloat(document.getElementById('pineInterval').value)
-                },
-                apple: {
-                    reward: parseFloat(document.getElementById('appleReward').value),
-                    time: parseFloat(document.getElementById('appleTime').value),
-                    reqAds: parseFloat(document.getElementById('appleReqAds').value),
-                    interval: parseFloat(document.getElementById('appleInterval').value)
-                },
-                sakura: {
-                    reward: parseFloat(document.getElementById('sakuraReward').value),
-                    time: parseFloat(document.getElementById('sakuraTime').value),
-                    reqAds: parseFloat(document.getElementById('sakuraReqAds').value),
-                    interval: parseFloat(document.getElementById('sakuraInterval').value)
-                },
-                crystal: {
-                    reward: parseFloat(document.getElementById('crystalReward').value),
-                    time: parseFloat(document.getElementById('crystalTime').value),
-                    reqAds: parseFloat(document.getElementById('crystalReqAds').value),
-                    interval: parseFloat(document.getElementById('crystalInterval').value)
-                }
-            },
-            ads: {
-                homeAd: {
-                    reward: parseFloat(document.getElementById('homeAdReward').value),
-                    timer: parseFloat(document.getElementById('homeAdTimer').value),
-                    limit: parseFloat(document.getElementById('homeAdLimit').value)
-                },
-                adsgram: {
-                    reward: parseFloat(document.getElementById('adsgramReward').value),
-                    timer: parseFloat(document.getElementById('adsgramTimer').value),
-                    limit: parseFloat(document.getElementById('adsgramLimit').value)
-                },
-                monetag: {
-                    reward: parseFloat(document.getElementById('monetagReward').value),
-                    timer: parseFloat(document.getElementById('monetagTimer').value),
-                    limit: parseFloat(document.getElementById('monetagLimit').value)
-                },
-                gigapub: {
-                    reward: parseFloat(document.getElementById('gigapubReward').value),
-                    timer: parseFloat(document.getElementById('gigapubTimer').value),
-                    limit: parseFloat(document.getElementById('gigapubLimit').value)
-                }
-            },
-            staking: {
-                flex: parseFloat(document.getElementById('stakeFlex').value),
-                d7: parseFloat(document.getElementById('stake7d').value),
-                d15: parseFloat(document.getElementById('stake15d').value),
-                d30: parseFloat(document.getElementById('stake30d').value),
-                d60: parseFloat(document.getElementById('stake60d').value),
-                d90: parseFloat(document.getElementById('stake90d').value),
-                d120: parseFloat(document.getElementById('stake120d').value),
-                d365: parseFloat(document.getElementById('stake365d').value)
-            }
+            coinUsdtValue: parseFloat(document.getElementById('coinUsdtValue').value),
+            dailyBonus: parseFloat(document.getElementById('dailyBonus').value),
+            refBonus: parseFloat(document.getElementById('refBonus').value),
+            minWithdrawal: parseFloat(document.getElementById('minWithdrawal').value)
         };
 
-        set(ref(db, 'adminSettings'), settingsData)
-            .then(() => {
-                alert('All Settings Saved Successfully to Firebase Database! 🚀');
-            })
-            .catch((error) => {
-                alert('Error: ' + error.message);
-            });
+        set(ref(db, 'adminSettings/general'), settingsData)
+            .then(() => alert('Settings Saved Successfully! 🚀'))
+            .catch((error) => alert('Error: ' + error.message));
     };
 </script>
 
