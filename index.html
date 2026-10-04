@@ -1,3 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gram Farming Mini App</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #ffffff;
+      --text-muted: #94a3b8;
+      --accent: #22c55e;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container {
+      padding: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+      flex: 1;
+      padding-bottom: 80px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button:disabled {
+      background: #475569;
+      cursor: not-allowed;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: white;
+      box-sizing: border-box;
+      margin-top: 5px;
+      margin-bottom: 15px;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+    .nav-item {
+      color: var(--text-muted);
+      text-align: center;
+      font-size: 12px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: auto;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-item.active { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <!-- ERROR CATCHER DEBUGGER -->
+  <div id="errorLog" style="position:fixed; bottom:60px; left:0; right:0; background:rgba(239,68,68,0.95); color:white; padding:8px; font-size:11px; z-index:99999; max-height:100px; overflow-y:auto; display:none;"></div>
+  <script>
+    window.onerror = function(msg, url, line) {
+      let errDiv = document.getElementById('errorLog');
+      if(errDiv) {
+        errDiv.style.display = 'block';
+        errDiv.innerHTML += `<div>⚠️ ${msg} (Line: ${line})</div>`;
+      }
+    };
+  </script>
+
+  <div class="container">
+    <!-- USER HEADER -->
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div id="telegramUserName" style="font-weight: bold; font-size: 16px; color: var(--accent);">👑 Loading...</div>
+        <div style="font-size: 12px; color: var(--text-muted);" id="displayCoinVolume">1 Coin = $0.01</div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 14px; color: var(--text-muted);" data-i18n="balanceText">Balance</div>
+        <div style="font-size: 20px; font-weight: bold;" id="userBalance">0.00</div>
+      </div>
+    </div>
+
+    <!-- HOME TAB -->
+    <div id="homeTab" class="tab-content active">
+      <div class="card">
+        <h3 style="margin-top:0;" data-i18n="homeTitle">🏠 Home</h3>
+        <p style="color: var(--text-muted); font-size: 14px;" data-i18n="clickToClaim">Click to Claim!</p>
+        <button onclick="claimDailyBonus()">🎁 Claim Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins)</button>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0;">⚡ Earn Coins (Adsgram)</h3>
+        <p style="color: var(--text-muted); font-size: 14px;">Watch ads to boost your earnings.</p>
+        <button id="homeWatchBtn" onclick="watchAdWithTimer(0.5, 'Adsgram', 'homeAdsgramLimit', 'homeWatchBtn')">
+          Watch Ad (+0.5 Coin) [<span id="homeAdsgramLimit">40</span> left]
+        </button>
+      </div>
+    </div>
+
+    <!-- TASKS TAB -->
+    <div id="tasksTab" class="tab-content">
+      <div class="card">
+        <h3 style="margin-top:0;" data-i18n="tasksOffers">📋 Tasks & Offers</h3>
+        <button onclick="completeTask(10, 'Telegram Join')">📢 Join Telegram Channel (+10 Coins)</button>
+      </div>
+    </div>
+
+    <!-- STAKING TAB -->
+    <div id="stakingTab" class="tab-content">
+      <div class="card">
+        <h3 style="margin-top:0;" data-i18n="stakingOptions">💎 Staking Options</h3>
+        <p style="color: var(--text-muted); font-size: 14px;">Stake your coins and earn passive rewards daily.</p>
+        <button onclick="stake('Flexible', 0, 10)">Stake Now (10% APY)</button>
+      </div>
+    </div>
+
+    <!-- REFERRALS TAB -->
+    <div id="referralsTab" class="tab-content">
+      <div class="card">
+        <h3 style="margin-top:0;" data-i18n="referralProgram">👥 REFERRAL PROGRAM</h3>
+        <p style="color: var(--text-muted); font-size: 14px;" data-i18n="inviteDesc">Get bonus from all 🪙 earned by your invited friends.</p>
+        <div style="margin: 15px 0;">
+          <div>Total Invited: <span id="totalInvitedCount" style="color: var(--accent); font-weight: bold;">0 USERS</span></div>
+          <div>Rewards: <span id="refRewardBalance" style="color: var(--accent); font-weight: bold;">+0.00 🪙</span></div>
+        </div>
+        <button onclick="copyRef()">📋 Copy Referral Link</button>
+        <button onclick="shareRef()" style="background: #2563eb; margin-top: 8px;">🚀 Share on Telegram</button>
+        <button onclick="claimRefRewards()" style="background: #eab308; color: #000; margin-top: 8px;">🎁 Claim Referral Rewards</button>
+      </div>
+    </div>
+
+    <!-- WALLET & EXCHANGE TAB -->
+    <div id="walletTab" class="tab-content">
+      <div class="card">
+        <h3 style="margin-top:0;" data-i18n="walletExchange">💼 Wallet & Exchange</h3>
+        <div>Coins Balance: <span id="walletCoinDisplay" style="font-weight: bold; color: var(--accent);">0.00</span></div>
+        <div>TON Balance: <span id="tonBalance" style="font-weight: bold;">0.0000</span> TON</div>
+        <div>USDT Balance: <span id="usdtBalance" style="font-weight: bold;">0.0000</span> USDT</div>
+
+        <hr style="border-color: var(--border); margin: 20px 0;">
+
+        <h4 style="margin-bottom: 5px;">🔄 Exchange Coins</h4>
+        <div id="liveRateStatus" style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">📡 Live TON Rate: Loading...</div>
+        
+        <label style="font-size: 13px;">Convert Coin to:</label>
+        <select id="exchangeCurrency" onchange="calculateExchange()" style="width:100%; padding:10px; border-radius:10px; background:#0f172a; color:white; border:1px solid var(--border); margin-top:5px; margin-bottom:10px;">
+          <option value="USDT">USDT</option>
+          <option value="TON">TON</option>
+        </select>
+
+        <label style="font-size: 13px;">Coin Amount to Exchange:</label>
+        <input type="number" id="exchangeAmount" placeholder="Enter coins" oninput="calculateExchange()">
+        <div style="font-size: 13px; margin-bottom: 10px; color: var(--text-muted);">You will get: <span id="previewExchange" style="color: var(--accent); font-weight: bold;">0.00</span></div>
+        <button onclick="exchangeCoins()">Exchange Now</button>
+
+        <hr style="border-color: var(--border); margin: 20px 0;">
+
+        <h4 id="withdrawHeaderTitle" style="margin-bottom: 5px;">📤 Withdraw Funds</h4>
+        <label style="font-size: 13px;" data-i18n="withdrawMethod">Withdrawal Method:</label>
+        <select id="withdrawMethod" onchange="toggleWithdrawFields()" style="width:100%; padding:10px; border-radius:10px; background:#0f172a; color:white; border:1px solid var(--border); margin-top:5px; margin-bottom:10px;">
+          <option value="ton">TON Wallet Address</option>
+          <option value="faucetpay">Faucetpay email id</option>
+        </select>
+
+        <label style="font-size: 13px;" id="addressLabel">TON Wallet Address:</label>
+        <div style="display: flex; gap: 5px;">
+          <input type="text" id="manualTonAddress" placeholder="Enter TON address or save below">
+        </div>
+        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+          <button onclick="saveTonAddress()" style="background: #2563eb; margin-top: 0; font-size: 13px; padding: 8px;">Save Address</button>
+          <button onclick="disconnectTonAddress()" style="background: #ef4444; margin-top: 0; font-size: 13px; padding: 8px;">Disconnect</button>
+        </div>
+
+        <label style="font-size: 13px;" id="withdrawAmountLabel">Amount (TON):</label>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <input type="number" id="withdrawAmount" placeholder="0.00" oninput="calculateWithdrawFee()" style="margin-bottom: 0;">
+          <button onclick="setMaxWithdraw()" style="width: 80px; margin-top: 0; background: #334155; font-size: 13px; padding: 12px 5px;">MAX</button>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 5px; margin-bottom: 10px;">
+          <span id="availableWithdrawBalance">Available: 0.0000</span>
+          <span id="withdrawMinLabel">Min 0.05 TON</span>
+        </div>
+        <div id="withdrawFeePreview" style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Fee (5%): 0.00 | You will receive: 0.00</div>
+        <button onclick="requestWithdrawal()">Submit Withdraw</button>
+
+        <div id="transactionHistoryList" style="margin-top: 15px; font-size: 12px; color: var(--text-muted);">No recent withdrawals.</div>
+      </div>
+    </div>
+
+    <!-- RANK TAB -->
+    <div id="rankTab" class="tab-content">
+      <div class="card">
+        <h3 style="margin-top:0;" data-i18n="topEarnersRank">Top Earners Rank</h3>
+        <p style="color: var(--text-muted); font-size: 14px;" data-i18n="liveRankingStats">Your live ranking and stats</p>
+        <div>Your Balance: <span id="rankBalance" style="color: var(--accent); font-weight: bold;">0.00</span> Coins</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <div class="nav-bar">
+    <button class="nav-item active" onclick="switchTab('homeTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+      🏠 <div data-i18n="navHome">Home</div>
+    </button>
+    <button class="nav-item" onclick="switchTab('tasksTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+      📋 <div data-i18n="navTasks">Tasks</div>
+    </button>
+    <button class="nav-item" onclick="switchTab('stakingTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+      💎 <div data-i18n="navStaking">Staking</div>
+    </button>
+    <button class="nav-item" onclick="switchTab('referralsTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+      👥 <div data-i18n="navReferrals">Referrals</div>
+    </button>
+    <button class="nav-item" onclick="switchTab('walletTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+      💼 <div data-i18n="navWallet">Wallet</div>
+    </button>
+    <button class="nav-item" onclick="switchTab('rankTab'); this.parentElement.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+      🏆 <div data-i18n="navRank">Rank</div>
+    </button>
+  </div>
+
   <!-- FIREBASE & APP SCRIPT LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -66,10 +329,7 @@
     let currentRefBonusPercent = 20;
 
     const adLimits = {
-      homeAdsgramLimit: 40,
-      taskAdsgramLimit: 40,
-      taskMonetagLimit: 40,
-      taskGigapubLimit: 40
+      homeAdsgramLimit: 40
     };
 
     // --- LIVE ADMIN SETTINGS LISTENER ---
@@ -83,15 +343,11 @@
         }
         if (data.dailyBonus !== undefined) {
           currentDailyBonus = parseFloat(data.dailyBonus);
-          let lblBonus = document.getElementById('lblDailyBonus');
-          if (lblBonus) lblBonus.innerText = `${currentDailyBonus} Coins`;
           let bonusDisp = document.getElementById('dailyBonusDisplay');
           if (bonusDisp) bonusDisp.innerText = currentDailyBonus.toFixed(2);
         }
         if (data.minWithdrawal !== undefined) {
           minWithdrawalAmt = parseFloat(data.minWithdrawal);
-          let lblMin = document.getElementById('lblMinWithdraw');
-          if (lblMin) lblMin.innerText = `${minWithdrawalAmt} Coins`;
         }
         if (data.refBonus !== undefined) {
           currentRefBonusPercent = parseFloat(data.refBonus);
@@ -101,84 +357,27 @@
       }
     });
 
-    const translations = {
-      en: { 
-        homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
-        clickToClaim: "Click to Claim!", watchBtn: "Watch", 
-        tasksOffers: "📋 Tasks & Offers", adsTasksTab: "Ads Tasks", userTasksTab: "User Tasks", 
-        addYourTask: "➕ Add Your Task", publishTaskBtn: "Publish Task (-10 Coin)", joinTelegram: "📢 Join Telegram Channel", reward10Coins: "Reward: +10 Coin", completeBtn: "Complete", 
-        stakingOptions: "💎 Staking Options", stakingCalc: "🧮 Staking Calculator & Preview", enterStakingCoins: "Enter Staking Coins:", 
-        selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking", 
-        flexTitle: "Flexible Staking", flexDesc: "Unstake anytime with zero locking period.", stakeBtn: "Stake", fixedHeader: "2. Fixed Staking (Up to 20% APY)",
-        referralProgram: "👥 REFERRAL PROGRAM", friendsTitle: "Friends", totalInvited: "Total invited", rewardsTitle: "Rewards", 
-        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get bonus from all 🪙 earned by your invited friends.", 
-        copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", 
-        convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
-        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "Amount:", tonAddressLabel: "TON Wallet Address:", submitWithdrawBtn: "Submit Withdraw", 
-        topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
-        navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" 
-      },
-      hi: { 
-        homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", 
-        clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", 
-        tasksOffers: "📋 टास्क और ऑफर्स", adsTasksTab: "एड्स टास्क", userTasksTab: "यूजर टास्क", 
-        addYourTask: "➕ अपना टास्क जोड़ें", publishTaskBtn: "टास्क पब्लिश करें (-10 कॉइन)", joinTelegram: "📢 टेलीग्राम चैनल ज्वाइन करें", reward10Coins: "इनाम: +10 कॉइन", completeBtn: "पूरा करें", 
-        stakingOptions: "💎 स्टेकिंग विकल्प", stakingCalc: "🧮 स्टेकिंग कैलकुलेटर और पूर्वावलोकन", enterStakingCoins: "स्टेकिंग कॉइन दर्ज करें:", 
-        selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
-        flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
-        referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम", 
-        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से बोनस पाएं।", 
-        copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", 
-        convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
-        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "मात्रा:", tonAddressLabel: "TON Wallet पता:", submitWithdrawBtn: "निकासी सबमिट करें", 
-        topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
-        navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" 
-      },
-      ru: { 
-        homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", 
-        clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", 
-        tasksOffers: "📋 Задания", adsTasksTab: "Реклама", userTasksTab: "Пользовательские", 
-        addYourTask: "➕ Добавить", publishTaskBtn: "Опубликовать", joinTelegram: "📢 Подписаться", reward10Coins: "Награда: +10", completeBtn: "Выполнить", 
-        stakingOptions: "💎 Стейкинг", stakingCalc: "🧮 Калькулятор", enterStakingCoins: "Введите монеты:", 
-        selectPlan: "План:", dailyReward: "Дневная", totalPeriodReward: "Общая", flexHeader: "1. Гибкий", 
-        flexTitle: "Гибкий стейкинг", flexDesc: "Без лока.", stakeBtn: "В стейкинг", fixedHeader: "2. Фиксированный стейкинг",
-        referralProgram: "👥 РЕФЕРАЛЫ", friendsTitle: "Друзья", totalInvited: "Приглашено", rewardsTitle: "Награды", 
-        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус", 
-        copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", 
-        convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
-        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "Сумма:", tonAddressLabel: "Адрес TON Wallet:", submitWithdrawBtn: "Вывести", 
-        topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
-        navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRating: "Рейтинг" 
+    // --- SAFE TELEGRAM INITIALIZATION ---
+    let tg = null;
+    try {
+      if (window.Telegram && window.Telegram.WebApp) {
+        tg = window.Telegram.WebApp;
+        tg.expand();
       }
-    };
-
-    window.changeLanguage = function(lang) {
-      const dict = translations[lang] || translations['en'];
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) el.innerText = dict[key];
-      });
-      toggleWithdrawFields();
-    }
-
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    } catch(e) {}
 
     let displayName = "👑 My Account";
     let userId = "12345";
     let startParam = "";
 
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
       let user = tg.initDataUnsafe.user;
       let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
       userId = String(user.id);
     }
 
-    if (tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
       startParam = tg.initDataUnsafe.start_param;
     }
 
@@ -215,10 +414,7 @@
           totalInvited: 0,
           savedTonAddress: "",
           referredBy: referrerId || "none",
-          homeAdsgramLimit: 40,
-          taskAdsgramLimit: 40,
-          taskMonetagLimit: 40,
-          taskGigapubLimit: 40
+          homeAdsgramLimit: 40
         });
       }
     });
@@ -234,9 +430,6 @@
         savedTonAddress = data.savedTonAddress || "";
 
         if (data.homeAdsgramLimit !== undefined) adLimits.homeAdsgramLimit = data.homeAdsgramLimit;
-        if (data.taskAdsgramLimit !== undefined) adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
-        if (data.taskMonetagLimit !== undefined) adLimits.taskMonetagLimit = data.taskMonetagLimit;
-        if (data.taskGigapubLimit !== undefined) adLimits.taskGigapubLimit = data.taskGigapubLimit;
       }
       renderUIValues();
       toggleWithdrawFields();
@@ -250,10 +443,7 @@
         refReward: refReward,
         totalInvited: totalInvited,
         savedTonAddress: savedTonAddress,
-        homeAdsgramLimit: adLimits.homeAdsgramLimit,
-        taskAdsgramLimit: adLimits.taskAdsgramLimit,
-        taskMonetagLimit: adLimits.taskMonetagLimit,
-        taskGigapubLimit: adLimits.taskGigapubLimit
+        homeAdsgramLimit: adLimits.homeAdsgramLimit
       });
     }
 
@@ -372,38 +562,16 @@
 
     window.switchTab = function(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       let targetTab = document.getElementById(tabId);
       if (targetTab) targetTab.classList.add('active');
     }
 
-    window.toggleTaskTab = function(subTab) {
-      let adsTasksEl = document.getElementById('adsTasks');
-      let userTasksEl = document.getElementById('userTasks');
-      if(subTab === 'adsTasks') {
-        if (adsTasksEl) adsTasksEl.style.display = 'block';
-        if (userTasksEl) userTasksEl.style.display = 'none';
-      } else {
-        if (adsTasksEl) adsTasksEl.style.display = 'none';
-        if (userTasksEl) userTasksEl.style.display = 'block';
-      }
-    }
-
-    window.toggleMiningBoxes = function() {
-      let section = document.getElementById('miningBoxesSection');
-      let arrow = document.getElementById('miningArrow');
-      if (!section || !arrow) return;
-      if (section.classList.contains('show')) {
-        section.classList.remove('show');
-        arrow.innerText = '▼';
-      } else {
-        section.classList.add('show');
-        arrow.innerText = '▲';
-      }
-    }
-
     let AdController = null;
-    try { AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); } catch(e) {}
+    try { 
+      if (window.Adsgram) {
+        AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); 
+      }
+    } catch(e) {}
 
     window.watchAdWithTimer = function(reward, adName, limitElementId, btnElementId) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
@@ -449,7 +617,7 @@
           btn.innerText = `Wait ${cooldown}s`;
           if (cooldown <= 0) {
             clearInterval(timerInterval);
-            btn.innerText = "Watch";
+            btn.innerText = "Watch Ad (+0.5 Coin)";
             btn.disabled = false;
           }
         }, 1000);
@@ -476,155 +644,6 @@
       } else {
         verifyAndClaim();
       }
-    }
-
-    const treeStates = [
-      { adsWatched: 0, limit: 20, status: 'ads' },
-      { adsWatched: 0, limit: 20, status: 'ads' },
-      { adsWatched: 0, limit: 20, status: 'ads' },
-      { adsWatched: 0, limit: 20, status: 'ads' }
-    ];
-
-    window.handleTreeAction = function(index, treeName, adType, totalDurationSec) {
-      let state = treeStates[index];
-      let btn = document.getElementById(`treeBtn-${index}`);
-      
-      if (state.status === 'ads') {
-        if (btn) btn.disabled = true;
-        let playAd = () => {
-          if (adType === 'Adsgram' && AdController) {
-            AdController.show().then(() => {
-              processTreeAdStep(index, treeName, adType, totalDurationSec);
-            }).catch(() => {
-              alert("Ad skipped.");
-              if (btn) btn.disabled = false;
-            });
-          } else {
-            processTreeAdStep(index, treeName, adType, totalDurationSec);
-          }
-        };
-        playAd();
-      } else if (state.status === 'mining') {
-        alert("Mining is already in progress!");
-      } else if (state.status === 'claim') {
-        claimTreeReward(index, treeName, totalDurationSec);
-      }
-    }
-
-    function processTreeAdStep(index, treeName, adType, totalDurationSec) {
-      let state = treeStates[index];
-      let btn = document.getElementById(`treeBtn-${index}`);
-      let statusEl = document.getElementById(`treeStatus-${index}`);
-      let limitElId = [`pineLimit`, `appleLimit`, `sakuraLimit`, `crystalLimit`][index];
-      let limitEl = document.getElementById(limitElId);
-
-      state.adsWatched++;
-      state.limit--;
-      if (limitEl) limitEl.innerText = `${state.limit} left`;
-
-      if (state.adsWatched < 20) {
-        if (statusEl) statusEl.innerHTML = `Watched ${state.adsWatched}/20 Ads`;
-        let cooldown = 5;
-        if (btn) btn.innerText = `Wait ${cooldown}s`;
-        let tInterval = setInterval(() => {
-          cooldown--;
-          if (btn) btn.innerText = `Wait ${cooldown}s`;
-          if (cooldown <= 0) {
-            clearInterval(tInterval);
-            if (btn) {
-              btn.innerText = `Watch Ad (${state.adsWatched + 1}/20)`;
-              btn.disabled = false;
-            }
-          }
-        }, 1000);
-      } else {
-        state.status = 'mining';
-        if (statusEl) statusEl.innerHTML = `Starting Mining...`;
-        startTreeMiningTimer(index, treeName, totalDurationSec);
-      }
-    }
-
-    function startTreeMiningTimer(index, treeName, totalDurationSec) {
-      let btn = document.getElementById(`treeBtn-${index}`);
-      let statusEl = document.getElementById(`treeStatus-${index}`);
-      let iconEl = document.getElementById(`treeIcon-${index}`);
-      let progFill = document.getElementById(`treeProg-${index}`);
-
-      if (btn) btn.disabled = true;
-      let timeLeft = totalDurationSec;
-      if (iconEl) iconEl.innerText = "🌿"; 
-
-      let timer = setInterval(() => {
-        timeLeft--;
-        let elapsed = totalDurationSec - timeLeft;
-        let percent = (elapsed / totalDurationSec) * 100;
-        if (progFill) progFill.style.width = `${percent}%`;
-
-        let hoursLeft = Math.floor(timeLeft / 3600);
-        let minsLeft = Math.floor((timeLeft % 3600) / 60);
-
-        if (percent > 75) {
-          if (iconEl) iconEl.innerText = "🌳🍎"; 
-          if (statusEl) statusEl.innerHTML = `🍎 Almost Ready`;
-        } else {
-          if (iconEl) iconEl.innerText = "🌳"; 
-          if (statusEl) statusEl.innerHTML = `⏳ Mining: ${hoursLeft}h ${minsLeft}m`;
-        }
-
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          if (iconEl) iconEl.innerText = "✨🌳✨";
-          if (statusEl) statusEl.innerHTML = `🎉 Ready to Claim!`;
-          treeStates[index].status = 'claim';
-          if (btn) {
-            btn.innerText = "🎁 Claim 1 Coin";
-            btn.style.background = "#eab308";
-            btn.style.color = "#000";
-            btn.disabled = false;
-          }
-        }
-      }, 1000);
-    }
-
-    function claimTreeReward(index, treeName, totalDurationSec) {
-      addEarningsWithReferral(1.00);
-      let btn = document.getElementById(`treeBtn-${index}`);
-      let statusEl = document.getElementById(`treeStatus-${index}`);
-      let iconEl = document.getElementById(`treeIcon-${index}`);
-      let progFill = document.getElementById(`treeProg-${index}`);
-
-      treeStates[index] = { adsWatched: 0, limit: 20, status: 'ads' };
-      let limitElId = [`pineLimit`, `appleLimit`, `sakuraLimit`, `crystalLimit`][index];
-      let limitEl = document.getElementById(limitElId);
-      if (limitEl) limitEl.innerText = `20 left`;
-
-      if (progFill) progFill.style.width = "0%";
-      if (iconEl) iconEl.innerText = "🌱";
-      if (statusEl) statusEl.innerHTML = `Watch 20 Ads to Start`;
-      if (btn) {
-        btn.innerText = "Watch Ad (1/20)";
-        btn.style.background = "#22c55e";
-        btn.style.color = "#fff";
-      }
-      alert(`🎉 Success! You claimed +1.00 Coin from ${treeName}!`);
-    }
-
-    window.calculateStakeRewards = function() {
-      let inputEl = document.getElementById('stakeCalcInput');
-      let planEl = document.getElementById('stakeCalcPlan');
-      if (!inputEl || !planEl) return;
-      let coins = parseFloat(inputEl.value) || 0;
-      let planVal = planEl.value.split('|');
-      let days = parseInt(planVal[0]);
-      let apy = parseFloat(planVal[1]);
-      
-      let totalRev = (coins * (apy / 100) * (days === 0 ? 1 : days / 365));
-      let dailyRev = days > 0 ? totalRev / days : totalRev / 365;
-      
-      let prevDaily = document.getElementById('previewDaily');
-      let prevTotal = document.getElementById('previewTotal');
-      if (prevDaily) prevDaily.innerText = `${dailyRev.toFixed(4)} Coin`;
-      if (prevTotal) prevTotal.innerText = `${totalRev.toFixed(4)} Coin`;
     }
 
     window.calculateExchange = function() {
@@ -679,28 +698,17 @@
       let amountLabel = document.getElementById('withdrawAmountLabel');
       let minLabel = document.getElementById('withdrawMinLabel');
       
-      if (!methodEl || !headerTitle || !label || !input) return;
+      if (!methodEl || !headerTitle || !label) return;
       let method = methodEl.value;
 
       if(method === 'ton') {
-        headerTitle.innerText = "⚡ TON Wallet Payout (Manual - 24 Hours Processing)";
+        headerTitle.innerText = "⚡ TON Wallet Payout (Manual)";
         label.innerText = "Saved TON Wallet Address:";
         if (amountLabel) amountLabel.innerText = "Amount (TON):";
         if (minLabel) minLabel.innerText = `Min ${minWithdrawalAmt} TON`;
-        if (savedTonAddress) {
-          input.value = savedTonAddress;
-          input.readOnly = true;
-        } else {
-          input.value = "";
-          input.placeholder = "Pehle upar address save karein";
-          input.readOnly = true;
-        }
       } else {
         headerTitle.innerText = "⚡ FaucetPay instant (USDT)";
         label.innerText = "FaucetPay Email ID:";
-        input.placeholder = "Enter FaucetPay email address";
-        input.readOnly = false;
-        input.value = "";
         if (amountLabel) amountLabel.innerText = "Amount (USDT):";
         if (minLabel) minLabel.innerText = `Min ${minWithdrawalAmt} USDT`;
       }
@@ -729,12 +737,10 @@
 
     window.requestWithdrawal = async function() {
       let amtInput = document.getElementById('withdrawAmount');
-      let destInput = document.getElementById('withdrawDestination');
       let methodEl = document.getElementById('withdrawMethod');
-      if (!amtInput || !destInput || !methodEl) return;
+      if (!amtInput || !methodEl) return;
 
       let rawAmt = parseFloat(amtInput.value);
-      let dest = destInput.value;
       let method = methodEl.value;
 
       if(!rawAmt || isNaN(rawAmt) || rawAmt < minWithdrawalAmt) { 
@@ -746,7 +752,6 @@
       let finalReceiveAmt = rawAmt - fee; 
 
       if (method === 'faucetpay') {
-        if(!dest) { alert("Please enter FaucetPay email address."); return; }
         if(parseFloat(usdtBalance.toFixed(4)) < parseFloat(rawAmt.toFixed(4))) { 
           alert("Insufficient USDT balance for withdrawal!"); 
           return; 
@@ -757,7 +762,7 @@
           let response = await fetch('https://gramfarming-api.onrender.com/api/withdraw-faucetpay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: dest, amount: finalReceiveAmt, currency: 'USDT' })
+            body: JSON.stringify({ amount: finalReceiveAmt, currency: 'USDT' })
           });
           let result = await response.json();
 
@@ -765,8 +770,8 @@
             usdtBalance -= rawAmt;
             saveToFirebase();
             renderUIValues();
-            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT to ${dest}`);
-            alert(`⚡ FaucetPay Success! ${finalReceiveAmt.toFixed(4)} USDT sent to ${dest}.`);
+            recordTransactionHistory(`FaucetPay: ${finalReceiveAmt.toFixed(4)} USDT`);
+            alert(`⚡ FaucetPay Success!`);
           } else {
             alert(`Payout Failed: ${result.message}`);
           }
@@ -796,8 +801,8 @@
           tonBalance -= rawAmt;
           saveToFirebase();
           renderUIValues();
-          recordTransactionHistory(`TON Withdrawal (Processing 24h): ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress}`);
-          alert(`🎉 TON Withdrawal Request Successful! Admin panel par update ho gaya hai.`);
+          recordTransactionHistory(`TON Withdrawal: ${finalReceiveAmt.toFixed(4)} TON`);
+          alert(`🎉 TON Withdrawal Request Successful!`);
         } catch (err) {
           alert("Error while processing withdrawal request to Firebase.");
         }
@@ -816,7 +821,6 @@
       }
     }
 
-    window.loadTransactionHistory = function() {}
     window.stake = function(planName, days, apy) { alert(`${planName} Staked successfully!`); }
     
     window.copyRef = function() { 
@@ -840,25 +844,11 @@
       renderUIValues();
       alert(`🎉 Successfully claimed ${claimedAmount.toFixed(2)} Coins to your main balance!`);
     }
-
-    window.addNewTask = function() { 
-      let titleInput = document.getElementById('customTaskTitle');
-      let linkInput = document.getElementById('customTaskLink');
-      if (!titleInput || !linkInput) return;
-      let title = titleInput.value;
-      let link = linkInput.value;
-
-      if(!title || !link) { alert("Please fill task details."); return; }
-      if(balance < 10) { alert("Insufficient balance! You need 10 coins to publish a task."); return; }
-      
-      balance -= 10;
-      saveToFirebase();
-      renderUIValues();
-      alert("Task published successfully! -10 Coins deducted.");
-    }
     
     window.completeTask = function(r, n) { 
       addEarningsWithReferral(r); 
       alert(`Task completed! +${r} Coins added.`); 
     }
   </script>
+</body>
+</html>
