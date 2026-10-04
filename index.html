@@ -87,7 +87,7 @@
 
     <!-- Daily Bonus Card -->
     <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
-      <span style="font-size: 14px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad 60s)</span>
+      <span style="font-size: 14px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad 5s)</span>
       <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Claim Now!</span>
     </div>
 
@@ -95,9 +95,9 @@
       <span class="limit-badge" id="homeAdsgramLimit">25 left</span>
       <div>
         <div style="font-weight: bold;">Adsgram Pro Task</div>
-        <small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span> (60s Ad)</small>
+        <small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span> (5s Ad)</small>
       </div>
-      <button class="btn" id="homeAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('homeAdsgramLimit', 'homeAdsgramBtn', 'Adsgram')">Watch (60s)</button>
+      <button class="btn" id="homeAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('homeAdsgramLimit', 'homeAdsgramBtn', 'Adsgram')">Watch (5s)</button>
     </div>
 
     <!-- ⚡ ADVANCED MINING SECTION (PRO) -->
@@ -132,10 +132,10 @@
           </div>
           <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-path1"></div></div>
           <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
-            <span id="treeStatus-path1">Watch 25 Ads (60s each) to Unlock</span>
+            <span id="treeStatus-path1">Watch 25 Ads (5s each) to Unlock</span>
             <span id="treeTimer-path1">06:00:00</span>
           </div>
-          <button class="btn" onclick="handleProMiningAction('path1')" id="treeBtn-path1">Watch Ad (1/25 - 60s)</button>
+          <button class="btn" onclick="handleProMiningAction('path1')" id="treeBtn-path1">Watch Ad (1/25 - 5s)</button>
         </div>
 
         <!-- MINING PATH 2: LIVE TIMER (HOURS:MIN:SEC) -->
@@ -155,18 +155,18 @@
           </div>
           <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-path2"></div></div>
           <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
-            <span id="treeStatus-path2">Watch 25 Ads (60s each) to Unlock</span>
+            <span id="treeStatus-path2">Watch 25 Ads (5s each) to Unlock</span>
             <span>Reward: 10.00 Coins</span>
           </div>
-          <button class="btn btn-yellow" onclick="handleProMiningAction('path2')" id="treeBtn-path2">Watch Ad (1/25 - 60s)</button>
+          <button class="btn btn-yellow" onclick="handleProMiningAction('path2')" id="treeBtn-path2">Watch Ad (1/25 - 5s)</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 📋 TASKS PAGE (25 ADS & 60s COUNTDOWN) -->
+  <!-- 📋 TASKS PAGE (25 ADS & 5s COUNTDOWN) -->
   <div id="tasks" class="tab-content">
-    <h3 data-i18n="tasksOffers">📋 Tasks & 25 Ads (60s Countdown)</h3>
+    <h3 data-i18n="tasksOffers">📋 Tasks & 25 Ads (5s Countdown)</h3>
     <div style="display:flex; gap:10px; margin-bottom:12px;">
       <button class="btn" onclick="toggleTaskTab('adsTasks')" style="flex:1;" data-i18n="adsTasksTab">Ads Tasks (25 Limit)</button>
       <button class="btn" onclick="toggleTaskTab('userTasks')" style="flex:1; background:#1e293b;" data-i18n="userTasksTab">User Tasks</button>
@@ -175,18 +175,18 @@
     <div id="adsTasks">
       <div class="card flex-between">
         <span class="limit-badge" id="taskAdsgramLimit">25 left</span>
-        <div><b>Adsgram (60s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
-        <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsgramLimit', 'taskAdsgramBtn', 'Adsgram')">Watch (60s)</button>
+        <div><b>Adsgram (5s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
+        <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsgramLimit', 'taskAdsgramBtn', 'Adsgram')">Watch (5s)</button>
       </div>
       <div class="card flex-between">
         <span class="limit-badge" id="taskMonetagLimit">25 left</span>
-        <div><b>Monetag (60s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
-        <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag')">Watch (60s)</button>
+        <div><b>Monetag (5s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
+        <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag')">Watch (5s)</button>
       </div>
       <div class="card flex-between">
         <span class="limit-badge" id="taskGigapubLimit">25 left</span>
-        <div><b>Gigapub (60s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
-        <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub')">Watch (60s)</button>
+        <div><b>Gigapub (5s Timer)</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
+        <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub')">Watch (5s)</button>
       </div>
     </div>
 
@@ -520,7 +520,7 @@
     let referralPercentage = 20;
     
     let dynamicAdReward = 0.05; 
-    let requiredAdsForMining = 25; // Updated to 25 Ads
+    let requiredAdsForMining = 25; 
     let miningDurationSeconds = 21600; // 6 Hours (6 * 3600)
     let miningRewardCoins = 10.00; 
 
@@ -570,8 +570,8 @@
     const translations = {
       en: { 
         homeTitle: "🏠 Home Dashboard", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn Ads", withdrawNavBtn: "🪙 Withdraw", 
-        clickToClaim: "Claim Now!", watchBtn: "Watch (60s)", 
-        tasksOffers: "📋 Tasks & 25 Ads (60s)", adsTasksTab: "Ads Tasks (25 Limit)", userTasksTab: "User Tasks", 
+        clickToClaim: "Claim Now!", watchBtn: "Watch (5s)", 
+        tasksOffers: "📋 Tasks & 25 Ads (5s)", adsTasksTab: "Ads Tasks (25 Limit)", userTasksTab: "User Tasks", 
         addYourTask: "➕ Add Your Task", publishTaskBtn: "Publish Task (-10 Coin)", joinTelegram: "📢 Join Telegram Channel", reward10Coins: "Reward: +10 Coin", completeBtn: "Complete", 
         stakingOptions: "💎 Staking Options", stakingCalc: "🧮 Staking Calculator & Preview", enterStakingCoins: "Enter Staking Coins:", 
         selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking", 
@@ -585,8 +585,8 @@
       },
       hi: { 
         homeTitle: "🏠 होम डैशबोर्ड", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", 
-        clickToClaim: "क्लेम करें!", watchBtn: "देखें (60s)", 
-        tasksOffers: "📋 टास्क और 25 एड्स (60s)", adsTasksTab: "एड्स टास्क (25 लिमिट)", userTasksTab: "यूजर टास्क", 
+        clickToClaim: "क्लेम करें!", watchBtn: "देखें (5s)", 
+        tasksOffers: "📋 टास्क और 25 एड्स (5s)", adsTasksTab: "एड्स टास्क (25 लिमिट)", userTasksTab: "यूजर टास्क", 
         addYourTask: "➕ अपना टास्क जोड़ें", publishTaskBtn: "टास्क पब्लिश करें (-10 कॉइन)", joinTelegram: "📢 टेलीग्राम चैनल ज्वाइन करें", reward10Coins: "इनाम: +10 कॉइन", completeBtn: "पूरा करें", 
         stakingOptions: "💎 स्टेकिंग विकल्प", stakingCalc: "🧮 स्टेकिंग कैलकुलेटर और पूर्वावलोकन", enterStakingCoins: "स्टेकिंग कॉइन दर्ज करें:", 
         selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
@@ -600,7 +600,7 @@
       },
       ru: { 
         homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", 
-        clickToClaim: "Забрать!", watchBtn: "Смотреть (60s)", 
+        clickToClaim: "Забрать!", watchBtn: "Смотреть (5s)", 
         tasksOffers: "📋 Задания (25 Реклам)", adsTasksTab: "Реклама (25)", userTasksTab: "Пользовательские", 
         addYourTask: "➕ Добавить", publishTaskBtn: "Опубликовать", joinTelegram: "📢 Подписаться", reward10Coins: "Награда: +10", completeBtn: "Выполнить", 
         stakingOptions: "💎 Стейкинг", stakingCalc: "🧮 Калькулятор", enterStakingCoins: "Введите монеты:", 
@@ -817,7 +817,7 @@
       }
     } catch(e) {}
 
-    // --- AD WATCH WITH 60 SECONDS COUNTDOWN & 25 LIMIT ---
+    // --- AD WATCH WITH 5 SECONDS COUNTDOWN & 25 LIMIT ---
     window.watchAdWithTimer = function(limitElementId, btnElementId, adName) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
       let currentLimit = adLimits[limitKey] !== undefined ? adLimits[limitKey] : 25;
@@ -840,7 +840,7 @@
               if (btn) btn.disabled = false;
             });
           } else {
-            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1500);
+            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1000);
           }
         } 
         else if (adName === 'Monetag') {
@@ -852,13 +852,13 @@
               if (btn) btn.disabled = false;
             });
           } else {
-            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1500);
+            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1000);
           }
         } 
         else if (adName === 'Gigapub') {
           setTimeout(() => {
             completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
-          }, 1500);
+          }, 1000);
         } else {
           completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
         }
@@ -877,14 +877,14 @@
       alert(`+${reward} Coin added successfully!`);
 
       if (btn) {
-        let cooldown = 60; // 60 Seconds Countdown as requested
+        let cooldown = 5; // 5 Seconds Countdown as requested
         btn.innerText = `Wait ${cooldown}s`;
         let timerInterval = setInterval(() => {
           cooldown--;
           btn.innerText = `Wait ${cooldown}s`;
           if (cooldown <= 0) {
             clearInterval(timerInterval);
-            btn.innerText = "Watch (60s)";
+            btn.innerText = "Watch (5s)";
             btn.disabled = false;
           }
         }, 1000);
@@ -906,7 +906,7 @@
         AdController.show().then(() => {
           verifyAndClaim();
         }).catch(() => {
-          alert("Ad skipped. Please watch the 60s ad to claim daily bonus.");
+          alert("Ad skipped. Please watch the ad to claim daily bonus.");
         });
       } else {
         verifyAndClaim();
@@ -959,14 +959,14 @@
 
       if (state.adsWatched < requiredAdsForMining) {
         statusEl.innerHTML = `Watched ${state.adsWatched}/${requiredAdsForMining} Ads`;
-        let cooldown = 60; // 60 Seconds countdown per ad step
+        let cooldown = 5; // 5 Seconds countdown per ad step
         btn.innerText = `Wait ${cooldown}s`;
         let tInterval = setInterval(() => {
           cooldown--;
           btn.innerText = `Wait ${cooldown}s`;
           if (cooldown <= 0) {
             clearInterval(tInterval);
-            btn.innerText = `Watch Ad (${state.adsWatched + 1}/${requiredAdsForMining} - 60s)`;
+            btn.innerText = `Watch Ad (${state.adsWatched + 1}/${requiredAdsForMining} - 5s)`;
             btn.disabled = false;
           }
         }, 1000);
@@ -1083,12 +1083,12 @@
         document.getElementById(`liveMinedCoinsDisplay`).innerText = "0.0000";
         document.getElementById(`treeTimer-path1`).innerText = "06:00:00";
       } else {
-        iconEl.innerText = "🌳⏱️";
+        iconEl.innerText = "🌳⏱️️";
         document.getElementById(`liveHmsDisplay`).innerText = "06 : 00 : 00";
       }
 
-      statusEl.innerHTML = `Watch 25 Ads (60s each) to Unlock`;
-      btn.innerText = "Watch Ad (1/25 - 60s)";
+      statusEl.innerHTML = `Watch 25 Ads (5s each) to Unlock`;
+      btn.innerText = "Watch Ad (1/25 - 5s)";
       btn.style.background = "#22c55e";
       btn.style.color = "#fff";
       alert(`🎉 Success! You claimed +${miningRewardCoins} Coins from Pro Mining Path ${pathKey === 'path1' ? '1' : '2'}!`);
