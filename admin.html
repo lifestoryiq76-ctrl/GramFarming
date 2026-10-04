@@ -16,7 +16,7 @@
         h2 { color: #22c55e; margin-top: 0; font-size: 18px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
         h1 { font-size: 20px; text-align: center; color: #f8fafc; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { border: 1px solid #334155; padding: 8px; text-align: left; color: #f8fafc; }
+        th, td { border: 1px solid #334155; padding: 8px; text-align: left; color: #f8fafc; word-break: break-all; }
         th { background: #0f172a; color: #38bdf8; }
         .table-container { overflow-x: auto; }
     </style>
@@ -57,9 +57,9 @@
             <table>
                 <thead>
                     <tr>
-                        <th>User ID</th>
+                        <th>User</th>
                         <th>Amount</th>
-                        <th>Wallet</th>
+                        <th>Destination Wallet</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -72,14 +72,14 @@
 
     <!-- Users List -->
     <div class="card">
-        <h2>👥 Users & Staking Details</h2>
+        <h2>👥 Users Details</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>User Details</th>
-                        <th>Referrals</th>
-                        <th>Staking Info</th>
+                        <th>User Name / ID</th>
+                        <th>Invited</th>
+                        <th>Balance</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
@@ -128,7 +128,7 @@
                     const id = childSnapshot.key;
                     const w = childSnapshot.val();
                     const statusText = w.status === 'Successful ✅' ? '<span style="color:#22c55e;">Successful ✅</span>' : `<button class="btn-success" onclick="markSuccess('${id}')">Approve ✅</button>`;
-                    tbody.innerHTML += `<tr><td>${w.userId || 'N/A'}</td><td>${w.amount}</td><td>${w.walletDetails || 'N/A'}</td><td>${statusText}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${w.userName || w.userId || 'N/A'}</td><td>${w.amount} ${w.method || ''}</td><td>${w.destination || 'N/A'}</td><td>${statusText}</td></tr>`;
                 });
             } else {
                 tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No requests found.</td></tr>`;
@@ -142,8 +142,7 @@
             if (snapshot.exists()) {
                 snapshot.forEach((childSnapshot) => {
                     const u = childSnapshot.val();
-                    const refCount = u.referrals ? Object.keys(u.referrals).length : 0;
-                    tbody.innerHTML += `<tr><td>${u.name || u.username || childSnapshot.key}</td><td>👥 ${refCount}</td><td>💎 ${u.staking ? 'Active' : 'None'}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${u.name || childSnapshot.key}</td><td>👥 ${u.totalInvited || 0}</td><td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td></tr>`;
                 });
             } else {
                 tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No users found.</td></tr>`;
