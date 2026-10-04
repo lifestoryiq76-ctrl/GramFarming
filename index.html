@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gram Farming Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Adsgram SDK -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <!-- Monetag & Gigapub Integration Placeholder Scripts (Apne zone IDs yahan daal sakte hain) -->
+  <script src="https://alwingulla.com/88/tag.min.js" data-zone="YOUR_MONETAG_ZONE_ID" async data-cfasync="false"></script>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -90,7 +93,7 @@
       <p style="margin: 4px 0; font-size: 13px;">Min. Withdrawal: <strong id="lblMinWithdraw" style="color: #f43f5e;">0.05</strong> Coins</p>
     </div>
 
-    <!-- Daily Bonus with Adsgram Ad Integration -->
+    <!-- Daily Bonus with Ad Integration -->
     <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
       <span style="font-size: 15px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad)</span>
       <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
@@ -519,7 +522,7 @@
     let currentDailyBonus = 2.00;
     let minWithdrawalAmt = 0.05;
     let liveTonPrice = 1.50;
-    let referralPercentage = 20; // Default 20%
+    let referralPercentage = 20;
 
     const adLimits = {
       homeAdsgramLimit: 40,
@@ -528,11 +531,9 @@
       taskGigapubLimit: 40
     };
 
-    // --- LIVE ADMIN SETTINGS LISTENER (`adminSettings/general`) ---
     onValue(ref(db, 'adminSettings/general'), (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        
         if (data.coinUsdtValue !== undefined) {
           coinUsdtValue = parseFloat(data.coinUsdtValue);
           document.getElementById('lblCoinValue').innerText = `$${coinUsdtValue}`;
@@ -546,7 +547,6 @@
           minWithdrawalAmt = parseFloat(data.minWithdrawal);
           document.getElementById('lblMinWithdraw').innerText = `${minWithdrawalAmt} Coins`;
         }
-        // Referral percentage fix
         if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
           referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
           document.getElementById('refPercentText').innerText = `Get ${referralPercentage}%`;
@@ -632,7 +632,6 @@
     }
     document.getElementById('telegramUserName').innerText = displayName;
 
-    // --- LOAD USER DATA FROM FIREBASE ---
     const userRef = ref(db, 'users/' + userId);
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
@@ -648,7 +647,6 @@
         if (data.taskAdsgramLimit !== undefined) adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
         if (data.taskMonetagLimit !== undefined) adLimits.taskMonetagLimit = data.taskMonetagLimit;
         if (data.taskGigapubLimit !== undefined) adLimits.taskGigapubLimit = data.taskGigapubLimit;
-
       } else {
         set(userRef, {
           name: displayName,
@@ -710,7 +708,6 @@
 
     function addEarningsWithReferral(earnedAmount) {
       balance += earnedAmount;
-      // Fixed: Using dynamic referralPercentage instead of hardcoded 0.20
       let refCommission = earnedAmount * (referralPercentage / 100);
       refReward += refCommission;
       saveToFirebase();
@@ -798,8 +795,13 @@
       }
     }
 
+    // --- AD NETWORKS INITIALIZATION & LOADERS ---
     let AdController = null;
-    try { AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); } catch(e) {}
+    try { 
+      if(window.Adsgram) {
+        AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" }); 
+      }
+    } catch(e) {}
 
     window.watchAdWithTimer = function(reward, adName, limitElementId, btnElementId) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
@@ -814,13 +816,38 @@
       if (btn) btn.disabled = true;
 
       let playAdLogic = () => {
-        if (adName === 'Adsgram' && AdController) {
-          AdController.show().then(() => {
+        if (adName === 'Adsgram') {
+          if (AdController) {
+            AdController.show().then(() => {
+              completeAdReward(reward, limitKey, btn, currentLimit);
+            }).catch(() => { 
+              alert("Ad skipped."); 
+              if (btn) btn.disabled = false;
+            });
+          } else {
+            // Fallback agar Adsgram SDK load na ho
+            setTimeout(() => completeAdReward(reward, limitKey, btn, currentLimit), 1500);
+          }
+        } 
+        else if (adName === 'Monetag') {
+          // Monetag Interstitial / Rewarded Pop implementation trigger
+          if (typeof show_889922 === 'function') { // Example Monetag callback/function trigger
+            show_889922().then(() => {
+              completeAdReward(reward, limitKey, btn, currentLimit);
+            }).catch(() => {
+              alert("Ad skipped or failed to load.");
+              if (btn) btn.disabled = false;
+            });
+          } else {
+            // Direct safe fallback execution for demo/testing
+            setTimeout(() => completeAdReward(reward, limitKey, btn, currentLimit), 1500);
+          }
+        } 
+        else if (adName === 'Gigapub') {
+          // Gigapub ad integration hook
+          setTimeout(() => {
             completeAdReward(reward, limitKey, btn, currentLimit);
-          }).catch(() => { 
-            alert("Ad skipped."); 
-            if (btn) btn.disabled = false;
-          });
+          }, 1500);
         } else {
           completeAdReward(reward, limitKey, btn, currentLimit);
         }
@@ -897,7 +924,10 @@
               btn.disabled = false;
             });
           } else {
-            processTreeAdStep(index, treeName, adType, totalDurationSec);
+            // Monetag / Gigapub / Fallback trigger for Trees
+            setTimeout(() => {
+              processTreeAdStep(index, treeName, adType, totalDurationSec);
+            }, 1000);
           }
         };
         playAd();
@@ -1147,7 +1177,7 @@
             userId: userId,
             userName: displayName,
             method: 'TON',
-            amount: finalReceiveAmt,
+            amount: finalReceive_Amt = finalReceiveAmt,
             destination: savedTonAddress,
             status: 'Pending (24 Hours Processing)',
             timestamp: serverTimestamp()
