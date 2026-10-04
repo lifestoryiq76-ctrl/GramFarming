@@ -1,463 +1,7 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gram Farming Mini App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #22c55e;
-      --accent-hover: #16a34a;
-      --yellow: #eab308;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: #334155;
-    }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 80px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-    .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-    .card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 1px solid var(--border); position: relative; }
-    .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; }
-    .btn:active { transform: scale(0.96); }
-    .btn:disabled { background: #475569; cursor: not-allowed; }
-    .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
-    .btn-red { background: #ef4444; color: #fff; }
-    .flex-between { display: flex; justify-content: space-between; align-items: center; }
-    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; backdrop-filter: blur(10px); }
-    .nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; }
-    .nav-item.active { color: var(--accent); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
-    input:focus, select:focus { border-color: var(--accent); }
-    
-    .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-    .tree-icon { font-size: 32px; transition: transform 0.3s ease; margin: 5px 0; display: inline-block; }
-    .tree-progress-bar { width: 100%; background: #334155; height: 6px; border-radius: 3px; margin: 8px 0; overflow: hidden; }
-    .tree-progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s ease; }
-    .limit-badge { position: absolute; top: 10px; right: 12px; background: #0284c7; color: #fff; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 6px; }
-    
-    #miningBoxesSection { display: none; }
-    #miningBoxesSection.show { display: block; }
-  </style>
-</head>
-<body>
-
-  <div class="header">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <h3 style="margin:0; color: var(--accent);">🌱 Gram Farming</h3>
-      <span class="live-badge">🔴 LIVE</span>
-    </div>
-    <select id="langSelect" onchange="changeLanguage(this.value)" style="width: auto; padding: 6px 12px;">
-      <option value="en">🇬🇧 EN</option>
-      <option value="ru">🇷🇺 RU</option>
-      <option value="hi" selected>🇮🇳 HI</option>
-    </select>
-  </div>
-
-  <!-- 🏠 HOME PAGE -->
-  <div id="home" class="tab-content active">
-    <div class="card">
-      <div class="flex-between" style="align-items: flex-start;">
-        <div>
-          <span style="font-size: 14px; color: var(--text-muted);" data-i18n="homeTitle">🏠 Home</span><br><br>
-          <span style="font-size: 16px; font-weight: bold;">🪙 <span data-i18n="balanceText">Balance</span>: <strong id="userBalance" style="color: var(--accent);">0.00</strong> Coin</span>
-        </div>
-        <div style="text-align: right;">
-          <small style="color: var(--text-muted);" data-i18n="coinVolume">Coin Volume</small><br>
-          <strong id="displayCoinVolume" style="color: var(--yellow); font-size: 15px;">1 Coin = $0.01</strong>
-        </div>
-      </div>
-      <br>
-      <div class="flex-between" style="background:#111827; padding:10px; border-radius:10px; border: 1px solid var(--border);">
-        <button class="btn" onclick="switchTab('tasks')" style="margin-right: 6px;" data-i18n="earnBtn">⚡ Earn</button>
-        <button class="btn" onclick="switchTab('wallet')" style="margin-left: 6px; background: #0284c7;" data-i18n="withdrawNavBtn">🪙 Withdraw</button>
-      </div>
-    </div>
-
-    <!-- Live Market & Rules Card (Admin Sync) -->
-    <div class="card" style="background: #111827; text-align: left;">
-      <h4 style="margin: 0 0 8px 0; color: var(--accent);">📊 Live Market & Rules</h4>
-      <p style="margin: 4px 0; font-size: 13px;">Coin Value: <strong id="lblCoinValue" style="color: #22c55e;">$0.01</strong></p>
-      <p style="margin: 4px 0; font-size: 13px;">Daily Bonus: <strong id="lblDailyBonus" style="color: #eab308;">2.00</strong> Coins</p>
-      <p style="margin: 4px 0; font-size: 13px;">Min. Withdrawal: <strong id="lblMinWithdraw" style="color: #f43f5e;">0.05</strong> Coins</p>
-    </div>
-
-    <!-- Daily Bonus with Adsgram Ad Integration -->
-    <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
-      <span style="font-size: 15px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad)</span>
-      <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
-    </div>
-
-    <div class="card flex-between">
-      <span class="limit-badge" id="homeAdsgramLimit">40 left</span>
-      <div>
-        <div style="font-weight: bold;">Adsgram</div>
-        <small style="color:var(--text-muted);">Reward: +0.05 Coin</small>
-      </div>
-      <button class="btn" id="homeAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Adsgram', 'homeAdsgramLimit', 'homeAdsgramBtn')">Watch</button>
-    </div>
-
-    <div class="card" style="background:var(--card-bg); border:1px solid var(--accent); cursor: pointer;" onclick="toggleMiningBoxes()">
-      <div class="flex-between">
-        <h4 style="margin:0; color: var(--accent);">⛏️ Advanced Tree Mining</h4>
-        <span id="miningArrow" style="font-size: 16px; color: var(--accent); font-weight: bold;">▼</span>
-      </div>
-    </div>
-
-    <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
-      <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🌳 Advanced Tree Mining</h4>
-      
-      <div class="mining-grid">
-        <div class="mining-box" id="mBox-0">
-          <span class="limit-badge" id="pineLimit">20 left</span>
-          <div>
-            <b style="font-size:13px;">🌲 Pine Tree (Monetag)</b><br>
-            <span class="tree-icon" id="treeIcon-0">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-0">Watch 20 Ads to Start</div>
-          </div>
-          <div>
-            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-0"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(0, 'Pine Tree', 'Monetag', 21600)" id="treeBtn-0">Watch Ad (1/20)</button>
-          </div>
-        </div>
-
-        <div class="mining-box" id="mBox-1">
-          <span class="limit-badge" id="appleLimit">20 left</span>
-          <div>
-            <b style="font-size:13px;">🍎 Apple Tree (Adsgram)</b><br>
-            <span class="tree-icon" id="treeIcon-1">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-1">Watch 20 Ads to Start</div>
-          </div>
-          <div>
-            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-1"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(1, 'Apple Tree', 'Adsgram', 21600)" id="treeBtn-1">Watch Ad (1/20)</button>
-          </div>
-        </div>
-
-        <div class="mining-box" id="mBox-2">
-          <span class="limit-badge" id="sakuraLimit">20 left</span>
-          <div>
-            <b style="font-size:13px;">🌸 Sakura Tree (Gigapub)</b><br>
-            <span class="tree-icon" id="treeIcon-2">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-2">Watch 20 Ads to Start</div>
-          </div>
-          <div>
-            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-2"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(2, 'Sakura Tree', 'Gigapub', 21600)" id="treeBtn-2">Watch Ad (1/20)</button>
-          </div>
-        </div>
-
-        <div class="mining-box" id="mBox-3">
-          <span class="limit-badge" id="crystalLimit">20 left</span>
-          <div>
-            <b style="font-size:13px;">💎 Crystal Tree (Adsgram)</b><br>
-            <span class="tree-icon" id="treeIcon-3">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-3">Watch 20 Ads to Start</div>
-          </div>
-          <div>
-            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-3"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(3, 'Crystal Tree', 'Adsgram', 21600)" id="treeBtn-3">Watch Ad (1/20)</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 📋 TASKS PAGE -->
-  <div id="tasks" class="tab-content">
-    <h3 data-i18n="tasksOffers">📋 Tasks & Offers</h3>
-    <div style="display:flex; gap:10px; margin-bottom:12px;">
-      <button class="btn" onclick="toggleTaskTab('adsTasks')" style="flex:1;" data-i18n="adsTasksTab">Ads Tasks</button>
-      <button class="btn" onclick="toggleTaskTab('userTasks')" style="flex:1; background:#334155;" data-i18n="userTasksTab">User Tasks</button>
-    </div>
-
-    <div id="adsTasks">
-      <div class="card flex-between">
-        <span class="limit-badge" id="taskAdsgramLimit">40 left</span>
-        <div><b>Adsgram</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
-        <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Adsgram', 'taskAdsgramLimit', 'taskAdsgramBtn')">Watch</button>
-      </div>
-      <div class="card flex-between">
-        <span class="limit-badge" id="taskMonetagLimit">40 left</span>
-        <div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
-        <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Monetag', 'taskMonetagLimit', 'taskMonetagBtn')">Watch</button>
-      </div>
-      <div class="card flex-between">
-        <span class="limit-badge" id="taskGigapubLimit">40 left</span>
-        <div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: +0.05 Coin</small></div>
-        <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer(0.05, 'Gigapub', 'taskGigapubLimit', 'taskGigapubBtn')">Watch</button>
-      </div>
-    </div>
-
-    <div id="userTasks" style="display:none;">
-      <div class="card" style="background:#0f172a; border: 1px dashed var(--accent); text-align: center;">
-        <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="addYourTask">➕ Add Your Task</h4>
-        <input type="text" id="customTaskTitle" placeholder="Task Name (e.g., Join Channel)">
-        <input type="text" id="customTaskLink" placeholder="Your Link (https://t.me/...)">
-        <button class="btn" style="margin-top:10px;" onclick="addNewTask()" data-i18n="publishTaskBtn">Publish Task (-10 Coin)</button>
-      </div>
-
-      <div id="dynamicTasksList">
-        <div class="card flex-between">
-          <div><span data-i18n="joinTelegram">📢 Join Telegram Channel</span><br><small style="color:var(--text-muted);" data-i18n="reward10Coins">Reward: +10 Coin</small></div>
-          <button class="btn" style="width: auto;" onclick="completeTask(10, 'Telegram Channel')" data-i18n="completeBtn">Complete</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 💎 STAKING PAGE -->
-  <div id="staking" class="tab-content">
-    <h3 data-i18n="stakingOptions">💎 Staking Options</h3>
-    
-    <div class="card" style="background:#111827; border:1px solid var(--accent);">
-      <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="stakingCalc">🧮 Staking Calculator & Preview</h4>
-      <label style="font-size:13px; color:var(--text-muted);" data-i18n="enterStakingCoins">Enter Staking Coins:</label>
-      <input type="number" id="stakeCalcInput" placeholder="e.g. 100" oninput="calculateStakeRewards()">
-      
-      <label style="font-size:13px; color:var(--text-muted); margin-top:8px; display:block;" data-i18n="selectPlan">Select Plan:</label>
-      <select id="stakeCalcPlan" onchange="calculateStakeRewards()">
-        <option value="0|4">Flexible (0 Days - 4% APY)</option>
-        <option value="7|3">Fixed (7 Days - 3% APY)</option>
-        <option value="15|4.5">Fixed (15 Days - 4.5% APY)</option>
-        <option value="30|6.25">Fixed (30 Days - 6.25% APY)</option>
-        <option value="60|8">Fixed (60 Days - 8% APY)</option>
-        <option value="90|11.25">Fixed (90 Days - 11.25% APY)</option>
-        <option value="120|14.5">Fixed (120 Days - 14.5% APY)</option>
-        <option value="365|20">Fixed (365 Days - 20% APY)</option>
-      </select>
-
-      <div style="margin-top:10px; padding:10px; background:#0f172a; border-radius:8px; font-size:13px; border:1px solid var(--border);">
-        <div>☀ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
-        <div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
-      </div>
-    </div>
-
-    <h4 style="color: var(--accent); margin-bottom: 8px;" data-i18n="flexHeader">1. Flexible Staking</h4>
-    <div class="card">
-      <div class="flex-between">
-        <div>
-          <b data-i18n="flexTitle">Flexible Staking</b><br>
-          <small style="color:var(--text-muted);" data-i18n="flexDesc">Unstake anytime with zero locking period.</small><br>
-          <span style="color: var(--accent); font-size: 13px; font-weight: bold;"><span id="displayFlexApy">4</span>% APY</span>
-        </div>
-        <button class="btn" style="width: auto;" onclick="stake('Flexible', 0, 4)" data-i18n="stakeBtn">Stake</button>
-      </div>
-    </div>
-
-    <h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;" data-i18n="fixedHeader">2. Fixed Staking (Up to 20% APY)</h4>
-    <div class="grid-cards">
-      <div class="card" style="text-align:center; margin:0;">
-        <b>7 Days</b><br><span style="color: var(--accent);"><span id="displayApy7">3</span>% APY</span><br>
-        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, 3)">Lock</button>
-      </div>
-      <div class="card" style="text-align:center; margin:0;">
-        <b>15 Days</b><br><span style="color: var(--accent);"><span id="displayApy15">4.5</span>% APY</span><br>
-        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, 4.5)">Lock</button>
-      </div>
-      <div class="card" style="text-align:center; margin:0;">
-        <b>30 Days</b><br><span style="color: var(--accent);"><span id="displayApy30">6.25</span>% APY</span><br>
-        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, 6.25)">Lock</button>
-      </div>
-      <div class="card" style="text-align:center; margin:0;">
-        <b>60 Days</b><br><span style="color: var(--accent);"><span id="displayApy60">8</span>% APY</span><br>
-        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, 8)">Lock</button>
-      </div>
-      <div class="card" style="text-align:center; margin:0;">
-        <b>90 Days</b><br><span style="color: var(--accent);"><span id="displayApy90">11.25</span>% APY</span><br>
-        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (90 Days)', 90, 11.25)">Lock</button>
-      </div>
-      <div class="card" style="text-align:center; margin:0;">
-        <b>120 Days</b><br><span style="color: var(--accent);"><span id="displayApy120">14.5</span>% APY</span><br>
-        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (120 Days)', 120, 14.5)">Lock</button>
-      </div>
-      <div class="card" style="text-align:center; margin:0; grid-column: span 2;">
-        <b>365 Days</b><br><span style="color: var(--accent);"><span id="displayApy365">20</span>% APY</span><br>
-        <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (365 Days)', 365, 20)">Lock</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 👥 REFERRALS PAGE -->
-  <div id="referrals" class="tab-content">
-    <h3 data-i18n="referralProgram">👥 REFERRAL PROGRAM</h3>
-    
-    <div class="grid-cards" style="margin-bottom: 12px;">
-      <div class="card" style="margin:0;">
-        <div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-          <span>👤</span> <b data-i18n="friendsTitle">Friends</b>
-        </div>
-        <small style="color:var(--text-muted); font-size:11px;" data-i18n="totalInvited">Total invited</small>
-        <div style="margin-top:12px; font-size:18px; font-weight:bold; color:var(--text-main);" id="totalInvitedCount">0 USERS</div>
-      </div>
-
-      <div class="card" style="margin:0;">
-        <div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-          <span>🎁</span> <b data-i18n="rewardsTitle">Rewards</b>
-        </div>
-        <small style="color:var(--text-muted); font-size:11px;" data-i18n="minClaim1Coin">Min. claim 1 Coin</small>
-        <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:16px; font-weight:bold; color:var(--yellow);" id="refRewardBalance">+0.00 🪙</span>
-          <button class="btn" style="width: auto; padding: 6px 12px; font-size:12px; background:var(--accent);" onclick="claimRefRewards()" data-i18n="claimBtn">Claim</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="font-size:14px; font-weight:bold; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
-        <span>🔗</span> <span data-i18n="inviteEarn">Invite & Earn</span>
-      </div>
-      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;" data-i18n="inviteDesc">Get 20% bonus from all 🪙 earned by your invited friends.</p>
-      <div style="display:flex; gap:8px;">
-        <button class="btn" style="background:#334155; flex:1;" onclick="copyRef()" data-i18n="copyLinkBtn">Copy Link</button>
-        <button class="btn" style="background:#0284c7; flex:1;" onclick="shareRef()" data-i18n="shareBtn">Share</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 💼 WALLET PAGE -->
-  <div id="wallet" class="tab-content">
-    <h3 data-i18n="walletExchange">💼 Wallet & Exchange</h3>
-    
-    <div class="card">
-      <div class="flex-between" style="margin-bottom: 10px;">
-        <h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange Coin (Live Rate)</h4>
-        <span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
-          🪙 Balance: <span id="walletCoinDisplay">0.00</span>
-        </span>
-      </div>
-      
-      <div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
-        <div>💎 TON Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong> TON</div>
-        <div>💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">0.00</strong> USDT</div>
-        <div style="margin-top:4px; font-size:11px; color:var(--text-muted);" id="liveRateStatus">📡 Fetching Live TON Rate...</div>
-      </div>
-
-      <label data-i18n="convertCoinTo">Convert Coin to:</label>
-      <select id="exchangeCurrency" onchange="calculateExchange()">
-        <option value="USDT">USDT (1 Coin = $0.01)</option>
-        <option value="TON">TON (Based on Live TON Price)</option>
-      </select>
-      
-      <label style="margin-top:8px; display:block;" data-i18n="coinAmountExchange">Coin Amount to Exchange:</label>
-      <input type="number" id="exchangeAmount" placeholder="Enter coins" oninput="calculateExchange()">
-      
-      <p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
-      
-      <button class="btn" style="margin-top:10px; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
-    </div>
-
-    <!-- Manual Saved Wallet Address Card -->
-    <div class="card" style="background:#111827; border: 1px solid var(--accent); text-align: center;">
-      <h4 style="margin:0 0 8px 0; color: var(--accent);">⚡ Manual Wallet Address</h4>
-      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;">Apna TON wallet address manually yahan save karein.</p>
-
-      <div style="text-align: left;">
-        <label style="font-size: 13px; color: var(--text-muted);">Saved TON Wallet Address:</label>
-        <input type="text" id="manualTonAddress" placeholder="UQ... ya EQ... apna address daalein">
-
-        <div style="display: flex; gap: 8px; margin-top: 10px;">
-          <button class="btn" style="background: var(--accent); flex: 1;" onclick="saveTonAddress()">Save Address</button>
-          <button class="btn btn-red" style="flex: 1;" onclick="disconnectTonAddress()">Disconnect</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Withdraw Funds Section -->
-    <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
-      <div class="flex-between" style="margin-bottom: 8px;">
-        <h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON manual payout (24h)</h4>
-        <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
-      </div>
-      
-      <label data-i18n="withdrawMethod">Withdrawal Method:</label>
-      <select id="withdrawMethod" onchange="toggleWithdrawFields()">
-        <option value="faucetpay">FaucetPay Email ID (Instant)</option>
-        <option value="ton">TON Wallet Address (Manual - 24 Hours Processing)</option>
-      </select>
-      
-      <label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT):</label>
-      <input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001" oninput="calculateWithdrawFee()">
-      
-      <div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
-        <span id="withdrawMinLabel">Min 0.05</span>
-        <div>
-          <span id="availableWithdrawBalance" style="color:var(--text-muted); margin-right:8px;">Available: 0.0000</span>
-          <button onclick="setMaxWithdraw()" style="background:none; border:none; color:var(--accent); font-weight:bold; cursor:pointer;">MAX</button>
-        </div>
-      </div>
-      
-      <div style="margin-top:4px; font-size:12px; color:var(--yellow);" id="withdrawFeePreview">
-        Fee (5%): 0.00 | You will receive: 0.00
-      </div>
-      
-      <label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
-      <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
-      
-      <button class="btn" style="margin-top:12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
-    </div>
-
-    <!-- TRANSACTION HISTORY SECTION -->
-    <div class="card" style="background: #111827; border: 1px solid var(--border);">
-      <div class="flex-between" style="margin-bottom: 8px;">
-        <h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
-        <span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
-      </div>
-      <div id="transactionHistoryList" style="font-size: 12px; color: var(--text-muted); min-height: 40px; display: flex; align-items: center;">
-        No recent withdrawals yet.
-      </div>
-    </div>
-  </div>
-
-  <!-- 🏆 RANK PAGE -->
-  <div id="leaderboard" class="tab-content">
-    <div class="card" style="background:var(--card-bg); border:1px solid var(--border); padding: 14px; margin-bottom: 12px;">
-      <div class="flex-between" style="margin-bottom: 10px;">
-        <div style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:16px;">
-          <span>🏆</span> <span data-i18n="topEarnersRank">Top Earners Rank</span>
-        </div>
-      </div>
-      <div style="font-size:12px; color:var(--text-muted); margin-bottom: 5px;" data-i18n="liveRankingStats">Your live ranking and stats</div>
-    </div>
-
-    <div class="card flex-between" style="background:#111827; padding: 12px; margin-bottom: 12px;">
-      <span style="font-size:13px; color:var(--text-muted);" data-i18n="yourRank">Your Rank:</span>
-      <span style="background:var(--accent); color:#fff; padding: 4px 10px; border-radius:6px; font-size:12px; font-weight:bold;" data-i18n="rankPlace">#1 place</span>
-    </div>
-
-    <div id="rankListContainer">
-      <div class="card" style="margin-bottom:8px; padding: 14px; background:#111827;">
-        <div class="flex-between" style="margin-bottom: 8px;">
-          <span style="font-weight:bold; font-size:14px; color:var(--yellow);" id="telegramUserName">👑 Loading User...</span>
-        </div>
-        <div class="flex-between" style="font-size:12px; border-top:1px solid var(--border); padding-top:8px; margin-top:6px;">
-          <span style="color:var(--text-muted); display:flex; align-items:center; gap:4px;">🪙 BALANCE: <b id="rankBalance" style="color:var(--yellow);">0.00</b></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="nav-bar">
-    <div class="nav-item active" onclick="switchTab('home')">🏠<br><span data-i18n="navHome">Home</span></div>
-    <div class="nav-item" onclick="switchTab('tasks')">📋<br><span data-i18n="navTasks">Tasks</span></div>
-    <div class="nav-item" onclick="switchTab('staking')">💎<br><span data-i18n="navStaking">Staking</span></div>
-    <div class="nav-item" onclick="switchTab('referrals')">👥<br><span data-i18n="navReferrals">Referrals</span></div>
-    <div class="nav-item" onclick="switchTab('wallet')">💼<br><span data-i18n="navWallet">Wallet</span></div>
-    <div class="nav-item" onclick="switchTab('leaderboard')">🏆<br><span data-i18n="navRank">Rank</span></div>
-  </div>
-
   <!-- FIREBASE & APP SCRIPT LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, update, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, onValue, update, set, push, serverTimestamp, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     // --- SINGLE DEVICE SESSION ENFORCEMENT ---
     const SESSION_KEY = 'gram_farming_active_session_lock';
@@ -519,6 +63,7 @@
     let currentDailyBonus = 2.00;
     let minWithdrawalAmt = 0.05;
     let liveTonPrice = 1.50;
+    let currentRefBonusPercent = 20; // Default 20%
 
     const adLimits = {
       homeAdsgramLimit: 40,
@@ -527,11 +72,10 @@
       taskGigapubLimit: 40
     };
 
-    // --- LIVE ADMIN SETTINGS LISTENER (`adminSettings/general`) ---
+    // --- LIVE ADMIN SETTINGS LISTENER ---
     onValue(ref(db, 'adminSettings/general'), (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        
         if (data.coinUsdtValue !== undefined) {
           coinUsdtValue = parseFloat(data.coinUsdtValue);
           document.getElementById('lblCoinValue').innerText = `$${coinUsdtValue}`;
@@ -544,6 +88,9 @@
         if (data.minWithdrawal !== undefined) {
           minWithdrawalAmt = parseFloat(data.minWithdrawal);
           document.getElementById('lblMinWithdraw').innerText = `${minWithdrawalAmt} Coins`;
+        }
+        if (data.refBonus !== undefined) {
+          currentRefBonusPercent = parseFloat(data.refBonus);
         }
         renderUIValues();
         calculateExchange();
@@ -560,7 +107,7 @@
         selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking", 
         flexTitle: "Flexible Staking", flexDesc: "Unstake anytime with zero locking period.", stakeBtn: "Stake", fixedHeader: "2. Fixed Staking (Up to 20% APY)",
         referralProgram: "👥 REFERRAL PROGRAM", friendsTitle: "Friends", totalInvited: "Total invited", rewardsTitle: "Rewards", 
-        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get 20% bonus from all 🪙 earned by your invited friends.", 
+        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get bonus from all 🪙 earned by your invited friends.", 
         copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", 
         convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
         withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
@@ -577,7 +124,7 @@
         selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
         flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
         referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम", 
-        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से 20% बोनस पाएं।", 
+        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से बोनस पाएं।", 
         copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", 
         convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
         withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
@@ -594,13 +141,13 @@
         selectPlan: "План:", dailyReward: "Дневная", totalPeriodReward: "Общая", flexHeader: "1. Гибкий", 
         flexTitle: "Гибкий стейкинг", flexDesc: "Без лока.", stakeBtn: "В стейкинг", fixedHeader: "2. Фиксированный стейкинг",
         referralProgram: "👥 РЕФЕРАЛЫ", friendsTitle: "Друзья", totalInvited: "Приглашено", rewardsTitle: "Награды", 
-        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус 20%", 
+        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус", 
         copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", 
         convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
         withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
         amountLabel: "Сумма:", tonAddressLabel: "Адрес TON Wallet:", submitWithdrawBtn: "Вывести", 
         topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
-        navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" 
+        navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRating: "Рейтинг" 
       }
     };
 
@@ -618,16 +165,59 @@
 
     let displayName = "👑 My Account";
     let userId = "12345";
+    let startParam = "";
+
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
       let user = tg.initDataUnsafe.user;
       let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
       userId = String(user.id);
     }
+
+    if (tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
+      startParam = tg.initDataUnsafe.start_param;
+    }
+
     document.getElementById('telegramUserName').innerText = displayName;
 
-    // --- LOAD USER DATA FROM FIREBASE ---
+    // --- LOAD USER DATA & HANDLE REFERRAL ---
     const userRef = ref(db, 'users/' + userId);
+    
+    get(child(ref(db), 'users/' + userId)).then((snapshot) => {
+      if (!snapshot.exists()) {
+        let referrerId = null;
+        if (startParam && startParam.startsWith('ref_')) {
+          referrerId = startParam.replace('ref_', '');
+        }
+
+        if (referrerId && referrerId !== userId) {
+          const inviterRef = ref(db, 'users/' + referrerId);
+          get(inviterRef).then((invSnapshot) => {
+            if (invSnapshot.exists()) {
+              let invData = invSnapshot.val();
+              let newInvitedCount = (invData.totalInvited || 0) + 1;
+              update(inviterRef, { totalInvited: newInvitedCount });
+            }
+          });
+        }
+
+        set(userRef, {
+          name: displayName,
+          balance: 0.00,
+          tonBalance: 0.00,
+          usdtBalance: 0.00,
+          refReward: 0.00,
+          totalInvited: 0,
+          savedTonAddress: "",
+          referredBy: referrerId || "none",
+          homeAdsgramLimit: 40,
+          taskAdsgramLimit: 40,
+          taskMonetagLimit: 40,
+          taskGigapubLimit: 40
+        });
+      }
+    });
+
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -642,21 +232,6 @@
         if (data.taskAdsgramLimit !== undefined) adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
         if (data.taskMonetagLimit !== undefined) adLimits.taskMonetagLimit = data.taskMonetagLimit;
         if (data.taskGigapubLimit !== undefined) adLimits.taskGigapubLimit = data.taskGigapubLimit;
-
-      } else {
-        set(userRef, {
-          name: displayName,
-          balance: 0.00,
-          tonBalance: 0.00,
-          usdtBalance: 0.00,
-          refReward: 0.00,
-          totalInvited: 0,
-          savedTonAddress: "",
-          homeAdsgramLimit: 40,
-          taskAdsgramLimit: 40,
-          taskMonetagLimit: 40,
-          taskGigapubLimit: 40
-        });
       }
       renderUIValues();
       toggleWithdrawFields();
@@ -675,6 +250,29 @@
         taskMonetagLimit: adLimits.taskMonetagLimit,
         taskGigapubLimit: adLimits.taskGigapubLimit
       });
+    }
+
+    // --- DYNAMIC REFERRAL COMMISSION (Reads from Admin Settings) ---
+    function addEarningsWithReferral(earnedAmount) {
+      balance += earnedAmount;
+      
+      get(userRef).then((snapshot) => {
+        if (snapshot.exists() && snapshot.val().referredBy && snapshot.val().referredBy !== "none") {
+          let inviterId = snapshot.val().referredBy;
+          let inviterRef = ref(db, 'users/' + inviterId);
+          get(inviterRef).then((invSnap) => {
+            if (invSnap.exists()) {
+              let currentRefReward = invSnap.val().refReward || 0;
+              // Admin panel se set ki gayi percentage use hogi (jaise 50% = 0.50)
+              let commission = earnedAmount * (currentRefBonusPercent / 100);
+              update(inviterRef, { refReward: currentRefReward + commission });
+            }
+          });
+        }
+      });
+
+      saveToFirebase();
+      renderUIValues();
     }
 
     window.saveTonAddress = function() {
@@ -700,14 +298,6 @@
         alert("🔄 Wallet successfully disconnect ho gaya hai.");
         toggleWithdrawFields();
       }
-    }
-
-    function addEarningsWithReferral(earnedAmount) {
-      balance += earnedAmount;
-      let refCommission = earnedAmount * 0.20;
-      refReward += refCommission;
-      saveToFirebase();
-      renderUIValues();
     }
 
     async function fetchLiveTonPrice() {
@@ -1210,5 +800,3 @@
       alert(`Task completed! +${r} Coins added.`); 
     }
   </script>
-</body>
-</html>
