@@ -46,6 +46,15 @@ const verifyFirebaseToken = async (req, res, next) => {
 
 // --- 2. API Routes ---
 
+// Health Check & Ping Routes for Cron-job.org
+app.get('/', (req, res) => {
+  res.send('Bot Server is Active and Running!');
+});
+
+app.get('/ping', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Withdraw Route
 app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
   const userId = req.user.uid;
@@ -128,7 +137,7 @@ app.post('/api/withdraw', verifyFirebaseToken, async (req, res) => {
   }
 });
 
-// Ad Reward Route (Aapki di gayi lines yahan transaction ke andar add kar di gayi hain)
+// Ad Reward Route
 app.post('/api/complete-ad', verifyFirebaseToken, async (req, res) => {
   const userId = req.user.uid;
   const { reward, limitKey, currentLimit } = req.body;
@@ -154,7 +163,6 @@ app.post('/api/complete-ad', verifyFirebaseToken, async (req, res) => {
       const currentBalance = userData.balance || 0;
       const balance = currentBalance + reward;
 
-      // Firebase me ad limit aur balance save karne ke liye
       let updateObj = { balance: balance };
       updateObj[limitKey] = currentLimit;
       
