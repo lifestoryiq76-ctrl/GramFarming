@@ -24,6 +24,18 @@
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
     .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    
+    /* Rocket Floating Animation */
+    @keyframes floatRocket {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+    .moving-rocket {
+      animation: floatRocket 3s ease-in-out infinite;
+      display: inline-block;
+    }
+
     .card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 1px solid var(--border); position: relative; }
     .btn { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; text-align: center; }
     .btn:active { transform: scale(0.96); }
@@ -41,9 +53,9 @@
     input:focus, select:focus { border-color: var(--accent); }
     .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-    .tree-icon { font-size: 32px; transition: transform 0.3s ease; margin: 5px 0; display: inline-block; }
-    .tree-progress-bar { width: 100%; background: #334155; height: 6px; border-radius: 3px; margin: 8px 0; overflow: hidden; }
-    .tree-progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s ease; }
+    .rocket-icon { font-size: 32px; margin: 5px 0; }
+    .rocket-progress-bar { width: 100%; background: #334155; height: 6px; border-radius: 3px; margin: 8px 0; overflow: hidden; }
+    .rocket-progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s ease; }
     .limit-badge { position: absolute; top: 10px; right: 12px; background: #0284c7; color: #fff; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 6px; }
     #miningBoxesSection { display: none; }
     #miningBoxesSection.show { display: block; }
@@ -100,71 +112,71 @@
 
     <div class="card" style="background:var(--card-bg); border:1px solid var(--accent); cursor: pointer;" onclick="toggleMiningBoxes()">
       <div class="flex-between">
-        <h4 style="margin:0; color: var(--accent);">⛏️ Advanced Tree Mining</h4>
+        <h4 style="margin:0; color: var(--accent);">🚀 Rocket Space Mining</h4>
         <span id="miningArrow" style="font-size: 16px; color: var(--accent); font-weight: bold;">▼</span>
       </div>
     </div>
 
     <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
-      <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🌳 Advanced Tree Mining (6h Cycle)</h4>
+      <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🛸 Space Rocket Mining (6h Cycle)</h4>
       <div class="mining-grid">
-        <!-- Mining Box 1 -->
+        <!-- Rocket Box 1 -->
         <div class="mining-box" id="mBox-0">
-          <span class="limit-badge" id="pineLimit">20 left</span>
+          <span class="limit-badge" id="rocket1Limit">20 left</span>
           <div>
-            <b style="font-size:13px;">🌲 Pine Tree</b><br>
-            <span class="tree-icon" id="treeIcon-0">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-0">Watch Ads to Start</div>
-            <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="treeAccumulated-0">Jama: 0.00 Coin</div>
+            <b style="font-size:13px;">🚀 Alpha Rocket</b><br>
+            <span class="rocket-icon moving-rocket" id="rocketIcon-0">🚀</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="rocketStatus-0">Watch Ads to Start</div>
+            <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="rocketAccumulated-0">Jama: 0.00 Coin</div>
           </div>
           <div>
-            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-0"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(0, 'Pine Tree', 'Monetag')" id="treeBtn-0">Watch Ad (1)</button>
+            <div class="rocket-progress-bar"><div class="rocket-progress-fill" id="rocketProg-0"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleRocketAction(0, 'Alpha Rocket', 'Monetag')" id="rocketBtn-0">Watch Ad (1)</button>
           </div>
         </div>
 
-        <!-- Mining Box 2 -->
+        <!-- Rocket Box 2 -->
         <div class="mining-box" id="mBox-1">
-          <span class="limit-badge" id="appleLimit">20 left</span>
+          <span class="limit-badge" id="rocket2Limit">20 left</span>
           <div>
-            <b style="font-size:13px;">🍎 Apple Tree</b><br>
-            <span class="tree-icon" id="treeIcon-1">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-1">Watch Ads to Start</div>
-            <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="treeAccumulated-1">Jama: 0.00 Coin</div>
+            <b style="font-size:13px;">🛸 Nova Rocket</b><br>
+            <span class="rocket-icon moving-rocket" id="rocketIcon-1">🛸</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="rocketStatus-1">Watch Ads to Start</div>
+            <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="rocketAccumulated-1">Jama: 0.00 Coin</div>
           </div>
           <div>
-            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-1"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(1, 'Apple Tree', 'Adsgram')" id="treeBtn-1">Watch Ad (1)</button>
+            <div class="rocket-progress-bar"><div class="rocket-progress-fill" id="rocketProg-1"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleRocketAction(1, 'Nova Rocket', 'Adsgram')" id="rocketBtn-1">Watch Ad (1)</button>
           </div>
         </div>
 
-        <!-- Mining Box 3 -->
+        <!-- Rocket Box 3 -->
         <div class="mining-box" id="mBox-2">
-          <span class="limit-badge" id="sakuraLimit">20 left</span>
+          <span class="limit-badge" id="rocket3Limit">20 left</span>
           <div>
-            <b style="font-size:13px;">🌸 Sakura Tree</b><br>
-            <span class="tree-icon" id="treeIcon-2">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-2">Watch Ads to Start</div>
-            <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="treeAccumulated-2">Jama: 0.00 Coin</div>
+            <b style="font-size:13px;">🛰️ Cosmic Rocket</b><br>
+            <span class="rocket-icon moving-rocket" id="rocketIcon-2">🛰️</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="rocketStatus-2">Watch Ads to Start</div>
+            <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="rocketAccumulated-2">Jama: 0.00 Coin</div>
           </div>
           <div>
-            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-2"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(2, 'Sakura Tree', 'Gigapub')" id="treeBtn-2">Watch Ad (1)</button>
+            <div class="rocket-progress-bar"><div class="rocket-progress-fill" id="rocketProg-2"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleRocketAction(2, 'Cosmic Rocket', 'Gigapub')" id="rocketBtn-2">Watch Ad (1)</button>
           </div>
         </div>
 
-        <!-- Mining Box 4 -->
+        <!-- Rocket Box 4 -->
         <div class="mining-box" id="mBox-3">
-          <span class="limit-badge" id="crystalLimit">20 left</span>
+          <span class="limit-badge" id="rocket4Limit">20 left</span>
           <div>
-            <b style="font-size:13px;">💎 Crystal Tree</b><br>
-            <span class="tree-icon" id="treeIcon-3">🌱</span>
-            <div style="font-size:11px; color:var(--text-muted);" id="treeStatus-3">Watch Ads to Start</div>
-            <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="treeAccumulated-3">Jama: 0.00 Coin</div>
+            <b style="font-size:13px;">🪐 Quantum Rocket</b><br>
+            <span class="rocket-icon moving-rocket" id="rocketIcon-3">🪐</span>
+            <div style="font-size:11px; color:var(--text-muted);" id="rocketStatus-3">Watch Ads to Start</div>
+            <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="rocketAccumulated-3">Jama: 0.00 Coin</div>
           </div>
           <div>
-            <div class="tree-progress-bar"><div class="tree-progress-fill" id="treeProg-3"></div></div>
-            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleTreeAction(3, 'Crystal Tree', 'Adsgram')" id="treeBtn-3">Watch Ad (1)</button>
+            <div class="rocket-progress-bar"><div class="rocket-progress-fill" id="rocketProg-3"></div></div>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="handleRocketAction(3, 'Quantum Rocket', 'Adsgram')" id="rocketBtn-3">Watch Ad (1)</button>
           </div>
         </div>
       </div>
@@ -481,7 +493,7 @@
                 <div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                   <h2 style="color: #ef4444; margin-top: 0;">⚠️ Multiple Instances Restricted</h2>
                   <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
-                    Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt me sirf ek hi instance open kar सकते hain!
+                    Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt me sirf ek hi instance open kar sakte hain!
                   </p>
                   <button onclick="location.reload()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%;">Retry / Refresh</button>
                 </div>
@@ -527,9 +539,9 @@
     let referralPercentage = 20;
     
     let dynamicAdReward = 0.05; 
-    let requiredAdsForMining = 1; // 1 Ad to start mining
+    let requiredAdsForMining = 1; 
     let miningDurationSeconds = 21600; // 6 hours (6 * 3600s)
-    let miningRewardCoins = 5.00; // Total reward after 6 hours per tree
+    let miningRewardCoins = 5.00; // Total reward after 6 hours per rocket
 
     let adLimits = {
       homeAdsgramLimit: 40,
@@ -663,7 +675,6 @@
 
     const userRef = ref(db, 'users/' + userId);
     
-    // --- DYNAMIC FIREBASE LISTENER FOR USER DATA ---
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -800,9 +811,9 @@
       document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
 
       for(let i=0; i<4; i++) {
-        let limEl = document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][i]);
-        if(limEl && treeStates[i]) {
-          limEl.innerText = `${treeStates[i].limit} left`;
+        let limEl = document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][i]);
+        if(limEl && rocketStates[i]) {
+          limEl.innerText = `${rocketStates[i].limit} left`;
         }
       }
     }
@@ -940,74 +951,73 @@
       }
     }
 
-    // --- ADVANCED TREE MINING SYSTEM WITH 6H TIMER & PER SEC ACCUMULATION ---
-    const treeStates = [
+    // --- ROCKET SPACE MINING SYSTEM WITH 6H TIMER & PER SEC ACCUMULATION ---
+    const rocketStates = [
       { status: 'ads', limit: 20, timeLeft: 0, accumulated: 0.00, timerInstance: null },
       { status: 'ads', limit: 20, timeLeft: 0, accumulated: 0.00, timerInstance: null },
       { status: 'ads', limit: 20, timeLeft: 0, accumulated: 0.00, timerInstance: null },
       { status: 'ads', limit: 20, timeLeft: 0, accumulated: 0.00, timerInstance: null }
     ];
 
-    window.handleTreeAction = function(index, treeName, adType) {
-      let state = treeStates[index];
-      let btn = document.getElementById(`treeBtn-${index}`);
+    window.handleRocketAction = function(index, rocketName, adType) {
+      let state = rocketStates[index];
+      let btn = document.getElementById(`rocketBtn-${index}`);
       
       if (state.status === 'ads') {
         btn.disabled = true;
         let playAd = () => {
           if (adType === 'Adsgram' && AdController) {
             AdController.show().then(() => {
-              startMiningCycle(index, treeName);
+              startRocketMiningCycle(index, rocketName);
             }).catch(() => {
               alert("Ad skipped.");
               btn.disabled = false;
             });
           } else if (adType === 'Monetag' && typeof show_889922 === 'function') {
             show_889922().then(() => {
-              startMiningCycle(index, treeName);
+              startRocketMiningCycle(index, rocketName);
             }).catch(() => {
               alert("Ad failed or skipped.");
               btn.disabled = false;
             });
           } else {
             setTimeout(() => {
-              startMiningCycle(index, treeName);
+              startRocketMiningCycle(index, rocketName);
             }, 1000);
           }
         };
         playAd();
       } else if (state.status === 'mining') {
-        alert("Mining is already in progress!");
+        alert("Rocket mining is already in progress!");
       } else if (state.status === 'claim') {
-        claimTreeReward(index, treeName);
+        claimRocketReward(index, rocketName);
       }
     }
 
-    function startMiningCycle(index, treeName) {
-      let state = treeStates[index];
+    function startRocketMiningCycle(index, rocketName) {
+      let state = rocketStates[index];
       state.limit--;
-      document.getElementById(['pineLimit', 'appleLimit', 'sakuraLimit', 'crystalLimit'][index]).innerText = `${state.limit} left`;
+      document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][index]).innerText = `${state.limit} left`;
 
       state.status = 'mining';
       state.timeLeft = miningDurationSeconds; // 6 Hours in seconds
       state.accumulated = 0.00;
 
-      let btn = document.getElementById(`treeBtn-${index}`);
+      let btn = document.getElementById(`rocketBtn-${index}`);
       btn.innerText = "Mining...";
       btn.disabled = true;
 
-      runTreeTimer(index, treeName);
+      runRocketTimer(index, rocketName);
     }
 
-    function runTreeTimer(index, treeName) {
-      let state = treeStates[index];
-      let btn = document.getElementById(`treeBtn-${index}`);
-      let statusEl = document.getElementById(`treeStatus-${index}`);
-      let accumEl = document.getElementById(`treeAccumulated-${index}`);
-      let iconEl = document.getElementById(`treeIcon-${index}`);
-      let progFill = document.getElementById(`treeProg-${index}`);
+    function runRocketTimer(index, rocketName) {
+      let state = rocketStates[index];
+      let btn = document.getElementById(`rocketBtn-${index}`);
+      let statusEl = document.getElementById(`rocketStatus-${index}`);
+      let accumEl = document.getElementById(`rocketAccumulated-${index}`);
+      let iconEl = document.getElementById(`rocketIcon-${index}`);
+      let progFill = document.getElementById(`rocketProg-${index}`);
 
-      // Coin per second calculation for 6 hours
       let coinPerSecond = miningRewardCoins / miningDurationSeconds;
 
       if (state.timerInstance) clearInterval(state.timerInstance);
@@ -1026,14 +1036,12 @@
 
         statusEl.innerHTML = `⏳ Timer: ${hours}h ${minutes}m ${seconds}s`;
         accumEl.innerHTML = `Jama: ${state.accumulated.toFixed(2)} Coin`;
-        iconEl.innerText = percent > 50 ? "🌳🍎" : "🌿";
 
         if (state.timeLeft <= 0) {
           clearInterval(state.timerInstance);
           state.status = 'claim';
-          state.accumulated = miningRewardCoins; // Ensure exact reward limit reached
+          state.accumulated = miningRewardCoins;
           
-          iconEl.innerText = "✨🌳✨";
           statusEl.innerHTML = `🎉 6 Hours Completed!`;
           accumEl.innerHTML = `Jama: ${state.accumulated.toFixed(2)} Coin`;
           
@@ -1045,28 +1053,25 @@
       }, 1000);
     }
 
-    function claimTreeReward(index, treeName) {
-      let state = treeStates[index];
+    function claimRocketReward(index, rocketName) {
+      let state = rocketStates[index];
       addEarningsWithReferral(state.accumulated); 
 
-      let btn = document.getElementById(`treeBtn-${index}`);
-      let statusEl = document.getElementById(`treeStatus-${index}`);
-      let accumEl = document.getElementById(`treeAccumulated-${index}`);
-      let iconEl = document.getElementById(`treeIcon-${index}`);
-      let progFill = document.getElementById(`treeProg-${index}`);
+      let btn = document.getElementById(`rocketBtn-${index}`);
+      let statusEl = document.getElementById(`rocketStatus-${index}`);
+      let accumEl = document.getElementById(`rocketAccumulated-${index}`);
+      let progFill = document.getElementById(`rocketProg-${index}`);
 
-      // Reset state for next cycle (User can watch ad again to restart mining)
       state.status = 'ads';
       state.accumulated = 0.00;
       progFill.style.width = "0%";
-      iconEl.innerText = "🌱";
       statusEl.innerHTML = `Watch Ad to Start`;
       accumEl.innerHTML = `Jama: 0.00 Coin`;
       btn.innerText = "Watch Ad (1)";
       btn.style.background = "#22c55e";
       btn.style.color = "#fff";
 
-      alert(`🎉 Success! You claimed earned coins from ${treeName}! Ab aap naya ad dekh kar mining dobara start kar sakte hain.`);
+      alert(`🎉 Success! You claimed earned coins from ${rocketName}! Ab aap naya ad dekh kar rocket mining dobara start kar sakte hain.`);
     }
 
     window.calculateStakeRewards = function() {
@@ -1258,7 +1263,7 @@
 
     window.shareRef = function() {
       let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
-      let text = encodeURIComponent("🌱 Join Gram Farming and start earning coins & crypto instantly! Play now:\n" + refLink);
+      let text = encodeURIComponent("🚀 Join Gram Farming space mining and start earning coins & crypto instantly! Play now:\n" + refLink);
       window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`, '_blank');
     }
 
