@@ -791,6 +791,12 @@
       document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
       
+      // Update Live Market & Rules UI values cleanly
+      document.getElementById('lblCoinValue').innerText = `$${coinUsdtValue}`;
+      document.getElementById('lblDailyBonus').innerText = `${currentDailyBonus.toFixed(2)} Coins`;
+      document.getElementById('lblMinWithdraw').innerText = `${minWithdrawalAmt} Coins`;
+      document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
+      
       let manInput = document.getElementById('manualTonAddress');
       if (savedTonAddress) {
         manInput.value = savedTonAddress;
