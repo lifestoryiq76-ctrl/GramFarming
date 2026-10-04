@@ -122,7 +122,7 @@
       <div class="mining-grid">
         <!-- Rocket Box 1 -->
         <div class="mining-box" id="mBox-0">
-          <span class="limit-badge" id="rocket1Limit">20 left</span>
+          <span class="limit-badge" id="rocket1Limit">25 left</span>
           <div>
             <b style="font-size:13px;">🚀 Alpha Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-0">🚀</span>
@@ -137,7 +137,7 @@
 
         <!-- Rocket Box 2 -->
         <div class="mining-box" id="mBox-1">
-          <span class="limit-badge" id="rocket2Limit">20 left</span>
+          <span class="limit-badge" id="rocket2Limit">25 left</span>
           <div>
             <b style="font-size:13px;">🛸 Nova Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-1">🛸</span>
@@ -152,7 +152,7 @@
 
         <!-- Rocket Box 3 -->
         <div class="mining-box" id="mBox-2">
-          <span class="limit-badge" id="rocket3Limit">20 left</span>
+          <span class="limit-badge" id="rocket3Limit">25 left</span>
           <div>
             <b style="font-size:13px;">🛰️ Cosmic Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-2">🛰️</span>
@@ -167,7 +167,7 @@
 
         <!-- Rocket Box 4 -->
         <div class="mining-box" id="mBox-3">
-          <span class="limit-badge" id="rocket4Limit">20 left</span>
+          <span class="limit-badge" id="rocket4Limit">25 left</span>
           <div>
             <b style="font-size:13px;">🪐 Quantum Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-3">🪐</span>
@@ -539,9 +539,9 @@
     let referralPercentage = 20;
     
     let dynamicAdReward = 0.05; 
-    let requiredAdsForMining = 1; 
+    let requiredAdsForMining = 25; // Updated to 25 ads required to start mining
     let miningDurationSeconds = 21600; // 6 hours (6 * 3600s)
-    let miningRewardCoins = 5.00; // Total reward after 6 hours per rocket
+    let miningRewardCoins = 1.00; // Total 1 coin reward after 6 hours per rocket
 
     let adLimits = {
       homeAdsgramLimit: 40,
@@ -813,7 +813,7 @@
       for(let i=0; i<4; i++) {
         let limEl = document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][i]);
         if(limEl && rocketStates[i]) {
-          limEl.innerText = `${rocketStates[i].limit} left`;
+          limEl.innerText = `${rocketStates[i].adsLeft} left`;
         }
       }
     }
@@ -951,12 +951,12 @@
       }
     }
 
-    // --- ROCKET SPACE MINING SYSTEM WITH 6H TIMER & PER SEC ACCUMULATION ---
+    // --- ROCKET SPACE MINING SYSTEM WITH 25 ADS, LIVE ACCUMULATION & CARDS ---
     const rocketStates = [
-      { status: 'ads', limit: 20, timeLeft: 0, accumulated: 0.00, timerInstance: null },
-      { status: 'ads', limit: 20, timeLeft: 0, accumulated: 0.00, timerInstance: null },
-      { status: 'ads', limit: 20, timeLeft: 0, accumulated: 0.00, timerInstance: null },
-      { status: 'ads', limit: 20, timeLeft: 0, accumulated: 0.00, timerInstance: null }
+      { status: 'ads', adsLeft: 25, timeLeft: 0, accumulated: 0.00, timerInstance: null },
+      { status: 'ads', adsLeft: 25, timeLeft: 0, accumulated: 0.00, timerInstance: null },
+      { status: 'ads', adsLeft: 25, timeLeft: 0, accumulated: 0.00, timerInstance: null },
+      { status: 'ads', adsLeft: 25, timeLeft: 0, accumulated: 0.00, timerInstance: null }
     ];
 
     window.handleRocketAction = function(index, rocketName, adType) {
@@ -968,46 +968,57 @@
         let playAd = () => {
           if (adType === 'Adsgram' && AdController) {
             AdController.show().then(() => {
-              startRocketMiningCycle(index, rocketName);
+              progressRocketAdWatch(index, rocketName);
             }).catch(() => {
               alert("Ad skipped.");
               btn.disabled = false;
             });
           } else if (adType === 'Monetag' && typeof show_889922 === 'function') {
             show_889922().then(() => {
-              startRocketMiningCycle(index, rocketName);
+              progressRocketAdWatch(index, rocketName);
             }).catch(() => {
               alert("Ad failed or skipped.");
               btn.disabled = false;
             });
           } else {
             setTimeout(() => {
-              startRocketMiningCycle(index, rocketName);
+              progressRocketAdWatch(index, rocketName);
             }, 1000);
           }
         };
         playAd();
       } else if (state.status === 'mining') {
-        alert("Rocket mining is already in progress!");
+        // User can claim anytime & multiple times while mining!
+        claimLiveMiningEarnings(index, rocketName);
       } else if (state.status === 'claim') {
         claimRocketReward(index, rocketName);
       }
     }
 
-    function startRocketMiningCycle(index, rocketName) {
+    function progressRocketAdWatch(index, rocketName) {
       let state = rocketStates[index];
-      state.limit--;
-      document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][index]).innerText = `${state.limit} left`;
-
-      state.status = 'mining';
-      state.timeLeft = miningDurationSeconds; // 6 Hours in seconds
-      state.accumulated = 0.00;
+      state.adsLeft--;
+      document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][index]).innerText = `${state.adsLeft} left`;
 
       let btn = document.getElementById(`rocketBtn-${index}`);
-      btn.innerText = "Mining...";
-      btn.disabled = true;
+      let statusEl = document.getElementById(`rocketStatus-${index}`);
 
-      runRocketTimer(index, rocketName);
+      if (state.adsLeft > 0) {
+        statusEl.innerHTML = `Ads watched. (${25 - state.adsLeft}/25)`;
+        btn.innerText = `Watch Ad (${state.adsLeft})`;
+        btn.disabled = false;
+      } else {
+        // All 25 ads watched -> Start mining cycle!
+        state.status = 'mining';
+        state.timeLeft = miningDurationSeconds; // 6 Hours
+        state.accumulated = 0.00;
+        
+        statusEl.innerHTML = `⏳ Timer: 6h 0m 0s`;
+        btn.innerText = `Claim 0.00 Coin`;
+        btn.disabled = false;
+
+        runRocketTimer(index, rocketName);
+      }
     }
 
     function runRocketTimer(index, rocketName) {
@@ -1015,7 +1026,6 @@
       let btn = document.getElementById(`rocketBtn-${index}`);
       let statusEl = document.getElementById(`rocketStatus-${index}`);
       let accumEl = document.getElementById(`rocketAccumulated-${index}`);
-      let iconEl = document.getElementById(`rocketIcon-${index}`);
       let progFill = document.getElementById(`rocketProg-${index}`);
 
       let coinPerSecond = miningRewardCoins / miningDurationSeconds;
@@ -1023,55 +1033,80 @@
       if (state.timerInstance) clearInterval(state.timerInstance);
 
       state.timerInstance = setInterval(() => {
-        state.timeLeft--;
-        state.accumulated += coinPerSecond;
+        if (state.timeLeft > 0) {
+          state.timeLeft--;
+          state.accumulated += coinPerSecond;
+        }
 
         let elapsed = miningDurationSeconds - state.timeLeft;
-        let percent = (elapsed / miningDurationSeconds) * 100;
+        let percent = Math.min(100, (elapsed / miningDurationSeconds) * 100);
         progFill.style.width = `${percent}%`;
 
         let hours = Math.floor(state.timeLeft / 3600);
         let minutes = Math.floor((state.timeLeft % 3600) / 60);
         let seconds = state.timeLeft % 60;
 
-        statusEl.innerHTML = `⏳ Timer: ${hours}h ${minutes}m ${seconds}s`;
-        accumEl.innerHTML = `Jama: ${state.accumulated.toFixed(2)} Coin`;
+        statusEl.innerHTML = state.timeLeft > 0 ? `⏳ Timer: ${hours}h ${minutes}m ${seconds}s` : `🎉 Mining Finished!`;
+        accumEl.innerHTML = `Jama: ${state.accumulated.toFixed(4)} Coin`;
+        
+        if (state.status === 'mining') {
+          btn.innerText = `Claim ${state.accumulated.toFixed(4)} Coin`;
+        }
 
-        if (state.timeLeft <= 0) {
-          clearInterval(state.timerInstance);
+        if (state.timeLeft <= 0 && state.status === 'mining') {
+          // Timer finished fully
           state.status = 'claim';
           state.accumulated = miningRewardCoins;
-          
-          statusEl.innerHTML = `🎉 6 Hours Completed!`;
-          accumEl.innerHTML = `Jama: ${state.accumulated.toFixed(2)} Coin`;
-          
-          btn.innerText = `🎁 Claim ${miningRewardCoins} Coin`;
+          accumEl.innerHTML = `Jama: ${state.accumulated.toFixed(4)} Coin`;
+          btn.innerText = `🎁 Claim Final 1 Coin`;
           btn.style.background = "#eab308";
           btn.style.color = "#000";
-          btn.disabled = false;
         }
       }, 1000);
     }
 
+    // User can claim anytime, multiple times!
+    function claimLiveMiningEarnings(index, rocketName) {
+      let state = rocketStates[index];
+      if (state.accumulated <= 0.0001) {
+        alert("Abhi tak kuch bhi coin accumulate nahi hua hai!");
+        return;
+      }
+
+      let claimAmount = state.accumulated;
+      addEarningsWithReferral(claimAmount);
+      
+      // Reduce accumulated amount by what was claimed
+      state.accumulated = 0.00;
+      document.getElementById(`rocketAccumulated-${index}`).innerHTML = `Jama: 0.00 Coin`;
+      
+      alert(`🎉 Successfully claimed ${claimAmount.toFixed(4)} Coins from ${rocketName}! Timer aur mining chalu rahegi.`);
+    }
+
     function claimRocketReward(index, rocketName) {
       let state = rocketStates[index];
-      addEarningsWithReferral(state.accumulated); 
+      let finalClaim = state.accumulated > 0 ? state.accumulated : miningRewardCoins;
+      addEarningsWithReferral(finalClaim); 
 
       let btn = document.getElementById(`rocketBtn-${index}`);
       let statusEl = document.getElementById(`rocketStatus-${index}`);
       let accumEl = document.getElementById(`rocketAccumulated-${index}`);
       let progFill = document.getElementById(`rocketProg-${index}`);
 
+      // Reset for next round of 25 ads
       state.status = 'ads';
+      state.adsLeft = 25;
       state.accumulated = 0.00;
       progFill.style.width = "0%";
-      statusEl.innerHTML = `Watch Ad to Start`;
+      document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][index]).innerText = `25 left`;
+      
+      statusEl.innerHTML = `Watch Ads to Start`;
       accumEl.innerHTML = `Jama: 0.00 Coin`;
-      btn.innerText = "Watch Ad (1)";
+      btn.innerText = "Watch Ad (25)";
       btn.style.background = "#22c55e";
       btn.style.color = "#fff";
 
-      alert(`🎉 Success! You claimed earned coins from ${rocketName}! Ab aap naya ad dekh kar rocket mining dobara start kar sakte hain.`);
+      alert(`🎉 Success! Mining cycle complete ho gaya. Ab aap phir se 25 ads dekh kar mining chalu kar sakte hain.`);
     }
 
     window.calculateStakeRewards = function() {
