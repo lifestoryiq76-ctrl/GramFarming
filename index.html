@@ -101,7 +101,7 @@
     </div>
 
     <div class="card flex-between">
-      <span class="limit-badge" id="homeAdsgramLimit">Watched: 0 / 40</span>
+      <span class="limit-badge" id="homeAdsgramLimit">0 / 40</span>
       <div>
         <div style="font-weight: bold;">Adsgram</div>
         <small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small>
@@ -121,7 +121,7 @@
       <div class="mining-grid">
         <!-- Rocket Box 1 -->
         <div class="mining-box" id="mBox-0">
-          <span class="limit-badge" id="rocket1Limit">Watched: 0 / 25</span>
+          <span class="limit-badge" id="rocket1Limit">0 / 25</span>
           <div>
             <b style="font-size:13px;">🚀 Alpha Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-0">🚀</span>
@@ -136,7 +136,7 @@
 
         <!-- Rocket Box 2 -->
         <div class="mining-box" id="mBox-1">
-          <span class="limit-badge" id="rocket2Limit">Watched: 0 / 25</span>
+          <span class="limit-badge" id="rocket2Limit">0 / 25</span>
           <div>
             <b style="font-size:13px;">🛸 Nova Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-1">🛸</span>
@@ -151,9 +151,9 @@
 
         <!-- Rocket Box 3 -->
         <div class="mining-box" id="mBox-2">
-          <span class="limit-badge" id="rocket3Limit">Watched: 0 / 25</span>
+          <span class="limit-badge" id="rocket3Limit">0 / 25</span>
           <div>
-            <b style="font-size:13px;">🛰️ Cosmic Rocket</b><br>
+            <b style="font-size:13px;">🛰️️ Cosmic Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-2">🛰️</span>
             <div style="font-size:11px; color:var(--text-muted);" id="rocketStatus-2">Watch Ads to Start</div>
             <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="rocketAccumulated-2">🪙 0.00 Coin</div>
@@ -166,7 +166,7 @@
 
         <!-- Rocket Box 4 -->
         <div class="mining-box" id="mBox-3">
-          <span class="limit-badge" id="rocket4Limit">Watched: 0 / 25</span>
+          <span class="limit-badge" id="rocket4Limit">0 / 25</span>
           <div>
             <b style="font-size:13px;">🪐 Quantum Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-3">🪐</span>
@@ -192,17 +192,17 @@
 
     <div id="adsTasks">
       <div class="card flex-between">
-        <span class="limit-badge" id="taskAdsgramLimit">Watched: 0 / 40</span>
+        <span class="limit-badge" id="taskAdsgramLimit">0 / 40</span>
         <div><b>Adsgram</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
         <button class="btn" id="taskAdsgramBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsgramLimit', 'taskAdsgramBtn', 'Adsgram')">Watch</button>
       </div>
       <div class="card flex-between">
-        <span class="limit-badge" id="taskMonetagLimit">Watched: 0 / 40</span>
+        <span class="limit-badge" id="taskMonetagLimit">0 / 40</span>
         <div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
         <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag')">Watch</button>
       </div>
       <div class="card flex-between">
-        <span class="limit-badge" id="taskGigapubLimit">Watched: 0 / 40</span>
+        <span class="limit-badge" id="taskGigapubLimit">0 / 40</span>
         <div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: <span class="dynamic-reward-text">+0.05 Coin</span></small></div>
         <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub')">Watch</button>
       </div>
@@ -499,7 +499,7 @@
                 <div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                   <h2 style="color: #ef4444; margin-top: 0;">⚠️ Multiple Instances Restricted</h2>
                   <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
-                    Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt me sirf ek hi instance open kar sakte hain!
+                    Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt mem sirf ek hi instance open kar sakte hain!
                   </p>
                   <button onclick="location.reload()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%;">Retry / Refresh</button>
                 </div>
@@ -539,7 +539,7 @@
     
     let coinUsdtValue = 0.01; 
     let currentDailyBonus = 2.00;
-    let minWithdrawalAmt = 0.01; // Updated to 0.01 as requested
+    let minWithdrawalAmt = 0.01; 
     let liveTonPrice = 1.50;
     let referralPercentage = 20;
     
@@ -804,11 +804,11 @@
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
       document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
       
-      // Update Ad Watched Counts Display (showing how many watched out of 40)
-      if (document.getElementById('homeAdsgramLimit')) document.getElementById('homeAdsgramLimit').innerText = `Watched: ${adWatchedCounts.homeAdsgramLimit} / 40`;
-      if (document.getElementById('taskAdsgramLimit')) document.getElementById('taskAdsgramLimit').innerText = `Watched: ${adWatchedCounts.taskAdsgramLimit} / 40`;
-      if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `Watched: ${adWatchedCounts.taskMonetagLimit} / 40`;
-      if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `Watched: ${adWatchedCounts.taskGigapubLimit} / 40`;
+      // Ads watch count updated display (Removed "Watched: " prefix, showing only numbers like 0 / 40)
+      if (document.getElementById('homeAdsgramLimit')) document.getElementById('homeAdsgramLimit').innerText = `${adWatchedCounts.homeAdsgramLimit} / 40`;
+      if (document.getElementById('taskAdsgramLimit')) document.getElementById('taskAdsgramLimit').innerText = `${adWatchedCounts.taskAdsgramLimit} / 40`;
+      if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit} / 40`;
+      if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit} / 40`;
 
       let manInput = document.getElementById('manualTonAddress');
       if (savedTonAddress) {
@@ -996,7 +996,6 @@
       alert(`✅ Successfully staked ${stakeAmount} Coins in ${planName}!`);
     }
 
-    // Automatically check and distribute daily staking rewards to wallet balance
     function processStakingDailyTransfer() {
       if (!activeStakes || activeStakes.length === 0) return;
       let currentTime = Date.now();
@@ -1065,7 +1064,6 @@
       }
     }
 
-    // --- ROCKET SPACE MINING SYSTEM (Calendar independent for user data retention) ---
     const rocketStates = [
       { status: 'ads', adsWatched: 0, timeLeft: 0, accumulated: 0.00, timerInstance: null },
       { status: 'ads', adsWatched: 0, timeLeft: 0, accumulated: 0.00, timerInstance: null },
@@ -1101,7 +1099,7 @@
       let state = rocketStates[index];
       state.adsWatched++;
       let limitDisplayEl = document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][index]);
-      if (limitDisplayEl) limitDisplayEl.innerText = `Watched: ${state.adsWatched} / 25`;
+      if (limitDisplayEl) limitDisplayEl.innerText = `${state.adsWatched} / 25`;
 
       let btn = document.getElementById(`rocketBtn-${index}`);
       let statusEl = document.getElementById(`rocketStatus-${index}`);
@@ -1194,7 +1192,7 @@
       state.adsWatched = 0;
       state.accumulated = 0.00;
       progFill.style.width = "0%";
-      document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][index]).innerText = `Watched: 0 / 25`;
+      document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][index]).innerText = `0 / 25`;
       
       statusEl.innerHTML = `Watch Ads to Start`;
       accumEl.innerHTML = `🪙 0.00 Coin`;
@@ -1252,8 +1250,7 @@
         headerTitle.innerText = "⚡ TON Wallet Payout (Manual - 24 Hours Processing)";
         label.innerText = "Saved TON Wallet Address:";
         amountLabel.innerText = "Amount (TON):";
-        minLimit = 0.05; // TON min withdrawal 0.05
-        minLabel.innerText = `Min 0.05 TON`;
+        minLabel.innerText = `Min 0.05 TON`; // Updated min amount display for TON
         if (savedTonAddress) {
           input.value = savedTonAddress;
           input.readOnly = true;
@@ -1269,8 +1266,7 @@
         input.readOnly = false;
         input.value = "";
         amountLabel.innerText = "Amount (USDT):";
-        minLimit = 0.01; // FaucetPay min withdrawal 0.01
-        minLabel.innerText = `Min 0.01 USDT`;
+        minLabel.innerText = `Min 0.01 USDT`; // Updated min amount display for FaucetPay
       }
       renderUIValues();
     }
@@ -1294,7 +1290,7 @@
       let dest = document.getElementById('withdrawDestination').value;
       let method = document.getElementById('withdrawMethod').value;
 
-      let currentMin = (method === 'ton') ? 0.05 : 0.01;
+      let currentMin = (method === 'ton') ? 0.05 : 0.01; // TON minimum set to 0.05, FaucetPay to 0.01
 
       if(!rawAmt || isNaN(rawAmt) || rawAmt < currentMin) { 
         alert(`Minimum withdrawal limit is ${currentMin}.`); 
@@ -1389,7 +1385,8 @@
     }
 
     window.claimRefRewards = function() {
-      if (refReward < 1.00) { alert("Minimum claim amount for referral rewards is 1 Coin."); return; }
+      let minClaimLimit = 1.00;
+      if (refReward < minClaimLimit) { alert(`Minimum claim amount for referral rewards is ${minClaimLimit} Coin.`); return; }
       balance += refReward;
       let claimedAmount = refReward;
       refReward = 0.00;
