@@ -2,61 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
 
-// Firebase Admin initialization (Render par environment variables ya service account ke sath)
-// Agar aapne environment variables ya firebase key set ki hai:
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault() // ya apna serviceAccount object yahan pass karein
-  });
-}
-
-const db = admin.firestore(); // Ya Realtime Database use kar rahe hain toh admin.database()
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware setup
-app.use(cors());
-app.use(express.json());
-
-// Root Route
-app.get('/', (req, res) => {
-  res.send('🌱 Gram Farming API Server is Live & Running!');
-});
-
-// 1. User Data Fetch Karne ka Endpoint (Jab app khule)
-app.get('/api/user/:userId', async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const userRef = db.collection('users').doc(userId);
-    const doc = await userRef.get();
-
-    if (!doc.exists) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-
-    return res.status(200).json({ success: true, data: doc.Aapka `package.json` file kaafi achha hai, isme saari zaroori dependencies (`firebase-admin`, `telegraf`, `@ton/ton`, etc.) pehle se added hain! 
-
-Lekin jo **server.js** code maine upar diya tha, usme **Firebase Admin SDK** ka initialization aur user data save/load karne ke endpoints missing the. Kyunki aapka data app band hone par hat jata hai, iska matlab ye hai ki server par database se data save ya fetch karne ka proper logic likhna padega.
-
-Aapke `package.json` ke hisaab se ek updated aur complete **`server.js`** file niche de raha hoon, jisme Firebase Admin SDK properly configure hai aur user ka data save/load karne ke liye APIs bhi bani hui hain.
-
-### Updated `server.js` Code:
-
-```javascript
-const express = require('express');
-const cors = require('cors');
-const admin = require('firebase-admin');
-
-// Firebase Admin initialization (Render par environment variables ya service account use karein)
-// Agar aapne firebase-admin key JSON file rakhi hai, toh use yahan load kar sakte hain
+// Firebase Admin initialization
 try {
   admin.initializeApp({
     credential: admin.credential.applicationDefault()
-    // ya apna firebase service account object yahan de sakte hain
   });
 } catch (e) {
-  // Fallback agar default credentials set nahi hain
-  console.log('Firebase Admin initialized or running in local mode');
+  console.log('Firebase Admin running in fallback mode');
 }
 
 const db = admin.apps.length ? admin.firestore() : null;
@@ -73,7 +25,7 @@ app.get('/', (req, res) => {
   res.send('🌱 Gram Farming API Server is Live & Running!');
 });
 
-// 2. Get User Data API (App kholne par data load karne ke liye)
+// 2. Get User Data API
 app.get('/api/user/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -98,7 +50,7 @@ app.get('/api/user/:userId', async (req, res) => {
   }
 });
 
-// 3. Save / Update User Data API (Mining, Balance ya Ads count update karne ke liye)
+// 3. Save / Update User Data API
 app.post('/api/user/update', async (req, res) => {
   try {
     const { userId, balance, tonBalance, usdtBalance, lastMiningTime, adLimits } = req.body;
@@ -120,7 +72,6 @@ app.post('/api/user/update', async (req, res) => {
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     };
 
-    // Firestore mein data merge/save karein
     await db.collection('users').doc(userId).set(userData, { merge: true });
 
     return res.status(200).json({
@@ -142,8 +93,6 @@ app.post('/api/withdraw-faucetpay', async (req, res) => {
     if (!email || !amount || parseFloat(amount) <= 0) {
       return res.status(400).json({ success: false, message: 'Invalid email or amount!' });
     }
-
-    console.log(`⚡ Processing Payout: ${amount} ${currency || 'USDT'} to ${email}`);
 
     return res.status(200).json({
       success: true,
