@@ -550,6 +550,64 @@
       taskGigapubLimit: 40
     };
 
+    // --- TELEGRAM USER IDENTIFICATION ---
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    let displayName = "👑 My Account";
+    let userId = "12345";
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      let user = tg.initDataUnsafe.user;
+      let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
+      userId = String(user.id);
+    }
+    document.getElementById('telegramUserName').innerText = displayName;
+
+    // --- LOCALSTORAGE CACHING SETUP ---
+    const CACHE_KEY = 'gram_farming_cache_' + userId;
+
+    function loadFromLocalStorage() {
+      try {
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        if (cachedData) {
+          const parsed = JSON.parse(cachedData);
+          balance = parsed.balance ?? 0.00;
+          tonBalance = parsed.tonBalance ?? 0.00;
+          usdtBalance = parsed.usdtBalance ?? 0.00;
+          refReward = parsed.refReward ?? 0.00;
+          totalInvited = parsed.totalInvited ?? 0;
+          savedTonAddress = parsed.savedTonAddress ?? "";
+          if (parsed.adLimits) {
+            adLimits = parsed.adLimits;
+          }
+          renderUIValues();
+        }
+      } catch (e) {
+        console.error("Error loading from localStorage caching:", e);
+      }
+    }
+
+    function saveToLocalStorage() {
+      try {
+        const dataToCache = {
+          balance,
+          tonBalance,
+          usdtBalance,
+          refReward,
+          totalInvited,
+          savedTonAddress,
+          adLimits
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
+      } catch (e) {
+        console.error("Error saving to localStorage caching:", e);
+      }
+    }
+
+    // Load data from local cache instantly on startup
+    loadFromLocalStorage();
+
     // --- REAL-TIME LISTENERS FOR ADMIN SETTINGS ---
     onValue(ref(db, 'adminSettings/announcement'), (snapshot) => {
       if (snapshot.exists()) {
@@ -660,19 +718,6 @@
       toggleWithdrawFields();
     }
 
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    let displayName = "👑 My Account";
-    let userId = "12345";
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      let user = tg.initDataUnsafe.user;
-      let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-      displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
-      userId = String(user.id);
-    }
-    document.getElementById('telegramUserName').innerText = displayName;
-
     const userRef = ref(db, 'users/' + userId);
     
     onValue(userRef, (snapshot) => {
@@ -689,6 +734,9 @@
         if (data.taskAdsgramLimit !== undefined) adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
         if (data.taskMonetagLimit !== undefined) adLimits.taskMonetagLimit = data.taskMonetagLimit;
         if (data.taskGigapubLimit !== undefined) adLimits.taskGigapubLimit = data.taskGigapubLimit;
+        
+        // Sync fresh Firebase data to LocalStorage cache
+        saveToLocalStorage();
       } else {
         set(userRef, {
           name: displayName,
@@ -709,6 +757,9 @@
     });
 
     function saveToFirebase() {
+      // Save data locally first for instant caching response
+      saveToLocalStorage();
+
       update(userRef, {
         balance: balance,
         tonBalance: tonBalance,
