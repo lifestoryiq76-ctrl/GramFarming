@@ -1,63 +1,81 @@
+const express = require('express');
+const app = express(); // यह लाइन सबसे ऊपर होनी चाहिए
 const admin = require('firebase-admin');
 
-// सुनिश्चित करें कि आपके प्रोजेक्ट में Firebase इनिशियलाइज्ड है
-// (यदि पहले से है तो इस initialization को दोबारा न लिखें)
+// Firebase Initialization (अपनी फायरबेस की जानकारी यहाँ जोड़ें)
+// admin.initializeApp({ ... });
+// const db = admin.firestore();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Admin Panel Route - डेटाबेस से यूजर्स और बैलेंस फेच करना
 app.get('/admin', async (req, res) => {
     try {
-        // डेटाबेस से यूजर्स की कुल संख्या और लिस्ट प्राप्त करें
-        const usersSnapshot = await admin.firestore().collection('users').get();
-        const totalUsers = usersSnapshot.size;
+        // अगर फायरबेस कनेक्टेड है तो यहाँ से डेटा निकाल सकते हैं:
+        // const usersSnapshot = await db.collection('users').get();
+        // let users = [];
+        // usersSnapshot.forEach(doc => users.push({ id: doc.id, ...doc.data() }));
 
-        let usersHtml = '';
-        usersSnapshot.forEach(doc => {
-            const data = doc.data();
-            usersHtml += `
-                <tr>
-                    <td>${doc.id}</td>
-                    <td>${data.balance || 0} Coins</td>
-                </tr>
-            `;
-        });
-
-        res.send(`
+        // अभी के लिए सुंदर HTML डैशबोर्ड लेआउट:
+        const html = `
             <!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Gram Farming Admin Panel</title>
+                <title>Gram Farming Admin Dashboard</title>
                 <style>
-                    body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 20px; text-align: center; }
-                    .card { background: #1e293b; padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 500px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-                    h1 { color: #38bdf8; font-size: 24px; }
-                    p { color: #94a3b8; }
-                    table { width: 100%; margin-top: 15px; border-collapse: collapse; }
-                    th, td { padding: 10px; border-bottom: 1px solid #334155; font-size: 14px; text-align: left; }
-                    th { color: #38bdf8; }
+                    body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; margin: 0; padding: 20px; }
+                    .container { max-width: 900px; margin: auto; background: #1e293b; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+                    h1 { color: #38bdf8; text-align: center; }
+                    .stats { display: flex; justify-content: space-around; margin: 20px 0; }
+                    .card { background: #334155; padding: 15px 25px; border-radius: 8px; text-align: center; flex: 1; margin: 0 10px; }
+                    .card h3 { margin: 0; font-size: 16px; color: #94a3b8; }
+                    .card p { font-size: 24px; font-weight: bold; margin: 10px 0 0; color: #facc15; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #475569; }
+                    th { background: #0f172a; color: #38bdf8; }
                 </style>
             </head>
             <body>
-                <h1>Gram Farming Admin Panel</h1>
-                <div class="card">
-                    <h3>Dashboard Overview</h3>
-                    <p>Bot Status: <span style="color: #4ade80;">Online & Connected</span></p>
-                    <p>Total Users: <b>${totalUsers}</b></p>
-                    <p>Adsgram Integration: Active (Block ID: 52000)</p>
-                    
+                <div class="container">
+                    <h1>Gram Farming Admin Panel</h1>
+                    <div class="stats">
+                        <div class="card">
+                            <h3>Total Users</h3>
+                            <p id="totalUsers">Loading...</p>
+                        </div>
+                        <div class="card">
+                            <h3>Total Gram Distributed</h3>
+                            <p id="totalGram">Loading...</p>
+                        </div>
+                    </div>
+                    <h2>User List</h2>
                     <table>
-                        <tr>
-                            <th>User ID / Telegram ID</th>
-                            <th>Balance</th>
-                        </tr>
-                        ${usersHtml || '<tr><td colspan="2" style="text-align:center;">No users found</td></tr>'}
+                        <thead>
+                            <tr>
+                                <th>Telegram ID</th>
+                                <th>Balance (Gram)</th>
+                                <th>Joined Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <tr><td colspan="3" style="text-align: center;">Fetching data from Firestore...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </body>
             </html>
-        `);
+        `;
+        res.send(html);
     } catch (error) {
-        console.error("Admin Panel Error:", error);
-        res.status(500).send("Internal Server Error while loading admin panel.");
+        res.status(500).send("Error loading admin panel: " + error.message);
     }
+});
+
+// Railway के लिए पोर्ट सेटिंग्स
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
