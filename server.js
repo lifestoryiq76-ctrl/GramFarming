@@ -1,17 +1,12 @@
 const express = require('express');
 const app = express();
-const admin = require('firebase-admin');
-
-// Firebase Initialization (अगर आपने फायरबेस कनेक्ट किया है)
-// admin.initializeApp({ ... });
-// const db = admin.firestore();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 1. Root / Homepage Route (अब यहाँ एरर नहीं आएगी)
+// 1. Root / Homepage Route
 app.get('/', (req, res) => {
-    res.send('Gram Farming Mini App Backend is Live! 🚀 Visit /admin for Dashboard.');
+    res.send('Gram Farming Mini App Backend is Live on Vercel! 🚀 Visit /admin for Dashboard.');
 });
 
 // 2. Admin Panel Route
@@ -60,7 +55,7 @@ app.get('/admin', async (req, res) => {
                             </tr>
                         </thead>
                         <tbody id="userTableBody">
-                            <tr><td colspan="3" style="text-align: center;">Connected successfully! Waiting for users data...</td></tr>
+                            <tr><td colspan="3" style="text-align: center;">Connected successfully on Vercel!</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -73,26 +68,18 @@ app.get('/admin', async (req, res) => {
     }
 });
 
-// 3. Adsgram Reward API Route (विज्ञापन देखने के बाद यूजर को ग्राम देने के लिए)
+// 3. Adsgram Reward API Route
 app.post('/api/reward', async (req, res) => {
     try {
         const { telegramId } = req.body;
         if (!telegramId) {
             return res.status(400).json({ success: false, message: "Telegram ID missing" });
         }
-
-        // यहाँ डेटाबेस में यूजर का बैलेंस अपडेट करने का कोड जोड़ सकते हैं
-        // उदा: const userRef = db.collection('users').doc(String(telegramId));
-        // await userRef.update({ balance: admin.firestore.FieldValue.increment(10) });
-
         res.json({ success: true, message: "Reward added successfully!" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// Railway पोर्ट के अनुसार सर्वर चलाना
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Vercel के लिए ऐप एक्सपोर्ट करना जरूरी है
+module.exports = app;
