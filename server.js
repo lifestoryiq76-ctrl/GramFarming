@@ -1,112 +1,63 @@
-const express = require('express');
-const cors = require('cors');
 const admin = require('firebase-admin');
 
-// Firebase Admin initialization
-try {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault()
-  });
-} catch (e) {
-  console.log('Firebase Admin running in fallback mode');
-}
+// सुनिश्चित करें कि आपके प्रोजेक्ट में Firebase इनिशियलाइज्ड है
+// (यदि पहले से है तो इस initialization को दोबारा न लिखें)
 
-const db = admin.apps.length ? admin.firestore() : null;
+app.get('/admin', async (req, res) => {
+    try {
+        // डेटाबेस से यूजर्स की कुल संख्या और लिस्ट प्राप्त करें
+        const usersSnapshot = await admin.firestore().collection('users').get();
+        const totalUsers = usersSnapshot.size;
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+        let usersHtml = '';
+        usersSnapshot.forEach(doc => {
+            const data = doc.data();
+            usersHtml += `
+                <tr>
+                    <td>${doc.id}</td>
+                    <td>${data.balance || 0} Coins</td>
+                </tr>
+            `;
+        });
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// 1. Root Route
-app.get('/', (req, res) => {
-  res.send('🌱 Gram Farming API Server is Live & Running!');
-});
-
-// 2. Get User Data API
-app.get('/api/user/:userId', async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    
-    if (!db) {
-      return res.status(500).json({ success: false, message: 'Database not initialized on server' });
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Gram Farming Admin Panel</title>
+                <style>
+                    body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 20px; text-align: center; }
+                    .card { background: #1e293b; padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 500px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+                    h1 { color: #38bdf8; font-size: 24px; }
+                    p { color: #94a3b8; }
+                    table { width: 100%; margin-top: 15px; border-collapse: collapse; }
+                    th, td { padding: 10px; border-bottom: 1px solid #334155; font-size: 14px; text-align: left; }
+                    th { color: #38bdf8; }
+                </style>
+            </head>
+            <body>
+                <h1>Gram Farming Admin Panel</h1>
+                <div class="card">
+                    <h3>Dashboard Overview</h3>
+                    <p>Bot Status: <span style="color: #4ade80;">Online & Connected</span></p>
+                    <p>Total Users: <b>${totalUsers}</b></p>
+                    <p>Adsgram Integration: Active (Block ID: 52000)</p>
+                    
+                    <table>
+                        <tr>
+                            <th>User ID / Telegram ID</th>
+                            <th>Balance</th>
+                        </tr>
+                        ${usersHtml || '<tr><td colspan="2" style="text-align:center;">No users found</td></tr>'}
+                    </table>
+                </div>
+            </body>
+            </html>
+        `);
+    } catch (error) {
+        console.error("Admin Panel Error:", error);
+        res.status(500).send("Internal Server Error while loading admin panel.");
     }
-
-    const userDoc = await db.collection('users').doc(userId).get();
-    
-    if (!userDoc.exists) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: userDoc.data()
-    });
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// 3. Save / Update User Data API
-app.post('/api/user/update', async (req, res) => {
-  try {
-    const { userId, balance, tonBalance, usdtBalance, lastMiningTime, adLimits } = req.body;
-
-    if (!userId) {
-      return res.status(400).json({ success: false, message: 'User ID is required' });
-    }
-
-    if (!db) {
-      return res.status(500).json({ success: false, message: 'Database not initialized on server' });
-    }
-
-    const userData = {
-      balance: balance || 0,
-      tonBalance: tonBalance || 0,
-      usdtBalance: usdtBalance || 0,
-      lastMiningTime: lastMiningTime || Date.now(),
-      adLimits: adLimits || {},
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
-    };
-
-    await db.collection('users').doc(userId).set(userData, { merge: true });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Data successfully saved to server!'
-    });
-
-  } catch (error) {
-    console.error('Error updating user data:', error);
-    return res.status(500).json({ success: false, message: 'Server error while saving data' });
-  }
-});
-
-// 4. FaucetPay Withdrawal API
-app.post('/api/withdraw-faucetpay', async (req, res) => {
-  try {
-    const { email, amount, currency } = req.body;
-
-    if (!email || !amount || parseFloat(amount) <= 0) {
-      return res.status(400).json({ success: false, message: 'Invalid email or amount!' });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'FaucetPay withdrawal successfully processed!',
-      data: { email, amount, currency: currency || 'USDT', timestamp: Date.now() }
-    });
-
-  } catch (error) {
-    console.error('Withdrawal Server Error:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-// Start Server
-app.listen(PORT, () => {
-  console.log(`🚀 Gram Farming backend server is running on port ${PORT}`);
 });
