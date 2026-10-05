@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
     `);
 });
 
-// Admin Panel Route serving your Ultimate Admin Panel HTML
+// Admin Panel Route serving the Ultimate Admin Panel HTML directly
 app.get('/admin', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="hi">
