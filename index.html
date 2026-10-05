@@ -735,7 +735,6 @@
         if (data.taskMonetagLimit !== undefined) adLimits.taskMonetagLimit = data.taskMonetagLimit;
         if (data.taskGigapubLimit !== undefined) adLimits.taskGigapubLimit = data.taskGigapubLimit;
         
-        // Sync fresh Firebase data to LocalStorage cache
         saveToLocalStorage();
       } else {
         set(userRef, {
@@ -757,9 +756,7 @@
     });
 
     function saveToFirebase() {
-      // Save data locally first for instant caching response
       saveToLocalStorage();
-
       update(userRef, {
         balance: balance,
         tonBalance: tonBalance,
@@ -1314,7 +1311,7 @@
           saveToFirebase();
           renderUIValues();
           recordTransactionHistory(`TON Withdrawal (Processing 24h): ${finalReceiveAmt.toFixed(4)} TON to ${savedTonAddress}`);
-          alert(`🎉 TON Withdrawal Request Successful! Admin panel par update ho gaya hai.`);
+          alert(`🎉 TON Withdrawal Request Successful!`);
         } catch (err) {
           alert("Error while processing withdrawal request to Firebase.");
         }
