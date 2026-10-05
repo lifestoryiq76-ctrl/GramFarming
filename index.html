@@ -25,7 +25,6 @@
     .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     
-    /* Rocket Floating Animation */
     @keyframes floatRocket {
       0% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-8px) rotate(2deg); }
@@ -296,6 +295,14 @@
         <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (365 Days)', 365, 20)">Lock</button>
       </div>
     </div>
+
+    <!-- Active Staking List Section -->
+    <h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;">📋 Active Staking Investments</h4>
+    <div id="activeStakingList" class="card" style="background: #111827; border: 1px solid var(--border);">
+      <div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">
+        No active staking plans found.
+      </div>
+    </div>
   </div>
 
   <!-- 👥 REFERRALS PAGE -->
@@ -476,7 +483,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, update, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // --- SINGLE DEVICE SESSION ENFORCEMENT ---
     const SESSION_KEY = 'gram_farming_active_session_lock';
     const currentSessionToken = 'sess_' + Math.random().toString(36).substring(2) + Date.now();
 
@@ -510,7 +516,6 @@
       }, 2000);
     });
 
-    // --- FIREBASE INITIALIZATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
       authDomain: "gramfarmingbot-1a570.firebaseapp.com",
@@ -524,13 +529,13 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- GLOBAL VARIABLES ---
     let balance = 0.00;
     let tonBalance = 0.00;
     let usdtBalance = 0.00;
     let refReward = 0.00;
     let totalInvited = 0;
     let savedTonAddress = "";
+    let activeStakes = [];
     
     let coinUsdtValue = 0.01; 
     let currentDailyBonus = 2.00;
@@ -539,9 +544,8 @@
     let referralPercentage = 20;
     
     let dynamicAdReward = 0.05; 
-    let requiredAdsForMining = 25; 
-    let miningDurationSeconds = 21600; // 6 hours (6 * 3600s)
-    let miningRewardCoins = 1.00; // Total 1 coin reward after 6 hours per rocket
+    let miningDurationSeconds = 21600; 
+    let miningRewardCoins = 1.00;
 
     let adLimits = {
       homeAdsgramLimit: 40,
@@ -550,7 +554,14 @@
       taskGigapubLimit: 40
     };
 
-    // --- TELEGRAM USER IDENTIFICATION ---
+    // Daily Ads limit Reset Check
+    let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
+    let todayDateStr = new Date().toDateString();
+    if (lastAdsResetDate !== todayDateStr) {
+      adLimits = { homeAdsgramLimit: 40, taskAdsgramLimit: 40, taskMonetagLimit: 40, taskGigapubLimit: 40 };
+      localStorage.setItem('last_ads_reset_date', todayDateStr);
+    }
+
     const tg = window.Telegram.WebApp;
     tg.expand();
 
@@ -564,7 +575,6 @@
     }
     document.getElementById('telegramUserName').innerText = displayName;
 
-    // --- LOCALSTORAGE CACHING SETUP ---
     const CACHE_KEY = 'gram_farming_cache_' + userId;
 
     function loadFromLocalStorage() {
@@ -578,37 +588,23 @@
           refReward = parsed.refReward ?? 0.00;
           totalInvited = parsed.totalInvited ?? 0;
           savedTonAddress = parsed.savedTonAddress ?? "";
-          if (parsed.adLimits) {
-            adLimits = parsed.adLimits;
-          }
+          activeStakes = parsed.activeStakes ?? [];
+          if (parsed.adLimits) adLimits = parsed.adLimits;
           renderUIValues();
+          renderStakingList();
         }
-      } catch (e) {
-        console.error("Error loading from localStorage caching:", e);
-      }
+      } catch (e) {}
     }
 
     function saveToLocalStorage() {
       try {
-        const dataToCache = {
-          balance,
-          tonBalance,
-          usdtBalance,
-          refReward,
-          totalInvited,
-          savedTonAddress,
-          adLimits
-        };
+        const dataToCache = { balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, adLimits };
         localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
-      } catch (e) {
-        console.error("Error saving to localStorage caching:", e);
-      }
+      } catch (e) {}
     }
 
-    // Load data from local cache instantly on startup
     loadFromLocalStorage();
 
-    // --- REAL-TIME LISTENERS FOR ADMIN SETTINGS ---
     onValue(ref(db, 'adminSettings/announcement'), (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -622,34 +618,22 @@
     onValue(ref(db, 'adminSettings/general'), (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        if (data.coinUsdtValue !== undefined) {
-          coinUsdtValue = parseFloat(data.coinUsdtValue);
-        }
+        if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
         if (data.dailyBonus !== undefined) {
           currentDailyBonus = parseFloat(data.dailyBonus);
           document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
         }
-        if (data.minWithdrawal !== undefined) {
-          minWithdrawalAmt = parseFloat(data.minWithdrawal);
-        }
+        if (data.minWithdrawal !== undefined) minWithdrawalAmt = parseFloat(data.minWithdrawal);
         if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
           referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
           document.getElementById('refPercentText').innerText = `Get ${referralPercentage}%`;
         }
-        
         if (data.rewardPerAd !== undefined || data.adReward !== undefined) {
           dynamicAdReward = parseFloat(data.rewardPerAd !== undefined ? data.rewardPerAd : data.adReward);
           document.querySelectorAll('.dynamic-reward-text').forEach(el => {
             el.innerText = `+${dynamicAdReward} Coin`;
           });
         }
-        if (data.miningDurationSeconds !== undefined) {
-          miningDurationSeconds = parseInt(data.miningDurationSeconds);
-        }
-        if (data.miningRewardCoins !== undefined) {
-          miningRewardCoins = parseFloat(data.miningRewardCoins);
-        }
-
         renderUIValues();
         calculateExchange();
       }
@@ -658,52 +642,43 @@
     const translations = {
       en: { 
         homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", 
-        clickToClaim: "Click to Claim!", watchBtn: "Watch", 
-        tasksOffers: "📋 Tasks & Offers", adsTasksTab: "Ads Tasks", userTasksTab: "User Tasks", 
+        clickToClaim: "Click to Claim!", watchBtn: "Watch", tasksOffers: "📋 Tasks & Offers", adsTasksTab: "Ads Tasks", userTasksTab: "User Tasks", 
         addYourTask: "➕ Add Your Task", publishTaskBtn: "Publish Task (-10 Coin)", joinTelegram: "📢 Join Telegram Channel", reward10Coins: "Reward: +10 Coin", completeBtn: "Complete", 
         stakingOptions: "💎 Staking Options", stakingCalc: "🧮 Staking Calculator & Preview", enterStakingCoins: "Enter Staking Coins:", 
         selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking", 
         flexTitle: "Flexible Staking", flexDesc: "Unstake anytime with zero locking period.", stakeBtn: "Stake", fixedHeader: "2. Fixed Staking (Up to 20% APY)",
         referralProgram: "👥 REFERRAL PROGRAM", friendsTitle: "Friends", totalInvited: "Total invited", rewardsTitle: "Rewards", 
-        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", inviteDesc: "Get bonus from all 🪙 earned by your invited friends.", 
-        copyLinkBtn: "Copy Link", shareBtn: "Share", walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", 
-        convertCoinTo: "Convert Coin to:", coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
-        withdrawFunds: "📤 Withdraw Funds", withdrawMethod: "Withdrawal Method:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "Amount:", tonAddressLabel: "TON Wallet Address:", submitWithdrawBtn: "Submit Withdraw", 
+        minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", copyLinkBtn: "Copy Link", shareBtn: "Share", 
+        walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", convertCoinTo: "Convert Coin to:", 
+        coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now", 
         topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
         navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" 
       },
       hi: { 
         homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", 
-        clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", 
-        tasksOffers: "📋 टास्क और ऑफर्स", adsTasksTab: "एड्स टास्क", userTasksTab: "यूजर टास्क", 
+        clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", tasksOffers: "📋 टास्क और ऑफर्स", adsTasksTab: "एड्स टास्क", userTasksTab: "यूजर टास्क", 
         addYourTask: "➕ अपना टास्क जोड़ें", publishTaskBtn: "टास्क पब्लिश करें (-10 कॉइन)", joinTelegram: "📢 टेलीग्राम चैनल ज्वाइन करें", reward10Coins: "इनाम: +10 कॉइन", completeBtn: "पूरा करें", 
         stakingOptions: "💎 स्टेकिंग विकल्प", stakingCalc: "🧮 स्टेकिंग कैलकुलेटर और पूर्वावलोकन", enterStakingCoins: "स्टेकिंग कॉइन दर्ज करें:", 
         selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग", 
         flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
         referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम", 
-        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", inviteDesc: "अपने आमंत्रित दोस्तों द्वारा कमाए गए सभी 🪙 से बोनस पाएं।", 
-        copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", 
-        convertCoinTo: "इसमें कॉइन बदलें:", coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
-        withdrawFunds: "📤 फंड विथड्रॉ करें", withdrawMethod: "निकासी का तरीका:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "मात्रा:", tonAddressLabel: "TON Wallet पता:", submitWithdrawBtn: "निकासी सबमिट करें", 
+        minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें", 
+        walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", convertCoinTo: "इसमें कॉइन बदलें:", 
+        coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें", 
         topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
         navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" 
       },
       ru: { 
         homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", 
-        clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", 
-        tasksOffers: "📋 Задания", adsTasksTab: "Реклама", userTasksTab: "Пользовательские", 
+        clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", tasksOffers: "📋 Задания", adsTasksTab: "Реклама", userTasksTab: "Пользовательские", 
         addYourTask: "➕ Добавить", publishTaskBtn: "Опубликовать", joinTelegram: "📢 Подписаться", reward10Coins: "Награда: +10", completeBtn: "Выполнить", 
         stakingOptions: "💎 Стейкинг", stakingCalc: "🧮 Калькулятор", enterStakingCoins: "Введите монеты:", 
         selectPlan: "План:", dailyReward: "Дневная", totalPeriodReward: "Общая", flexHeader: "1. Гибкий", 
         flexTitle: "Гибкий стейкинг", flexDesc: "Без лока.", stakeBtn: "В стейкинг", fixedHeader: "2. Фиксированный стейкинг",
         referralProgram: "👥 РЕФЕРАЛЫ", friendsTitle: "Друзья", totalInvited: "Приглашено", rewardsTitle: "Награды", 
-        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", inviteDesc: "Бонус от рефералов.", 
-        copyLinkBtn: "Копировать", shareBtn: "Поделиться", walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", 
-        convertCoinTo: "В:", coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
-        withdrawFunds: "📤 Вывод средств", withdrawMethod: "Метод:", tonWalletOpt: "TON Wallet Address", faucetpayOpt: "Faucetpay email id", 
-        amountLabel: "Сумма:", tonAddressLabel: "Адрес TON Wallet:", submitWithdrawBtn: "Вывести", 
+        minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", copyLinkBtn: "Копировать", shareBtn: "Поделиться", 
+        walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", convertCoinTo: "В:", 
+        coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять", 
         topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
         navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" 
       }
@@ -729,6 +704,7 @@
         refReward = data.refReward || 0.00;
         totalInvited = data.totalInvited || 0;
         savedTonAddress = data.savedTonAddress || "";
+        activeStakes = data.activeStakes || [];
 
         if (data.homeAdsgramLimit !== undefined) adLimits.homeAdsgramLimit = data.homeAdsgramLimit;
         if (data.taskAdsgramLimit !== undefined) adLimits.taskAdsgramLimit = data.taskAdsgramLimit;
@@ -739,31 +715,19 @@
       } else {
         set(userRef, {
           name: displayName,
-          balance: 0.00,
-          tonBalance: 0.00,
-          usdtBalance: 0.00,
-          refReward: 0.00,
-          totalInvited: 0,
-          savedTonAddress: "",
-          homeAdsgramLimit: 40,
-          taskAdsgramLimit: 40,
-          taskMonetagLimit: 40,
-          taskGigapubLimit: 40
+          balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [],
+          homeAdsgramLimit: 40, taskAdsgramLimit: 40, taskMonetagLimit: 40, taskGigapubLimit: 40
         });
       }
       renderUIValues();
+      renderStakingList();
       toggleWithdrawFields();
     });
 
     function saveToFirebase() {
       saveToLocalStorage();
       update(userRef, {
-        balance: balance,
-        tonBalance: tonBalance,
-        usdtBalance: usdtBalance,
-        refReward: refReward,
-        totalInvited: totalInvited,
-        savedTonAddress: savedTonAddress,
+        balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes,
         homeAdsgramLimit: adLimits.homeAdsgramLimit,
         taskAdsgramLimit: adLimits.taskAdsgramLimit,
         taskMonetagLimit: adLimits.taskMonetagLimit,
@@ -857,13 +821,6 @@
       let method = document.getElementById('withdrawMethod').value;
       let availVal = (method === 'ton') ? tonBalance : usdtBalance;
       document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
-
-      for(let i=0; i<4; i++) {
-        let limEl = document.getElementById(['rocket1Limit', 'rocket2Limit', 'rocket3Limit', 'rocket4Limit'][i]);
-        if(limEl && rocketStates[i]) {
-          limEl.innerText = `${rocketStates[i].adsLeft} left`;
-        }
-      }
     }
     
     fetchLiveTonPrice();
@@ -904,52 +861,51 @@
       }
     } catch(e) {}
 
+    // --- 5 SECOND TIMER LOGIC FOR ADS WATCH & TASKS ---
     window.watchAdWithTimer = function(limitElementId, btnElementId, adName) {
       let limitKey = limitElementId || 'homeAdsgramLimit';
       let currentLimit = adLimits[limitKey] !== undefined ? adLimits[limitKey] : 40;
       
       if (currentLimit <= 0) {
-        alert("Daily ad limit reached for today!");
+        alert("Daily ad limit reached for today! New ads will refresh tomorrow.");
         return;
       }
 
       let btn = btnElementId ? document.getElementById(btnElementId) : null;
       if (btn) btn.disabled = true;
 
-      let playAdLogic = () => {
-        if (adName === 'Adsgram') {
-          if (AdController) {
-            AdController.show().then(() => {
-              completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
-            }).catch(() => { 
-              alert("Ad skipped."); 
-              if (btn) btn.disabled = false;
-            });
-          } else {
-            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1500);
-          }
-        } 
-        else if (adName === 'Monetag') {
-          if (typeof show_889922 === 'function') { 
-            show_889922().then(() => {
-              completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
-            }).catch(() => {
-              alert("Ad skipped or failed to load.");
-              if (btn) btn.disabled = false;
-            });
-          } else {
-            setTimeout(() => completeAdReward(dynamicAdReward, limitKey, btn, currentLimit), 1500);
-          }
-        } 
-        else if (adName === 'Gigapub') {
-          setTimeout(() => {
-            completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
-          }, 1500);
-        } else {
-          completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
+      // 5 Seconds Timer before showing/finishing ad
+      let countdown = 5;
+      if (btn) btn.innerText = `Loading ${countdown}s`;
+      
+      let timerInterval = setInterval(() => {
+        countdown--;
+        if (btn) btn.innerText = `Wait ${countdown}s`;
+        if (countdown <= 0) {
+          clearInterval(timerInterval);
+          executeAdDisplay(limitKey, btn, adName, currentLimit);
         }
+      }, 1000);
+    }
+
+    function executeAdDisplay(limitKey, btn, adName, currentLimit) {
+      let finishAd = () => {
+        completeAdReward(dynamicAdReward, limitKey, btn, currentLimit);
       };
-      playAdLogic();
+
+      if (adName === 'Adsgram' && AdController) {
+        AdController.show().then(finishAd).catch(() => { 
+          alert("Ad skipped."); 
+          if (btn) { btn.innerText = "Watch"; btn.disabled = false; }
+        });
+      } else if (adName === 'Monetag' && typeof show_889922 === 'function') {
+        show_889922().then(finishAd).catch(() => {
+          alert("Ad skipped or failed.");
+          if (btn) { btn.innerText = "Watch"; btn.disabled = false; }
+        });
+      } else {
+        setTimeout(finishAd, 1000);
+      }
     }
 
     function completeAdReward(reward, limitKey, btn, currentLimit) {
@@ -963,20 +919,12 @@
       alert(`+${reward} Coin added successfully!`);
 
       if (btn) {
-        let cooldown = 5;
-        btn.innerText = `Wait ${cooldown}s`;
-        let timerInterval = setInterval(() => {
-          cooldown--;
-          btn.innerText = `Wait ${cooldown}s`;
-          if (cooldown <= 0) {
-            clearInterval(timerInterval);
-            btn.innerText = "Watch";
-            btn.disabled = false;
-          }
-        }, 1000);
+        btn.innerText = "Watch";
+        btn.disabled = false;
       }
     }
 
+    // --- DAILY BONUS WITH 5 SEC TIMER ---
     window.claimDailyBonus = function() {
       let lastClaimDate = localStorage.getItem('last_bonus_date_' + userId);
       let todayStr = new Date().toDateString();
@@ -989,9 +937,7 @@
       };
 
       if (AdController) {
-        AdController.show().then(() => {
-          verifyAndClaim();
-        }).catch(() => {
+        AdController.show().then(verifyAndClaim).catch(() => {
           alert("Ad skipped. Please watch the ad to claim daily bonus.");
         });
       } else {
@@ -999,7 +945,92 @@
       }
     }
 
-    // --- ROCKET SPACE MINING SYSTEM WITH 25 ADS, LIVE ACCUMULATION & CARDS ---
+    // --- STAKING SYSTEM WITH ACTIVE LIST SHOWING BELOW ---
+    window.calculateStakeRewards = function() {
+      let coins = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
+      let planVal = document.getElementById('stakeCalcPlan').value.split('|');
+      let days = parseInt(planVal[0]);
+      let apy = parseFloat(planVal[1]);
+      
+      let totalRev = (coins * (apy / 100) * (days === 0 ? 1 : days / 365));
+      let dailyRev = days > 0 ? totalRev / days : totalRev / 365;
+      
+      document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)} Coin`;
+      document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} Coin`;
+    }
+
+    window.stake = function(planName, days, apy) {
+      let amountInput = prompt(`Enter coin amount to stake in ${planName} (${apy}% APY):`, "100");
+      let stakeAmount = parseFloat(amountInput);
+
+      if (!stakeAmount || isNaN(stakeAmount) || stakeAmount <= 0) {
+        alert("Please enter a valid coin amount.");
+        return;
+      }
+
+      if (balance < stakeAmount) {
+        alert("Insufficient coin balance to stake this amount!");
+        return;
+      }
+
+      balance -= stakeAmount;
+
+      let newStakeObj = {
+        id: Date.now(),
+        planName: planName,
+        amount: stakeAmount,
+        apy: apy,
+        days: days,
+        date: new Date().toLocaleDateString()
+      };
+
+      activeStakes.push(newStakeObj);
+      saveToFirebase();
+      renderUIValues();
+      renderStakingList();
+
+      alert(`✅ Successfully staked ${stakeAmount} Coins in ${planName}!`);
+    }
+
+    window.renderStakingList = function() {
+      let listContainer = document.getElementById('activeStakingList');
+      if (!activeStakes || activeStakes.length === 0) {
+        listContainer.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No active staking plans found.</div>`;
+        return;
+      }
+
+      let html = '';
+      activeStakes.forEach((stake, idx) => {
+        html += `
+          <div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 12px;">
+            <div class="flex-between">
+              <strong style="color: var(--accent);">${stake.planName}</strong>
+              <span style="color: var(--yellow);">🪙 ${stake.amount.toFixed(2)} Coins</span>
+            </div>
+            <div class="flex-between" style="margin-top: 4px; color: var(--text-muted);">
+              <span>APY: ${stake.apy}% | Date: ${stake.date}</span>
+              <button onclick="unstake(${stake.id})" style="background: #ef4444; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Unstake</button>
+            </div>
+          </div>
+        `;
+      });
+      listContainer.innerHTML = html;
+    }
+
+    window.unstake = function(stakeId) {
+      let index = activeStakes.findIndex(s => s.id === stakeId);
+      if (index !== -1) {
+        let refundedAmount = activeStakes[index].amount;
+        balance += refundedAmount;
+        activeStakes.splice(index, 1);
+        saveToFirebase();
+        renderUIValues();
+        renderStakingList();
+        alert(`🔓 Successfully unstaked and returned ${refundedAmount.toFixed(2)} Coins to your balance.`);
+      }
+    }
+
+    // --- ROCKET SPACE MINING SYSTEM ---
     const rocketStates = [
       { status: 'ads', adsLeft: 25, timeLeft: 0, accumulated: 0.00, timerInstance: null },
       { status: 'ads', adsLeft: 25, timeLeft: 0, accumulated: 0.00, timerInstance: null },
@@ -1013,28 +1044,17 @@
       
       if (state.status === 'ads') {
         btn.disabled = true;
-        let playAd = () => {
-          if (adType === 'Adsgram' && AdController) {
-            AdController.show().then(() => {
-              progressRocketAdWatch(index, rocketName);
-            }).catch(() => {
-              alert("Ad skipped.");
-              btn.disabled = false;
-            });
-          } else if (adType === 'Monetag' && typeof show_889922 === 'function') {
-            show_889922().then(() => {
-              progressRocketAdWatch(index, rocketName);
-            }).catch(() => {
-              alert("Ad failed or skipped.");
-              btn.disabled = false;
-            });
-          } else {
-            setTimeout(() => {
-              progressRocketAdWatch(index, rocketName);
-            }, 1000);
+        let countdown = 5;
+        btn.innerText = `Wait ${countdown}s`;
+        
+        let tInterval = setInterval(() => {
+          countdown--;
+          btn.innerText = `Wait ${countdown}s`;
+          if (countdown <= 0) {
+            clearInterval(tInterval);
+            progressRocketAdWatch(index, rocketName);
           }
-        };
-        playAd();
+        }, 1000);
       } else if (state.status === 'mining') {
         claimLiveMiningEarnings(index, rocketName);
       } else if (state.status === 'claim') {
@@ -1056,7 +1076,7 @@
         btn.disabled = false;
       } else {
         state.status = 'mining';
-        state.timeLeft = miningDurationSeconds; // 6 Hours
+        state.timeLeft = miningDurationSeconds; 
         state.accumulated = 0.00;
         
         statusEl.innerHTML = `⏳ Timer: 6h 0m 0s`;
@@ -1119,11 +1139,9 @@
 
       let claimAmount = state.accumulated;
       addEarningsWithReferral(claimAmount);
-      
       state.accumulated = 0.00;
       document.getElementById(`rocketAccumulated-${index}`).innerHTML = `🪙 0.00 Coin`;
-      
-      alert(`🎉 Successfully claimed ${claimAmount.toFixed(4)} Coins from ${rocketName}! Timer aur mining chalu rahegi.`);
+      alert(`🎉 Successfully claimed ${claimAmount.toFixed(4)} Coins from ${rocketName}!`);
     }
 
     function claimRocketReward(index, rocketName) {
@@ -1149,19 +1167,6 @@
       btn.style.color = "#fff";
 
       alert(`🎉 Success! Mining cycle complete ho gaya. Ab aap phir se 25 ads dekh kar mining chalu kar sakte hain.`);
-    }
-
-    window.calculateStakeRewards = function() {
-      let coins = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
-      let planVal = document.getElementById('stakeCalcPlan').value.split('|');
-      let days = parseInt(planVal[0]);
-      let apy = parseFloat(planVal[1]);
-      
-      let totalRev = (coins * (apy / 100) * (days === 0 ? 1 : days / 365));
-      let dailyRev = days > 0 ? totalRev / days : totalRev / 365;
-      
-      document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)} Coin`;
-      document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} Coin`;
     }
 
     window.calculateExchange = function() {
@@ -1330,7 +1335,6 @@
     }
 
     window.loadTransactionHistory = function() {}
-    window.stake = function(planName, days, apy) { alert(`${planName} Staked successfully!`); }
     
     window.copyRef = function() { 
       let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
@@ -1356,8 +1360,8 @@
 
     window.addNewTask = function() { 
       let title = document.getElementById('customTaskTitle').value;
-      let link = document.getElementById('customTaskLink').value;
-      if(!title || !link) { alert("Please fill task details."); return; }
+      let link = document.getElementById('customTaskLink55').value;
+      if(!title) { alert("Please fill task details."); return; }
       if(balance < 10) { alert("Insufficient balance! You need 10 coins to publish a task."); return; }
       
       balance -= 10;
