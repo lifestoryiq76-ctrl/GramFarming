@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gram Farming Ultimate Admin Panel - Master Control</title>
+    <title>Gram Farming Admin Panel - Master Control</title>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --accent: #22c55e; --text: #f8fafc; --text-muted: #94a3b8; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; margin: 0; }
@@ -17,8 +17,7 @@
         .btn-success { background: #10b981; padding: 6px 12px; width: auto; font-size: 13px; border-radius: 6px; }
         .btn-blue { background: #0284c7; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        @media(max-width: 768px) { .grid-4 { grid-template-columns: 1fr 1fr; } }
+        @media(max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
         h2 { color: var(--accent); margin-top: 0; font-size: 17px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
         h1 { font-size: 22px; text-align: center; color: var(--text); margin-bottom: 25px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
@@ -31,7 +30,7 @@
 <body>
 
 <div class="container">
-    <h1>🌱 Gram Farming Ultimate Admin Panel <span class="badge-live">MASTER CONTROL</span></h1>
+    <h1>🌱 Gram Farming Admin Panel <span class="badge-live">MASTER CONTROL</span></h1>
     
     <!-- 1. General & Economic Settings -->
     <div class="card">
@@ -61,73 +60,7 @@
         <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
     </div>
 
-    <!-- 2. 4-Types Mining Control Functions -->
-    <div class="card">
-        <h2>⛏️ 4-Types Mining Parameters Control</h2>
-        <div class="grid-4">
-            <div>
-                <label>Mining 1 Reward (Coins):</label>
-                <input type="number" id="mining1Reward" step="0.01">
-            </div>
-            <div>
-                <label>Mining 2 Reward (Coins):</label>
-                <input type="number" id="mining2Reward" step="0.01">
-            </div>
-            <div>
-                <label>Mining 3 Reward (Coins):</label>
-                <input type="number" id="mining3Reward" step="0.01">
-            </div>
-            <div>
-                <label>Mining 4 Reward (Coins):</label>
-                <input type="number" id="mining4Reward" step="0.01">
-            </div>
-        </div>
-        <div class="grid-2" style="margin-top: 10px;">
-            <div>
-                <label>⏱️ Mining Duration (Hours):</label>
-                <input type="number" id="miningDurationHours" step="0.5" placeholder="e.g. 6 hours">
-            </div>
-            <div>
-                <label>Required Ads to Unlock Mining:</label>
-                <input type="number" id="miningRequiredAds" step="1">
-            </div>
-        </div>
-        <div>
-            <label>⏱️ Mining Ads Watch Cooldown Timer (Seconds after watching ad):</label>
-            <input type="number" id="miningAdTimer" step="1" placeholder="e.g. 60 seconds">
-        </div>
-        <button type="button" onclick="saveSettings('mining')">💾 Save 4 Mining Controls & Timers</button>
-    </div>
-
-    <!-- 3. Ads Watch & Task Limits Functions -->
-    <div class="card">
-        <h2>📺 Ads Watch & Task System Settings</h2>
-        <div class="grid-2">
-            <div>
-                <label>Reward Per Ad Watch (Coins):</label>
-                <input type="number" id="adReward" step="0.01">
-            </div>
-            <div>
-                <label>Daily Ad Watch Limit Per User:</label>
-                <input type="number" id="dailyAdLimit" step="1">
-            </div>
-            <div>
-                <label>Task Ads Bonus Reward:</label>
-                <input type="number" id="taskAdReward" step="0.01">
-            </div>
-            <div>
-                <label>Max Daily Task Limit:</label>
-                <input type="number" id="dailyTaskLimit" step="1">
-            </div>
-        </div>
-        <div>
-            <label>⏱ Task Ads Watch Cooldown Timer (Seconds after watching task ad):</label>
-            <input type="number" id="taskAdTimer" step="1" placeholder="e.g. 30 seconds">
-        </div>
-        <button type="button" onclick="saveSettings('adsAndTasks')">💾 Save Ads & Tasks Limits & Timers</button>
-    </div>
-
-    <!-- 4. Global Broadcast Announcement -->
+    <!-- 2. Global Broadcast Announcement -->
     <div class="card">
         <h2>📢 App Announcement / Pop-up Notice</h2>
         <div>
@@ -146,13 +79,13 @@
         <button type="button" onclick="saveAnnouncement()">📢 Update Announcement</button>
     </div>
 
-    <!-- 5. Task Creator -->
+    <!-- 3. Task Creator -->
     <div class="card">
-        <h2>📋 Add New Custom Task (Telegram/YouTube/Ads)</h2>
+        <h2>📋 Add New Custom Task (Telegram/YouTube)</h2>
         <div class="grid-2">
             <div>
                 <label>Task Title:</label>
-                <input type="text" id="taskTitle" placeholder="e.g. Watch Ad & Earn / Join Channel">
+                <input type="text" id="taskTitle" placeholder="e.g. Join Channel / Subscribe">
             </div>
             <div>
                 <label>Reward Amount (Coins):</label>
@@ -160,13 +93,13 @@
             </div>
         </div>
         <div>
-            <label>Task Link / Ad Script URL:</label>
-            <input type="text" id="taskLink" placeholder="https://t.me/... or Ad Link">
+            <label>Task Link URL:</label>
+            <input type="text" id="taskLink" placeholder="https://t.me/...">
         </div>
         <button type="button" class="btn-blue" onclick="addNewTask()">➕ Create & Publish Task</button>
     </div>
 
-    <!-- 6. User Balance Manual Manager -->
+    <!-- 4. User Balance Manual Manager -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚡ User Balance Modifier</h2>
         <div class="grid-2">
@@ -182,7 +115,7 @@
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 7A. FaucetPay Withdrawal Requests -->
+    <!-- 5A. FaucetPay Withdrawal Requests -->
     <div class="card">
         <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
@@ -202,7 +135,7 @@
         </div>
     </div>
 
-    <!-- 7B. TON Withdrawal Requests -->
+    <!-- 5B. TON Withdrawal Requests -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests</h2>
         <div class="table-container">
@@ -222,7 +155,7 @@
         </div>
     </div>
 
-    <!-- 8. Registered Users List -->
+    <!-- 6. Registered Users List -->
     <div class="card">
         <h2>👥 Registered Users</h2>
         <div class="table-container">
@@ -242,7 +175,7 @@
         </div>
     </div>
 
-    <!-- 9. Active Stakings List -->
+    <!-- 7. Active Stakings List -->
     <div class="card">
         <h2>🔒 Active Stakings</h2>
         <div class="table-container">
@@ -289,23 +222,6 @@
                     document.getElementById('refBonus').value = data.general.refPercent ?? 20;
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? 0.05;
                     document.getElementById('minTon').value = data.general.minTon ?? 0.50;
-                }
-                if(data.mining) {
-                    document.getElementById('mining1Reward').value = data.mining.mining1Reward ?? 0.1;
-                    document.getElementById('mining2Reward').value = data.mining.mining2Reward ?? 0.2;
-                    document.getElementById('mining3Reward').value = data.mining.mining3Reward ?? 0.5;
-                    document.getElementById('mining4Reward').value = data.mining.mining4Reward ?? 1.0;
-                    let durHours = data.mining.durationHours ?? ((data.mining.duration ?? 21600) / 3600);
-                    document.getElementById('miningDurationHours').value = durHours;
-                    document.getElementById('miningRequiredAds').value = data.mining.requiredAds ?? 20;
-                    document.getElementById('miningAdTimer').value = data.mining.adTimer ?? 60;
-                }
-                if(data.adsAndTasks) {
-                    document.getElementById('adReward').value = data.adsAndTasks.adReward ?? 0.05;
-                    document.getElementById('dailyAdLimit').value = data.adsAndTasks.dailyAdLimit ?? 40;
-                    document.getElementById('taskAdReward').value = data.adsAndTasks.taskAdReward ?? 0.10;
-                    document.getElementById('dailyTaskLimit').value = data.adsAndTasks.dailyTaskLimit ?? 20;
-                    document.getElementById('taskAdTimer').value = data.adsAndTasks.taskAdTimer ?? 30;
                 }
                 if(data.announcement) {
                     document.getElementById('announcementText').value = data.announcement.text ?? '';
@@ -378,7 +294,6 @@
     });
 
     window.saveSettings = function(type) {
-        console.log("Saving type:", type);
         try {
             if (type === 'general') {
                 let data = {
@@ -390,32 +305,6 @@
                 };
                 update(ref(db), data)
                     .then(() => alert('General Settings Saved Successfully!'))
-                    .catch((err) => { console.error(err); alert('Firebase Error: ' + err.message); });
-            } else if (type === 'mining') {
-                let hours = parseFloat(document.getElementById('miningDurationHours').value) || 6;
-                let data = {
-                    'adminSettings/mining/mining1Reward': parseFloat(document.getElementById('mining1Reward').value) || 0,
-                    'adminSettings/mining/mining2Reward': parseFloat(document.getElementById('mining2Reward').value) || 0,
-                    'adminSettings/mining/mining3Reward': parseFloat(document.getElementById('mining3Reward').value) || 0,
-                    'adminSettings/mining/mining4Reward': parseFloat(document.getElementById('mining4Reward').value) || 0,
-                    'adminSettings/mining/durationHours': hours,
-                    'adminSettings/mining/duration': hours * 3600,
-                    'adminSettings/mining/requiredAds': parseInt(document.getElementById('miningRequiredAds').value) || 0,
-                    'adminSettings/mining/adTimer': parseInt(document.getElementById('miningAdTimer').value) || 0
-                };
-                update(ref(db), data)
-                    .then(() => alert('Mining Controls & Timers Saved Successfully!'))
-                    .catch((err) => { console.error(err); alert('Firebase Error: ' + err.message); });
-            } else if (type === 'adsAndTasks') {
-                let data = {
-                    'adminSettings/adsAndTasks/adReward': parseFloat(document.getElementById('adReward').value) || 0,
-                    'adminSettings/adsAndTasks/dailyAdLimit': parseInt(document.getElementById('dailyAdLimit').value) || 0,
-                    'adminSettings/adsAndTasks/taskAdReward': parseFloat(document.getElementById('taskAdReward').value) || 0,
-                    'adminSettings/adsAndTasks/dailyTaskLimit': parseInt(document.getElementById('dailyTaskLimit').value) || 0,
-                    'adminSettings/adsAndTasks/taskAdTimer': parseInt(document.getElementById('taskAdTimer').value) || 0
-                };
-                update(ref(db), data)
-                    .then(() => alert('Ads & Tasks Limits & Timers Saved Successfully!'))
                     .catch((err) => { console.error(err); alert('Firebase Error: ' + err.message); });
             }
         } catch (e) {
