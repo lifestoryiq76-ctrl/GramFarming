@@ -1,23 +1,22 @@
 const express = require('express');
-const app = express(); // यह लाइन सबसे ऊपर होनी चाहिए
+const app = express();
 const admin = require('firebase-admin');
 
-// Firebase Initialization (अपनी फायरबेस की जानकारी यहाँ जोड़ें)
+// Firebase Initialization (अगर आपने फायरबेस कनेक्ट किया है)
 // admin.initializeApp({ ... });
 // const db = admin.firestore();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Admin Panel Route - डेटाबेस से यूजर्स और बैलेंस फेच करना
+// 1. Root / Homepage Route (अब यहाँ एरर नहीं आएगी)
+app.get('/', (req, res) => {
+    res.send('Gram Farming Mini App Backend is Live! 🚀 Visit /admin for Dashboard.');
+});
+
+// 2. Admin Panel Route
 app.get('/admin', async (req, res) => {
     try {
-        // अगर फायरबेस कनेक्टेड है तो यहाँ से डेटा निकाल सकते हैं:
-        // const usersSnapshot = await db.collection('users').get();
-        // let users = [];
-        // usersSnapshot.forEach(doc => users.push({ id: doc.id, ...doc.data() }));
-
-        // अभी के लिए सुंदर HTML डैशबोर्ड लेआउट:
         const html = `
             <!DOCTYPE html>
             <html lang="en">
@@ -44,11 +43,11 @@ app.get('/admin', async (req, res) => {
                     <div class="stats">
                         <div class="card">
                             <h3>Total Users</h3>
-                            <p id="totalUsers">Loading...</p>
+                            <p id="totalUsers">0</p>
                         </div>
                         <div class="card">
                             <h3>Total Gram Distributed</h3>
-                            <p id="totalGram">Loading...</p>
+                            <p id="totalGram">0</p>
                         </div>
                     </div>
                     <h2>User List</h2>
@@ -57,11 +56,11 @@ app.get('/admin', async (req, res) => {
                             <tr>
                                 <th>Telegram ID</th>
                                 <th>Balance (Gram)</th>
-                                <th>Joined Date</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="userTableBody">
-                            <tr><td colspan="3" style="text-align: center;">Fetching data from Firestore...</td></tr>
+                            <tr><td colspan="3" style="text-align: center;">Connected successfully! Waiting for users data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -74,7 +73,25 @@ app.get('/admin', async (req, res) => {
     }
 });
 
-// Railway के लिए पोर्ट सेटिंग्स
+// 3. Adsgram Reward API Route (विज्ञापन देखने के बाद यूजर को ग्राम देने के लिए)
+app.post('/api/reward', async (req, res) => {
+    try {
+        const { telegramId } = req.body;
+        if (!telegramId) {
+            return res.status(400).json({ success: false, message: "Telegram ID missing" });
+        }
+
+        // यहाँ डेटाबेस में यूजर का बैलेंस अपडेट करने का कोड जोड़ सकते हैं
+        // उदा: const userRef = db.collection('users').doc(String(telegramId));
+        // await userRef.update({ balance: admin.firestore.FieldValue.increment(10) });
+
+        res.json({ success: true, message: "Reward added successfully!" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Railway पोर्ट के अनुसार सर्वर चलाना
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
