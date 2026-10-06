@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 export default async function handler(req, res) {
-    // CORS headers allow karne ke liye
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -17,11 +16,15 @@ export default async function handler(req, res) {
     try {
         const { amount, currency, recipientAddressOrEmail } = req.body;
 
+        // User IP address nikalna zaroori hai FaucetPay ke liye
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+
         const payload = new URLSearchParams({
-            api_key: process.env.FAUCETPAY_API_KEY, // Vercel Environment Variables se uthayega
+            api_key: process.env.FAUCETPAY_API_KEY,
             amount: amount,
             currency: currency,
-            to: recipientAddressOrEmail
+            to: recipientAddressOrEmail,
+            ip_address: clientIp.split(',')[0].trim()
         });
 
         const response = await axios.post('https://faucetpay.io/api/v1/send', payload, {
@@ -35,7 +38,10 @@ export default async function handler(req, res) {
         }
 
     } catch (error) {
-        console.error('FaucetPay Payout Error:', error.message);
-        return res.status(500).json({ success: false, message: 'Internal server error during withdrawal.' });
+        console.error('FaucetPay Payout Error:', error.response?.data || error.message);
+        return res.status(500).json({ 
+            success: false, 
+            message: error.response?.data?.message || 'Internal server error during withdrawal.' 
+        });
     }
 }
