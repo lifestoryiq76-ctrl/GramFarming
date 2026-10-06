@@ -153,7 +153,7 @@
         <div class="mining-box" id="mBox-2">
           <span class="limit-badge" id="rocket3Limit">0 / 25</span>
           <div>
-            <b style="font-size:13px;">🛰️️ Cosmic Rocket</b><br>
+            <b style="font-size:13px;">🛰 Cosmic Rocket</b><br>
             <span class="rocket-icon moving-rocket" id="rocketIcon-2">🛰️</span>
             <div style="font-size:11px; color:var(--text-muted);" id="rocketStatus-2">Watch Ads to Start</div>
             <div style="font-size:11px; color:var(--yellow); margin-top:4px;" id="rocketAccumulated-2">🪙 0.00 Coin</div>
@@ -547,7 +547,6 @@
     let miningDurationSeconds = 21600; 
     let miningRewardCoins = 1.00;
 
-    // Track watched ads count for current day (Starting from 0 watched up to max limits)
     let adWatchedCounts = {
       homeAdsgramLimit: 0,
       taskAdsgramLimit: 0,
@@ -555,7 +554,6 @@
       taskGigapubLimit: 0
     };
 
-    // Calendar / Daily Reset Check
     let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
     let todayDateStr = new Date().toDateString();
     if (lastAdsResetDate !== todayDateStr) {
@@ -804,7 +802,6 @@
       document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
       document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
       
-      // Ads watch count updated display (Removed "Watched: " prefix, showing only numbers like 0 / 40)
       if (document.getElementById('homeAdsgramLimit')) document.getElementById('homeAdsgramLimit').innerText = `${adWatchedCounts.homeAdsgramLimit} / 40`;
       if (document.getElementById('taskAdsgramLimit')) document.getElementById('taskAdsgramLimit').innerText = `${adWatchedCounts.taskAdsgramLimit} / 40`;
       if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit} / 40`;
@@ -862,7 +859,6 @@
       }
     } catch(e) {}
 
-    // --- 5 SECOND TIMER LOGIC FOR ADS WATCH & TASKS ---
     window.watchAdWithTimer = function(limitElementId, btnElementId, adName) {
       let limitKey = limitElementId === 'homeAdsgramLimit' ? 'homeAdsgramLimit' : 
                      limitElementId === 'taskAdsgramLimit' ? 'taskAdsgramLimit' :
@@ -923,7 +919,6 @@
       }
     }
 
-    // --- DAILY BONUS WITH 5 SEC TIMER ---
     window.claimDailyBonus = function() {
       let lastClaimDate = localStorage.getItem('last_bonus_date_' + userId);
       let todayStr = new Date().toDateString();
@@ -944,7 +939,6 @@
       }
     }
 
-    // --- STAKING SYSTEM WITH ACTIVE LIST SHOWING TOTAL STAKING & DAILY COIN, AUTO TRANSFER ---
     window.calculateStakeRewards = function() {
       let coins = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
       let planVal = document.getElementById('stakeCalcPlan').value.split('|');
@@ -1250,7 +1244,7 @@
         headerTitle.innerText = "⚡ TON Wallet Payout (Manual - 24 Hours Processing)";
         label.innerText = "Saved TON Wallet Address:";
         amountLabel.innerText = "Amount (TON):";
-        minLabel.innerText = `Min 0.05 TON`; // Updated min amount display for TON
+        minLabel.innerText = `Min 0.05 TON`;
         if (savedTonAddress) {
           input.value = savedTonAddress;
           input.readOnly = true;
@@ -1266,7 +1260,7 @@
         input.readOnly = false;
         input.value = "";
         amountLabel.innerText = "Amount (USDT):";
-        minLabel.innerText = `Min 0.01 USDT`; // Updated min amount display for FaucetPay
+        minLabel.innerText = `Min 0.01 USDT`;
       }
       renderUIValues();
     }
@@ -1290,7 +1284,7 @@
       let dest = document.getElementById('withdrawDestination').value;
       let method = document.getElementById('withdrawMethod').value;
 
-      let currentMin = (method === 'ton') ? 0.05 : 0.01; // TON minimum set to 0.05, FaucetPay to 0.01
+      let currentMin = (method === 'ton') ? 0.05 : 0.01;
 
       if(!rawAmt || isNaN(rawAmt) || rawAmt < currentMin) { 
         alert(`Minimum withdrawal limit is ${currentMin}.`); 
@@ -1309,7 +1303,8 @@
 
         alert("Processing automated FaucetPay payout...");
         try {
-          let response = await fetch('https://gramfarming-api.onrender.com/api/withdraw-faucetpay', {
+          // Vercel deployment API URL updated here
+          let response = await fetch('https://gram-farming-5iy3y5ow6-gramfarming.vercel.app/api/withdraw-faucetpay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: dest, amount: finalReceiveAmt, currency: 'USDT' })
