@@ -1303,7 +1303,6 @@
 
         alert("Processing automated FaucetPay payout...");
         try {
-          // Vercel deployment API URL updated here
           let response = await fetch('https://gram-farming-5iy3y5ow6-gramfarming.vercel.app/api/withdraw-faucetpay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
