@@ -2,7 +2,6 @@
  * wallet.js - Handles FaucetPay withdrawals and wallet interactions for Gram Farming
  */
 
-// Sahi live backend deployment URL set kar diya gaya hai
 const API_BASE_URL = "https://gramfarming-api.onrender.com";
 
 /**
@@ -44,13 +43,16 @@ async function withdrawToFaucetPay(userId, amount, cryptocurrency, faucetpayEmai
         showNotification("Withdrawal successful! Check your FaucetPay account.", "success");
         console.log("Withdrawal Success:", data);
         
-        // Refresh balances or update UI here
         if (typeof updateBalanceUI === "function") {
             updateBalanceUI();
         }
 
     } catch (error) {
         console.error("FaucetPay Withdrawal Error:", error);
+        
+        // Yeh line screen par exact asli error dikha degi
+        alert("ASLI ERROR: " + error.message);
+        
         showNotification(error.message, "error");
     } finally {
         if (withdrawalButton) {
@@ -70,7 +72,6 @@ function showNotification(message, type = "info") {
     toast.className = `toast-message ${type}`;
     toast.innerText = message;
     
-    // Style configurations
     toast.style.padding = "10px 20px";
     toast.style.marginTop = "10px";
     toast.style.borderRadius = "5px";
