@@ -10,7 +10,8 @@ app.get('/', (req, res) => {
   res.send('Gram Farming User Bot is running successfully! 🚀');
 });
 
-app.listen(PORT, () => {
+// Render ke liye '0.0.0.0' host dena zaroori hai
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
