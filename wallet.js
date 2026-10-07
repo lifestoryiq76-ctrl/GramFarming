@@ -2,8 +2,8 @@
  * wallet.js - Handles FaucetPay withdrawals and wallet interactions for Gram Farming
  */
 
-// Replace this with your actual Vercel live deployment URL or backend API base URL
-const API_BASE_URL = "https://gram-farming-api.onrender.com"; // Ya apna Vercel URL yahan dalein
+// Sahi live backend deployment URL set kar diya gaya hai
+const API_BASE_URL = "https://gramfarming-api.onrender.com";
 
 /**
  * Function to handle withdrawal to FaucetPay
