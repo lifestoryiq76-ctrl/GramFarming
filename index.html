@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gram Farming Mini App</title>
+<!-- Monetag Verification Meta Tag Added -->
+<meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <!-- Monetag Integration Script -->
 <script src="https://alwingulla.com/88/tag.min.js" data-zone="889922" async data-cfasync="false"></script>
@@ -80,7 +82,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <div style="text-align: right;">
 <small style="color: var(--text-muted);" data-i18n="coinVolume">Coin Volume</small>
 <strong id="displayCoinVolume" style="color: var(--yellow); font-size: 15px;">1 Coin = $0.01</strong>
-<!-- 🕒 5:30 AM Timer Added Here -->
 <small style="color: var(--accent); font-size: 11px; font-weight: bold;" id="restartTimerDisplay">⏳ Reset in: --:--:--</small>
 </div>
 </div>
@@ -107,7 +108,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
 <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🛸 Space Rocket Mining (8h Cycle)</h4>
 <div class="mining-grid">
-<!-- Rocket Box 1 (Nova Rocket - Monetag with 50 ads) -->
+<!-- Rocket Box 1 -->
 <div class="mining-box" id="mBox-0">
 <span class="limit-badge" id="rocket1Limit">0 / 50</span>
 <div>
@@ -122,7 +123,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Rocket Box 2 (Cosmic Rocket - Gigapub with 50 ads) -->
+<!-- Rocket Box 2 -->
 <div class="mining-box" id="mBox-1">
 <span class="limit-badge" id="rocket2Limit">0 / 50</span>
 <div>
@@ -277,7 +278,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Active Staking List Section -->
 <h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;">📋 Active Staking Investments</h4>
 <div id="activeStakingList" class="card" style="background: #111827; border: 1px solid var(--border);">
 <div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">
@@ -473,17 +473,6 @@ No recent withdrawals yet.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, onValue, update, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Service Worker Registration for Monetag
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-    .then((reg) => {
-      console.log('Service Worker registered successfully', reg);
-    })
-    .catch((err) => {
-      console.log('Service Worker registration failed', err);
-    });
-}
-
 const SESSION_KEY = 'gram_farming_active_session_lock';
 const currentSessionToken = 'sess_' + Math.random().toString(36).substring(2) + Date.now();
 
@@ -552,7 +541,6 @@ adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
-// Toast Message Function
 function showToast(message, type = 'success') {
 const container = document.getElementById('toastContainer');
 const toast = document.createElement('div');
@@ -567,7 +555,6 @@ setTimeout(() => { container.removeChild(toast); }, 300);
 }, 3000);
 }
 
-// Daily 5:30 AM Full App Restart & Staking Auto-Claim Check Logic + Live Countdown Timer
 function check530AmRestartAndStaking() {
 let now = new Date();
 let lastResetStored = localStorage.getItem('last_530_reset_date');
@@ -892,7 +879,6 @@ arrow.innerText = '▲';
 }
 }
 
-// 60-Second Timer Ad Watch Handler (Fully Automated: No manual click required after timer ends)
 window.watchAdWithTimer = function(limitElementId, btnElementId, adName, maxAdsLimit, rewardPerAd) {
 let watched = adWatchedCounts[limitElementId] || 0;
 if (watched >= maxAdsLimit) {
@@ -903,7 +889,7 @@ return;
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
-let countdown = 60; // 60 sec timer
+let countdown = 60;
 if (btn) btn.innerText = `Ads show (${countdown}s)`;
 showToast("Ads show... Please wait until timer ends.", "success");
 
@@ -924,7 +910,6 @@ completeAdReward(rewardPerAd, limitElementId, btn);
 
 if (adName === 'Monetag' && typeof show_889922 === 'function') {
 show_889922().then(finishAd).catch(() => {
-// Fallback if ad SDK fails, still auto-credit
 finishAd();
 });
 } else {
@@ -938,7 +923,6 @@ adWatchedCounts[limitKey] = (adWatchedCounts[limitKey] || 0) + 1;
 saveToFirebase();
 renderUIValues();
 
-// Automatic Claim Successful Message
 showToast(`Claim Successful! +${reward} Coin added automatically!`, "success");
 
 if (btn) {
@@ -1126,7 +1110,7 @@ btn.innerText = `Watch Ad (${state.adsWatched}/50)`;
 btn.disabled = false;
 } else {
 state.status = 'mining';
-state.timeLeft = miningDurationSeconds; // 8 Hours
+state.timeLeft = miningDurationSeconds;
 state.accumulated = 0.00;
 
 statusEl.innerHTML = `⏳ Timer: 8h 0m 0s`;
@@ -1293,7 +1277,7 @@ calculateWithdrawFee();
 
 window.calculateWithdrawFee = function() {
 let amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
-let fee = amt * 0.05; // 5% fee
+let fee = amt * 0.05;
 let receive = amt - fee;
 if (receive < 0) receive = 0;
 document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${receive.toFixed(4)}`;
