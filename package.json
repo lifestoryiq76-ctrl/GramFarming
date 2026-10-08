@@ -1,0 +1,13 @@
+{
+  "name": "gram-farming-app",
+  "version": "1.0.0",
+  "description": "Gram Farming Telegram Mini App with FaucetPay withdrawal",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
+  }
+}
