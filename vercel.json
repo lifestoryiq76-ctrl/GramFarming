@@ -1,11 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "bot.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "bot.js" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/bot.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
