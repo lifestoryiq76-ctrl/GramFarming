@@ -7,8 +7,8 @@
 <!-- Monetag Verification Meta Tag Added -->
 <meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<!-- Monetag Integration Script -->
-<script src="https://alwingulla.com/88/tag.min.js" data-zone="889922" async data-cfasync="false"></script>
+<!-- Monetag Integration Script Updated with Zone ID 11982084 -->
+<script src="https://alwingulla.com/88/tag.min.js" data-zone="11982084" async data-cfasync="false"></script>
 <style>
 :root {
 --bg-color: #0f172a;
@@ -908,10 +908,16 @@ let finishAd = () => {
 completeAdReward(rewardPerAd, limitElementId, btn);
 };
 
-if (adName === 'Monetag' && typeof show_889922 === 'function') {
-show_889922().then(finishAd).catch(() => {
+if (adName === 'Monetag') {
+// Direct Link open via window.open using Zone ID 11982084
+window.open('https://uplcm.com/4/11982084', '_blank');
+if (typeof show_11982084 === 'function') {
+show_11982084().then(finishAd).catch(() => {
 finishAd();
 });
+} else {
+setTimeout(finishAd, 1000);
+}
 } else {
 setTimeout(finishAd, 500);
 }
@@ -938,6 +944,9 @@ if(lastClaimDate === todayStr) {
 showToast("Daily bonus already claimed today!", "error");
 return;
 }
+
+// Open Direct Link for Daily Bonus reward verification
+window.open('https://uplcm.com/4/11982084', '_blank');
 
 localStorage.setItem('last_bonus_date_' + userId, todayStr);
 addEarningsWithReferral(currentDailyBonus);
@@ -1084,10 +1093,15 @@ let finishAd = () => {
 progressRocketAdWatch(index, rocketName);
 };
 
-if (adType === 'Monetag' && typeof show_889922 === 'function') {
-show_889922().then(finishAd).catch(() => {
+if (adType === 'Monetag') {
+window.open('https://uplcm.com/4/11982084', '_blank');
+if (typeof show_11982084 === 'function') {
+show_11982084().then(finishAd).catch(() => {
 finishAd();
 });
+} else {
+setTimeout(finishAd, 1000);
+}
 } else {
 setTimeout(finishAd, 500);
 }
