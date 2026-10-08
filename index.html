@@ -473,6 +473,17 @@ No recent withdrawals yet.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, onValue, update, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+// Service Worker Registration for Monetag
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then((reg) => {
+      console.log('Service Worker registered successfully', reg);
+    })
+    .catch((err) => {
+      console.log('Service Worker registration failed', err);
+    });
+}
+
 const SESSION_KEY = 'gram_farming_active_session_lock';
 const currentSessionToken = 'sess_' + Math.random().toString(36).substring(2) + Date.now();
 
