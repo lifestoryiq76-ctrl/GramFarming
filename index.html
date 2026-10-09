@@ -16,8 +16,11 @@
 <!-- Adexium SDK / Script Integration -->
 <script src="https://bid.tgads.live/sdk.js" data-wid="feeb4d68-3bee-4595-93ef-4db7" data-sdk="show_adexium_ad"></script>
 
-<!-- Adsterra Integration Script -->
-<script data-cfasync="false" src="https://afders.org/1/72d8cbfa78d1c71f03b49e393b301f42"></script>
+<!-- Tads SDK / Script Integration -->
+<script src="https://bid.tgads.live/sdk.js" data-wid="tads-placeholder-id" data-sdk="show_tads_ad"></script>
+
+<!-- AdLoop SDK / Script Integration -->
+<script src="https://adloop.co/sdk.js" data-wid="adloop-placeholder-id" data-sdk="show_adloop_ad"></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -231,9 +234,14 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="btn" id="taskAdexiumBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdexiumLimit', 'taskAdexiumBtn', 'Adexium', 40, 0.03)">Watch</button>
 </div>
 <div class="card flex-between">
-<span class="limit-badge" id="taskAdsterraLimit">0 / 40</span>
-<div><b>Adsterra</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
-<button class="btn" id="taskAdsterraBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsterraLimit', 'taskAdsterraLimit', 'Adsterra', 40, 0.03)">Watch</button>
+<span class="limit-badge" id="taskTadsLimit">0 / 40</span>
+<div><b>Tads</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
+<button class="btn" id="taskTadsBtn" style="width: auto;" onclick="watchAdWithTimer('taskTadsLimit', 'taskTadsBtn', 'Tads', 40, 0.03)">Watch</button>
+</div>
+<div class="card flex-between">
+<span class="limit-badge" id="taskAdLoopLimit">0 / 40</span>
+<div><b>AdLoop</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
+<button class="btn" id="taskAdLoopBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdLoopLimit', 'taskAdLoopBtn', 'AdLoop', 40, 0.03)">Watch</button>
 </div>
 </div>
 
@@ -598,13 +606,14 @@ taskMonetagLimit: 0,
 taskGigapubLimit: 0,
 taskMonetixLimit: 0,
 taskAdexiumLimit: 0,
-taskAdsterraLimit: 0
+taskTadsLimit: 0,
+taskAdLoopLimit: 0
 };
 
 let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 let todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdexiumLimit: 0, taskAdsterraLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskAdLoopLimit: 0 };
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -650,7 +659,7 @@ today530.setHours(5, 30, 0, 0);
 
 if (realNow >= today530 && lastResetStored !== todayStr) {
 processStakingDailyTransfer();
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdexiumLimit: 0, taskAdsterraLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskAdLoopLimit: 0 };
 localStorage.setItem('last_530_reset_date', todayStr);
 saveToFirebase();
 
@@ -805,7 +814,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [],
-adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdexiumLimit: 0, taskAdsterraLimit: 0 }
+adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskAdLoopLimit: 0 }
 });
 }
 renderUIValues();
@@ -899,7 +908,8 @@ if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMo
 if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / 50`;
 if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / 40`;
 if (document.getElementById('taskAdexiumLimit')) document.getElementById('taskAdexiumLimit').innerText = `${adWatchedCounts.taskAdexiumLimit || 0} / 40`;
-if (document.getElementById('taskAdsterraLimit')) document.getElementById('taskAdsterraLimit').innerText = `${adWatchedCounts.taskAdsterraLimit || 0} / 40`;
+if (document.getElementById('taskTadsLimit')) document.getElementById('taskTadsLimit').innerText = `${adWatchedCounts.taskTadsLimit || 0} / 40`;
+if (document.getElementById('taskAdLoopLimit')) document.getElementById('taskAdLoopLimit').innerText = `${adWatchedCounts.taskAdLoopLimit || 0} / 40`;
 
 let manInput = document.getElementById('manualTonAddress');
 if (savedTonAddress) {
@@ -978,10 +988,26 @@ handleAdError(btn);
 } else {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 }
-} else if (adName === 'Adsterra') {
-// Triggering Adsterra Link/Popunder script action directly when user clicks the Adsterra watch button
-window.open('https://afders.org/1/72d8cbfa78d1c71f03b49e393b301f42', '_blank');
+} else if (adName === 'Tads') {
+if (typeof window.show_tads_ad === 'function') {
+window.show_tads_ad().then(() => {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}).catch(() => {
+handleAdError(btn);
+});
+} else {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}
+} else if (adName === 'AdLoop') {
+if (typeof window.show_adloop_ad === 'function') {
+window.show_adloop_ad().then(() => {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}).catch(() => {
+handleAdError(btn);
+});
+} else {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}
 } else {
 // Default fallback for other networks like Gigapub/Monetix
 if (typeof window.show_11989490 === 'function') {
