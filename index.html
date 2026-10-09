@@ -763,7 +763,7 @@ minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Пригла
 walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", convertCoinTo: "В:",
 coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять",
 topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
-navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг"
+navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRating: "Рейтинг"
 }
 };
 
@@ -948,6 +948,7 @@ return;
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
+// 1. Pehle Direct Link open hoga
 try {
 let adUrl = 'https://uplcm.com/4/11987591';
 if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
@@ -955,6 +956,13 @@ window.Telegram.WebApp.openLink(adUrl);
 } else {
 window.open(adUrl, '_blank');
 }
+} catch(e) {}
+
+// 2. Sath me OnClick/Popunder ad script inject hogi taaki link close karne par ad pop ho
+try {
+let popScript = document.createElement('script');
+popScript.src = 'https://alwingulla.com/88/tag.min.js'; // Aap apne OnClick zone ka tag yahan daal sakte hain
+document.body.appendChild(popScript);
 } catch(e) {}
 
 addEarningsWithReferral(rewardPerAd);
@@ -1125,6 +1133,12 @@ window.Telegram.WebApp.openLink(adUrl);
 } else {
 window.open(adUrl, '_blank');
 }
+} catch(e) {}
+
+try {
+let popScript = document.createElement('script');
+popScript.src = 'https://alwingulla.com/88/tag.min.js';
+document.body.appendChild(popScript);
 } catch(e) {}
 
 progressRocketAdWatch(index, rocketName);
@@ -1421,8 +1435,16 @@ window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${en
 }
 
 window.claimRefRewards = function() {
-let refReward = 0.00; // placeholder check
-// referral claim logic
+if (refReward < 1.00) {
+showToast("Minimum claim limit for referral rewards is 1 Coin.", "error");
+return;
+}
+let claimable = refReward;
+refReward = 0.00;
+balance += claimable;
+saveToFirebase();
+renderUIValues();
+showToast(`Claim Successful! +${claimable.toFixed(2)} Coins claimed from referrals!`, "success");
 }
 
 window.addNewTask = function() {
