@@ -882,11 +882,11 @@ document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
 document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
 document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 
-if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit} / 50`;
-if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit} / 50`;
-if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit} / 40`;
-if (document.getElementById('taskAdexiumLimit')) document.getElementById('taskAdexiumLimit').innerText = `${adWatchedCounts.taskAdexiumLimit} / 40`;
-if (document.getElementById('taskAdsterraLimit')) document.getElementById('taskAdsterraLimit').innerText = `${adWatchedCounts.taskAdsterraLimit} / 40`;
+if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / 50`;
+if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / 50`;
+if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / 40`;
+if (document.getElementById('taskAdexiumLimit')) document.getElementById('taskAdexiumLimit').innerText = `${adWatchedCounts.taskAdexiumLimit || 0} / 40`;
+if (document.getElementById('taskAdsterraLimit')) document.getElementById('taskAdsterraLimit').innerText = `${adWatchedCounts.taskAdsterraLimit || 0} / 40`;
 
 let manInput = document.getElementById('manualTonAddress');
 if (savedTonAddress) {
@@ -963,18 +963,9 @@ let finishAd = () => {
 completeAdReward(rewardPerAd, limitElementId, btn);
 };
 
-if (adName === 'Monetag') {
+// Yahan aap har ad network ke liye apna alag link bhi daal sakte hain
 window.open('https://al5sm.com/4/11987297', '_blank');
-if (typeof show_11987297 === 'function') {
-show_11987297().then(finishAd).catch(() => {
-finishAd();
-});
-} else {
 setTimeout(finishAd, 1000);
-}
-} else {
-setTimeout(finishAd, 500);
-}
 }
 
 function completeAdReward(reward, limitKey, btn) {
@@ -1146,18 +1137,8 @@ let finishAd = () => {
 progressRocketAdWatch(index, rocketName);
 };
 
-if (adType === 'Monetag') {
 window.open('https://al5sm.com/4/11987297', '_blank');
-if (typeof show_11987297 === 'function') {
-show_11987297().then(finishAd).catch(() => {
-finishAd();
-});
-} else {
 setTimeout(finishAd, 1000);
-}
-} else {
-setTimeout(finishAd, 500);
-}
 }
 
 function progressRocketAdWatch(index, rocketName) {
