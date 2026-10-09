@@ -4,8 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gram Farming Mini App</title>
-<!-- Monetag Verification Meta Tag Added -->
+<!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
+
+<!-- Aapka Monetag Script Header me add kar diya gaya hai -->
+<script>(function(s){s.dataset.zone='11987439',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
@@ -577,7 +581,7 @@ let minWithdrawalAmt = 0.05;
 let liveTonPrice = 1.50;
 let referralPercentage = 20;
 
-let miningDurationSeconds = 28800; // 8 Hours (8 * 60 * 60)
+let miningDurationSeconds = 28800; // 8 Hours
 let miningRewardCoins = 1.00;
 
 let adWatchedCounts = {
@@ -944,22 +948,25 @@ return;
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
-// 1. Pehle ad open karo (Anchor tag trick se)
+// Monetag ad script click trigger simulation
+try {
+let monetagLink = 'https://nap5k.com/4/11987439';
 let a = document.createElement('a');
-a.href = 'https://al5sm.com/4/11987297';
+a.href = monetagLink;
 a.target = '_blank';
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
+} catch(e) {}
 
-// 2. Turant coin / reward add karo
+// Turant coin add karein
 addEarningsWithReferral(rewardPerAd);
 adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
 saveToFirebase();
 renderUIValues();
 showToast(`Claim Successful! +${rewardPerAd} Coin added automatically!`, "success");
 
-// 3. Ab 60 seconds ka cooldown timer shuru ho ga jiske baad button phir se "Watch" ban jayega
+// 60 seconds ka cooldown timer shuru karein
 let countdown = 60;
 if (btn) btn.innerText = `Wait (${countdown}s)`;
 
@@ -984,12 +991,14 @@ showToast("Daily bonus already claimed today!", "error");
 return;
 }
 
+try {
 let a = document.createElement('a');
-a.href = 'https://al5sm.com/4/11987297';
+a.href = 'https://nap5k.com/4/11987439';
 a.target = '_blank';
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
+} catch(e) {}
 
 localStorage.setItem('last_bonus_date_' + userId, todayStr);
 addEarningsWithReferral(currentDailyBonus);
@@ -1113,12 +1122,14 @@ let btn = document.getElementById(`rocketBtn-${index}`);
 if (state.status === 'ads') {
 btn.disabled = true;
 
+try {
 let a = document.createElement('a');
-a.href = 'https://al5sm.com/4/11987297';
+a.href = 'https://nap5k.com/4/11987439';
 a.target = '_blank';
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
+} catch(e) {}
 
 progressRocketAdWatch(index, rocketName);
 
