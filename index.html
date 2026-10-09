@@ -16,6 +16,9 @@
 <!-- Adexium SDK / Script Integration -->
 <script src="https://bid.tgads.live/sdk.js" data-wid="feeb4d68-3bee-4595-93ef-4db7" data-sdk="show_adexium_ad"></script>
 
+<!-- Adsterra Integration Script -->
+<script data-cfasync="false" src="https://afders.org/1/72d8cbfa78d1c71f03b49e393b301f42"></script>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
@@ -973,11 +976,14 @@ finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 handleAdError(btn);
 });
 } else {
-// Fallback if ad SDK is triggered via standard promise or click handler
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 }
+} else if (adName === 'Adsterra') {
+// Triggering Adsterra Link/Popunder script action directly when user clicks the Adsterra watch button
+window.open('https://afders.org/1/72d8cbfa78d1c71f03b49e393b301f42', '_blank');
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 } else {
-// Default fallback for other networks like Gigapub/Monetix/Adsterra
+// Default fallback for other networks like Gigapub/Monetix
 if (typeof window.show_11989490 === 'function') {
 window.show_11989490().then(() => {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
