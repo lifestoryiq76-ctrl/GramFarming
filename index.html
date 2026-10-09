@@ -944,42 +944,36 @@ return;
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
+// 1. Pehle ad open karo (Anchor tag trick se)
+let a = document.createElement('a');
+a.href = 'https://al5sm.com/4/11987297';
+a.target = '_blank';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+
+// 2. Turant coin / reward add karo
+addEarningsWithReferral(rewardPerAd);
+adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
+saveToFirebase();
+renderUIValues();
+showToast(`Claim Successful! +${rewardPerAd} Coin added automatically!`, "success");
+
+// 3. Ab 60 seconds ka cooldown timer shuru ho ga jiske baad button phir se "Watch" ban jayega
 let countdown = 60;
-if (btn) btn.innerText = `Ads show (${countdown}s)`;
-showToast("Ads show... Please wait until timer ends.", "success");
+if (btn) btn.innerText = `Wait (${countdown}s)`;
 
 let timerInterval = setInterval(() => {
 countdown--;
-if (btn) btn.innerText = `Ads show (${countdown}s)`;
+if (btn) btn.innerText = `Wait (${countdown}s)`;
 if (countdown <= 0) {
 clearInterval(timerInterval);
-executeAutomaticAdCompletion(limitElementId, btn, adName, maxAdsLimit, rewardPerAd);
-}
-}, 1000);
-}
-
-function executeAutomaticAdCompletion(limitElementId, btn, adName, maxAdsLimit, rewardPerAd) {
-let finishAd = () => {
-completeAdReward(rewardPerAd, limitElementId, btn);
-};
-
-// Yahan aap har ad network ke liye apna alag link bhi daal sakte hain
-window.open('https://al5sm.com/4/11987297', '_blank');
-setTimeout(finishAd, 1000);
-}
-
-function completeAdReward(reward, limitKey, btn) {
-addEarningsWithReferral(reward);
-adWatchedCounts[limitKey] = (adWatchedCounts[limitKey] || 0) + 1;
-saveToFirebase();
-renderUIValues();
-
-showToast(`Claim Successful! +${reward} Coin added automatically!`, "success");
-
 if (btn) {
 btn.innerText = "Watch";
 btn.disabled = false;
 }
+}
+}, 1000);
 }
 
 window.claimDailyBonus = function() {
@@ -990,7 +984,12 @@ showToast("Daily bonus already claimed today!", "error");
 return;
 }
 
-window.open('https://al5sm.com/4/11987297', '_blank');
+let a = document.createElement('a');
+a.href = 'https://al5sm.com/4/11987297';
+a.target = '_blank';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
 
 localStorage.setItem('last_bonus_date_' + userId, todayStr);
 addEarningsWithReferral(currentDailyBonus);
@@ -1113,32 +1112,35 @@ let btn = document.getElementById(`rocketBtn-${index}`);
 
 if (state.status === 'ads') {
 btn.disabled = true;
-let countdown = 60;
-btn.innerText = `Ads show (${countdown}s)`;
-showToast(`Ads show... Please wait for ${rocketName}.`, "success");
 
+let a = document.createElement('a');
+a.href = 'https://al5sm.com/4/11987297';
+a.target = '_blank';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+
+progressRocketAdWatch(index, rocketName);
+
+let countdown = 60;
+btn.innerText = `Wait (${countdown}s)`;
 let tInterval = setInterval(() => {
 countdown--;
-btn.innerText = `Ads show (${countdown}s)`;
+btn.innerText = `Wait (${countdown}s)`;
 if (countdown <= 0) {
 clearInterval(tInterval);
-executeAutomaticRocketAdCompletion(index, rocketName, adType, btn);
+if (state.status === 'ads') {
+btn.innerText = `Watch Ad (${state.adsWatched}/50)`;
+btn.disabled = false;
+}
 }
 }, 1000);
+
 } else if (state.status === 'mining') {
 claimLiveMiningEarnings(index, rocketName);
 } else if (state.status === 'claim') {
 claimRocketReward(index, rocketName);
 }
-}
-
-function executeAutomaticRocketAdCompletion(index, rocketName, adType, btn) {
-let finishAd = () => {
-progressRocketAdWatch(index, rocketName);
-};
-
-window.open('https://al5sm.com/4/11987297', '_blank');
-setTimeout(finishAd, 1000);
 }
 
 function progressRocketAdWatch(index, rocketName) {
@@ -1147,21 +1149,16 @@ state.adsWatched++;
 let limitDisplayEl = document.getElementById(['rocket1Limit', 'rocket2Limit'][index]);
 if (limitDisplayEl) limitDisplayEl.innerText = `${state.adsWatched} / 50`;
 
-let btn = document.getElementById(`rocketBtn-${index}`);
 let statusEl = document.getElementById(`rocketStatus-${index}`);
-
 showToast(`Claim Successful! Ad watched for ${rocketName} (${state.adsWatched}/50)`, "success");
 
-if (state.adsWatched < 50) {
-statusEl.innerHTML = `Ads watched: ${state.adsWatched}/50`;
-btn.innerText = `Watch Ad (${state.adsWatched}/50)`;
-btn.disabled = false;
-} else {
+if (state.adsWatched >= 50) {
 state.status = 'mining';
 state.timeLeft = miningDurationSeconds;
 state.accumulated = 0.00;
 
 statusEl.innerHTML = `⏳ Timer: 8h 0m 0s`;
+let btn = document.getElementById(`rocketBtn-${index}`);
 btn.innerText = `Claim 0.00 Coin`;
 btn.disabled = false;
 
