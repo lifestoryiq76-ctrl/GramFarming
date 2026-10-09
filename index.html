@@ -20,7 +20,7 @@
 --text-muted: #94a3b8;
 --border: #334155;
 }
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 80px; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 90px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -40,9 +40,58 @@ display: inline-block;
 .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
 .btn-red { background: #ef4444; color: #fff; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
-.nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; backdrop-filter: blur(10px); }
-.nav-item { color: var(--text-muted); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; font-weight: 500; }
-.nav-item.active { color: var(--accent); }
+
+/* Modern Bottom Navigation Bar Styles */
+.nav-bar { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    right: 0; 
+    background: rgba(15, 23, 42, 0.95); 
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex; 
+    justify-content: space-around; 
+    padding: 8px 4px 12px 4px; 
+    border-top: 1px solid rgba(51, 65, 85, 0.6); 
+    z-index: 100; 
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+}
+.nav-item { 
+    color: var(--text-muted); 
+    text-decoration: none; 
+    font-size: 11px; 
+    text-align: center; 
+    cursor: pointer; 
+    font-weight: 500; 
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    position: relative;
+}
+.nav-item span {
+    font-size: 10px;
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+}
+.nav-emoji {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+.nav-item.active { 
+    color: var(--accent); 
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+.nav-item.active .nav-emoji {
+    transform: translateY(-2px) scale(1.15);
+}
+
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -86,7 +135,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<div class="flex-between" style="background:#111827; padding:10px; border-radius:10px; border: 1px solid var(--border);">
+<div class="flex-between" style="background:#111827; padding:10px; border-radius:10px; border: 1px solid var(--border); margin-top: 12px;">
 <button class="btn" onclick="switchTab('tasks')" style="margin-right: 6px;" data-i18n="earnBtn">⚡ Earn</button>
 <button class="btn" onclick="switchTab('wallet')" style="margin-left: 6px; background: #0284c7;" data-i18n="withdrawNavBtn">🪙 Withdraw</button>
 </div>
@@ -152,32 +201,27 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="adsTasks">
 <div class="card flex-between">
 <span class="limit-badge" id="taskMonetagLimit">0 / 50</span>
-<div><b>Monetag</b>
-<small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
+<div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
 <button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag', 50, 0.04)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskGigapubLimit">0 / 50</span>
-<div><b>Gigapub</b>
-<small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
+<div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
 <button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub', 50, 0.04)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskMonetixLimit">0 / 40</span>
-<div><b>Monetix</b>
-<small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
+<div><b>Monetix</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
 <button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', 40, 0.03)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskAdexiumLimit">0 / 40</span>
-<div><b>Adexium</b>
-<small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
+<div><b>Adexium</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
 <button class="btn" id="taskAdexiumBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdexiumLimit', 'taskAdexiumBtn', 'Adexium', 40, 0.03)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskAdsterraLimit">0 / 40</span>
-<div><b>Adsterra</b>
-<small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
+<div><b>Adsterra</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
 <button class="btn" id="taskAdsterraBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsterraLimit', 'taskAdsterraBtn', 'Adsterra', 40, 0.03)">Watch</button>
 </div>
 </div>
@@ -192,7 +236,7 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <div id="dynamicTasksList">
 <div class="card flex-between">
-<div><span data-i18n="joinTelegram">📢 Join Telegram Channel</span>
+<div><span data-i18n="joinTelegram">📢 Join Telegram Channel</span><br>
 <small style="color:var(--text-muted);" data-i18n="reward10Coins">Reward: +10 Coin</small></div>
 <button class="btn" style="width: auto;" onclick="completeTask(10, 'Telegram Channel')" data-i18n="completeBtn">Complete</button>
 </div>
@@ -231,8 +275,8 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="card">
 <div class="flex-between">
 <div>
-<b data-i18n="flexTitle">Flexible Staking</b>
-<small style="color:var(--text-muted);" data-i18n="flexDesc">Unstake anytime with zero locking period.</small>
+<b data-i18n="flexTitle">Flexible Staking</b><br>
+<small style="color:var(--text-muted);" data-i18n="flexDesc">Unstake anytime with zero locking period.</small><br>
 <span style="color: var(--accent); font-size: 13px; font-weight: bold;"><span id="displayFlexApy">4</span>% APY</span>
 </div>
 <button class="btn" style="width: auto;" onclick="stake('Flexible', 0, 4)" data-i18n="stakeBtn">Stake</button>
@@ -242,38 +286,37 @@ input:focus, select:focus { border-color: var(--accent); }
 <h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;" data-i18n="fixedHeader">2. Fixed Staking (Up to 20% APY)</h4>
 <div class="grid-cards">
 <div class="card" style="text-align:center; margin:0;">
-<b>7 Days</b>
-<span style="color: var(--accent);"><span id="displayApy7">3</span>% APY</span>
+<b>7 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy7">3</span>% APY</span><br>
 <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, 3)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>15 Days</b>
-<span style="color: var(--accent);"><span id="displayApy15">4.5</span>% APY</span>
+<b>15 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy15">4.5</span>% APY</span><br>
 <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, 4.5)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>30 Days</b>
-<span style="color: var(--accent);"><span id="displayApy30">6.25</span>% APY</span>
+<b>30 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy30">6.25</span>% APY</span><br>
 <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, 6.25)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>60 Days</b>
-<span style="color: var(--accent);"><span id="displayApy60">8</span>% APY</span>
+<b>60 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy60">8</span>% APY</span><br>
 <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, 8)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>90 Days</b>
-<span style="color: var(--accent);"><span id="displayApy90">11.25</span>% APY</span>
+<b>90 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy90">11.25</span>% APY</span><br>
 <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (90 Days)', 90, 11.25)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>120 Days</b>
-<span style="color: var(--accent);"><span id="displayApy120">14.5</span>% APY</span>
+<b>120 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy120">14.5</span>% APY</span><br>
 <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (120 Days)', 120, 14.5)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0; grid-column: span 2;">
-<b>365 Days</b>
-<span style="color: var(--accent);"><span id="displayApy365">20</span>% APY</span>
+<b>365 Days</b> - <span style="color: var(--accent);"><span id="displayApy365">20</span>% APY</span>
 <button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (365 Days)', 365, 20)">Lock</button>
 </div>
 </div>
@@ -441,19 +484,32 @@ No recent withdrawals yet.
 </div>
 </div>
 
+<!-- Modern Bottom Navigation Bar -->
 <div class="nav-bar">
-<div class="nav-item active" onclick="switchTab('home')">🏠
-<span data-i18n="navHome">Home</span></div>
-<div class="nav-item" onclick="switchTab('tasks')">📋
-<span data-i18n="navTasks">Tasks</span></div>
-<div class="nav-item" onclick="switchTab('staking')">💎
-<span data-i18n="navStaking">Staking</span></div>
-<div class="nav-item" onclick="switchTab('referrals')">👥
-<span data-i18n="navReferrals">Referrals</span></div>
-<div class="nav-item" onclick="switchTab('wallet')">💼
-<span data-i18n="navWallet">Wallet</span></div>
-<div class="nav-item" onclick="switchTab('leaderboard')">🏆
-<span data-i18n="navRank">Rank</span></div>
+<div class="nav-item active" onclick="switchTab('home')">
+<span class="nav-emoji">🏠</span>
+<span data-i18n="navHome">Home</span>
+</div>
+<div class="nav-item" onclick="switchTab('tasks')">
+<span class="nav-emoji">📋</span>
+<span data-i18n="navTasks">Tasks</span>
+</div>
+<div class="nav-item" onclick="switchTab('staking')">
+<span class="nav-emoji">💎</span>
+<span data-i18n="navStaking">Staking</span>
+</div>
+<div class="nav-item" onclick="switchTab('referrals')">
+<span class="nav-emoji">👥</span>
+<span data-i18n="navReferrals">Referrals</span>
+</div>
+<div class="nav-item" onclick="switchTab('wallet')">
+<span class="nav-emoji">💼</span>
+<span data-i18n="navWallet">Wallet</span>
+</div>
+<div class="nav-item" onclick="switchTab('leaderboard')">
+<span class="nav-emoji">🏆</span>
+<span data-i18n="navRank">Rank</span>
+</div>
 </div>
 
 <!-- ANNOUNCEMENT MODAL -->
@@ -855,6 +911,7 @@ window.switchTab = function(tabId) {
 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 document.getElementById(tabId).classList.add('active');
+event.currentTarget.classList.add('active');
 }
 
 window.toggleTaskTab = function(subTab) {
@@ -909,7 +966,6 @@ completeAdReward(rewardPerAd, limitElementId, btn);
 };
 
 if (adName === 'Monetag') {
-// Direct Link open via window.open using Zone ID 11982084
 window.open('https://uplcm.com/4/11982084', '_blank');
 if (typeof show_11982084 === 'function') {
 show_11982084().then(finishAd).catch(() => {
@@ -945,7 +1001,6 @@ showToast("Daily bonus already claimed today!", "error");
 return;
 }
 
-// Open Direct Link for Daily Bonus reward verification
 window.open('https://uplcm.com/4/11982084', '_blank');
 
 localStorage.setItem('last_bonus_date_' + userId, todayStr);
