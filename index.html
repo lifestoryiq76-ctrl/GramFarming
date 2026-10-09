@@ -7,7 +7,7 @@
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
 
-<!-- Aapka Naya Monetag Script Header me add kar diya gaya hai -->
+<!-- Aapka Monetag Script Header me -->
 <script src="https://quge5.com/88/tag.min.js" data-zone="292721" async data-cfasync="false"></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -949,12 +949,12 @@ let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
 try {
-let a = document.createElement('a');
-a.href = 'https://quge5.com/4/292721';
-a.target = '_blank';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
+let adUrl = 'https://quge5.com/4/292721';
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+window.Telegram.WebApp.openLink(adUrl);
+} else {
+window.open(adUrl, '_blank');
+}
 } catch(e) {}
 
 addEarningsWithReferral(rewardPerAd);
@@ -988,12 +988,12 @@ return;
 }
 
 try {
-let a = document.createElement('a');
-a.href = 'https://quge5.com/4/292721';
-a.target = '_blank';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
+let adUrl = 'https://quge5.com/4/292721';
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+window.Telegram.WebApp.openLink(adUrl);
+} else {
+window.open(adUrl, '_blank');
+}
 } catch(e) {}
 
 localStorage.setItem('last_bonus_date_' + userId, todayStr);
@@ -1119,12 +1119,12 @@ if (state.status === 'ads') {
 btn.disabled = true;
 
 try {
-let a = document.createElement('a');
-a.href = 'https://quge5.com/4/292721';
-a.target = '_blank';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
+let adUrl = 'https://quge5.com/4/292721';
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+window.Telegram.WebApp.openLink(adUrl);
+} else {
+window.open(adUrl, '_blank');
+}
 } catch(e) {}
 
 progressRocketAdWatch(index, rocketName);
