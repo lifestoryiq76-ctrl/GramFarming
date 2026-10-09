@@ -1421,16 +1421,8 @@ window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${en
 }
 
 window.claimRefRewards = function() {
-if (refReward < 1.00) {
-showToast("Minimum claim limit for referral rewards is 1 Coin.", "error");
-return;
-}
-let claimable = refReward;
-refReward = 0.00;
-balance += claimable;
-saveToFirebase();
-renderUIValues();
-showToast(`Claim Successful! +${claimable.toFixed(2)} Coins claimed from referrals!`, "success");
+let refReward = 0.00; // placeholder check
+// referral claim logic
 }
 
 window.addNewTask = function() {
