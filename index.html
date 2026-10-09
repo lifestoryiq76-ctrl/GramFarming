@@ -7,7 +7,7 @@
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
 
-<!-- Aapka Naya Monetag Vignette Banner Script -->
+<!-- Monetag Vignette Banner Script -->
 <script>(function(s){s.dataset.zone='11987535',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -763,7 +763,7 @@ minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Пригла
 walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", convertCoinTo: "В:",
 coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять",
 topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
-navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRating: "Рейтинг"
+navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг"
 }
 };
 
@@ -948,6 +948,15 @@ return;
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
+try {
+let adUrl = 'https://uplcm.com/4/11987591';
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+window.Telegram.WebApp.openLink(adUrl);
+} else {
+window.open(adUrl, '_blank');
+}
+} catch(e) {}
+
 addEarningsWithReferral(rewardPerAd);
 adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
 saveToFirebase();
@@ -977,6 +986,15 @@ if(lastClaimDate === todayStr) {
 showToast("Daily bonus already claimed today!", "error");
 return;
 }
+
+try {
+let adUrl = 'https://uplcm.com/4/11987591';
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+window.Telegram.WebApp.openLink(adUrl);
+} else {
+window.open(adUrl, '_blank');
+}
+} catch(e) {}
 
 localStorage.setItem('last_bonus_date_' + userId, todayStr);
 addEarningsWithReferral(currentDailyBonus);
@@ -1099,6 +1117,15 @@ let btn = document.getElementById(`rocketBtn-${index}`);
 
 if (state.status === 'ads') {
 btn.disabled = true;
+
+try {
+let adUrl = 'https://uplcm.com/4/11987591';
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+window.Telegram.WebApp.openLink(adUrl);
+} else {
+window.open(adUrl, '_blank');
+}
+} catch(e) {}
 
 progressRocketAdWatch(index, rocketName);
 
