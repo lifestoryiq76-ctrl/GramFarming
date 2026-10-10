@@ -17,10 +17,10 @@
 <!-- 3. Gigapub SDK / Script Integration -->
 <script src="https://ad.gigapub.tech/script?id=8575"></script>
 
-<!-- 4. Adexium Official Widget Script Integration (WID 14366) -->
-<script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" data-wid="14366" async></script>
+<!-- 4. Adexium Official Widget Script Integration -->
+<script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" data-wid="e9aaf049-ad48-4385-bdf8-d8e963aff2f1"></script>
 
-<!-- 5. Monetix Official Script Integration -->
+<!-- 5. Monetix Official Script Integration (Updated) -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
 <!-- 6. Tads Official Script Integration -->
@@ -60,6 +60,7 @@ display: inline-block;
 .btn-red { background: #ef4444; color: #fff; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 
+/* Modern Bottom Navigation Bar Styles */
 .nav-bar { 
     position: fixed; 
     bottom: 0; 
@@ -123,13 +124,6 @@ input:focus, select:focus { border-color: var(--accent); }
 .limit-badge { position: absolute; top: 10px; right: 12px; background: #0284c7; color: #fff; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 6px; }
 #miningBoxesSection { display: none; }
 #miningBoxesSection.show { display: block; }
-
-/* Adexium Container Container Style */
-#adexiumContainer {
-    width: 100%;
-    margin-top: 10px;
-    display: none;
-}
 </style>
 </head>
 <body>
@@ -239,19 +233,11 @@ input:focus, select:focus { border-color: var(--accent); }
 <div><b>Monetix</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
 <button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', 40, 0.03)">Watch</button>
 </div>
-
-<!-- Adexium Card with Widget Slot Injection -->
-<div class="card">
-<div class="flex-between">
+<div class="card flex-between">
 <span class="limit-badge" id="taskAdexiumLimit">0 / 40</span>
 <div><b>Adexium</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
 <button class="btn" id="taskAdexiumBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdexiumLimit', 'taskAdexiumBtn', 'Adexium', 40, 0.03)">Watch</button>
 </div>
-<div id="adexiumContainer">
-<div id="adexium-widget-14366"></div>
-</div>
-</div>
-
 <div class="card flex-between">
 <span class="limit-badge" id="taskTadsLimit">0 / 40</span>
 <div><b>Tads</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
@@ -547,6 +533,19 @@ No recent withdrawals yet.
 <div class="nav-item" onclick="switchTab('leaderboard')">
 <span class="nav-emoji">🏆</span>
 <span data-i18n="navRank">Rank</span>
+</div>
+</div>
+
+<!-- ADEXIUM / TADS POPUP AD MODAL -->
+<div id="adexiumAdModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:center; padding:16px; box-sizing:border-box;">
+<div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:14px; max-width:380px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 25px rgba(0,0,0,0.6); position:relative;">
+<h4 id="adModalTitle" style="color:#eab308; margin-top:0; margin-bottom:10px;">📢 Sponsored Ad</h4>
+<img id="adexiumAdImage" src="" style="width:100%; max-height:200px; object-fit:cover; border-radius:8px; margin-bottom:10px; display:none;">
+<div id="adexiumAdText" style="font-size:13px; color:#cbd5e1; margin-bottom:15px; line-height:1.4;">Loading Ad...</div>
+<div style="display:flex; gap:10px;">
+<a id="adexiumAdBtn" href="#" target="_blank" onclick="closeAdexiumModal()" style="background:#22c55e; color:#fff; text-decoration:none; padding:10px 15px; border-radius:8px; font-weight:bold; flex:1; display:inline-block;">Go!</a>
+<button onclick="closeAdexiumModal()" style="background:#475569; color:#fff; border:none; padding:10px 15px; border-radius:8px; cursor:pointer; font-weight:bold; flex:1;">Close</button>
+</div>
 </div>
 </div>
 
@@ -853,6 +852,10 @@ window.closeAnnouncement = function() {
 document.getElementById('announcementModal').style.display = 'none';
 }
 
+window.closeAdexiumModal = function() {
+document.getElementById('adexiumAdModal').style.display = 'none';
+}
+
 window.saveTonAddress = function() {
 let addrInput = document.getElementById('manualTonAddress').value.trim();
 if (!addrInput || addrInput.length < 15) {
@@ -976,34 +979,51 @@ arrow.innerText = '▲';
 }
 }
 
-// DYNAMIC SCRIPT INJECTION FOR ADEXIUM REAL WIDGET LOAD
-function triggerAdexiumWidget(limitElementId, btn, rewardPerAd) {
-    let adContainer = document.getElementById('adexiumContainer');
-    if (adContainer) {
-        adContainer.style.display = 'block';
-        adContainer.innerHTML = `<div id="adexium-widget-14366"></div>`;
-        
-        let oldScript = document.getElementById('adexiumDynamicScript');
-        if (oldScript) oldScript.remove();
+// ADEXIUM & TADS DIRECT API FETCHER WITH POPUP MODAL DISPLAY
+async function fetchAndShowBotRequestAd(widCode, adTitle, limitElementId, btn, rewardPerAd) {
+    btn && (btn.disabled = true);
+    try {
+        let response = await fetch('https://bid.tgads.live/bot-request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                wid: widCode,
+                language: "en",
+                isPremium: false,
+                firstName: displayName || "User",
+                telegramId: String(userId)
+            })
+        });
 
-        let script = document.createElement('script');
-        script.id = 'adexiumDynamicScript';
-        script.type = 'text/javascript';
-        script.src = 'https://cdn.tgads.space/assets/js/adexium-widget.min.js';
-        script.setAttribute('data-wid', '14366');
-        
-        script.onload = () => {
+        let data = await response.json();
+
+        if (data && (data.text || data.image)) {
+            let titleEl = document.getElementById('adModalTitle');
+            let imgEl = document.getElementById('adexiumAdImage');
+            let textEl = document.getElementById('adexiumAdText');
+            let btnEl = document.getElementById('adexiumAdBtn');
+
+            titleEl.innerText = `📢 ${adTitle} Sponsored Ad`;
+
+            if (data.image) {
+                imgEl.src = data.image;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
+
+            textEl.innerText = data.text || "Exclusive Telegram Offer!";
+            btnEl.href = data.clickUrl || "#";
+            btnEl.innerText = data.buttonText || "Go!";
+
+            document.getElementById('adexiumAdModal').style.display = 'flex';
             finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
             startCountdownTimer(btn);
-        };
-
-        script.onerror = () => {
+        } else {
             finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
             startCountdownTimer(btn);
-        };
-
-        document.body.appendChild(script);
-    } else {
+        }
+    } catch (e) {
         finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
         startCountdownTimer(btn);
     }
@@ -1018,14 +1038,19 @@ return;
 
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 
-// Adexium Real Dynamic Widget Injection
+// Handle Adexium (SDK + Direct API Failsafe)
 if (adName === 'Adexium') {
-    btn && (btn.disabled = true);
-    triggerAdexiumWidget(limitElementId, btn, rewardPerAd);
+    try {
+        if (typeof window.AdexiumWidget === 'function') {
+            const adexiumWidget = new window.AdexiumWidget({wid: 'e9aaf049-ad48-4385-bdf8-d8e963aff2f1', adFormat: 'interstitial'});
+            adexiumWidget.show();
+        }
+    } catch(e) {}
+    fetchAndShowBotRequestAd("e9aaf049-ad48-4385-bdf8-d8e963aff2f1", "Adexium", limitElementId, btn, rewardPerAd);
     return;
 }
 
-// Handle Tads
+// Handle Tads (SDK + Direct API Failsafe)
 if (adName === 'Tads') {
     try {
         if (typeof window.TadsWidget === 'function') {
@@ -1033,12 +1058,11 @@ if (adName === 'Tads') {
             tadsWidget.show();
         }
     } catch(e) {}
-    finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-    startCountdownTimer(btn);
+    fetchAndShowBotRequestAd("12561", "Tads", limitElementId, btn, rewardPerAd);
     return;
 }
 
-// Handle Monetix
+// Handle Monetix (Integrated with real `showRewardAd` function)
 if (adName === 'Monetix') {
     btn && (btn.disabled = true);
     if (typeof window.showRewardAd === 'function') {
@@ -1051,6 +1075,7 @@ if (adName === 'Monetix') {
             }
         });
     } else {
+        // Fallback agar script load hone me samay le
         finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
         startCountdownTimer(btn);
     }
