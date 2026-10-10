@@ -20,9 +20,6 @@
 <!-- 4. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
-<!-- 5. Tads Official Script Integration -->
-<script src="https://cdn.tgads.live/assets/js/tads-widget.min.js" data-wid="12561"></script>
-
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
 <style>
@@ -229,11 +226,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <span class="limit-badge" id="taskMonetixLimit">0 / 40</span>
 <div><b>Monetix</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
 <button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', 40, 0.03)">Watch</button>
-</div>
-<div class="card flex-between">
-<span class="limit-badge" id="taskTadsLimit">0 / 40</span>
-<div><b>Tads</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
-<button class="btn" id="taskTadsBtn" style="width: auto;" onclick="watchAdWithTimer('taskTadsLimit', 'taskTadsBtn', 'Tads', 40, 0.03)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskAdsBitvexLimit">0 / 40</span>
@@ -528,19 +520,6 @@ No recent withdrawals yet.
 </div>
 </div>
 
-<!-- CUSTOM TADS AD MODAL POPUP (GUARANTEED SHOW INSIDE MINI APP) -->
-<div id="tadsAdModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:center; padding:16px; box-sizing:border-box;">
-<div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:14px; max-width:380px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 25px rgba(0,0,0,0.6); position:relative;">
-<h4 style="color:#eab308; margin-top:0; margin-bottom:10px;">📢 Sponsored Ad</h4>
-<img id="tadsAdImage" src="" style="width:100%; max-height:200px; object-fit:cover; border-radius:8px; margin-bottom:10px; display:none;">
-<div id="tadsAdText" style="font-size:13px; color:#cbd5e1; margin-bottom:15px; line-height:1.4;">Loading Ad...</div>
-<div style="display:flex; gap:10px;">
-<a id="tadsAdBtn" href="#" target="_blank" onclick="closeTadsModal()" style="background:#22c55e; color:#fff; text-decoration:none; padding:10px 15px; border-radius:8px; font-weight:bold; flex:1; display:inline-block;">Go!</a>
-<button onclick="closeTadsModal()" style="background:#475569; color:#fff; border:none; padding:10px 15px; border-radius:8px; cursor:pointer; font-weight:bold; flex:1;">Close</button>
-</div>
-</div>
-</div>
-
 <!-- ANNOUNCEMENT MODAL -->
 <div id="announcementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
 <div style="background:#1e293b; border:1px solid #334155; padding:20px; border-radius:14px; max-width:400px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
@@ -615,14 +594,13 @@ let adWatchedCounts = {
 taskMonetagLimit: 0,
 taskGigapubLimit: 0,
 taskMonetixLimit: 0,
-taskTadsLimit: 0,
 taskAdsBitvexLimit: 0
 };
 
 let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 let todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskTadsLimit: 0, taskAdsBitvexLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 };
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -668,7 +646,7 @@ today530.setHours(5, 30, 0, 0);
 
 if (realNow >= today530 && lastResetStored !== todayStr) {
 processStakingDailyTransfer();
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskTadsLimit: 0, taskAdsBitvexLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 };
 localStorage.setItem('last_530_reset_date', todayStr);
 saveToFirebase();
 
@@ -823,7 +801,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [],
-adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskTadsLimit: 0, taskAdsBitvexLimit: 0 }
+adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 }
 });
 }
 renderUIValues();
@@ -841,10 +819,6 @@ adWatchedCounts
 
 window.closeAnnouncement = function() {
 document.getElementById('announcementModal').style.display = 'none';
-}
-
-window.closeTadsModal = function() {
-document.getElementById('tadsAdModal').style.display = 'none';
 }
 
 window.saveTonAddress = function() {
@@ -920,7 +894,6 @@ document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFix
 if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / 50`;
 if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / 50`;
 if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / 40`;
-if (document.getElementById('taskTadsLimit')) document.getElementById('taskTadsLimit').innerText = `${adWatchedCounts.taskTadsLimit || 0} / 40`;
 if (document.getElementById('taskAdsBitvexLimit')) document.getElementById('taskAdsBitvexLimit').innerText = `${adWatchedCounts.taskAdsBitvexLimit || 0} / 40`;
 
 let manInput = document.getElementById('manualTonAddress');
@@ -969,53 +942,6 @@ arrow.innerText = '▲';
 }
 }
 
-// TADS DIRECT API FETCH & SHOW IN CUSTOM POPUP MODAL (WORKS 100% IN TELEGRAM MINI APP)
-async function fetchAndShowTadsModalAd(widCode, limitElementId, btn, rewardPerAd) {
-    btn && (btn.disabled = true);
-    try {
-        let response = await fetch('https://bid.tgads.live/bot-request', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                wid: widCode,
-                language: "en",
-                isPremium: false,
-                firstName: displayName || "User",
-                telegramId: String(userId)
-            })
-        });
-
-        let data = await response.json();
-
-        if (data && (data.text || data.image)) {
-            let imgEl = document.getElementById('tadsAdImage');
-            let textEl = document.getElementById('tadsAdText');
-            let btnEl = document.getElementById('tadsAdBtn');
-
-            if (data.image) {
-                imgEl.src = data.image;
-                imgEl.style.display = 'block';
-            } else {
-                imgEl.style.display = 'none';
-            }
-
-            textEl.innerText = data.text || "Exclusive Telegram Offer!";
-            btnEl.href = data.clickUrl || "#";
-            btnEl.innerText = data.buttonText || "Go!";
-
-            document.getElementById('tadsAdModal').style.display = 'flex';
-            finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-            startCountdownTimer(btn);
-        } else {
-            finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-            startCountdownTimer(btn);
-        }
-    } catch (e) {
-        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-        startCountdownTimer(btn);
-    }
-}
-
 window.watchAdWithTimer = function(limitElementId, btnElementId, adName, maxAdsLimit, rewardPerAd) {
 let watched = adWatchedCounts[limitElementId] || 0;
 if (watched >= maxAdsLimit) {
@@ -1024,18 +950,6 @@ return;
 }
 
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
-
-// Handle Tads (SDK + Guaranteed Custom Modal API)
-if (adName === 'Tads') {
-    try {
-        if (typeof window.TadsWidget === 'function') {
-            const tadsWidget = new window.TadsWidget({ wid: '12561', adFormat: 'interstitial' });
-            tadsWidget.show();
-        }
-    } catch(e) {}
-    fetchAndShowTadsModalAd("12561", limitElementId, btn, rewardPerAd);
-    return;
-}
 
 // Handle Monetix
 if (adName === 'Monetix') {
