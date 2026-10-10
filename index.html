@@ -992,6 +992,19 @@ finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 if (typeof window.show_tads_ad === 'function') {
 window.show_tads_ad().then(() => {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}).catch((err) => {
+console.error("Tads Ad Error:", err);
+handleAdError(btn);
+});
+} else if (typeof window.show_tgads_ad === 'function') {
+window.show_tgads_ad().then(() => {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}).catch(() => {
+handleAdError(btn);
+});
+} else if (typeof window.show_tads === 'function') {
+window.show_tads().then(() => {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 }).catch(() => {
 handleAdError(btn);
 });
