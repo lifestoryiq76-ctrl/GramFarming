@@ -234,8 +234,8 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskHilltopadsLimit">0 / 40</span>
-<div><b>Hilltopads</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
-<button class="btn" id="taskHilltopadsBtn" style="width: auto;" onclick="watchAdWithTimer('taskHilltopadsLimit', 'taskHilltopadsBtn', 'Hilltopads', 40, 0.03)">Watch</button>
+<div><b>Hilltopads Combo</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
+<button class="btn" id="taskHilltopadsBtn" style="width: auto;" onclick="watchAdWithTimer('taskHilltopadsLimit', 'taskHilltopadsBtn', 'Hilltopads', 40, 0.04)">Watch</button>
 </div>
 </div>
 
@@ -977,20 +977,33 @@ if (adName === 'Clickadu') {
     return;
 }
 
-// Handle Hilltopads Direct Link
+// Handle Hilltopads + Monetag Combo (Link -> Return -> Monetag Screen Ad)
 if (adName === 'Hilltopads') {
     btn && (btn.disabled = true);
     const hilltopAdUrl = "https://motionless-bus.com/DvqMfQ";
+    
+    // 1. Open HilltopAds Link
     if (tg && tg.openLink) {
         tg.openLink(hilltopAdUrl);
     } else {
         window.open(hilltopAdUrl, '_blank');
     }
     
+    // 2. Trigger Monetag Screen Ad after link opens
     setTimeout(() => {
-        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-        startCountdownTimer(btn);
-    }, 3000);
+        if (typeof window.show_11989490 === 'function') {
+            window.show_11989490().then(() => {
+                finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+                startCountdownTimer(btn);
+            }).catch(() => {
+                finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+                startCountdownTimer(btn);
+            });
+        } else {
+            finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+            startCountdownTimer(btn);
+        }
+    }, 2000);
     return;
 }
 
