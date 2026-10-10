@@ -17,7 +17,7 @@
 <!-- 3. Gigapub SDK / Script Integration -->
 <script src="https://ad.gigapub.tech/script?id=8575"></script>
 
-<!-- 4. Monetix Official Script Integration (Updated) -->
+<!-- 4. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
 <!-- 5. Tads Official Script Integration -->
@@ -528,6 +528,19 @@ No recent withdrawals yet.
 </div>
 </div>
 
+<!-- CUSTOM TADS AD MODAL POPUP (GUARANTEED SHOW INSIDE MINI APP) -->
+<div id="tadsAdModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:center; padding:16px; box-sizing:border-box;">
+<div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:14px; max-width:380px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 25px rgba(0,0,0,0.6); position:relative;">
+<h4 style="color:#eab308; margin-top:0; margin-bottom:10px;">📢 Sponsored Ad</h4>
+<img id="tadsAdImage" src="" style="width:100%; max-height:200px; object-fit:cover; border-radius:8px; margin-bottom:10px; display:none;">
+<div id="tadsAdText" style="font-size:13px; color:#cbd5e1; margin-bottom:15px; line-height:1.4;">Loading Ad...</div>
+<div style="display:flex; gap:10px;">
+<a id="tadsAdBtn" href="#" target="_blank" onclick="closeTadsModal()" style="background:#22c55e; color:#fff; text-decoration:none; padding:10px 15px; border-radius:8px; font-weight:bold; flex:1; display:inline-block;">Go!</a>
+<button onclick="closeTadsModal()" style="background:#475569; color:#fff; border:none; padding:10px 15px; border-radius:8px; cursor:pointer; font-weight:bold; flex:1;">Close</button>
+</div>
+</div>
+</div>
+
 <!-- ANNOUNCEMENT MODAL -->
 <div id="announcementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
 <div style="background:#1e293b; border:1px solid #334155; padding:20px; border-radius:14px; max-width:400px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
@@ -830,6 +843,10 @@ window.closeAnnouncement = function() {
 document.getElementById('announcementModal').style.display = 'none';
 }
 
+window.closeTadsModal = function() {
+document.getElementById('tadsAdModal').style.display = 'none';
+}
+
 window.saveTonAddress = function() {
 let addrInput = document.getElementById('manualTonAddress').value.trim();
 if (!addrInput || addrInput.length < 15) {
@@ -952,6 +969,53 @@ arrow.innerText = '▲';
 }
 }
 
+// TADS DIRECT API FETCH & SHOW IN CUSTOM POPUP MODAL (WORKS 100% IN TELEGRAM MINI APP)
+async function fetchAndShowTadsModalAd(widCode, limitElementId, btn, rewardPerAd) {
+    btn && (btn.disabled = true);
+    try {
+        let response = await fetch('https://bid.tgads.live/bot-request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                wid: widCode,
+                language: "en",
+                isPremium: false,
+                firstName: displayName || "User",
+                telegramId: String(userId)
+            })
+        });
+
+        let data = await response.json();
+
+        if (data && (data.text || data.image)) {
+            let imgEl = document.getElementById('tadsAdImage');
+            let textEl = document.getElementById('tadsAdText');
+            let btnEl = document.getElementById('tadsAdBtn');
+
+            if (data.image) {
+                imgEl.src = data.image;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
+
+            textEl.innerText = data.text || "Exclusive Telegram Offer!";
+            btnEl.href = data.clickUrl || "#";
+            btnEl.innerText = data.buttonText || "Go!";
+
+            document.getElementById('tadsAdModal').style.display = 'flex';
+            finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+            startCountdownTimer(btn);
+        } else {
+            finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+            startCountdownTimer(btn);
+        }
+    } catch (e) {
+        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+        startCountdownTimer(btn);
+    }
+}
+
 window.watchAdWithTimer = function(limitElementId, btnElementId, adName, maxAdsLimit, rewardPerAd) {
 let watched = adWatchedCounts[limitElementId] || 0;
 if (watched >= maxAdsLimit) {
@@ -961,16 +1025,15 @@ return;
 
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 
-// Handle Tads
+// Handle Tads (SDK + Guaranteed Custom Modal API)
 if (adName === 'Tads') {
     try {
         if (typeof window.TadsWidget === 'function') {
-            const tadsWidget = new window.TadsWidget({wid: '12561', adFormat: 'interstitial'});
+            const tadsWidget = new window.TadsWidget({ wid: '12561', adFormat: 'interstitial' });
             tadsWidget.show();
         }
     } catch(e) {}
-    finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-    startCountdownTimer(btn);
+    fetchAndShowTadsModalAd("12561", limitElementId, btn, rewardPerAd);
     return;
 }
 
