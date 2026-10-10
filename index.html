@@ -927,7 +927,9 @@ window.switchTab = function(tabId) {
 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 document.getElementById(tabId).classList.add('active');
-event.currentTarget.classList.add('active');
+if (event && event.currentTarget) {
+    event.currentTarget.classList.add('active');
+}
 }
 
 window.toggleTaskTab = function(subTab) {
@@ -964,11 +966,10 @@ let btn = btnElementId ? document.getElementById(btnElementId) : null;
 // Handle Clickadu Direct Link / Ad Zone
 if (adName === 'Clickadu') {
     btn && (btn.disabled = true);
-    // Yahan apna Clickadu ka Direct Link/Zone URL daal sakte hain
-    const clickaduAdUrl = "PASTE_YOUR_CLICKADU_DIRECT_LINK_HERE";
+    // Jab Clickadu link approve ho jaye, is URL ko apne Direct Link se replace karein
+    const clickaduAdUrl = "https://gram-farming.vercel.app";
     window.open(clickaduAdUrl, '_blank');
     
-    // Simulate verification delay / completion
     setTimeout(() => {
         finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
         startCountdownTimer(btn);
@@ -1500,7 +1501,8 @@ return;
 let data = snapshot.val();
 let html = '';
 Object.values(data).reverse().forEach(item => {
-html += `<div style="background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);"> <div class="flex-between"> <b style="color: var(--accent);">${item.method} - ${item.amount.toFixed(4)}</b> <span style="color: ${item.status.includes('SUCCESS') ? 'var(--accent)' : 'var(--yellow)'};">${item.status}</span> </div> <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"> Destination: ${item.destination} | Net: ${item.received.4} </div> <div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 2px;"> ${item.date} </div> </div>`;
+let receivedAmount = item.received ? parseFloat(item.received).toFixed(4) : "0.0000";
+html += `<div style="background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);"> <div class="flex-between"> <b style="color: var(--accent);">${item.method} - ${item.amount.toFixed(4)}</b> <span style="color: ${item.status.includes('SUCCESS') ? 'var(--accent)' : 'var(--yellow)'};">${item.status}</span> </div> <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"> Destination: ${item.destination} | Net: ${receivedAmount} </div> <div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 2px;"> ${item.date} </div> </div>`;
 });
 historyContainer.innerHTML = html;
 }, { onlyOnce: true });
