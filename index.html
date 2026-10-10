@@ -1488,3 +1488,97 @@ showToast(`Claim Successful! Withdrawal request submitted successfully.`, "succe
 
 window.loadTransactionHistory = function() {
 let historyContainer = document.getElementById('transactionHistoryList');
+onValue(ref(db, 'withdrawals/' + userId), (snapshot) => {
+if (!snapshot.exists()) {
+historyContainer.innerHTML = "No recent withdrawals yet.";
+return;
+}
+let data = snapshot.val();
+let html = '';
+Object.values(data).reverse().forEach(item => {
+html += `<div style="background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);"> <div class="flex-between"> <b style="color: var(--accent);">${item.method} - ${item.amount.toFixed(4)}</b> <span style="color: ${item.status.includes('SUCCESS') ? 'var(--accent)' : 'var(--yellow)'};">${item.status}</span> </div> <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"> Destination: ${item.destination} | Net: ${item.received.toFixed(4)} </div> <div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 2px;"> ${item.date} </div> </div>`;
+});
+historyContainer.innerHTML = html;
+}, { onlyOnce: true });
+}
+loadTransactionHistory();
+
+window.copyRef = function() {
+let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
+navigator.clipboard.writeText(refLink);
+showToast("✅ Referral link copied to clipboard!", "success");
+}
+
+window.shareRef = function() {
+let refLink = `https://t.me/GramFarmingBot?start=ref_${userId}`;
+let shareText = `Join Gram Farming Bot and earn free crypto & coins! 🚀\n${refLink}`;
+if (tg.openTelegramLink) {
+tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`);
+} else {
+window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`, '_blank');
+}
+}
+
+window.claimRefRewards = function() {
+if (refReward < 1.00) {
+showToast("Minimum claim limit for referral rewards is 1 Coin.", "error");
+return;
+}
+let claimable = refReward;
+refReward = 0.00;
+balance += claimable;
+saveToFirebase();
+renderUIValues();
+showToast(`Claim Successful! +${claimable.toFixed(2)} Coins claimed from referrals!`, "success");
+}
+
+window.addNewTask = function() {
+let title = document.getElementById('customTaskTitle').value.trim();
+let link = document.getElementById('customTaskLink').value.trim();
+
+if (!title || !link) {
+showToast("Kripya Task Name aur Link dono enter karein.", "error");
+return;
+}
+
+if (balance < 10) {
+showToast("Task publish karne ke liye kam se kam 10 Coins chahiye!", "error");
+return;
+}
+
+balance -= 10;
+saveToFirebase();
+renderUIValues();
+
+let newTaskObj = { title, link, reward: 5, userId };
+push(ref(db, 'customTasks'), newTaskObj);
+
+document.getElementById('customTaskTitle').value = '';
+document.getElementById('customTaskLink').value = '';
+showToast(`Claim Successful! Task successfully published (-10 Coins).`, "success");
+}
+
+window.completeTask = function(reward, taskName) {
+addEarningsWithReferral(reward);
+showToast(`Claim Successful! Completed task '${taskName}' and earned +${reward} Coins!`, "success");
+}
+
+onValue(ref(db, 'customTasks'), (snapshot) => {
+let listEl = document.getElementById('dynamicTasksList');
+let defaultHtml = `<div class="card flex-between"> <div><span>📢 Join Telegram Channel</span><br><small style="color:var(--text-muted);">Reward: +10 Coin</small></div> <button class="btn" style="width: auto;" onclick="completeTask(10, 'Telegram Channel')">Complete</button> </div>`;
+
+if (!snapshot.exists()) {
+listEl.innerHTML = defaultHtml;
+return;
+}
+
+let data = snapshot.val();
+let html = defaultHtml;
+Object.values(data).forEach(task => {
+html += `<div class="card flex-between"> <div><span>📢 ${task.title}</span><br><small style="color:var(--text-muted);">Reward: +${task.reward} Coin</small></div> <button class="btn" style="width: auto;" onclick="window.open('${task.link}', '_blank'); completeTask(${task.reward}, '${task.title}');">Complete</button> </div>`;
+});
+listEl.innerHTML = html;
+});
+</script>
+</body>
+</html>
