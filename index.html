@@ -17,7 +17,7 @@
 <!-- 3. Gigapub SDK / Script Integration -->
 <script src="https://ad.gigapub.tech/script?id=8575"></script>
 
-<!-- 4. Adexium Official Widget Script Integration (Updated WID 14366) -->
+<!-- 4. Adexium Official Widget Script Integration -->
 <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" data-wid="14366"></script>
 
 <!-- 5. Monetix Official Script Integration -->
@@ -978,7 +978,7 @@ arrow.innerText = '▲';
 }
 }
 
-// ADEXIUM & TADS DIRECT API FETCHER WITH POPUP MODAL DISPLAY
+// ADEXIUM & TADS DIRECT API FETCHER WITH POPUP MODAL DISPLAY (Inside Telegram Mini App)
 async function fetchAndShowBotRequestAd(widCode, adTitle, limitElementId, btn, rewardPerAd) {
     btn && (btn.disabled = true);
     try {
@@ -1037,21 +1037,9 @@ return;
 
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 
-// Handle Adexium (Direct Redirect / Popup Method for Guaranteed Ad Show)
+// Handle Adexium (In-App Modal Popup Display)
 if (adName === 'Adexium') {
-    btn && (btn.disabled = true);
-    
-    // Direct Adexium Network Click URL / Placement Link
-    let adexiumUrl = `https://tgads.space/ad/14366?user=${userId}`;
-    
-    if (tg.openLink) {
-        tg.openLink(adexiumUrl);
-    } else {
-        window.open(adexiumUrl, '_blank');
-    }
-    
-    finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-    startCountdownTimer(btn);
+    fetchAndShowBotRequestAd("14366", "Adexium", limitElementId, btn, rewardPerAd);
     return;
 }
 
@@ -1637,7 +1625,7 @@ return;
 }
 
 if (balance < 10) {
-showToast("Task publish karne ke liye kam से kam 10 Coins chahiye!", "error");
+showToast("Task publish karne ke liye kam se kam 10 Coins chahiye!", "error");
 return;
 }
 
