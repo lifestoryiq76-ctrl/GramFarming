@@ -18,10 +18,10 @@
 <script src="https://ad.gigapub.tech/script?id=8575"></script>
 
 <!-- 4. Adexium Official Widget Script Integration -->
-<script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+<script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" data-wid="e9aaf049-ad48-4385-bdf8-d8e963aff2f1"></script>
 
 <!-- 5. Monetix Official Script Integration -->
-<script src="https://monetix.com/sdk.js" data-wid="monetix_gramfarming"></script>
+<script src="https://monetix.com/sdk.js" data-wid="e9aaf049-ad48-4385-bdf8-d8e963aff2f1"></script>
 
 <!-- 6. Tads Official Script Integration -->
 <script src="https://cdn.tgads.live/assets/js/tads-widget.min.js" data-wid="12561"></script>
@@ -1074,8 +1074,7 @@ finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 startCountdownTimer(btn);
 });
 } else {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-startCountdownTimer(btn);
+fetchAndShowBotRequestAd("e9aaf049-ad48-4385-bdf8-d8e963aff2f1", "Monetix", limitElementId, btn, rewardPerAd);
 }
 return;
 }
