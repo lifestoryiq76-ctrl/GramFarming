@@ -1,1 +1,641 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gram Farming Ultimate Admin Panel - Master Control</title>
+    <meta name="clckd" content="a4942e4a5f319085b03d008d9ef168b9">
 
+  <style>
+        :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --accent: #22c55e; --text: #f8fafc; --text-muted: #94a3b8; --yellow: #eab308; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; margin: 0; }
+        .container { max-width: 950px; margin: 0 auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        input, select, textarea { background: var(--bg); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-top: 6px; margin-bottom: 12px; box-sizing: border-box; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        label { font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 500; }
+        button { background: var(--accent); color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; transition: 0.2s; }
+        button:active { transform: scale(0.98); }
+        .btn-success { background: #10b981; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; margin-right: 4px; }
+        .btn-danger { background: #ef4444; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; }
+        .btn-blue { background: #0284c7; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        @media(max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+        h2 { color: var(--accent); margin-top: 0; font-size: 17px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        h1 { font-size: 22px; text-align: center; color: var(--text); margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; color: var(--text); word-break: break-all; }
+        th { background: var(--bg); color: #38bdf8; }
+        .table-container { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid var(--border); }
+        .badge-live { background: #ef4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; float: right; }
+        .net-box { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; }
+        .net-box h3 { margin: 0 0 10px 0; color: var(--yellow); font-size: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌱 Gram Farming Ultimate Admin Panel <span class="badge-live">MASTER CONTROL</span></h1>
+    
+    <!-- 1. General & Economic Settings -->
+    <div class="card">
+        <h2>🌐 General & Economic Settings</h2>
+        <div class="grid-2">
+            <div>
+                <label>Coin USDT Value ($):</label>
+                <input type="number" id="coinUsdtValue" step="0.001">
+            </div>
+            <div>
+                <label>Daily Bonus Reward (Coins):</label>
+                <input type="number" id="dailyBonus" step="0.01">
+            </div>
+            <div>
+                <label>Referral Bonus (%):</label>
+                <input type="number" id="refBonus" step="0.1">
+            </div>
+            <div>
+                <label>Min. FaucetPay Withdrawal ($):</label>
+                <input type="number" id="minFaucetPay" step="0.01">
+            </div>
+            <div>
+                <label>Min. TON Withdrawal (TON):</label>
+                <input type="number" id="minTon" step="0.001">
+            </div>
+        </div>
+        <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
+    </div>
+
+    <!-- 2. Rocket Space Mining Parameters Control -->
+    <div class="card">
+        <h2>🚀 Space Rocket Mining Control</h2>
+        
+        <!-- Nova Rocket -->
+        <div class="net-box">
+            <h3>🛸 Nova Rocket</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Reward (Coins):</label>
+                    <input type="number" id="novaReward" step="0.01" value="1.00">
+                </div>
+                <div>
+                    <label>Mining Duration (Hours):</label>
+                    <input type="number" id="novaDuration" step="0.5" value="8">
+                </div>
+                <div>
+                    <label>Required Ads to Start:</label>
+                    <input type="number" id="novaReqAds" step="1" value="50">
+                </div>
+            </div>
+        </div>
+
+        <!-- Cosmic Rocket -->
+        <div class="net-box">
+            <h3>🛰️ Cosmic Rocket</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Reward (Coins):</label>
+                    <input type="number" id="cosmicReward" step="0.01" value="1.00">
+                </div>
+                <div>
+                    <label>Mining Duration (Hours):</label>
+                    <input type="number" id="cosmicDuration" step="0.5" value="8">
+                </div>
+                <div>
+                    <label>Required Ads to Start:</label>
+                    <input type="number" id="cosmicReqAds" step="1" value="50">
+                </div>
+            </div>
+        </div>
+
+        <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
+    </div>
+
+    <!-- 3. Ad Networks Control (Detailed Settings for Each Network) -->
+    <div class="card">
+        <h2>📺 Ads Watch Networks Setup (Network-wise Control)</h2>
+        
+        <!-- Monetag -->
+        <div class="net-box">
+            <h3>🔵 Monetag Ad Network</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Daily Limit (Ads):</label>
+                    <input type="number" id="monetagLimit" step="1" value="50">
+                </div>
+                <div>
+                    <label>Timer Cooldown (Seconds):</label>
+                    <input type="number" id="monetagTimer" step="1" value="60">
+                </div>
+                <div>
+                    <label>Reward Per Ad (Coin):</label>
+                    <input type="number" id="monetagReward" step="0.001" value="0.04">
+                </div>
+            </div>
+        </div>
+
+        <!-- Gigapub -->
+        <div class="net-box">
+            <h3>🟣 Gigapub Ad Network</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Daily Limit (Ads):</label>
+                    <input type="number" id="gigapubLimit" step="1" value="50">
+                </div>
+                <div>
+                    <label>Timer Cooldown (Seconds):</label>
+                    <input type="number" id="gigapubTimer" step="1" value="60">
+                </div>
+                <div>
+                    <label>Reward Per Ad (Coin):</label>
+                    <input type="number" id="gigapubReward" step="0.001" value="0.04">
+                </div>
+            </div>
+        </div>
+
+        <!-- Monetix -->
+        <div class="net-box">
+            <h3>🟢 Monetix Ad Network</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Daily Limit (Ads):</label>
+                    <input type="number" id="monetixLimit" step="1" value="40">
+                </div>
+                <div>
+                    <label>Timer Cooldown (Seconds):</label>
+                    <input type="number" id="monetixTimer" step="1" value="60">
+                </div>
+                <div>
+                    <label>Reward Per Ad (Coin):</label>
+                    <input type="number" id="monetixReward" step="0.001" value="0.03">
+                </div>
+            </div>
+        </div>
+
+        <!-- Clickadu -->
+        <div class="net-box">
+            <h3>🔴 Clickadu Ad Network</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Daily Limit (Ads):</label>
+                    <input type="number" id="clickaduLimit" step="1" value="40">
+                </div>
+                <div>
+                    <label>Timer Cooldown (Seconds):</label>
+                    <input type="number" id="clickaduTimer" step="1" value="60">
+                </div>
+                <div>
+                    <label>Reward Per Ad (Coin):</label>
+                    <input type="number" id="clickaduReward" step="0.001" value="0.03">
+                </div>
+            </div>
+        </div>
+
+        <!-- Hilltopads Combo -->
+        <div class="net-box">
+            <h3>🟡 Hilltopads Combo Ad Network</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Daily Limit (Ads):</label>
+                    <input type="number" id="hilltopLimit" step="1" value="40">
+                </div>
+                <div>
+                    <label>Timer Cooldown (Seconds):</label>
+                    <input type="number" id="hilltopTimer" step="1" value="60">
+                </div>
+                <div>
+                    <label>Reward Per Ad (Coin):</label>
+                    <input type="number" id="hilltopReward" step="0.001" value="0.04">
+                </div>
+            </div>
+        </div>
+
+        <button type="button" onclick="saveSettings('adsNetworks')">💾 Save All Ad Networks Setup</button>
+    </div>
+
+    <!-- 4. Staking APY Control -->
+    <div class="card" style="border: 1px solid var(--yellow);">
+        <h2 style="color: var(--yellow);">💎 Staking Plans APY Control</h2>
+        <div class="grid-4">
+            <div>
+                <label>Flexible APY (%):</label>
+                <input type="number" id="stakeApy0" step="0.1">
+            </div>
+            <div>
+                <label>7 Days APY (%):</label>
+                <input type="number" id="stakeApy7" step="0.1">
+            </div>
+            <div>
+                <label>15 Days APY (%):</label>
+                <input type="number" id="stakeApy15" step="0.1">
+            </div>
+            <div>
+                <label>30 Days APY (%):</label>
+                <input type="number" id="stakeApy30" step="0.1">
+            </div>
+            <div>
+                <label>60 Days APY (%):</label>
+                <input type="number" id="stakeApy60" step="0.1">
+            </div>
+            <div>
+                <label>90 Days APY (%):</label>
+                <input type="number" id="stakeApy90" step="0.1">
+            </div>
+            <div>
+                <label>120 Days APY (%):</label>
+                <input type="number" id="stakeApy120" step="0.1">
+            </div>
+            <div>
+                <label>365 Days APY (%):</label>
+                <input type="number" id="stakeApy365" step="0.1">
+            </div>
+        </div>
+        <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
+    </div>
+
+    <!-- 5. Global Broadcast Announcement -->
+    <div class="card">
+        <h2>📢 App Announcement / Pop-up Notice</h2>
+        <div>
+            <label>Announcement Text (HTML supported):</label>
+            <textarea id="announcementText" rows="3" placeholder="Enter important message for users..."></textarea>
+        </div>
+        <div class="grid-2">
+            <div>
+                <label>Show Announcement Popup?</label>
+                <select id="announcementActive">
+                    <option value="true">Active (Show)</option>
+                    <option value="false">Inactive (Hide)</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" onclick="saveAnnouncement()">📢 Update Announcement</button>
+    </div>
+
+    <!-- 6. Task Creator -->
+    <div class="card">
+        <h2>📋 Add New Custom Task (Telegram/YouTube/Ads)</h2>
+        <div class="grid-2">
+            <div>
+                <label>Task Title:</label>
+                <input type="text" id="taskTitle" placeholder="e.g. Join Channel">
+            </div>
+            <div>
+                <label>Reward Amount (Coins):</label>
+                <input type="number" id="taskReward" step="0.01" placeholder="e.g. 5.00">
+            </div>
+        </div>
+        <div>
+            <label>Task Link / Ad URL:</label>
+            <input type="text" id="taskLink" placeholder="https://t.me/...">
+        </div>
+        <button type="button" class="btn-blue" onclick="addNewTask()">➕ Create & Publish Task</button>
+    </div>
+
+    <!-- 7. User Balance Manual Manager -->
+    <div class="card" style="border: 1px solid var(--accent);">
+        <h2>⚡ User Balance Modifier</h2>
+        <div class="grid-2">
+            <div>
+                <label>Target Telegram User ID:</label>
+                <input type="text" id="targetUserId" placeholder="User ID">
+            </div>
+            <div>
+                <label>Amount (+ to Add, - to Deduct):</label>
+                <input type="number" id="targetAmount" step="0.01" placeholder="e.g. 10 or -5">
+            </div>
+        </div>
+        <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
+    </div>
+
+    <!-- 8A. FaucetPay Withdrawal Requests -->
+    <div class="card">
+        <h2>💳 FaucetPay Withdrawal Requests</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>FaucetPay Email / Wallet</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="faucetpayTableBody">
+                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 8B. TON Withdrawal Requests -->
+    <div class="card">
+        <h2>💎 TON Withdrawal Requests</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Amount (TON)</th>
+                        <th>TON Destination Address</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tonTableBody">
+                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 9. Registered Users List -->
+    <div class="card">
+        <h2>👥 Registered Users</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID / Name</th>
+                        <th>Invites</th>
+                        <th>Coin Balance</th>
+                        <th>TON / USDT</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg", 
+        authDomain: "gramfarmingbot-1a570.firebaseapp.com",
+        databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com",
+        projectId: "gramfarmingbot-1a570",
+        storageBucket: "gramfarmingbot-1a570.firebasestorage.app",
+        messagingSenderId: "113291680927",
+        appId: "1:113291680927:web:cb20c9f6b7914a546156aa" 
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.addEventListener('DOMContentLoaded', () => {
+        get(ref(db, 'adminSettings')).then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if(data.general) {
+                    document.getElementById('coinUsdtValue').value = data.general.coinUsdtValue ?? 0.01;
+                    document.getElementById('dailyBonus').value = data.general.dailyBonus ?? 2.00;
+                    document.getElementById('refBonus').value = data.general.refPercent ?? 20;
+                    document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? 0.05;
+                    document.getElementById('minTon').value = data.general.minTon ?? 0.50;
+                }
+                if(data.mining) {
+                    document.getElementById('novaReward').value = data.mining.novaReward ?? 1.0;
+                    document.getElementById('novaDuration').value = data.mining.novaDuration ?? 8;
+                    document.getElementById('novaReqAds').value = data.mining.novaReqAds ?? 50;
+
+                    document.getElementById('cosmicReward').value = data.mining.cosmicReward ?? 1.0;
+                    document.getElementById('cosmicDuration').value = data.mining.cosmicDuration ?? 8;
+                    document.getElementById('cosmicReqAds').value = data.mining.cosmicReqAds ?? 50;
+                }
+                if(data.adNetworks) {
+                    if(data.adNetworks.monetag) {
+                        document.getElementById('monetagLimit').value = data.adNetworks.monetag.limit ?? 50;
+                        document.getElementById('monetagTimer').value = data.adNetworks.monetag.timer ?? 60;
+                        document.getElementById('monetagReward').value = data.adNetworks.monetag.reward ?? 0.04;
+                    }
+                    if(data.adNetworks.gigapub) {
+                        document.getElementById('gigapubLimit').value = data.adNetworks.gigapub.limit ?? 50;
+                        document.getElementById('gigapubTimer').value = data.adNetworks.gigapub.timer ?? 60;
+                        document.getElementById('gigapubReward').value = data.adNetworks.gigapub.reward ?? 0.04;
+                    }
+                    if(data.adNetworks.monetix) {
+                        document.getElementById('monetixLimit').value = data.adNetworks.monetix.limit ?? 40;
+                        document.getElementById('monetixTimer').value = data.adNetworks.monetix.timer ?? 60;
+                        document.getElementById('monetixReward').value = data.adNetworks.monetix.reward ?? 0.03;
+                    }
+                    if(data.adNetworks.clickadu) {
+                        document.getElementById('clickaduLimit').value = data.adNetworks.clickadu.limit ?? 40;
+                        document.getElementById('clickaduTimer').value = data.adNetworks.clickadu.timer ?? 60;
+                        document.getElementById('clickaduReward').value = data.adNetworks.clickadu.reward ?? 0.03;
+                    }
+                    if(data.adNetworks.hilltop) {
+                        document.getElementById('hilltopLimit').value = data.adNetworks.hilltop.limit ?? 40;
+                        document.getElementById('hilltopTimer').value = data.adNetworks.hilltop.timer ?? 60;
+                        document.getElementById('hilltopReward').value = data.adNetworks.hilltop.reward ?? 0.04;
+                    }
+                }
+                if(data.stakingApy) {
+                    document.getElementById('stakeApy0').value = data.stakingApy[0] ?? 4;
+                    document.getElementById('stakeApy7').value = data.stakingApy[7] ?? 3;
+                    document.getElementById('stakeApy15').value = data.stakingApy[15] ?? 4.5;
+                    document.getElementById('stakeApy30').value = data.stakingApy[30] ?? 6.25;
+                    document.getElementById('stakeApy60').value = data.stakingApy[60] ?? 8;
+                    document.getElementById('stakeApy90').value = data.stakingApy[90] ?? 11.25;
+                    document.getElementById('stakeApy120').value = data.stakingApy[120] ?? 14.5;
+                    document.getElementById('stakeApy365').value = data.stakingApy[365] ?? 20;
+                }
+                if(data.announcement) {
+                    document.getElementById('announcementText').value = data.announcement.text ?? '';
+                    document.getElementById('announcementActive').value = String(data.announcement.active ?? false);
+                }
+            }
+        }).catch(err => console.error("Load settings error:", err));
+
+        // Load Withdrawals
+        get(ref(db, 'withdrawals')).then((snapshot) => {
+            const fpTableBody = document.getElementById('faucetpayTableBody');
+            const tonTableBody = document.getElementById('tonTableBody');
+            fpTableBody.innerHTML = '';
+            tonTableBody.innerHTML = '';
+            
+            let fpCount = 0;
+            let tonCount = 0;
+
+            if (snapshot.exists()) {
+                snapshot.forEach((userSnapshot) => {
+                    let userId = userSnapshot.key;
+                    userSnapshot.forEach((wSnapshot) => {
+                        let wId = wSnapshot.key;
+                        let w = wSnapshot.val();
+                        let method = (w.method || '').toUpperCase();
+                        let isSuccess = w.status && w.status.includes('SUCCESS');
+                        let isRejected = w.status && w.status.includes('REJECTED');
+                        
+                        let actionButtons = '';
+                        if (isSuccess) {
+                            actionButtons = '<span style="color:#22c55e; font-weight:bold;">Approved ✅</span>';
+                        } else if (isRejected) {
+                            actionButtons = '<span style="color:#ef4444; font-weight:bold;">Rejected ❌</span>';
+                        } else {
+                            actionButtons = `<button class="btn-success" onclick="processWithdrawal('${userId}', '${wId}', 'approve', '${w.method}', ${w.amount})">Approve ✅</button>
+                                             <button class="btn-danger" onclick="processWithdrawal('${userId}', '${wId}', 'reject', '${w.method}', ${w.amount})">Reject ❌</button>`;
+                        }
+
+                        let rowHtml = `<tr><td>${w.userName || userId}</td><td>${w.amount ? w.amount.toFixed(4) : '0'}</td><td>${w.destination || 'N/A'}</td><td>${actionButtons}</td></tr>`;
+
+                        if (method.includes('FAUCETPAY') || method.includes('USDT')) {
+                            fpTableBody.innerHTML += rowHtml;
+                            fpCount++;
+                        } else {
+                            tonTableBody.innerHTML += rowHtml;
+                            tonCount++;
+                        }
+                    });
+                });
+            }
+
+            if (fpCount === 0) fpTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No FaucetPay withdrawals found.</td></tr>`;
+            if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No TON withdrawals found.</td></tr>`;
+        });
+
+        // Load Users
+        get(ref(db, 'users')).then((snapshot) => {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    let u = child.val();
+                    tbody.innerHTML += `<tr><td>${u.name || child.key}</td><td>👥 ${u.totalInvited || 0}</td><td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td><td>TON: ${u.tonBalance ? u.tonBalance.toFixed(4) : '0.0000'}<br>USDT: ${u.usdtBalance ? u.usdtBalance.toFixed(4) : '0.0000'}</td></tr>`;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No users found.</td></tr>`;
+            }
+        });
+    });
+
+    window.saveSettings = function(type) {
+        try {
+            if (type === 'general') {
+                let data = {
+                    'adminSettings/general/coinUsdtValue': parseFloat(document.getElementById('coinUsdtValue').value) || 0,
+                    'adminSettings/general/dailyBonus': parseFloat(document.getElementById('dailyBonus').value) || 0,
+                    'adminSettings/general/refPercent': parseFloat(document.getElementById('refBonus').value) || 0,
+                    'adminSettings/general/minFaucetPay': parseFloat(document.getElementById('minFaucetPay').value) || 0,
+                    'adminSettings/general/minTon': parseFloat(document.getElementById('minTon').value) || 0
+                };
+                update(ref(db), data).then(() => alert('General Settings Saved Successfully!'));
+            } else if (type === 'mining') {
+                let data = {
+                    'adminSettings/mining/novaReward': parseFloat(document.getElementById('novaReward').value) || 1.0,
+                    'adminSettings/mining/novaDuration': parseFloat(document.getElementById('novaDuration').value) || 8,
+                    'adminSettings/mining/novaReqAds': parseInt(document.getElementById('novaReqAds').value) || 50,
+                    'adminSettings/mining/cosmicReward': parseFloat(document.getElementById('cosmicReward').value) || 1.0,
+                    'adminSettings/mining/cosmicDuration': parseFloat(document.getElementById('cosmicDuration').value) || 8,
+                    'adminSettings/mining/cosmicReqAds': parseInt(document.getElementById('cosmicReqAds').value) || 50
+                };
+                update(ref(db), data).then(() => alert('Rocket Mining Settings Saved Successfully!'));
+            } else if (type === 'adsNetworks') {
+                let adsData = {
+                    'adminSettings/adNetworks/monetag/limit': parseInt(document.getElementById('monetagLimit').value) || 50,
+                    'adminSettings/adNetworks/monetag/timer': parseInt(document.getElementById('monetagTimer').value) || 60,
+                    'adminSettings/adNetworks/monetag/reward': parseFloat(document.getElementById('monetagReward').value) || 0.04,
+
+                    'adminSettings/adNetworks/gigapub/limit': parseInt(document.getElementById('gigapubLimit').value) || 50,
+                    'adminSettings/adNetworks/gigapub/timer': parseInt(document.getElementById('gigapubTimer').value) || 60,
+                    'adminSettings/adNetworks/gigapub/reward': parseFloat(document.getElementById('gigapubReward').value) || 0.04,
+
+                    'adminSettings/adNetworks/monetix/limit': parseInt(document.getElementById('monetixLimit').value) || 40,
+                    'adminSettings/adNetworks/monetix/timer': parseInt(document.getElementById('monetixTimer').value) || 60,
+                    'adminSettings/adNetworks/monetix/reward': parseFloat(document.getElementById('monetixReward').value) || 0.03,
+
+                    'adminSettings/adNetworks/clickadu/limit': parseInt(document.getElementById('clickaduLimit').value) || 40,
+                    'adminSettings/adNetworks/clickadu/timer': parseInt(document.getElementById('clickaduTimer').value) || 60,
+                    'adminSettings/adNetworks/clickadu/reward': parseFloat(document.getElementById('clickaduReward').value) || 0.03,
+
+                    'adminSettings/adNetworks/hilltop/limit': parseInt(document.getElementById('hilltopLimit').value) || 40,
+                    'adminSettings/adNetworks/hilltop/timer': parseInt(document.getElementById('hilltopTimer').value) || 60,
+                    'adminSettings/adNetworks/hilltop/reward': parseFloat(document.getElementById('hilltopReward').value) || 0.04
+                };
+                update(ref(db), adsData).then(() => alert('All Ad Networks Setup Saved Successfully!'));
+            } else if (type === 'staking') {
+                let stakingData = {
+                    'adminSettings/stakingApy/0': parseFloat(document.getElementById('stakeApy0').value) || 4,
+                    'adminSettings/stakingApy/7': parseFloat(document.getElementById('stakeApy7').value) || 3,
+                    'adminSettings/stakingApy/15': parseFloat(document.getElementById('stakeApy15').value) || 4.5,
+                    'adminSettings/stakingApy/30': parseFloat(document.getElementById('stakeApy30').value) || 6.25,
+                    'adminSettings/stakingApy/60': parseFloat(document.getElementById('stakeApy60').value) || 8,
+                    'adminSettings/stakingApy/90': parseFloat(document.getElementById('stakeApy90').value) || 11.25,
+                    'adminSettings/stakingApy/120': parseFloat(document.getElementById('stakeApy120').value) || 14.5,
+                    'adminSettings/stakingApy/365': parseFloat(document.getElementById('stakeApy365').value) || 20
+                };
+                update(ref(db), stakingData).then(() => alert('Staking APY Rates Saved Successfully!'));
+            }
+        } catch (e) {
+            alert("Error: " + e.message);
+        }
+    };
+
+    window.saveAnnouncement = function() {
+        let text = document.getElementById('announcementText').value;
+        let active = document.getElementById('announcementActive').value === 'true';
+        update(ref(db), { 'adminSettings/announcement/text': text, 'adminSettings/announcement/active': active })
+            .then(() => alert('Announcement Updated!'));
+    };
+
+    window.addNewTask = function() {
+        let title = document.getElementById('taskTitle').value.trim();
+        let reward = parseFloat(document.getElementById('taskReward').value);
+        let link = document.getElementById('taskLink').value.trim();
+        if(!title || isNaN(reward) || !link) { alert('Sabhi fields bharein.'); return; }
+        push(ref(db, 'customTasks'), { title, reward, link }).then(() => {
+            alert('Task created!');
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskReward').value = '';
+            document.getElementById('taskLink').value = '';
+        });
+    };
+
+    window.processWithdrawal = function(userId, wId, action, method, amount) {
+        let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED (Refunded)';
+        update(ref(db, `withdrawals/${userId}/${wId}`), { status: statusText }).then(() => {
+            if (action === 'reject') {
+                get(ref(db, `users/${userId}`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        let userData = snapshot.val();
+                        let updateData = {};
+                        if ((method || '').toUpperCase().includes('TON')) {
+                            updateData.tonBalance = (userData.tonBalance || 0) + amount;
+                        } else {
+                            updateData.usdtBalance = (userData.usdtBalance || 0) + amount;
+                        }
+                        update(ref(db, `users/${userId}`), updateData).then(() => {
+                            alert('Rejected & Refunded!');
+                            location.reload();
+                        });
+                    } else { location.reload(); }
+                });
+            } else {
+                alert('Approved!');
+                location.reload();
+            }
+        });
+    };
+
+    window.modifyUserBalance = function() {
+        let uId = document.getElementById('targetUserId').value.trim();
+        let amt = parseFloat(document.getElementById('targetAmount').value);
+        if(!uId || isNaN(amt)) { alert("User ID aur Amount enter karein."); return; }
+        get(ref(db, 'users/' + uId)).then((snapshot) => {
+            if(snapshot.exists()) {
+                let newBal = (snapshot.val().balance || 0) + amt;
+                update(ref(db, 'users/' + uId), { balance: newBal }).then(() => {
+                    alert(`Balance updated! New: ${newBal.toFixed(2)}`);
+                    location.reload();
+                });
+            } else { alert("User ID nahi mili!"); }
+        });
+    };
+</script>
+
+</body>
+</html>
