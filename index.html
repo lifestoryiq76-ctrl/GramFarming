@@ -14,13 +14,10 @@
 <!-- 1. Monetag Telegram Mini App SDK Script -->
 <script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490'></script>
 
-<!-- 2. ADSBitvex SDK / Script Integration -->
-<script src="https://adsbitvex.com/sdk.js" data-wid="000499" data-sdk="show_adsbitvex_ad"></script>
-
-<!-- 3. Gigapub SDK / Script Integration -->
+<!-- 2. Gigapub SDK / Script Integration -->
 <script src="https://ad.gigapub.tech/script?id=8575"></script>
 
-<!-- 4. Monetix Official Script Integration -->
+<!-- 3. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
@@ -216,9 +213,9 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <div id="adsTasks">
 <div class="card flex-between">
-<span class="limit-badge" id="taskClickaduLimit">0 / 50</span>
-<div><b>Clickadu</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
-<button class="btn" id="taskClickaduBtn" style="width: auto;" onclick="watchAdWithTimer('taskClickaduLimit', 'taskClickaduBtn', 'Clickadu', 50, 0.04)">Watch</button>
+<span class="limit-badge" id="taskPropellerLimit">0 / 40</span>
+<div><b>PropellerAds</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
+<button class="btn" id="taskPropellerBtn" style="width: auto;" onclick="watchAdWithTimer('taskPropellerLimit', 'taskPropellerBtn', 'PropellerAds', 40, 0.03)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskMonetagLimit">0 / 50</span>
@@ -236,9 +233,9 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', 40, 0.03)">Watch</button>
 </div>
 <div class="card flex-between">
-<span class="limit-badge" id="taskAdsBitvexLimit">0 / 40</span>
-<div><b>ADSBitvex</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
-<button class="btn" id="taskAdsBitvexBtn" style="width: auto;" onclick="watchAdWithTimer('taskAdsBitvexLimit', 'taskAdsBitvexBtn', 'ADSBitvex', 40, 0.03)">Watch</button>
+<span class="limit-badge" id="taskClickaduLimit">0 / 50</span>
+<div><b>Clickadu</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
+<button class="btn" id="taskClickaduBtn" style="width: auto;" onclick="watchAdWithTimer('taskClickaduLimit', 'taskClickaduBtn', 'Clickadu', 50, 0.04)">Watch</button>
 </div>
 </div>
 
@@ -599,17 +596,17 @@ let miningDurationSeconds = 28800;
 let miningRewardCoins = 1.00;
 
 let adWatchedCounts = {
+taskPropellerLimit: 0,
 taskClickaduLimit: 0,
 taskMonetagLimit: 0,
 taskGigapubLimit: 0,
-taskMonetixLimit: 0,
-taskAdsBitvexLimit: 0
+taskMonetixLimit: 0
 };
 
 let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 let todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-adWatchedCounts = { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 };
+adWatchedCounts = { taskPropellerLimit: 0, taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 };
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -655,7 +652,7 @@ today530.setHours(5, 30, 0, 0);
 
 if (realNow >= today530 && lastResetStored !== todayStr) {
 processStakingDailyTransfer();
-adWatchedCounts = { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 };
+adWatchedCounts = { taskPropellerLimit: 0, taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 };
 localStorage.setItem('last_530_reset_date', todayStr);
 saveToFirebase();
 
@@ -810,7 +807,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [],
-adWatchedCounts: { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 }
+adWatchedCounts: { taskPropellerLimit: 0, taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 }
 });
 }
 renderUIValues();
@@ -900,11 +897,11 @@ document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
 document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
 document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 
+if (document.getElementById('taskPropellerLimit')) document.getElementById('taskPropellerLimit').innerText = `${adWatchedCounts.taskPropellerLimit || 0} / 40`;
 if (document.getElementById('taskClickaduLimit')) document.getElementById('taskClickaduLimit').innerText = `${adWatchedCounts.taskClickaduLimit || 0} / 50`;
 if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / 50`;
 if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / 50`;
 if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / 40`;
-if (document.getElementById('taskAdsBitvexLimit')) document.getElementById('taskAdsBitvexLimit').innerText = `${adWatchedCounts.taskAdsBitvexLimit || 0} / 40`;
 
 let manInput = document.getElementById('manualTonAddress');
 if (savedTonAddress) {
@@ -963,11 +960,23 @@ return;
 
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 
+// Handle PropellerAds Direct Link
+if (adName === 'PropellerAds') {
+    btn && (btn.disabled = true);
+    const propellerAdUrl = "PASTE_YOUR_PROPELLERADS_DIRECT_LINK_HERE";
+    window.open(propellerAdUrl, '_blank');
+    
+    setTimeout(() => {
+        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+        startCountdownTimer(btn);
+    }, 3000);
+    return;
+}
+
 // Handle Clickadu Direct Link / Ad Zone
 if (adName === 'Clickadu') {
     btn && (btn.disabled = true);
-    // Jab Clickadu link approve ho jaye, is URL ko apne Direct Link se replace karein
-    const clickaduAdUrl = "https://gram-farming.vercel.app";
+    const clickaduAdUrl = "PASTE_YOUR_CLICKADU_DIRECT_LINK_HERE";
     window.open(clickaduAdUrl, '_blank');
     
     setTimeout(() => {
@@ -1019,25 +1028,6 @@ if (adName === 'Gigapub') {
 if (typeof window.showGiga === 'function') {
 btn && (btn.disabled = true);
 window.showGiga().then(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-startCountdownTimer(btn);
-}).catch(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-startCountdownTimer(btn);
-});
-} else {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-startCountdownTimer(btn);
-}
-return;
-}
-
-// Handle ADSBitvex
-if (adName === 'ADSBitvex') {
-let showFn = window.show_adsbitvex_ad || window.adsbitvex_show;
-if (typeof showFn === 'function') {
-btn && (btn.disabled = true);
-showFn().then(() => {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 startCountdownTimer(btn);
 }).catch(() => {
