@@ -10,9 +10,6 @@
 <!-- Monetag Telegram Mini App SDK Script -->
 <script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490'></script>
 
-<!-- Monetag Vignette Banner Script -->
-<script>(function(s){s.dataset.zone='11987535',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
 <!-- Adexium SDK / Script Integration -->
 <script src="https://bid.tgads.live/sdk.js" data-wid="14358" data-sdk="show_adexium_ad"></script>
 
@@ -968,102 +965,92 @@ return;
 }
 
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
-if (btn) btn.disabled = true;
 
-// Check which ad network was clicked and trigger its respective SDK function
+// Handle Monetag
 if (adName === 'Monetag') {
 if (typeof window.show_11989490 === 'function') {
+btn && (btn.disabled = true);
 window.show_11989490().then(() => {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+startCountdownTimer(btn);
 }).catch(() => {
 handleAdError(btn);
 });
 } else {
 handleAdNotLoaded(btn);
 }
-} else if (adName === 'Gigapub') {
+return;
+} 
+
+// Handle Gigapub
+if (adName === 'Gigapub') {
 if (typeof window.showGiga === 'function') {
+btn && (btn.disabled = true);
 window.showGiga().then(() => {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+startCountdownTimer(btn);
 }).catch(() => {
 handleAdError(btn);
 });
 } else {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+startCountdownTimer(btn);
 }
-} else if (adName === 'Adexium') {
-if (typeof window.show_adexium_ad === 'function') {
-window.show_adexium_ad().then(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}).catch(() => {
-handleAdError(btn);
-});
-} else {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}
-} else if (adName === 'Tads') {
-if (typeof window.show_tads_ad === 'function') {
-window.show_tads_ad().then(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}).catch((err) => {
-console.error("Tads Ad Error:", err);
-handleAdError(btn);
-});
-} else if (typeof window.show_tgads_ad === 'function') {
-window.show_tgads_ad().then(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}).catch(() => {
-handleAdError(btn);
-});
-} else if (typeof window.show_tads === 'function') {
-window.show_tads().then(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}).catch(() => {
-handleAdError(btn);
-});
-} else {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}
-} else if (adName === 'ADSBitvex') {
-if (typeof window.show_adsbitvex_ad === 'function') {
-window.show_adsbitvex_ad().then(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}).catch(() => {
-handleAdError(btn);
-});
-} else if (typeof window.adsbitvex_show === 'function') {
-window.adsbitvex_show().then(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}).catch(() => {
-handleAdError(btn);
-});
-} else {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}
-} else {
-if (typeof window.show_11989490 === 'function') {
-window.show_11989490().then(() => {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}).catch(() => {
-handleAdError(btn);
-});
-} else {
-finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-}
+return;
 }
 
+// Handle Adexium & Tads
+if (adName === 'Adexium' || adName === 'Tads') {
+let showFn = adName === 'Adexium' ? window.show_adexium_ad : (window.show_tads_ad || window.show_tgads_ad || window.show_tads);
+if (typeof showFn === 'function') {
+btn && (btn.disabled = true);
+showFn().then(() => {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+startCountdownTimer(btn);
+}).catch(() => {
+handleAdError(btn);
+});
+} else {
+handleAdNotLoaded(btn);
+}
+return;
+}
+
+// Handle ADSBitvex
+if (adName === 'ADSBitvex') {
+let showFn = window.show_adsbitvex_ad || window.adsbitvex_show;
+if (typeof showFn === 'function') {
+btn && (btn.disabled = true);
+showFn().then(() => {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+startCountdownTimer(btn);
+}).catch(() => {
+handleAdError(btn);
+});
+} else {
+handleAdNotLoaded(btn);
+}
+return;
+}
+
+// Default Fallback
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+startCountdownTimer(btn);
+}
+
+function startCountdownTimer(btn) {
+if (!btn) return;
+btn.disabled = true;
 let countdown = 60;
-if (btn) btn.innerText = `Wait (${countdown}s)`;
+btn.innerText = `Wait (${countdown}s)`;
 
 let timerInterval = setInterval(() => {
 countdown--;
-if (btn) btn.innerText = `Wait (${countdown}s)`;
+btn.innerText = `Wait (${countdown}s)`;
 if (countdown <= 0) {
 clearInterval(timerInterval);
-if (btn) {
 btn.innerText = "Watch";
 btn.disabled = false;
-}
 }
 }, 1000);
 }
@@ -1074,10 +1061,6 @@ adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
 saveToFirebase();
 renderUIValues();
 showToast(`Claim Successful! +${rewardPerAd} Coin added automatically!`, "success");
-if (btn) {
-btn.innerText = "Watch";
-btn.disabled = false;
-}
 }
 
 function handleAdError(btn) {
@@ -1089,7 +1072,7 @@ btn.disabled = false;
 }
 
 function handleAdNotLoaded(btn) {
-showToast("Ad network is loading, please try again in a moment.", "error");
+showToast("Ad network is loading/unavailable, please try again in a moment.", "error");
 if (btn) {
 btn.innerText = "Watch";
 btn.disabled = false;
