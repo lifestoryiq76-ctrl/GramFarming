@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gram Farming Mini App</title>
 
+<!-- Clickadu Verification Meta Tag -->
+<meta name="clckd" content="1e748cebaa6a7cff39a2b5c1914804ef" />
+
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
 
@@ -212,6 +215,11 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 
 <div id="adsTasks">
+<div class="card flex-between">
+<span class="limit-badge" id="taskClickaduLimit">0 / 50</span>
+<div><b>Clickadu</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
+<button class="btn" id="taskClickaduBtn" style="width: auto;" onclick="watchAdWithTimer('taskClickaduLimit', 'taskClickaduBtn', 'Clickadu', 50, 0.04)">Watch</button>
+</div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskMonetagLimit">0 / 50</span>
 <div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
@@ -591,6 +599,7 @@ let miningDurationSeconds = 28800;
 let miningRewardCoins = 1.00;
 
 let adWatchedCounts = {
+taskClickaduLimit: 0,
 taskMonetagLimit: 0,
 taskGigapubLimit: 0,
 taskMonetixLimit: 0,
@@ -600,7 +609,7 @@ taskAdsBitvexLimit: 0
 let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 let todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 };
+adWatchedCounts = { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 };
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -646,7 +655,7 @@ today530.setHours(5, 30, 0, 0);
 
 if (realNow >= today530 && lastResetStored !== todayStr) {
 processStakingDailyTransfer();
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 };
+adWatchedCounts = { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 };
 localStorage.setItem('last_530_reset_date', todayStr);
 saveToFirebase();
 
@@ -801,7 +810,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [],
-adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 }
+adWatchedCounts: { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsBitvexLimit: 0 }
 });
 }
 renderUIValues();
@@ -891,6 +900,7 @@ document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
 document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
 document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 
+if (document.getElementById('taskClickaduLimit')) document.getElementById('taskClickaduLimit').innerText = `${adWatchedCounts.taskClickaduLimit || 0} / 50`;
 if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / 50`;
 if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / 50`;
 if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / 40`;
@@ -950,6 +960,21 @@ return;
 }
 
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
+
+// Handle Clickadu Direct Link / Ad Zone
+if (adName === 'Clickadu') {
+    btn && (btn.disabled = true);
+    // Yahan apna Clickadu ka Direct Link/Zone URL daal sakte hain
+    const clickaduAdUrl = "PASTE_YOUR_CLICKADU_DIRECT_LINK_HERE";
+    window.open(clickaduAdUrl, '_blank');
+    
+    // Simulate verification delay / completion
+    setTimeout(() => {
+        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+        startCountdownTimer(btn);
+    }, 3000);
+    return;
+}
 
 // Handle Monetix
 if (adName === 'Monetix') {
@@ -1475,7 +1500,7 @@ return;
 let data = snapshot.val();
 let html = '';
 Object.values(data).reverse().forEach(item => {
-html += `<div style="background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);"> <div class="flex-between"> <b style="color: var(--accent);">${item.method} - ${item.amount.toFixed(4)}</b> <span style="color: ${item.status.includes('SUCCESS') ? 'var(--accent)' : 'var(--yellow)'};">${item.status}</span> </div> <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"> Destination: ${item.destination} | Net: ${item.received.toFixed(4)} </div> <div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 2px;"> ${item.date} </div> </div>`;
+html += `<div style="background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);"> <div class="flex-between"> <b style="color: var(--accent);">${item.method} - ${item.amount.toFixed(4)}</b> <span style="color: ${item.status.includes('SUCCESS') ? 'var(--accent)' : 'var(--yellow)'};">${item.status}</span> </div> <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"> Destination: ${item.destination} | Net: ${item.received.4} </div> <div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 2px;"> ${item.date} </div> </div>`;
 });
 historyContainer.innerHTML = html;
 }, { onlyOnce: true });
