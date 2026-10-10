@@ -25,6 +25,9 @@
 <!-- ADSBitvex SDK / Script Integration -->
 <script src="https://adsbitvex.com/sdk.js" data-wid="000499" data-sdk="show_adsbitvex_ad"></script>
 
+<!-- Gigapub SDK / Script Integration -->
+<script src="https://ad.gigapub.tech/script?id=8575"></script>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
@@ -988,6 +991,16 @@ handleAdError(btn);
 } else {
 handleAdNotLoaded(btn);
 }
+} else if (adName === 'Gigapub') {
+if (typeof window.showGiga === 'function') {
+window.showGiga().then(() => {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}).catch(() => {
+handleAdError(btn);
+});
+} else {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}
 } else if (adName === 'Adexium') {
 if (typeof window.show_adexium_ad === 'function') {
 window.show_adexium_ad().then(() => {
@@ -1048,7 +1061,6 @@ handleAdError(btn);
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 }
 } else {
-// Default fallback for other networks like Gigapub/Monetix
 if (typeof window.show_11989490 === 'function') {
 window.show_11989490().then(() => {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
@@ -1242,18 +1254,16 @@ let btn = document.getElementById(`rocketBtn-${index}`);
 if (state.status === 'ads') {
 btn.disabled = true;
 
-if (typeof window.show_11989490 === 'function') {
-window.show_11989490().then(() => {
-progressRocketAdWatch(index, rocketName);
+let adPromise = (adType === 'Gigapub' && typeof window.showGiga === 'function') 
+    ? window.showGiga() 
+    : (typeof window.show_11989490 === 'function' ? window.show_11989490() : Promise.resolve());
+
+adPromise.then(() => {
+    progressRocketAdWatch(index, rocketName);
 }).catch(() => {
-showToast("Ad failed to load or was skipped.", "error");
-btn.disabled = false;
+    showToast("Ad failed to load or was skipped.", "error");
+    btn.disabled = false;
 });
-} else {
-showToast("Ad network is loading, please try again.", "error");
-btn.disabled = false;
-return;
-}
 
 let countdown = 60;
 btn.innerText = `Wait (${countdown}s)`;
@@ -1595,7 +1605,7 @@ let listEl = document.getElementById('dynamicTasksList');
 let defaultHtml = `<div class="card flex-between"> <div><span>📢 Join Telegram Channel</span><br><small style="color:var(--text-muted);">Reward: +10 Coin</small></div> <button class="btn" style="width: auto;" onclick="completeTask(10, 'Telegram Channel')">Complete</button> </div>`;
 
 if (!snapshot.exists()) {
-listRef.innerHTML = defaultHtml;
+listEl.innerHTML = defaultHtml;
 return;
 }
 
