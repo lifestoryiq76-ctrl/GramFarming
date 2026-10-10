@@ -1038,6 +1038,12 @@ finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 }).catch(() => {
 handleAdError(btn);
 });
+} else if (typeof window.adsbitvex_show === 'function') {
+window.adsbitvex_show().then(() => {
+finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+}).catch(() => {
+handleAdError(btn);
+});
 } else {
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 }
@@ -1589,7 +1595,7 @@ let listEl = document.getElementById('dynamicTasksList');
 let defaultHtml = `<div class="card flex-between"> <div><span>📢 Join Telegram Channel</span><br><small style="color:var(--text-muted);">Reward: +10 Coin</small></div> <button class="btn" style="width: auto;" onclick="completeTask(10, 'Telegram Channel')">Complete</button> </div>`;
 
 if (!snapshot.exists()) {
-listEl.innerHTML = defaultHtml;
+listRef.innerHTML = defaultHtml;
 return;
 }
 
