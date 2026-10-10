@@ -1037,25 +1037,21 @@ return;
 
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 
-// Handle Adexium (Fixed Interstitial SDK with WID 14366 & Direct Fallback)
+// Handle Adexium (Direct Redirect / Popup Method for Guaranteed Ad Show)
 if (adName === 'Adexium') {
     btn && (btn.disabled = true);
     
-    if (typeof window.AdexiumWidget === 'function') {
-        try {
-            const adexiumWidget = new window.AdexiumWidget({
-                wid: '14366',
-                adFormat: 'interstitial'
-            });
-            adexiumWidget.show();
-            finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-            startCountdownTimer(btn);
-        } catch(e) {
-            fetchAndShowBotRequestAd("14366", "Adexium", limitElementId, btn, rewardPerAd);
-        }
+    // Direct Adexium Network Click URL / Placement Link
+    let adexiumUrl = `https://tgads.space/ad/14366?user=${userId}`;
+    
+    if (tg.openLink) {
+        tg.openLink(adexiumUrl);
     } else {
-        fetchAndShowBotRequestAd("14366", "Adexium", limitElementId, btn, rewardPerAd);
+        window.open(adexiumUrl, '_blank');
     }
+    
+    finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+    startCountdownTimer(btn);
     return;
 }
 
@@ -1641,7 +1637,7 @@ return;
 }
 
 if (balance < 10) {
-showToast("Task publish karne ke liye kam se kam 10 Coins chahiye!", "error");
+showToast("Task publish karne ke liye kam से kam 10 Coins chahiye!", "error");
 return;
 }
 
