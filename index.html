@@ -168,7 +168,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 
 <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
-<h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🛸 Space Rocket Mining (8h Cycle)</h4>
+<h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🛸 Space Rocket Mining</h4>
 <div class="mining-grid">
 <!-- Rocket Box 1 -->
 <div class="mining-box" id="mBox-0">
@@ -755,6 +755,22 @@ toggleWithdrawFields();
 }
 });
 
+// Firebase Listener - Rocket Mining Parameters Sync from Admin Panel
+onValue(ref(db, 'adminSettings/mining'), (snapshot) => {
+if (snapshot.exists()) {
+const data = snapshot.val();
+if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
+if (data.novaDuration !== undefined) miningDurationSeconds = parseFloat(data.novaDuration) * 3600;
+}
+});
+onValue(ref(db, 'mining'), (snapshot) => {
+if (snapshot.exists()) {
+const data = snapshot.val();
+if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
+if (data.novaDuration !== undefined) miningDurationSeconds = parseFloat(data.novaDuration) * 3600;
+}
+});
+
 // Firebase Listener - Ads Limits & Rewards Sync from Admin Panel
 onValue(ref(db, 'adminSettings/ads'), (snapshot) => {
 if (snapshot.exists()) {
@@ -1325,7 +1341,8 @@ state.status = 'mining';
 state.timeLeft = miningDurationSeconds;
 state.accumulated = 0.00;
 
-statusEl.innerHTML = `⏳ Timer: 8h 0m 0s`;
+let hoursTotal = Math.floor(miningDurationSeconds / 3600);
+statusEl.innerHTML = `⏳ Timer: ${hoursTotal}h 0m 0s`;
 let btn = document.getElementById(`rocketBtn-${index}`);
 btn.innerText = `Claim 0.00 Coin`;
 btn.disabled = false;
@@ -1370,7 +1387,7 @@ if (state.timeLeft <= 0 && state.status === 'mining') {
 state.status = 'claim';
 state.accumulated = miningRewardCoins;
 accumEl.innerHTML = `🪙 ${state.accumulated.toFixed(4)} Coin`;
-btn.innerText = `🎁 Claim Final 1 Coin`;
+btn.innerText = `🎁 Claim Final Coin`;
 btn.style.background = "#eab308";
 btn.style.color = "#000";
 }
