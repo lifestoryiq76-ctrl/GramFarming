@@ -52,6 +52,9 @@ const ADMIN_ID = Number(process.env.ADMIN_TELEGRAM_ID || 6806028116);
 const bot = new Telegraf(BOT_TOKEN);
 const MINI_APP_URL = "https://gram-farming.vercel.app";
 
+// Payout Channel Username
+const PAYOUT_CHANNEL = '@GramFarming_Payout';
+
 // Helper Function: Daily Check-in Reminder
 async function sendDailyCheckinReminder(chatId, streakCount) {
   try {
@@ -82,6 +85,26 @@ async function sendBroadcastMessage(chatId, title, body) {
   }
 }
 
+// Helper Function: Send Payout Proof to Telegram Channel
+async function sendPayoutNotification(withdrawalData) {
+  const { userId, amount, currency, method } = withdrawalData;
+  const maskedUser = userId ? `${userId.toString().slice(0, 4)}***` : 'User';
+
+  const message = `🎉 <b>NEW WITHDRAWAL APPROVED!</b> 🎉\n\n` +
+                  `👤 <b>User ID:</b> <code>${maskedUser}</code>\n` +
+                  `💰 <b>Amount:</b> <b>${amount} ${currency || 'GRAM'}</b>\n` +
+                  `💳 <b>Method:</b> ${method || 'FaucetPay / Wallet'}\n` +
+                  `⚡ <b>Status:</b> Completed ✅\n\n` +
+                  `🌐 <b>Play & Earn:</b> @gram_farmingbot`;
+
+  try {
+    await bot.telegram.sendMessage(PAYOUT_CHANNEL, message, { parse_mode: 'HTML' });
+    console.log('Payout proof posted successfully to channel!');
+  } catch (error) {
+    console.error('Failed to post payout proof to channel:', error.message);
+  }
+}
+
 // 1. BROADCAST NOTIFICATION LISTENER (From Admin Panel)
 async function pollBroadcasts() {
   const broadcasts = await getFirebaseData('botBroadcasts');
@@ -103,7 +126,22 @@ async function pollBroadcasts() {
 }
 setInterval(pollBroadcasts, 10000);
 
-// 2. DAILY AUTO CHECK-IN REMINDER (Cron Job - Daily at 10:00 AM)
+// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER (From Admin Panel / Firebase)
+async function pollPayouts() {
+  const withdrawals = await getFirebaseData('withdrawals');
+  if (withdrawals) {
+    for (let key in withdrawals) {
+      let data = withdrawals[key];
+      if (data && data.status === 'approved' && !data.postedToChannel) {
+        await sendPayoutNotification(data);
+        await updateFirebaseData(`withdrawals/${key}`, { postedToChannel: true });
+      }
+    }
+  }
+}
+setInterval(pollPayouts, 5000);
+
+// 3. DAILY AUTO CHECK-IN REMINDER (Cron Job - Daily at 10:00 AM)
 cron.schedule('0 10 * * *', async () => {
   console.log('Sending Daily Check-in Reminders...');
   const users = await getFirebaseData('users');
@@ -124,7 +162,8 @@ bot.command(['start', 'admin'], (ctx) => {
             parse_mode: 'Markdown',
             ...Markup.inlineKeyboard([
                 [Markup.button.callback('📺 Ad Limits & Rewards', 'menu_ads')],
-                [Markup.button.callback('🌐 Economic Settings', 'menu_general')]
+                [Markup.button.callback('🌐 Economic Settings', 'menu_general')],
+                [Markup.button.url('📢 Payout Channel', `https://t.me/${PAYOUT_CHANNEL.replace('@', '')}`)]
             ])
         }
     );
