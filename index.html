@@ -154,7 +154,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Daily Bonus Card (Original) -->
+<!-- Daily Bonus Card -->
 <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
 <span style="font-size: 15px;">🎁 Today's reward: <span id="dailyBonusDisplay">0.01</span> Coin</span>
 <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
@@ -742,17 +742,6 @@ localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
 
 loadFromLocalStorage();
 
-// Firebase Listener - Announcement
-onValue(ref(db, 'adminSettings/announcement'), (snapshot) => {
-if (snapshot.exists()) {
-const data = snapshot.val();
-if (data.message && data.active === true) {
-document.getElementById('announcementMessage').innerText = data.message;
-document.getElementById('announcementModal').style.display = 'flex';
-}
-}
-});
-
 // Firebase Listener - General & Economic Settings Sync
 onValue(ref(db, 'adminSettings/general'), (snapshot) => {
 if (snapshot.exists()) {
@@ -771,7 +760,7 @@ toggleWithdrawFields();
 }
 });
 
-// Firebase Listener - Rocket Mining Parameters Sync
+// Firebase Listener - Rocket Mining Parameters Sync (Fixed live update sync)
 function applyMiningData(data) {
 if (!data) return;
 if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
@@ -797,9 +786,6 @@ document.getElementById('rocketBtn-1').innerText = `Watch Ad (${rocketStates[1].
 }
 
 onValue(ref(db, 'adminSettings/mining'), (snapshot) => {
-if (snapshot.exists()) applyMiningData(snapshot.val());
-});
-onValue(ref(db, 'mining'), (snapshot) => {
 if (snapshot.exists()) applyMiningData(snapshot.val());
 });
 
@@ -950,10 +936,6 @@ update(userRef, {
 balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, lastCheckin,
 adWatchedCounts
 });
-}
-
-window.closeAnnouncement = function() {
-document.getElementById('announcementModal').style.display = 'none';
 }
 
 window.saveTonAddress = function() {
@@ -1539,6 +1521,7 @@ let netReceive = amt - fee;
 
 let newWithdrawal = {
 id: Date.now(),
+userName: displayName,
 method: method.toUpperCase(),
 amount: amt,
 fee: fee,
