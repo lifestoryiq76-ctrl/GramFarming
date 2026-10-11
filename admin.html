@@ -120,14 +120,14 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 3. Task Ads Networks Control (Limit & Reward Only) -->
+    <!-- 3. Task Ads Networks Control (Limit, Reward & Timer Control) -->
     <div class="card">
-        <h2>📺 Ads Watch Networks Setup (Network-wise Control)</h2>
+        <h2>📺 Task Ads Watch Networks Setup (Limit, Reward & Timer Control)</h2>
         
         <!-- Monetag -->
         <div class="net-box">
             <h3>🔵 Monetag Ad Network</h3>
-            <div class="grid-2">
+            <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="monetagLimit" step="1" value="50">
@@ -136,13 +136,17 @@
                     <label>Reward Per Ad (Coin):</label>
                     <input type="number" id="monetagReward" step="0.001" value="0.04">
                 </div>
+                <div>
+                    <label>Ad Timer (Seconds):</label>
+                    <input type="number" id="monetagTimer" step="1" value="60">
+                </div>
             </div>
         </div>
 
         <!-- Gigapub -->
         <div class="net-box">
             <h3>🟣 Gigapub Ad Network</h3>
-            <div class="grid-2">
+            <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="gigapubLimit" step="1" value="50">
@@ -151,13 +155,17 @@
                     <label>Reward Per Ad (Coin):</label>
                     <input type="number" id="gigapubReward" step="0.001" value="0.04">
                 </div>
+                <div>
+                    <label>Ad Timer (Seconds):</label>
+                    <input type="number" id="gigapubTimer" step="1" value="60">
+                </div>
             </div>
         </div>
 
         <!-- Monetix -->
         <div class="net-box">
             <h3>🟢 Monetix Ad Network</h3>
-            <div class="grid-2">
+            <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="monetixLimit" step="1" value="40">
@@ -166,13 +174,17 @@
                     <label>Reward Per Ad (Coin):</label>
                     <input type="number" id="monetixReward" step="0.001" value="0.03">
                 </div>
+                <div>
+                    <label>Ad Timer (Seconds):</label>
+                    <input type="number" id="monetixTimer" step="1" value="60">
+                </div>
             </div>
         </div>
 
         <!-- Clickadu -->
         <div class="net-box">
             <h3>🔴 Clickadu Ad Network</h3>
-            <div class="grid-2">
+            <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="clickaduLimit" step="1" value="40">
@@ -181,13 +193,17 @@
                     <label>Reward Per Ad (Coin):</label>
                     <input type="number" id="clickaduReward" step="0.001" value="0.03">
                 </div>
+                <div>
+                    <label>Ad Timer (Seconds):</label>
+                    <input type="number" id="clickaduTimer" step="1" value="60">
+                </div>
             </div>
         </div>
 
         <!-- Hilltopads Combo -->
         <div class="net-box">
             <h3>🟡 Hilltopads Combo Ad Network</h3>
-            <div class="grid-2">
+            <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="hilltopLimit" step="1" value="40">
@@ -195,6 +211,10 @@
                 <div>
                     <label>Reward Per Ad (Coin):</label>
                     <input type="number" id="hilltopReward" step="0.001" value="0.04">
+                </div>
+                <div>
+                    <label>Ad Timer (Seconds):</label>
+                    <input type="number" id="hilltopTimer" step="1" value="60">
                 </div>
             </div>
         </div>
@@ -401,18 +421,23 @@
                 if(data.ads) {
                     document.getElementById('monetagLimit').value = data.ads.monetagLimit ?? 50;
                     document.getElementById('monetagReward').value = data.ads.monetagReward ?? 0.04;
+                    document.getElementById('monetagTimer').value = data.ads.monetagTimer ?? 60;
 
                     document.getElementById('gigapubLimit').value = data.ads.gigapubLimit ?? 50;
                     document.getElementById('gigapubReward').value = data.ads.gigapubReward ?? 0.04;
+                    document.getElementById('gigapubTimer').value = data.ads.gigapubTimer ?? 60;
 
                     document.getElementById('monetixLimit').value = data.ads.monetixLimit ?? 40;
                     document.getElementById('monetixReward').value = data.ads.monetixReward ?? 0.03;
+                    document.getElementById('monetixTimer').value = data.ads.monetixTimer ?? 60;
 
                     document.getElementById('clickaduLimit').value = data.ads.clickaduLimit ?? 40;
                     document.getElementById('clickaduReward').value = data.ads.clickaduReward ?? 0.03;
+                    document.getElementById('clickaduTimer').value = data.ads.clickaduTimer ?? 60;
 
                     document.getElementById('hilltopLimit').value = data.ads.hilltopadsLimit ?? 40;
                     document.getElementById('hilltopReward').value = data.ads.hilltopadsReward ?? 0.04;
+                    document.getElementById('hilltopTimer').value = data.ads.hilltopadsTimer ?? 60;
                 }
 
                 if(data.stakingApy) {
@@ -524,18 +549,23 @@
                 let adsData = {
                     'adminSettings/ads/monetagLimit': parseInt(document.getElementById('monetagLimit').value) || 50,
                     'adminSettings/ads/monetagReward': parseFloat(document.getElementById('monetagReward').value) || 0.04,
+                    'adminSettings/ads/monetagTimer': parseInt(document.getElementById('monetagTimer').value) || 60,
 
                     'adminSettings/ads/gigapubLimit': parseInt(document.getElementById('gigapubLimit').value) || 50,
                     'adminSettings/ads/gigapubReward': parseFloat(document.getElementById('gigapubReward').value) || 0.04,
+                    'adminSettings/ads/gigapubTimer': parseInt(document.getElementById('gigapubTimer').value) || 60,
 
                     'adminSettings/ads/monetixLimit': parseInt(document.getElementById('monetixLimit').value) || 40,
                     'adminSettings/ads/monetixReward': parseFloat(document.getElementById('monetixReward').value) || 0.03,
+                    'adminSettings/ads/monetixTimer': parseInt(document.getElementById('monetixTimer').value) || 60,
 
                     'adminSettings/ads/clickaduLimit': parseInt(document.getElementById('clickaduLimit').value) || 40,
                     'adminSettings/ads/clickaduReward': parseFloat(document.getElementById('clickaduReward').value) || 0.03,
+                    'adminSettings/ads/clickaduTimer': parseInt(document.getElementById('clickaduTimer').value) || 60,
 
                     'adminSettings/ads/hilltopadsLimit': parseInt(document.getElementById('hilltopLimit').value) || 40,
-                    'adminSettings/ads/hilltopadsReward': parseFloat(document.getElementById('hilltopReward').value) || 0.04
+                    'adminSettings/ads/hilltopadsReward': parseFloat(document.getElementById('hilltopReward').value) || 0.04,
+                    'adminSettings/ads/hilltopadsTimer': parseInt(document.getElementById('hilltopTimer').value) || 60
                 };
                 update(ref(db), adsData).then(() => alert('All Ad Networks Setup Saved Successfully!'));
             } else if (type === 'staking') {
