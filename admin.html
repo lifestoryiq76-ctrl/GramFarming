@@ -67,7 +67,7 @@
         <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
     </div>
 
-    <!-- 2. TELEGRAM BOT BROADCAST NOTIFICATION (Pure Text Message) -->
+    <!-- 2. TELEGRAM BOT BROADCAST NOTIFICATION (Pure Text Message to Telegram Chat) -->
     <div class="card" style="border: 1px solid var(--yellow);">
         <h2 style="color: var(--yellow);">📩 Send Telegram Chat Notification (Broadcast)</h2>
         <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px;">Aap yahan jo Title aur Message likh kar bhejenge, wo bina kisi button ke seedha sabhi users ke Telegram Chat par notification ke roop me chala jayega.</p>
@@ -376,7 +376,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg", 
@@ -392,6 +392,9 @@
     const db = getDatabase(app);
 
     window.addEventListener('DOMContentLoaded', () => {
+        // Clear existing popup/announcement data from Firebase automatically to stop unwanted popup
+        remove(ref(db, 'adminSettings/announcement')).catch(() => {});
+
         get(ref(db, 'adminSettings')).then((snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
@@ -658,8 +661,8 @@
         get(ref(db, 'users/' + uId)).then((snapshot) => {
             if(snapshot.exists()) {
                 let currentBal = snapshot.val().balance || 0;
-                let finalArgument = action === 'add' ? amt : -amt;
-                let newBal = currentBal + finalArgument;
+                let finalAmount = action === 'add' ? amt : -amt;
+                let newBal = currentBal + finalAmount;
                 
                 if (newBal < 0) newBal = 0;
 
