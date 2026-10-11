@@ -120,7 +120,7 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 3. Task Ads Networks Control (Limit, Reward & Timer Control) -->
+    <!-- 3. Task Ads Networks Control -->
     <div class="card">
         <h2>📺 Task Ads Watch Networks Setup (Limit, Reward & Timer Control)</h2>
         
@@ -301,17 +301,24 @@
         <button type="button" class="btn-blue" onclick="addNewTask()">➕ Create & Publish Task</button>
     </div>
 
-    <!-- 7. User Balance Manual Manager -->
+    <!-- 7. User Balance Manual Manager (With Add / Deduct Options) -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚡ User Balance Modifier</h2>
-        <div class="grid-2">
+        <div class="grid-3">
             <div>
                 <label>Target Telegram User ID:</label>
                 <input type="text" id="targetUserId" placeholder="User ID">
             </div>
             <div>
-                <label>Amount (+ to Add, - to Deduct):</label>
-                <input type="number" id="targetAmount" step="0.01" placeholder="e.g. 10 or -5">
+                <label>Select Action Type:</label>
+                <select id="actionType">
+                    <option value="add">➕ To Add Coins</option>
+                    <option value="deduct">➖ To Deduct Coins</option>
+                </select>
+            </div>
+            <div>
+                <label>Coin Amount:</label>
+                <input type="number" id="targetAmount" step="0.01" placeholder="e.g. 10">
             </div>
         </div>
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
@@ -634,16 +641,29 @@
 
     window.modifyUserBalance = function() {
         let uId = document.getElementById('targetUserId').value.trim();
+        let action = document.getElementById('actionType').value;
         let amt = parseFloat(document.getElementById('targetAmount').value);
-        if(!uId || isNaN(amt)) { alert("User ID aur Amount enter karein."); return; }
+        
+        if(!uId || isNaN(amt) || amt <= 0) { 
+            alert("Kripya valid User ID aur Coin Amount enter karein."); 
+            return; 
+        }
+
         get(ref(db, 'users/' + uId)).then((snapshot) => {
             if(snapshot.exists()) {
-                let newBal = (snapshot.val().balance || 0) + amt;
+                let currentBal = snapshot.val().balance || 0;
+                let finalAmount = action === 'add' ? amt : -amt;
+                let newBal = currentBal + finalAmount;
+                
+                if (newBal < 0) newBal = 0;
+
                 update(ref(db, 'users/' + uId), { balance: newBal }).then(() => {
-                    alert(`Balance updated! New: ${newBal.toFixed(2)}`);
+                    alert(`Balance successfully updated! New Balance: ${newBal.toFixed(2)}`);
                     location.reload();
                 });
-            } else { alert("User ID nahi mili!"); }
+            } else { 
+                alert("Yeh User ID database mein nahi mili!"); 
+            }
         });
     };
 </script>
