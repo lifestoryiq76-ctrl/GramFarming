@@ -356,7 +356,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>User ID / Name</th>
+                        <th>User ID & Name</th>
                         <th>Invites</th>
                         <th>Coin Balance</th>
                         <th>TON / USDT</th>
@@ -498,14 +498,16 @@
             if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No TON withdrawals found.</td></tr>`;
         });
 
-        // Load Users
+        // Load Users with explicit ID and Name display
         get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
             if (snapshot.exists()) {
                 snapshot.forEach((child) => {
+                    let userIdKey = child.key;
                     let u = child.val();
-                    tbody.innerHTML += `<tr><td>${u.name || child.key}</td><td>👥 ${u.totalInvited || 0}</td><td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td><td>TON: ${u.tonBalance ? u.tonBalance.toFixed(4) : '0.0000'}<br>USDT: ${u.usdtBalance ? u.usdtBalance.toFixed(4) : '0.0000'}</td></tr>`;
+                    let nameDisplay = u.name ? u.name : 'No Name';
+                    tbody.innerHTML += `<tr><td><b>${userIdKey}</b><br><small style="color:var(--text-muted);">${nameDisplay}</small></td><td>👥 ${u.totalInvited || 0}</td><td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td><td>TON: ${u.tonBalance ? u.tonBalance.toFixed(4) : '0.0000'}<br>USDT: ${u.usdtBalance ? u.usdtBalance.toFixed(4) : '0.0000'}</td></tr>`;
                 });
             } else {
                 tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No users found.</td></tr>`;
