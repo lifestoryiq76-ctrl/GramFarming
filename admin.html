@@ -112,21 +112,17 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 3. Ad Networks Control (Detailed Settings for Each Network) -->
+    <!-- 3. Ad Networks Control (Fixed for Direct Sync with Mini App) -->
     <div class="card">
         <h2>📺 Ads Watch Networks Setup (Network-wise Control)</h2>
         
         <!-- Monetag -->
         <div class="net-box">
             <h3>🔵 Monetag Ad Network</h3>
-            <div class="grid-3">
+            <div class="grid-2">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="monetagLimit" step="1" value="50">
-                </div>
-                <div>
-                    <label>Timer Cooldown (Seconds):</label>
-                    <input type="number" id="monetagTimer" step="1" value="60">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
@@ -138,14 +134,10 @@
         <!-- Gigapub -->
         <div class="net-box">
             <h3>🟣 Gigapub Ad Network</h3>
-            <div class="grid-3">
+            <div class="grid-2">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="gigapubLimit" step="1" value="50">
-                </div>
-                <div>
-                    <label>Timer Cooldown (Seconds):</label>
-                    <input type="number" id="gigapubTimer" step="1" value="60">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
@@ -157,14 +149,10 @@
         <!-- Monetix -->
         <div class="net-box">
             <h3>🟢 Monetix Ad Network</h3>
-            <div class="grid-3">
+            <div class="grid-2">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="monetixLimit" step="1" value="40">
-                </div>
-                <div>
-                    <label>Timer Cooldown (Seconds):</label>
-                    <input type="number" id="monetixTimer" step="1" value="60">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
@@ -176,14 +164,10 @@
         <!-- Clickadu -->
         <div class="net-box">
             <h3>🔴 Clickadu Ad Network</h3>
-            <div class="grid-3">
+            <div class="grid-2">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="clickaduLimit" step="1" value="40">
-                </div>
-                <div>
-                    <label>Timer Cooldown (Seconds):</label>
-                    <input type="number" id="clickaduTimer" step="1" value="60">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
@@ -195,14 +179,10 @@
         <!-- Hilltopads Combo -->
         <div class="net-box">
             <h3>🟡 Hilltopads Combo Ad Network</h3>
-            <div class="grid-3">
+            <div class="grid-2">
                 <div>
                     <label>Daily Limit (Ads):</label>
                     <input type="number" id="hilltopLimit" step="1" value="40">
-                </div>
-                <div>
-                    <label>Timer Cooldown (Seconds):</label>
-                    <input type="number" id="hilltopTimer" step="1" value="60">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
@@ -407,33 +387,25 @@
                     document.getElementById('cosmicDuration').value = data.mining.cosmicDuration ?? 8;
                     document.getElementById('cosmicReqAds').value = data.mining.cosmicReqAds ?? 50;
                 }
-                if(data.adNetworks) {
-                    if(data.adNetworks.monetag) {
-                        document.getElementById('monetagLimit').value = data.adNetworks.monetag.limit ?? 50;
-                        document.getElementById('monetagTimer').value = data.adNetworks.monetag.timer ?? 60;
-                        document.getElementById('monetagReward').value = data.adNetworks.monetag.reward ?? 0.04;
-                    }
-                    if(data.adNetworks.gigapub) {
-                        document.getElementById('gigapubLimit').value = data.adNetworks.gigapub.limit ?? 50;
-                        document.getElementById('gigapubTimer').value = data.adNetworks.gigapub.timer ?? 60;
-                        document.getElementById('gigapubReward').value = data.adNetworks.gigapub.reward ?? 0.04;
-                    }
-                    if(data.adNetworks.monetix) {
-                        document.getElementById('monetixLimit').value = data.adNetworks.monetix.limit ?? 40;
-                        document.getElementById('monetixTimer').value = data.adNetworks.monetix.timer ?? 60;
-                        document.getElementById('monetixReward').value = data.adNetworks.monetix.reward ?? 0.03;
-                    }
-                    if(data.adNetworks.clickadu) {
-                        document.getElementById('clickaduLimit').value = data.adNetworks.clickadu.limit ?? 40;
-                        document.getElementById('clickaduTimer').value = data.adNetworks.clickadu.timer ?? 60;
-                        document.getElementById('clickaduReward').value = data.adNetworks.clickadu.reward ?? 0.03;
-                    }
-                    if(data.adNetworks.hilltop) {
-                        document.getElementById('hilltopLimit').value = data.adNetworks.hilltop.limit ?? 40;
-                        document.getElementById('hilltopTimer').value = data.adNetworks.hilltop.timer ?? 60;
-                        document.getElementById('hilltopReward').value = data.adNetworks.hilltop.reward ?? 0.04;
-                    }
+                
+                // Ads settings loading fix
+                if(data.ads) {
+                    document.getElementById('monetagLimit').value = data.ads.monetagLimit ?? 50;
+                    document.getElementById('monetagReward').value = data.ads.monetagReward ?? 0.04;
+
+                    document.getElementById('gigapubLimit').value = data.ads.gigapubLimit ?? 50;
+                    document.getElementById('gigapubReward').value = data.ads.gigapubReward ?? 0.04;
+
+                    document.getElementById('monetixLimit').value = data.ads.monetixLimit ?? 40;
+                    document.getElementById('monetixReward').value = data.ads.monetixReward ?? 0.03;
+
+                    document.getElementById('clickaduLimit').value = data.ads.clickaduLimit ?? 40;
+                    document.getElementById('clickaduReward').value = data.ads.clickaduReward ?? 0.03;
+
+                    document.getElementById('hilltopLimit').value = data.ads.hilltopadsLimit ?? 40;
+                    document.getElementById('hilltopReward').value = data.ads.hilltopadsReward ?? 0.04;
                 }
+
                 if(data.stakingApy) {
                     document.getElementById('stakeApy0').value = data.stakingApy[0] ?? 4;
                     document.getElementById('stakeApy7').value = data.stakingApy[7] ?? 3;
@@ -498,7 +470,7 @@
             if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No TON withdrawals found.</td></tr>`;
         });
 
-        // Load Users with explicit ID and Name display
+        // Load Registered Users
         get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
@@ -537,26 +509,22 @@
                 };
                 update(ref(db), data).then(() => alert('Rocket Mining Settings Saved Successfully!'));
             } else if (type === 'adsNetworks') {
+                // Fixed Ads Saving Structure to match Vercel Mini App path ('adminSettings/ads')
                 let adsData = {
-                    'adminSettings/adNetworks/monetag/limit': parseInt(document.getElementById('monetagLimit').value) || 50,
-                    'adminSettings/adNetworks/monetag/timer': parseInt(document.getElementById('monetagTimer').value) || 60,
-                    'adminSettings/adNetworks/monetag/reward': parseFloat(document.getElementById('monetagReward').value) || 0.04,
+                    'adminSettings/ads/monetagLimit': parseInt(document.getElementById('monetagLimit').value) || 50,
+                    'adminSettings/ads/monetagReward': parseFloat(document.getElementById('monetagReward').value) || 0.04,
 
-                    'adminSettings/adNetworks/gigapub/limit': parseInt(document.getElementById('gigapubLimit').value) || 50,
-                    'adminSettings/adNetworks/gigapub/timer': parseInt(document.getElementById('gigapubTimer').value) || 60,
-                    'adminSettings/adNetworks/gigapub/reward': parseFloat(document.getElementById('gigapubReward').value) || 0.04,
+                    'adminSettings/ads/gigapubLimit': parseInt(document.getElementById('gigapubLimit').value) || 50,
+                    'adminSettings/ads/gigapubReward': parseFloat(document.getElementById('gigapubReward').value) || 0.04,
 
-                    'adminSettings/adNetworks/monetix/limit': parseInt(document.getElementById('monetixLimit').value) || 40,
-                    'adminSettings/adNetworks/monetix/timer': parseInt(document.getElementById('monetixTimer').value) || 60,
-                    'adminSettings/adNetworks/monetix/reward': parseFloat(document.getElementById('monetixReward').value) || 0.03,
+                    'adminSettings/ads/monetixLimit': parseInt(document.getElementById('monetixLimit').value) || 40,
+                    'adminSettings/ads/monetixReward': parseFloat(document.getElementById('monetixReward').value) || 0.03,
 
-                    'adminSettings/adNetworks/clickadu/limit': parseInt(document.getElementById('clickaduLimit').value) || 40,
-                    'adminSettings/adNetworks/clickadu/timer': parseInt(document.getElementById('clickaduTimer').value) || 60,
-                    'adminSettings/adNetworks/clickadu/reward': parseFloat(document.getElementById('clickaduReward').value) || 0.03,
+                    'adminSettings/ads/clickaduLimit': parseInt(document.getElementById('clickaduLimit').value) || 40,
+                    'adminSettings/ads/clickaduReward': parseFloat(document.getElementById('clickaduReward').value) || 0.03,
 
-                    'adminSettings/adNetworks/hilltop/limit': parseInt(document.getElementById('hilltopLimit').value) || 40,
-                    'adminSettings/adNetworks/hilltop/timer': parseInt(document.getElementById('hilltopTimer').value) || 60,
-                    'adminSettings/adNetworks/hilltop/reward': parseFloat(document.getElementById('hilltopReward').value) || 0.04
+                    'adminSettings/ads/hilltopadsLimit': parseInt(document.getElementById('hilltopLimit').value) || 40,
+                    'adminSettings/ads/hilltopadsReward': parseFloat(document.getElementById('hilltopReward').value) || 0.04
                 };
                 update(ref(db), adsData).then(() => alert('All Ad Networks Setup Saved Successfully!'));
             } else if (type === 'staking') {
@@ -580,7 +548,7 @@
     window.saveAnnouncement = function() {
         let text = document.getElementById('announcementText').value;
         let active = document.getElementById('announcementActive').value === 'true';
-        update(ref(db), { 'adminSettings/announcement/text': text, 'adminSettings/announcement/active': active })
+        update(ref(db), { 'adminSettings/announcement/message': text, 'adminSettings/announcement/active': active })
             .then(() => alert('Announcement Updated!'));
     };
 
