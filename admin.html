@@ -74,7 +74,7 @@
         <!-- Nova Rocket -->
         <div class="net-box">
             <h3>🛸 Nova Rocket</h3>
-            <div class="grid-3">
+            <div class="grid-4">
                 <div>
                     <label>Reward (Coins):</label>
                     <input type="number" id="novaReward" step="0.01" value="1.00">
@@ -87,13 +87,17 @@
                     <label>Required Ads to Start:</label>
                     <input type="number" id="novaReqAds" step="1" value="50">
                 </div>
+                <div>
+                    <label>Ad Cooldown Timer (Seconds):</label>
+                    <input type="number" id="novaTimer" step="1" value="60">
+                </div>
             </div>
         </div>
 
         <!-- Cosmic Rocket -->
         <div class="net-box">
             <h3>🛰️ Cosmic Rocket</h3>
-            <div class="grid-3">
+            <div class="grid-4">
                 <div>
                     <label>Reward (Coins):</label>
                     <input type="number" id="cosmicReward" step="0.01" value="1.00">
@@ -106,13 +110,17 @@
                     <label>Required Ads to Start:</label>
                     <input type="number" id="cosmicReqAds" step="1" value="50">
                 </div>
+                <div>
+                    <label>Ad Cooldown Timer (Seconds):</label>
+                    <input type="number" id="cosmicTimer" step="1" value="60">
+                </div>
             </div>
         </div>
 
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 3. Ad Networks Control (Fixed for Direct Sync with Mini App) -->
+    <!-- 3. Ad Networks Control -->
     <div class="card">
         <h2>📺 Ads Watch Networks Setup (Network-wise Control)</h2>
         
@@ -382,13 +390,14 @@
                     document.getElementById('novaReward').value = data.mining.novaReward ?? 1.0;
                     document.getElementById('novaDuration').value = data.mining.novaDuration ?? 8;
                     document.getElementById('novaReqAds').value = data.mining.novaReqAds ?? 50;
+                    document.getElementById('novaTimer').value = data.mining.novaTimer ?? 60;
 
                     document.getElementById('cosmicReward').value = data.mining.cosmicReward ?? 1.0;
                     document.getElementById('cosmicDuration').value = data.mining.cosmicDuration ?? 8;
                     document.getElementById('cosmicReqAds').value = data.mining.cosmicReqAds ?? 50;
+                    document.getElementById('cosmicTimer').value = data.mining.cosmicTimer ?? 60;
                 }
                 
-                // Ads settings loading fix
                 if(data.ads) {
                     document.getElementById('monetagLimit').value = data.ads.monetagLimit ?? 50;
                     document.getElementById('monetagReward').value = data.ads.monetagReward ?? 0.04;
@@ -417,7 +426,7 @@
                     document.getElementById('stakeApy365').value = data.stakingApy[365] ?? 20;
                 }
                 if(data.announcement) {
-                    document.getElementById('announcementText').value = data.announcement.text ?? '';
+                    document.getElementById('announcementText').value = data.announcement.message ?? '';
                     document.getElementById('announcementActive').value = String(data.announcement.active ?? false);
                 }
             }
@@ -503,13 +512,15 @@
                     'adminSettings/mining/novaReward': parseFloat(document.getElementById('novaReward').value) || 1.0,
                     'adminSettings/mining/novaDuration': parseFloat(document.getElementById('novaDuration').value) || 8,
                     'adminSettings/mining/novaReqAds': parseInt(document.getElementById('novaReqAds').value) || 50,
+                    'adminSettings/mining/novaTimer': parseInt(document.getElementById('novaTimer').value) || 60,
+                    
                     'adminSettings/mining/cosmicReward': parseFloat(document.getElementById('cosmicReward').value) || 1.0,
                     'adminSettings/mining/cosmicDuration': parseFloat(document.getElementById('cosmicDuration').value) || 8,
-                    'adminSettings/mining/cosmicReqAds': parseInt(document.getElementById('cosmicReqAds').value) || 50
+                    'adminSettings/mining/cosmicReqAds': parseInt(document.getElementById('cosmicReqAds').value) || 50,
+                    'adminSettings/mining/cosmicTimer': parseInt(document.getElementById('cosmicTimer').value) || 60
                 };
                 update(ref(db), data).then(() => alert('Rocket Mining Settings Saved Successfully!'));
             } else if (type === 'adsNetworks') {
-                // Fixed Ads Saving Structure to match Vercel Mini App path ('adminSettings/ads')
                 let adsData = {
                     'adminSettings/ads/monetagLimit': parseInt(document.getElementById('monetagLimit').value) || 50,
                     'adminSettings/ads/monetagReward': parseFloat(document.getElementById('monetagReward').value) || 0.04,
