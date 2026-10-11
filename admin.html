@@ -67,22 +67,7 @@
         <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
     </div>
 
-    <!-- 2. TELEGRAM BOT BROADCAST NOTIFICATION (Pure Text Message to Telegram Chat) -->
-    <div class="card" style="border: 1px solid var(--yellow);">
-        <h2 style="color: var(--yellow);">📩 Send Telegram Chat Notification (Broadcast)</h2>
-        <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px;">Aap yahan jo Title aur Message likh kar bhejenge, wo bina kisi button ke seedha sabhi users ke Telegram Chat par notification ke roop me chala jayega.</p>
-        <div>
-            <label>Notification Header / Title:</label>
-            <input type="text" id="botNotifTitle" placeholder="e.g. 📢 Important Notice">
-        </div>
-        <div>
-            <label>Notification Message Body:</label>
-            <textarea id="botNotifBody" rows="4" placeholder="e.g. Write your message here for users..."></textarea>
-        </div>
-        <button type="button" class="btn-yellow" onclick="sendTelegramBroadcast()">🚀 Send Broadcast Message to All Users</button>
-    </div>
-
-    <!-- 3. Rocket Space Mining Parameters Control -->
+    <!-- 2. Rocket Space Mining Parameters Control -->
     <div class="card">
         <h2>🚀 Space Rocket Mining Control</h2>
         
@@ -133,7 +118,7 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 4. Task Ads Networks Control -->
+    <!-- 3. Task Ads Networks Control -->
     <div class="card">
         <h2>📺 Task Ads Watch Networks Setup</h2>
         
@@ -230,7 +215,7 @@
         <button type="button" onclick="saveSettings('adsNetworks')">💾 Save All Ad Networks Setup</button>
     </div>
 
-    <!-- 5. Staking APY Control -->
+    <!-- 4. Staking APY Control -->
     <div class="card" style="border: 1px solid var(--yellow);">
         <h2 style="color: var(--yellow);">💎 Staking Plans APY Control</h2>
         <div class="grid-4">
@@ -270,7 +255,7 @@
         <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
     </div>
 
-    <!-- 6. Task Creator -->
+    <!-- 5. Task Creator -->
     <div class="card">
         <h2>📋 Add New Custom Task (Telegram/YouTube/Ads)</h2>
         <div class="grid-2">
@@ -290,7 +275,7 @@
         <button type="button" class="btn-blue" onclick="addNewTask()">➕ Create & Publish Task</button>
     </div>
 
-    <!-- 7. User Balance Manual Manager (With Add / Deduct Options) -->
+    <!-- 6. User Balance Manual Manager (With Add / Deduct Options) -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚡ User Balance Modifier</h2>
         <div class="grid-3">
@@ -313,47 +298,51 @@
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 8A. FaucetPay Withdrawal Requests -->
+    <!-- 7A. FaucetPay Withdrawal Requests -->
     <div class="card">
         <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>User</th>
+                        <th>User Details</th>
                         <th>Amount</th>
-                        <th>FaucetPay Email / Wallet</th>
+                        <th>Destination</th>
+                        <th>Method</th>
+                        <th>Status & Time</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="faucetpayTableBody">
-                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                    <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- 8B. TON Withdrawal Requests -->
+    <!-- 7B. TON Withdrawal Requests -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>User</th>
+                        <th>User Details</th>
                         <th>Amount (TON)</th>
-                        <th>TON Destination Address</th>
+                        <th>Destination</th>
+                        <th>Method</th>
+                        <th>Status & Time</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="tonTableBody">
-                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                    <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- 9. Registered Users List -->
+    <!-- 8. Registered Users List -->
     <div class="card">
         <h2>👥 Registered Users</h2>
         <div class="table-container">
@@ -391,8 +380,19 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    function formatTimeAgo(timestamp) {
+        if (!timestamp) return 'N/A';
+        let seconds = Math.floor((Date.now() - timestamp) / 1000);
+        if (seconds < 60) return `${seconds} sec ago`;
+        let minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes} min ago`;
+        let hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} hrs ago`;
+        let days = Math.floor(hours / 24);
+        return `${days} days ago`;
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-        // Clear existing popup/announcement data from Firebase automatically to stop unwanted popup
         remove(ref(db, 'adminSettings/announcement')).catch(() => {});
 
         get(ref(db, 'adminSettings')).then((snapshot) => {
@@ -452,7 +452,7 @@
             }
         }).catch(err => console.error("Load settings error:", err));
 
-        // Load Withdrawals
+        // Load Withdrawals with full details, timer & actions
         get(ref(db, 'withdrawals')).then((snapshot) => {
             const fpTableBody = document.getElementById('faucetpayTableBody');
             const tonTableBody = document.getElementById('tonTableBody');
@@ -482,7 +482,19 @@
                                              <button class="btn-danger" onclick="processWithdrawal('${userId}', '${wId}', 'reject', '${w.method}', ${w.amount})">Reject ❌</button>`;
                         }
 
-                        let rowHtml = `<tr><td>${w.userName || userId}</td><td>${w.amount ? w.amount.toFixed(4) : '0'}</td><td>${w.destination || 'N/A'}</td><td>${actionButtons}</td></tr>`;
+                        let timeAgo = formatTimeAgo(w.id);
+                        let userName = w.userName || "User";
+                        let userDetailHtml = `<b>Name:</b> ${userName}<br><b>ID:</b> ${userId}`;
+                        let statusTimeHtml = `<b>Status:</b> ${w.status || 'PENDING'}<br><small style="color:var(--yellow);">⏱️ ${timeAgo}</small>`;
+
+                        let rowHtml = `<tr>
+                            <td>${userDetailHtml}</td>
+                            <td><b>${w.amount ? w.amount.toFixed(4) : '0'}</b></td>
+                            <td>${w.destination || 'N/A'}</td>
+                            <td>${w.method || 'N/A'}</td>
+                            <td>${statusTimeHtml}</td>
+                            <td>${actionButtons}</td>
+                        </tr>`;
 
                         if (method.includes('FAUCETPAY') || method.includes('USDT')) {
                             fpTableBody.innerHTML += rowHtml;
@@ -495,8 +507,8 @@
                 });
             }
 
-            if (fpCount === 0) fpTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No FaucetPay withdrawals found.</td></tr>`;
-            if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No TON withdrawals found.</td></tr>`;
+            if (fpCount === 0) fpTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No FaucetPay withdrawals found.</td></tr>`;
+            if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No TON withdrawals found.</td></tr>`;
         });
 
         // Load Registered Users
@@ -584,29 +596,6 @@
         } catch (e) {
             alert("Error: " + e.message);
         }
-    };
-
-    window.sendTelegramBroadcast = function() {
-        let title = document.getElementById('botNotifTitle').value.trim();
-        let body = document.getElementById('botNotifBody').value.trim();
-
-        if(!title || !body) {
-            alert("Kripya Notification Title aur Body dono bharein!");
-            return;
-        }
-
-        let broadcastData = {
-            title: title,
-            body: body,
-            timestamp: Date.now(),
-            status: 'pending'
-        };
-
-        push(ref(db, 'botBroadcasts'), broadcastData).then(() => {
-            alert("🚀 Broadcast message sent to Telegram Bot Server!");
-            document.getElementById('botNotifTitle').value = '';
-            document.getElementById('botNotifBody').value = '';
-        });
     };
 
     window.addNewTask = function() {
