@@ -596,6 +596,11 @@ let referralPercentage = 20;
 let miningDurationSeconds = 28800;
 let miningRewardCoins = 1.00;
 
+// Staking APY Rates Cache
+window.stakingApyRates = {
+0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20
+};
+
 // Dynamic Admin Panel Controls
 window.maxLimits = {
 monetag: 50,
@@ -768,6 +773,38 @@ if (snapshot.exists()) {
 const data = snapshot.val();
 if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
 if (data.novaDuration !== undefined) miningDurationSeconds = parseFloat(data.novaDuration) * 3600;
+}
+});
+
+// Firebase Listener - Staking APY Rates Sync from Admin Panel
+onValue(ref(db, 'adminSettings/stakingApy'), (snapshot) => {
+if (snapshot.exists()) {
+const data = snapshot.val();
+window.stakingApyRates = { ...window.stakingApyRates, ...data };
+
+if (data[0] !== undefined) document.getElementById('displayFlexApy').innerText = data[0];
+if (data[7] !== undefined) document.getElementById('displayApy7').innerText = data[7];
+if (data[15] !== undefined) document.getElementById('displayApy15').innerText = data[15];
+if (data[30] !== undefined) document.getElementById('displayApy30').innerText = data[30];
+if (data[60] !== undefined) document.getElementById('displayApy60').innerText = data[60];
+if (data[90] !== undefined) document.getElementById('displayApy90').innerText = data[90];
+if (data[120] !== undefined) document.getElementById('displayApy120').innerText = data[120];
+if (data[365] !== undefined) document.getElementById('displayApy365').innerText = data[365];
+
+const calcSelect = document.getElementById('stakeCalcPlan');
+if (calcSelect) {
+calcSelect.innerHTML = `
+<option value="0|${window.stakingApyRates[0]}">Flexible (0 Days - ${window.stakingApyRates[0]}% APY)</option>
+<option value="7|${window.stakingApyRates[7]}">Fixed (7 Days - ${window.stakingApyRates[7]}% APY)</option>
+<option value="15|${window.stakingApyRates[15]}">Fixed (15 Days - ${window.stakingApyRates[15]}% APY)</option>
+<option value="30|${window.stakingApyRates[30]}">Fixed (30 Days - ${window.stakingApyRates[30]}% APY)</option>
+<option value="60|${window.stakingApyRates[60]}">Fixed (60 Days - ${window.stakingApyRates[60]}% APY)</option>
+<option value="90|${window.stakingApyRates[90]}">Fixed (90 Days - ${window.stakingApyRates[90]}% APY)</option>
+<option value="120|${window.stakingApyRates[120]}">Fixed (120 Days - ${window.stakingApyRates[120]}% APY)</option>
+<option value="365|${window.stakingApyRates[365]}">Fixed (365 Days - ${window.stakingApyRates[365]}% APY)</option>
+`;
+}
+calculateStakeRewards();
 }
 });
 
