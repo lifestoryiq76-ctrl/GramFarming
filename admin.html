@@ -17,7 +17,9 @@
         button { background: var(--accent); color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; transition: 0.2s; }
         button:active { transform: scale(0.98); }
         .btn-success { background: #10b981; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; margin-right: 4px; }
-        .btn-danger { background: #ef4444; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; }
+        .btn-danger { background: #ef4444; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; margin-right: 4px; }
+        .btn-delete { background: #64748b; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; }
+        .btn-delete:hover { background: #475569; }
         .btn-blue { background: #0284c7; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -382,7 +384,12 @@
 
     function formatTimeAgo(timestamp) {
         if (!timestamp) return 'N/A';
-        let seconds = Math.floor((Date.now() - timestamp) / 1000);
+        // Parse numerical ID or timestamp string
+        let ts = Number(timestamp);
+        if (isNaN(ts) || ts <= 0) return 'N/A';
+        
+        let seconds = Math.floor((Date.now() - ts) / 1000);
+        if (seconds < 0) return 'Just now';
         if (seconds < 60) return `${seconds} sec ago`;
         let minutes = Math.floor(seconds / 60);
         if (minutes < 60) return `${minutes} min ago`;
@@ -452,7 +459,7 @@
             }
         }).catch(err => console.error("Load settings error:", err));
 
-        // Load Withdrawals with full details, timer & actions
+        // Load Withdrawals with full details, timer, actions & delete icon
         get(ref(db, 'withdrawals')).then((snapshot) => {
             const fpTableBody = document.getElementById('faucetpayTableBody');
             const tonTableBody = document.getElementById('tonTableBody');
@@ -474,29 +481,32 @@
                         
                         let actionButtons = '';
                         if (isSuccess) {
-                            actionButtons = '<span style="color:#22c55e; font-weight:bold;">Approved ✅</span>';
+                            actionButtons = `<span style="color:#22c55e; font-weight:bold; margin-right:6px;">Approved ✅</span>
+                                             <button class="btn-delete" onclick="deleteWithdrawalHistory('${userId}', '${wId}')" title="Delete History">🗑️ Delete</button>`;
                         } else if (isRejected) {
-                            actionButtons = '<span style="color:#ef4444; font-weight:bold;">Rejected ❌</span>';
+                            actionButtons = `<span style="color:#ef4444; font-weight:bold; margin-right:6px;">Rejected ❌</span>
+                                             <button class="btn-delete" onclick="deleteWithdrawalHistory('${userId}', '${wId}')" title="Delete History">🗑️ Delete</button>`;
                         } else {
                             actionButtons = `<button class="btn-success" onclick="processWithdrawal('${userId}', '${wId}', 'approve', '${w.method}', ${w.amount})">Approve ✅</button>
-                                             <button class="btn-danger" onclick="processWithdrawal('${userId}', '${wId}', 'reject', '${w.method}', ${w.amount})">Reject ❌</button>`;
+                                             <button class="btn-danger" onclick="processWithdrawal('${userId}', '${wId}', 'reject', '${w.method}', ${w.amount})">Reject ❌</button>
+                                             <button class="btn-delete" onclick="deleteWithdrawalHistory('${userId}', '${wId}')" title="Delete History">🗑️ Delete</button>`;
                         }
 
-                        let timeAgo = formatTimeAgo(w.id);
+                        let timeAgo = formatTimeAgo(w.id || w.timestamp);
                         let userName = w.userName || "User";
                         let userDetailHtml = `<b>Name:</b> ${userName}<br><b>ID:</b> ${userId}`;
                         let statusTimeHtml = `<b>Status:</b> ${w.status || 'PENDING'}<br><small style="color:var(--yellow);">⏱️ ${timeAgo}</small>`;
 
                         let rowHtml = `<tr>
                             <td>${userDetailHtml}</td>
-                            <td><b>${w.amount ? w.amount.toFixed(4) : '0'}</b></td>
+                            <td><b>${w.amount ? Number(w.amount).toFixed(4) : '0'}</b></td>
                             <td>${w.destination || 'N/A'}</td>
-                            <td>${w.method || 'N/A'}</td>
+                            <td>${w.method || (method.includes('TON') ? 'TON' : 'FaucetPay')}</td>
                             <td>${statusTimeHtml}</td>
                             <td>${actionButtons}</td>
                         </tr>`;
 
-                        if (method.includes('FAUCETPAY') || method.includes('USDT')) {
+                        if (method.includes('FAUCETPAY') || method.includes('USDT') || (!method.includes('TON') && method !== '')) {
                             fpTableBody.innerHTML += rowHtml;
                             fpCount++;
                         } else {
@@ -635,6 +645,17 @@
                 location.reload();
             }
         });
+    };
+
+    window.deleteWithdrawalHistory = function(userId, wId) {
+        if (confirm("Kya aap is withdrawal history record ko admin panel se hatana chahte hain? (User Account/ID delete nahi hoga)")) {
+            remove(ref(db, `withdrawals/${userId}/${wId}`)).then(() => {
+                alert("🗑️ Withdrawal history successfully removed!");
+                location.reload();
+            }).catch((err) => {
+                alert("Error: " + err.message);
+            });
+        }
     };
 
     window.modifyUserBalance = function() {
