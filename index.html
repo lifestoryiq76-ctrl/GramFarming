@@ -597,6 +597,8 @@ let miningDurationSeconds = 28800;
 let miningRewardCoins = 1.00;
 let novaRequiredAds = 50;
 let cosmicRequiredAds = 50;
+let novaTimerSec = 60;
+let cosmicTimerSec = 60;
 
 // Staking APY Rates Cache
 window.stakingApyRates = {
@@ -762,18 +764,28 @@ toggleWithdrawFields();
 }
 });
 
-// Firebase Listener - Rocket Mining Parameters Sync (from adminSettings/mining & root mining)
+// Firebase Listener - Rocket Mining Parameters Sync
 function applyMiningData(data) {
 if (!data) return;
 if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
 if (data.novaDuration !== undefined) miningDurationSeconds = parseFloat(data.novaDuration) * 3600;
+if (data.novaTimer !== undefined) novaTimerSec = parseInt(data.novaTimer);
+if (data.cosmicTimer !== undefined) cosmicTimerSec = parseInt(data.cosmicTimer);
+
 if (data.novaReqAds !== undefined) {
 novaRequiredAds = parseInt(data.novaReqAds);
 document.getElementById('novaLimitMax').innerText = novaRequiredAds;
+if (rocketStates[0].status === 'ads') {
+document.getElementById('rocketBtn-0').innerText = `Watch Ad (${rocketStates[0].adsWatched}/${novaRequiredAds})`;
 }
+}
+
 if (data.cosmicReqAds !== undefined) {
 cosmicRequiredAds = parseInt(data.cosmicReqAds);
 document.getElementById('cosmicLimitMax').innerText = cosmicRequiredAds;
+if (rocketStates[1].status === 'ads') {
+document.getElementById('rocketBtn-1').innerText = `Watch Ad (${rocketStates[1].adsWatched}/${cosmicRequiredAds})`;
+}
 }
 }
 
@@ -1338,6 +1350,7 @@ window.handleRocketAction = function(index, rocketName, adType) {
 let state = rocketStates[index];
 let btn = document.getElementById(`rocketBtn-${index}`);
 let maxLimitNeeded = (index === 0) ? novaRequiredAds : cosmicRequiredAds;
+let cooldownSec = (index === 0) ? novaTimerSec : cosmicTimerSec;
 
 if (state.status === 'ads') {
 btn.disabled = true;
@@ -1352,7 +1365,7 @@ adPromise.then(() => {
     progressRocketAdWatch(index, rocketName, maxLimitNeeded);
 });
 
-let countdown = 60;
+let countdown = cooldownSec;
 btn.innerText = `Wait (${countdown}s)`;
 let tInterval = setInterval(() => {
 countdown--;
@@ -1668,7 +1681,7 @@ return;
 }
 
 if (balance < 10) {
-showToast("Task publish karne ke liye kam से kam 10 Coins chahiye!", "error");
+showToast("Task publish karne ke liye kam se kam 10 Coins chahiye!", "error");
 return;
 }
 
