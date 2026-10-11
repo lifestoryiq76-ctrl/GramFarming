@@ -346,7 +346,7 @@
 
     <!-- 8. Registered Users List -->
     <div class="card">
-        <h2>👥 Registered Users</h2>
+        <h2>👥 Registered Users & Staking Details</h2>
         <div class="table-container">
             <table>
                 <thead>
@@ -355,10 +355,11 @@
                         <th>Invites</th>
                         <th>Coin Balance</th>
                         <th>TON / USDT</th>
+                        <th>Staking Plans / Staked Coins</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
-                    <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                    <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -384,7 +385,6 @@
 
     function formatTimeAgo(timestamp) {
         if (!timestamp) return 'N/A';
-        // Parse numerical ID or timestamp string
         let ts = Number(timestamp);
         if (isNaN(ts) || ts <= 0) return 'N/A';
         
@@ -459,7 +459,7 @@
             }
         }).catch(err => console.error("Load settings error:", err));
 
-        // Load Withdrawals with full details, timer, actions & delete icon
+        // Load Withdrawals
         get(ref(db, 'withdrawals')).then((snapshot) => {
             const fpTableBody = document.getElementById('faucetpayTableBody');
             const tonTableBody = document.getElementById('tonTableBody');
@@ -521,7 +521,7 @@
             if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No TON withdrawals found.</td></tr>`;
         });
 
-        // Load Registered Users
+        // Load Registered Users & Staking Details
         get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
@@ -530,10 +530,27 @@
                     let userIdKey = child.key;
                     let u = child.val();
                     let nameDisplay = u.name ? u.name : 'No Name';
-                    tbody.innerHTML += `<tr><td><b>${userIdKey}</b><br><small style="color:var(--text-muted);">${nameDisplay}</small></td><td>👥 ${u.totalInvited || 0}</td><td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td><td>TON: ${u.tonBalance ? u.tonBalance.toFixed(4) : '0.0000'}<br>USDT: ${u.usdtBalance ? u.usdtBalance.toFixed(4) : '0.0000'}</td></tr>`;
+                    
+                    // Format Staking Details for each user
+                    let stakingInfoHtml = '<span style="color:var(--text-muted);">0 (No Staking)</span>';
+                    if (u.activeStakes && Array.isArray(u.activeStakes) && u.activeStakes.length > 0) {
+                        stakingInfoHtml = '';
+                        u.activeStakes.forEach(stk => {
+                            let amt = stk.amount ? Number(stk.amount).toFixed(2) : '0';
+                            stakingInfoHtml += `<div style="margin-bottom:4px; font-size:12px;">💎 <b>${stk.planName}</b>: <span style="color:var(--yellow);">${amt} Coins</span> (APY: ${stk.apy}%)</div>`;
+                        });
+                    }
+
+                    tbody.innerHTML += `<tr>
+                        <td><b>${userIdKey}</b><br><small style="color:var(--text-muted);">${nameDisplay}</small></td>
+                        <td>👥 ${u.totalInvited || 0}</td>
+                        <td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td>
+                        <td>TON: ${u.tonBalance ? u.tonBalance.toFixed(4) : '0.0000'}<br>USDT: ${u.usdtBalance ? u.usdtBalance.toFixed(4) : '0.0000'}</td>
+                        <td>${stakingInfoHtml}</td>
+                    </tr>`;
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No users found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>`;
             }
         });
     });
