@@ -215,27 +215,27 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="card flex-between">
 <span class="limit-badge" id="taskMonetagLimit">0 / 50</span>
 <div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardMonetag">+0.04 Coin</span></small></div>
-<button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdSimple('taskMonetagLimit', 'taskMonetagBtn', 'Monetag', maxLimits.monetag, rewards.monetag)">Watch</button>
+<button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag', maxLimits.monetag, rewards.monetag, adTimers.monetag)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskGigapubLimit">0 / 50</span>
 <div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardGigapub">+0.04 Coin</span></small></div>
-<button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdSimple('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub', maxLimits.gigapub, rewards.gigapub)">Watch</button>
+<button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub', maxLimits.gigapub, rewards.gigapub, adTimers.gigapub)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskMonetixLimit">0 / 40</span>
 <div><b>Monetix</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardMonetix">+0.03 Coin</span></small></div>
-<button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdSimple('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', maxLimits.monetix, rewards.monetix)">Watch</button>
+<button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', maxLimits.monetix, rewards.monetix, adTimers.monetix)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskClickaduLimit">0 / 40</span>
 <div><b>Clickadu</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardClickadu">+0.03 Coin</span></small></div>
-<button class="btn" id="taskClickaduBtn" style="width: auto;" onclick="watchAdSimple('taskClickaduLimit', 'taskClickaduBtn', 'Clickadu', maxLimits.clickadu, rewards.clickadu)">Watch</button>
+<button class="btn" id="taskClickaduBtn" style="width: auto;" onclick="watchAdWithTimer('taskClickaduLimit', 'taskClickaduBtn', 'Clickadu', maxLimits.clickadu, rewards.clickadu, adTimers.clickadu)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskHilltopadsLimit">0 / 40</span>
 <div><b>Hilltopads Combo</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardHilltopads">+0.04 Coin</span></small></div>
-<button class="btn" id="taskHilltopadsBtn" style="width: auto;" onclick="watchAdSimple('taskHilltopadsLimit', 'taskHilltopadsBtn', 'Hilltopads', maxLimits.hilltopads, rewards.hilltopads)">Watch</button>
+<button class="btn" id="taskHilltopadsBtn" style="width: auto;" onclick="watchAdWithTimer('taskHilltopadsLimit', 'taskHilltopadsBtn', 'Hilltopads', maxLimits.hilltopads, rewards.hilltopads, adTimers.hilltopads)">Watch</button>
 </div>
 </div>
 
@@ -622,6 +622,14 @@ clickadu: 0.03,
 hilltopads: 0.04
 };
 
+window.adTimers = {
+monetag: 60,
+gigapub: 60,
+monetix: 60,
+clickadu: 60,
+hilltopads: 60
+};
+
 let adWatchedCounts = {
 taskClickaduLimit: 0,
 taskMonetagLimit: 0,
@@ -828,7 +836,7 @@ calculateStakeRewards();
 }
 });
 
-// Firebase Listener - Ads Limits & Rewards Sync from Admin Panel
+// Firebase Listener - Ads Limits, Rewards & Timers Sync from Admin Panel
 onValue(ref(db, 'adminSettings/ads'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
@@ -843,6 +851,12 @@ if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
 if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
 if (data.clickaduReward) rewards.clickadu = parseFloat(data.clickaduReward);
 if (data.hilltopadsReward) rewards.hilltopads = parseFloat(data.hilltopadsReward);
+
+if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
+if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
+if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
+if (data.clickaduTimer) adTimers.clickadu = parseInt(data.clickaduTimer);
+if (data.hilltopadsTimer) adTimers.hilltopads = parseInt(data.hilltopadsTimer);
 
 renderUIValues();
 }
@@ -1073,8 +1087,8 @@ arrow.innerText = '▲';
 }
 }
 
-// Simple Task Ad watch without timer requirement
-window.watchAdSimple = function(limitElementId, btnElementId, adName, maxAdsLimit, rewardPerAd) {
+// Task Ads Watch with Admin Timer Integration
+window.watchAdWithTimer = function(limitElementId, btnElementId, adName, maxAdsLimit, rewardPerAd, timerDurationSec) {
 let watched = adWatchedCounts[limitElementId] || 0;
 if (watched >= maxAdsLimit) {
 showToast("Daily ad limit reached for today! New ads will refresh tomorrow at 5:30 AM.", "error");
@@ -1102,9 +1116,28 @@ if (adName === 'Clickadu' || adName === 'Hilltopads') {
 
 adPromise.then(() => {
     finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+    startTaskCountdownTimer(btn, timerDurationSec);
 }).catch(() => {
     finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+    startTaskCountdownTimer(btn, timerDurationSec);
 });
+}
+
+function startTaskCountdownTimer(btn, durationSec) {
+if (!btn) return;
+btn.disabled = true;
+let countdown = durationSec || 60;
+btn.innerText = `Wait (${countdown}s)`;
+
+let timerInterval = setInterval(() => {
+countdown--;
+btn.innerText = `Wait (${countdown}s)`;
+if (countdown <= 0) {
+clearInterval(timerInterval);
+btn.innerText = "Watch";
+btn.disabled = false;
+}
+}, 1000);
 }
 
 function finishAdWatchSuccess(limitElementId, btn, rewardPerAd) {
@@ -1112,7 +1145,6 @@ addEarningsWithReferral(rewardPerAd);
 adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
 saveToFirebase();
 renderUIValues();
-if (btn) btn.disabled = false;
 showToast(`Claim Successful! +${rewardPerAd} Coin added automatically!`, "success");
 }
 
