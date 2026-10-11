@@ -156,7 +156,7 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <!-- Daily Bonus Card -->
 <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
-<span style="font-size: 15px;">🎁 Daily Bonus (<span id="dailyBonusDisplay">2.00</span> Coins - Watch Ad)</span>
+<span style="font-size: 15px;">🎁 Today's reward: <span id="dailyBonusDisplay">0.01</span> Coin (Streak: <span id="streakDisplay">1</span> day)</span>
 <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
 </div>
 
@@ -585,9 +585,11 @@ let refReward = 0.00;
 let totalInvited = 0;
 let savedTonAddress = "";
 let activeStakes = [];
+let streak = 1;
+let lastCheckin = 0;
 
 let coinUsdtValue = 0.01;
-let currentDailyBonus = 2.00;
+let currentDailyBonus = 0.01;
 let minWithdrawalAmt = 0.01;
 let minTonWithdrawalAmt = 0.01;
 let liveTonPrice = 1.50;
@@ -724,6 +726,8 @@ refReward = parsed.refReward ?? 0.00;
 totalInvited = parsed.totalInvited ?? 0;
 savedTonAddress = parsed.savedTonAddress ?? "";
 activeStakes = parsed.activeStakes ?? [];
+streak = parsed.streak ?? 1;
+lastCheckin = parsed.lastCheckin ?? 0;
 if (parsed.adWatchedCounts) adWatchedCounts = parsed.adWatchedCounts;
 renderUIValues();
 renderStakingList();
@@ -733,7 +737,7 @@ renderStakingList();
 
 function saveToLocalStorage() {
 try {
-const dataToCache = { balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, adWatchedCounts };
+const dataToCache = { balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, streak, lastCheckin, adWatchedCounts };
 localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
 } catch (e) {}
 }
@@ -756,10 +760,6 @@ onValue(ref(db, 'adminSettings/general'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
 if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
-if (data.dailyBonus !== undefined) {
-currentDailyBonus = parseFloat(data.dailyBonus);
-document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
-}
 if (data.minWithdrawal !== undefined) minWithdrawalAmt = parseFloat(data.minWithdrawal);
 if (data.minTonWithdrawal !== undefined) minTonWithdrawalAmt = parseFloat(data.minTonWithdrawal);
 if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
@@ -928,6 +928,8 @@ refReward = data.refReward || 0.00;
 totalInvited = data.totalInvited || 0;
 savedTonAddress = data.savedTonAddress || "";
 activeStakes = data.activeStakes || [];
+streak = data.streak || 1;
+lastCheckin = data.lastCheckin || 0;
 
 if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
 
@@ -936,6 +938,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [],
+streak: 1, lastCheckin: 0,
 adWatchedCounts: { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 }
 });
 }
@@ -947,7 +950,7 @@ toggleWithdrawFields();
 function saveToFirebase() {
 saveToLocalStorage();
 update(userRef, {
-balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes,
+balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, streak, lastCheckin,
 adWatchedCounts
 });
 }
@@ -1024,7 +1027,8 @@ document.getElementById('refRewardBalance').innerText = `+${refReward.toFixed(2)
 document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
 document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
 document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
-document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
+document.getElementById('dailyBonusDisplay').innerText = "0.01";
+if(document.getElementById('streakDisplay')) document.getElementById('streakDisplay').innerText = streak;
 
 // Dynamic Limits & Rewards UI Display
 if (document.getElementById('taskClickaduLimit')) document.getElementById('taskClickaduLimit').innerText = `${adWatchedCounts.taskClickaduLimit || 0} / ${maxLimits.clickadu}`;
@@ -1149,27 +1153,26 @@ showToast(`Claim Successful! +${rewardPerAd} Coin added automatically!`, "succes
 }
 
 window.claimDailyBonus = function() {
-let lastClaimDate = localStorage.getItem('last_bonus_date_' + userId);
-let todayStr = new Date().toDateString();
-if(lastClaimDate === todayStr) {
-showToast("Daily bonus already claimed today!", "error");
+let now = Date.now();
+if (now - lastCheckin < 86400000 && lastCheckin !== 0) {
+showToast("Daily Bonus already claimed today!", "error");
 return;
 }
 
+let runClaimAction = () => {
+let isConsecutive = (now - lastCheckin) < (86400000 * 2) && lastCheckin !== 0;
+streak = isConsecutive ? streak + 1 : 1;
+lastCheckin = now;
+addEarningsWithReferral(0.01);
+saveToFirebase();
+renderUIValues();
+showToast(`Claim Successful! +0.01 Coins added. Current Streak: ${streak} day(s)`, "success");
+};
+
 if (typeof window.show_11989490 === 'function') {
-window.show_11989490().then(() => {
-localStorage.setItem('last_bonus_date_' + userId, todayStr);
-addEarningsWithReferral(currentDailyBonus);
-showToast(`Claim Successful! +${currentDailyBonus.toFixed(2)} Coins added.`, "success");
-}).catch(() => {
-localStorage.setItem('last_bonus_date_' + userId, todayStr);
-addEarningsWithReferral(currentDailyBonus);
-showToast(`Claim Successful! +${currentDailyBonus.toFixed(2)} Coins added.`, "success");
-});
+window.show_11989490().then(runClaimAction).catch(runClaimAction);
 } else {
-localStorage.setItem('last_bonus_date_' + userId, todayStr);
-addEarningsWithReferral(currentDailyBonus);
-showToast(`Claim Successful! +${currentDailyBonus.toFixed(2)} Coins added.`, "success");
+runClaimAction();
 }
 }
 
