@@ -154,9 +154,9 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Daily Bonus Card -->
+<!-- Daily Bonus Card (Original) -->
 <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
-<span style="font-size: 15px;">🎁 Today's reward: <span id="dailyBonusDisplay">0.01</span> Coin (Streak: <span id="streakDisplay">1</span> day)</span>
+<span style="font-size: 15px;">🎁 Today's reward: <span id="dailyBonusDisplay">0.01</span> Coin</span>
 <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
 </div>
 
@@ -585,7 +585,6 @@ let refReward = 0.00;
 let totalInvited = 0;
 let savedTonAddress = "";
 let activeStakes = [];
-let streak = 1;
 let lastCheckin = 0;
 
 let coinUsdtValue = 0.01;
@@ -726,7 +725,6 @@ refReward = parsed.refReward ?? 0.00;
 totalInvited = parsed.totalInvited ?? 0;
 savedTonAddress = parsed.savedTonAddress ?? "";
 activeStakes = parsed.activeStakes ?? [];
-streak = parsed.streak ?? 1;
 lastCheckin = parsed.lastCheckin ?? 0;
 if (parsed.adWatchedCounts) adWatchedCounts = parsed.adWatchedCounts;
 renderUIValues();
@@ -737,7 +735,7 @@ renderStakingList();
 
 function saveToLocalStorage() {
 try {
-const dataToCache = { balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, streak, lastCheckin, adWatchedCounts };
+const dataToCache = { balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, lastCheckin, adWatchedCounts };
 localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
 } catch (e) {}
 }
@@ -760,6 +758,7 @@ onValue(ref(db, 'adminSettings/general'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
 if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
+if (data.dailyBonus !== undefined) currentDailyBonus = parseFloat(data.dailyBonus);
 if (data.minWithdrawal !== undefined) minWithdrawalAmt = parseFloat(data.minWithdrawal);
 if (data.minTonWithdrawal !== undefined) minTonWithdrawalAmt = parseFloat(data.minTonWithdrawal);
 if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
@@ -928,7 +927,6 @@ refReward = data.refReward || 0.00;
 totalInvited = data.totalInvited || 0;
 savedTonAddress = data.savedTonAddress || "";
 activeStakes = data.activeStakes || [];
-streak = data.streak || 1;
 lastCheckin = data.lastCheckin || 0;
 
 if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
@@ -937,8 +935,7 @@ saveToLocalStorage();
 } else {
 set(userRef, {
 name: displayName,
-balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [],
-streak: 1, lastCheckin: 0,
+balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
 adWatchedCounts: { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 }
 });
 }
@@ -950,7 +947,7 @@ toggleWithdrawFields();
 function saveToFirebase() {
 saveToLocalStorage();
 update(userRef, {
-balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, streak, lastCheckin,
+balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, lastCheckin,
 adWatchedCounts
 });
 }
@@ -1027,8 +1024,7 @@ document.getElementById('refRewardBalance').innerText = `+${refReward.toFixed(2)
 document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
 document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
 document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
-document.getElementById('dailyBonusDisplay').innerText = "0.01";
-if(document.getElementById('streakDisplay')) document.getElementById('streakDisplay').innerText = streak;
+document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 
 // Dynamic Limits & Rewards UI Display
 if (document.getElementById('taskClickaduLimit')) document.getElementById('taskClickaduLimit').innerText = `${adWatchedCounts.taskClickaduLimit || 0} / ${maxLimits.clickadu}`;
@@ -1160,13 +1156,11 @@ return;
 }
 
 let runClaimAction = () => {
-let isConsecutive = (now - lastCheckin) < (86400000 * 2) && lastCheckin !== 0;
-streak = isConsecutive ? streak + 1 : 1;
 lastCheckin = now;
-addEarningsWithReferral(0.01);
+addEarningsWithReferral(currentDailyBonus);
 saveToFirebase();
 renderUIValues();
-showToast(`Claim Successful! +0.01 Coins added. Current Streak: ${streak} day(s)`, "success");
+showToast(`Claim Successful! +${currentDailyBonus.toFixed(2)} Coins added!`, "success");
 };
 
 if (typeof window.show_11989490 === 'function') {
