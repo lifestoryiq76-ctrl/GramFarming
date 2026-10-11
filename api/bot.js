@@ -1,8 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { Telegraf, Markup } = require('telegraf');
-const { initializeApp, cert } = require('firebase-admin/app');
-const { getDatabase } = require('firebase-admin/database');
+const admin = require('firebase-admin');
 
 const app = express();
 app.use(express.json());
@@ -10,24 +9,27 @@ app.use(express.json());
 // Static files serve karne ke liye
 app.use(express.static(path.join(__dirname, '..')));
 
-// Firebase Setup
-const firebaseConfig = {
-    databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com"
-};
+// Firebase Admin Setup (Vercel Serverless Compatible)
+const FIREBASE_DATABASE_URL = "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com";
 
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    initializeApp({
-        credential: cert(serviceAccount),
-        databaseURL: firebaseConfig.databaseURL
-    });
-} else {
-    initializeApp({
-        databaseURL: firebaseConfig.databaseURL
-    });
+if (!admin.apps.length) {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        try {
+            const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount),
+                databaseURL: FIREBASE_DATABASE_URL
+            });
+        } catch (e) {
+            console.error("Firebase JSON parsing error:", e);
+            admin.initializeApp({ databaseURL: FIREBASE_DATABASE_URL });
+        }
+    } else {
+        admin.initializeApp({ databaseURL: FIREBASE_DATABASE_URL });
+    }
 }
 
-const db = getDatabase();
+const db = admin.database();
 
 // Telegram Bot Setup
 const BOT_TOKEN = process.env.BOT_TOKEN || '8887103142:AAEBZAe-bi4ylcSauB-mMGxf97iVxHaZrlE';
@@ -104,36 +106,40 @@ bot.hears(/^\/minusdt ([\d.]+)/, async (ctx) => {
 
 // Pending Withdrawals Menu
 bot.action('menu_withdrawals', async (ctx) => {
-    const snapshot = await db.ref('withdrawals').once('value');
-    if (!snapshot.exists()) {
-        return ctx.reply("🎉 Koi pending withdrawal request nahi hai!");
-    }
-    
-    let pendingFound = false;
-    snapshot.forEach((userSnap) => {
-        const uId = userSnap.key;
-        userSnap.forEach((wSnap) => {
-            const wId = wSnap.key;
-            const w = wSnap.val();
-            if (!w.status || (!w.status.includes('SUCCESS') && !w.status.includes('REJECTED'))) {
-                pendingFound = true;
-                ctx.reply(
-                    `💳 *Withdrawal Request*\n\n👤 User: \`${uId}\`\n💰 Amount: *${w.amount}${w.method}*\n📍 Address: \`${w.destination}\``,
-                    {
-                        parse_mode: 'Markdown',
-                        ...Markup.inlineKeyboard([
-                            [
-                                Markup.button.callback('✅ Approve', `app_${uId}_${wId}`),
-                                Markup.button.callback('❌ Reject', `rej_${uId}_${wId}`)
-                            ]
-                        ])
-                    }
-                );
-            }
+    try {
+        const snapshot = await db.ref('withdrawals').once('value');
+        if (!snapshot.exists()) {
+            return ctx.reply("🎉 Koi pending withdrawal request nahi hai!");
+        }
+        
+        let pendingFound = false;
+        snapshot.forEach((userSnap) => {
+            const uId = userSnap.key;
+            userSnap.forEach((wSnap) => {
+                const wId = wSnap.key;
+                const w = wSnap.val();
+                if (!w.status || (!w.status.includes('SUCCESS') && !w.status.includes('REJECTED'))) {
+                    pendingFound = true;
+                    ctx.reply(
+                        `💳 *Withdrawal Request*\n\n👤 User: \`${uId}\`\n💰 Amount: *${w.amount}${w.method}*\n📍 Address: \`${w.destination}\``,
+                        {
+                            parse_mode: 'Markdown',
+                            ...Markup.inlineKeyboard([
+                                [
+                                    Markup.button.callback('✅ Approve', `app_${uId}_${wId}`),
+                                    Markup.button.callback('❌ Reject', `rej_${uId}_${wId}`)
+                                ]
+                            ])
+                        }
+                    );
+                }
+            });
         });
-    });
 
-    if (!pendingFound) ctx.reply("🎉 Sabhi withdrawals processed hain!");
+        if (!pendingFound) ctx.reply("🎉 Sabhi withdrawals processed hain!");
+    } catch (err) {
+        ctx.reply(`❌ Firebase Error: ${err.message}`);
+    }
 });
 
 // Approve Action
@@ -162,7 +168,7 @@ app.post('/api/bot', async (req, res) => {
         await bot.handleUpdate(req.body);
         res.status(200).send('OK');
     } catch (err) {
-        console.error(err);
+        console.error("Webhook processing error:", err);
         res.status(500).send('Error');
     }
 });
