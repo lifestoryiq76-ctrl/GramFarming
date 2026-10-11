@@ -214,28 +214,28 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="adsTasks">
 <div class="card flex-between">
 <span class="limit-badge" id="taskMonetagLimit">0 / 50</span>
-<div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
-<button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag', 50, 0.04)">Watch</button>
+<div><b>Monetag</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardMonetag">+0.04 Coin</span></small></div>
+<button class="btn" id="taskMonetagBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag', maxLimits.monetag, rewards.monetag)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskGigapubLimit">0 / 50</span>
-<div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
-<button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub', 50, 0.04)">Watch</button>
+<div><b>Gigapub</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardGigapub">+0.04 Coin</span></small></div>
+<button class="btn" id="taskGigapubBtn" style="width: auto;" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub', maxLimits.gigapub, rewards.gigapub)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskMonetixLimit">0 / 40</span>
-<div><b>Monetix</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
-<button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', 40, 0.03)">Watch</button>
+<div><b>Monetix</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardMonetix">+0.03 Coin</span></small></div>
+<button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', maxLimits.monetix, rewards.monetix)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskClickaduLimit">0 / 40</span>
-<div><b>Clickadu</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.03 Coin</span></small></div>
-<button class="btn" id="taskClickaduBtn" style="width: auto;" onclick="watchAdWithTimer('taskClickaduLimit', 'taskClickaduBtn', 'Clickadu', 40, 0.03)">Watch</button>
+<div><b>Clickadu</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardClickadu">+0.03 Coin</span></small></div>
+<button class="btn" id="taskClickaduBtn" style="width: auto;" onclick="watchAdWithTimer('taskClickaduLimit', 'taskClickaduBtn', 'Clickadu', maxLimits.clickadu, rewards.clickadu)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskHilltopadsLimit">0 / 40</span>
-<div><b>Hilltopads Combo</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);">+0.04 Coin</span></small></div>
-<button class="btn" id="taskHilltopadsBtn" style="width: auto;" onclick="watchAdWithTimer('taskHilltopadsLimit', 'taskHilltopadsBtn', 'Hilltopads', 40, 0.04)">Watch</button>
+<div><b>Hilltopads Combo</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardHilltopads">+0.04 Coin</span></small></div>
+<button class="btn" id="taskHilltopadsBtn" style="width: auto;" onclick="watchAdWithTimer('taskHilltopadsLimit', 'taskHilltopadsBtn', 'Hilltopads', maxLimits.hilltopads, rewards.hilltopads)">Watch</button>
 </div>
 </div>
 
@@ -440,7 +440,7 @@ No active staking plans found.
 <input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001" oninput="calculateWithdrawFee()">
 
 <div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
-<span id="withdrawMinLabel">Min 0.05</span>
+<span id="withdrawMinLabel">Min 0.01 USDT</span>
 <div>
 <span id="availableWithdrawBalance" style="color:var(--text-muted); margin-right:8px;">Available: 0.0000</span>
 <button onclick="setMaxWithdraw()" style="background:none; border:none; color:var(--accent); font-weight:bold; cursor:pointer;">MAX</button>
@@ -588,12 +588,30 @@ let activeStakes = [];
 
 let coinUsdtValue = 0.01;
 let currentDailyBonus = 2.00;
-let minWithdrawalAmt = 0.05;
+let minWithdrawalAmt = 0.01;
+let minTonWithdrawalAmt = 0.01;
 let liveTonPrice = 1.50;
 let referralPercentage = 20;
 
 let miningDurationSeconds = 28800;
 let miningRewardCoins = 1.00;
+
+// Dynamic Admin Panel Controls
+window.maxLimits = {
+monetag: 50,
+gigapub: 50,
+monetix: 40,
+clickadu: 40,
+hilltopads: 40
+};
+
+window.rewards = {
+monetag: 0.04,
+gigapub: 0.04,
+monetix: 0.03,
+clickadu: 0.03,
+hilltopads: 0.04
+};
 
 let adWatchedCounts = {
 taskClickaduLimit: 0,
@@ -705,6 +723,7 @@ localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
 
 loadFromLocalStorage();
 
+// Firebase Listener - Announcement
 onValue(ref(db, 'adminSettings/announcement'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
@@ -715,6 +734,7 @@ document.getElementById('announcementModal').style.display = 'flex';
 }
 });
 
+// Firebase Listener - General & Economic Settings Sync
 onValue(ref(db, 'adminSettings/general'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
@@ -724,12 +744,34 @@ currentDailyBonus = parseFloat(data.dailyBonus);
 document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 }
 if (data.minWithdrawal !== undefined) minWithdrawalAmt = parseFloat(data.minWithdrawal);
+if (data.minTonWithdrawal !== undefined) minTonWithdrawalAmt = parseFloat(data.minTonWithdrawal);
 if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
 referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
 document.getElementById('refPercentText').innerText = `Get ${referralPercentage}%`;
 }
 renderUIValues();
 calculateExchange();
+toggleWithdrawFields();
+}
+});
+
+// Firebase Listener - Ads Limits & Rewards Sync from Admin Panel
+onValue(ref(db, 'adminSettings/ads'), (snapshot) => {
+if (snapshot.exists()) {
+const data = snapshot.val();
+if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
+if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
+if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
+if (data.clickaduLimit) maxLimits.clickadu = parseInt(data.clickaduLimit);
+if (data.hilltopadsLimit) maxLimits.hilltopads = parseInt(data.hilltopadsLimit);
+
+if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
+if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
+if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
+if (data.clickaduReward) rewards.clickadu = parseFloat(data.clickaduReward);
+if (data.hilltopadsReward) rewards.hilltopads = parseFloat(data.hilltopadsReward);
+
+renderUIValues();
 }
 });
 
@@ -897,11 +939,18 @@ document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
 document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
 document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 
-if (document.getElementById('taskClickaduLimit')) document.getElementById('taskClickaduLimit').innerText = `${adWatchedCounts.taskClickaduLimit || 0} / 40`;
-if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / 50`;
-if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / 50`;
-if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / 40`;
-if (document.getElementById('taskHilltopadsLimit')) document.getElementById('taskHilltopadsLimit').innerText = `${adWatchedCounts.taskHilltopadsLimit || 0} / 40`;
+// Dynamic Limits & Rewards UI Display
+if (document.getElementById('taskClickaduLimit')) document.getElementById('taskClickaduLimit').innerText = `${adWatchedCounts.taskClickaduLimit || 0} / ${maxLimits.clickadu}`;
+if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / ${maxLimits.monetag}`;
+if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / ${maxLimits.gigapub}`;
+if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / ${maxLimits.monetix}`;
+if (document.getElementById('taskHilltopadsLimit')) document.getElementById('taskHilltopadsLimit').innerText = `${adWatchedCounts.taskHilltopadsLimit || 0} / ${maxLimits.hilltopads}`;
+
+if (document.getElementById('rewardMonetag')) document.getElementById('rewardMonetag').innerText = `+${rewards.monetag} Coin`;
+if (document.getElementById('rewardGigapub')) document.getElementById('rewardGigapub').innerText = `+${rewards.gigapub} Coin`;
+if (document.getElementById('rewardMonetix')) document.getElementById('rewardMonetix').innerText = `+${rewards.monetix} Coin`;
+if (document.getElementById('rewardClickadu')) document.getElementById('rewardClickadu').innerText = `+${rewards.clickadu} Coin`;
+if (document.getElementById('rewardHilltopads')) document.getElementById('rewardHilltopads').innerText = `+${rewards.hilltopads} Coin`;
 
 let manInput = document.getElementById('manualTonAddress');
 if (savedTonAddress) {
@@ -963,7 +1012,7 @@ let btn = btnElementId ? document.getElementById(btnElementId) : null;
 // Handle Clickadu Direct Link / Ad Zone
 if (adName === 'Clickadu') {
     btn && (btn.disabled = true);
-    const clickaduAdUrl = "PASTE_YOUR_CLICKADU_DIRECT_LINK_HERE";
+    const clickaduAdUrl = "https://motionless-bus.com/DvqMfQ";
     if (tg && tg.openLink) {
         tg.openLink(clickaduAdUrl);
     } else {
@@ -977,19 +1026,17 @@ if (adName === 'Clickadu') {
     return;
 }
 
-// Handle Hilltopads + Monetag Combo (Link -> Return -> Monetag Screen Ad)
+// Handle Hilltopads + Monetag Combo
 if (adName === 'Hilltopads') {
     btn && (btn.disabled = true);
     const hilltopAdUrl = "https://motionless-bus.com/DvqMfQ";
     
-    // 1. Open HilltopAds Link
     if (tg && tg.openLink) {
         tg.openLink(hilltopAdUrl);
     } else {
         window.open(hilltopAdUrl, '_blank');
     }
     
-    // 2. Trigger Monetag Screen Ad after link opens
     setTimeout(() => {
         if (typeof window.show_11989490 === 'function') {
             window.show_11989490().then(() => {
@@ -1062,7 +1109,6 @@ startCountdownTimer(btn);
 return;
 }
 
-// Default Fallback
 finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
 startCountdownTimer(btn);
 }
@@ -1423,12 +1469,12 @@ let availVal = 0;
 if (method === 'faucetpay') {
 destLabel.innerText = "FaucetPay Email ID:";
 document.getElementById('withdrawDestination').placeholder = "Enter FaucetPay email address";
-minLbl.innerText = "Min 0.05 USDT";
+minLbl.innerText = `Min ${minWithdrawalAmt} USDT`;
 availVal = usdtBalance;
 } else {
 destLabel.innerText = "TON Wallet Address:";
 document.getElementById('withdrawDestination').placeholder = "Enter TON Wallet Address (UQ... / EQ...)";
-minLbl.innerText = "Min 0.1 TON";
+minLbl.innerText = `Min ${minTonWithdrawalAmt} TON`;
 availVal = tonBalance;
 }
 document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
@@ -1454,7 +1500,7 @@ window.requestWithdrawal = function() {
 let method = document.getElementById('withdrawMethod').value;
 let amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
 let destination = document.getElementById('withdrawDestination').value.trim();
-let minLimit = method === 'faucetpay' ? 0.05 : 0.1;
+let minLimit = method === 'faucetpay' ? minWithdrawalAmt : minTonWithdrawalAmt;
 
 if (amt < minLimit) {
 showToast(`Minimum withdrawal amount is ${minLimit} ${method === 'faucetpay' ? 'USDT' : 'TON'}.`, "error");
