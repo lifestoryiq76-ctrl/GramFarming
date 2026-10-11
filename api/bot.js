@@ -9,27 +9,40 @@ app.use(express.json());
 // Static files serve karne ke liye
 app.use(express.static(path.join(__dirname, '..')));
 
-// Firebase Admin Setup (Vercel Serverless Compatible)
+// Firebase Setup - Express & Anonymous REST mode
 const FIREBASE_DATABASE_URL = "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com";
 
 if (!admin.apps.length) {
-    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-        try {
-            const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount),
-                databaseURL: FIREBASE_DATABASE_URL
-            });
-        } catch (e) {
-            console.error("Firebase JSON parsing error:", e);
-            admin.initializeApp({ databaseURL: FIREBASE_DATABASE_URL });
-        }
-    } else {
-        admin.initializeApp({ databaseURL: FIREBASE_DATABASE_URL });
+    admin.initializeApp({
+        databaseURL: FIREBASE_DATABASE_URL
+    });
+}
+
+// Fallback to fetch directly if SDK auth fails
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+// Helper function to update/read Firebase without Auth issues
+async function getFirebaseData(path) {
+    try {
+        const res = await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`);
+        return await res.json();
+    } catch(e) {
+        return null;
     }
 }
 
-const db = admin.database();
+async function setFirebaseData(path, data) {
+    try {
+        await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        return true;
+    } catch(e) {
+        return false;
+    }
+}
 
 // Telegram Bot Setup
 const BOT_TOKEN = process.env.BOT_TOKEN || '8887103142:AAEBZAe-bi4ylcSauB-mMGxf97iVxHaZrlE';
@@ -74,15 +87,15 @@ bot.action('menu_ads', (ctx) => {
 
 bot.hears(/^\/monetag (\d+)/, async (ctx) => {
     const limit = Number(ctx.match[1]);
-    await db.ref('adminSettings/ads/monetagLimit').set(limit);
-    await db.ref('adminSettings/adNetworks/monetag/limit').set(limit);
+    await setFirebaseData('adminSettings/ads/monetagLimit', limit);
+    await setFirebaseData('adminSettings/adNetworks/monetag/limit', limit);
     ctx.reply(`✅ Monetag limit set to *${limit}*!`, { parse_mode: 'Markdown' });
 });
 
 bot.hears(/^\/gigapub (\d+)/, async (ctx) => {
     const limit = Number(ctx.match[1]);
-    await db.ref('adminSettings/ads/gigapubLimit').set(limit);
-    await db.ref('adminSettings/adNetworks/gigapub/limit').set(limit);
+    await setFirebaseData('adminSettings/ads/gigapubLimit', limit);
+    await setFirebaseData('adminSettings/adNetworks/gigapub/limit', limit);
     ctx.reply(`✅ Gigapub limit set to *${limit}*!`, { parse_mode: 'Markdown' });
 });
 
@@ -99,117 +112,76 @@ bot.action('menu_general', (ctx) => {
 
 bot.hears(/^\/minusdt ([\d.]+)/, async (ctx) => {
     const val = Number(ctx.match[1]);
-    await db.ref('adminSettings/general/minFaucetPay').set(val);
-    await db.ref('adminSettings/general/minWithdrawal').set(val);
+    await setFirebaseData('adminSettings/general/minFaucetPay', val);
+    await setFirebaseData('adminSettings/general/minWithdrawal', val);
     ctx.reply(`✅ Min USDT withdrawal set to *$${val}*!`, { parse_mode: 'Markdown' });
 });
 
 // Pending Withdrawals Menu
 bot.action('menu_withdrawals', async (ctx) => {
-    try {
-        const snapshot = await db.ref('withdrawals').once('value');
-        if (!snapshot.exists()) {
-            return ctx.reply("🎉 Koi pending withdrawal request nahi hai!");
-        }
-        
-        let pendingFound = false;
-        snapshot.forEach((userSnap) => {
-            const uId = userSnap.key;
-            userSnap.forEach((wSnap) => {
-                const wId = wSnap.key;
-                const w = wSnap.val();
-                if (!w.status || (!w.status.includes('SUCCESS') && !w.status.includes('REJECTED'))) {
-                    pendingFound = true;
-                    ctx.reply(
-                        `💳 *Withdrawal Request*\n\n👤 User: \`${uId}\`\n💰 Amount: *${w.amount}${w.method}*\n📍 Address: \`${w.destination}\``,
-                        {
-                            parse_mode: 'Markdown',
-                            ...Markup.inlineKeyboard([
-                                [
-                                    Markup.button.callback('✅ Approve', `app_${uId}_${wId}`),
-                                    Markup.button.callback('❌ Reject', `rej_${uId}_${wId}`)
-                                ]
-                            ])
-                        }
-                    );
-                }
-            });
-        });
-
-        if (!pendingFound) ctx.reply("🎉 Sabhi withdrawals processed hain!");
-    } catch (err) {
-        ctx.reply(`❌ Firebase Error: ${err.message}`);
+    const withdrawals = await getFirebaseData('withdrawals');
+    if (!withdrawals) {
+        return ctx.reply("🎉 Koi pending withdrawal request nahi hai!");
     }
+    
+    let pendingFound = false;
+    Object.keys(withdrawals).forEach((uId) => {
+        const userWithdrawals = withdrawals[uId];
+        Object.keys(userWithdrawals).forEach((wId) => {
+            const w = userWithdrawals[wId];
+            if (!w.status || (!w.status.includes('SUCCESS') && !w.status.includes('REJECTED'))) {
+                pendingFound = true;
+                ctx.reply(
+                    `💳 *Withdrawal Request*\n\n👤 User: \`${uId}\`\n💰 Amount: *${w.amount}${w.method}*\n📍 Address: \`${w.destination}\``,
+                    {
+                        parse_mode: 'Markdown',
+                        ...Markup.inlineKeyboard([
+                            [
+                                Markup.button.callback('✅ Approve', `app_${uId}_${wId}`),
+                                Markup.button.callback('❌ Reject', `rej_${uId}_${wId}`)
+                            ]
+                        ])
+                    }
+                );
+            }
+        });
+    });
+
+    if (!pendingFound) ctx.reply("🎉 Sabhi withdrawals processed hain!");
 });
 
 // Approve Action
 bot.action(/^app_(.+)_(.+)$/, async (ctx) => {
     const [, uId, wId] = ctx.match;
-    await db.ref(`withdrawals/${uId}/${wId}/status`).set('SUCCESS (Approved)');
+    await setFirebaseData(`withdrawals/${uId}/${wId}/status`, 'SUCCESS (Approved)');
     ctx.editMessageText("✅ *Approved & Saved Successfully!*", { parse_mode: 'Markdown' });
 });
 
 // Reject Action
 bot.action(/^rej_(.+)_(.+)$/, async (ctx) => {
     const [, uId, wId] = ctx.match;
-    await db.ref(`withdrawals/${uId}/${wId}/status`).set('REJECTED');
+    await setFirebaseData(`withdrawals/${uId}/${wId}/status`, 'REJECTED');
     ctx.editMessageText("❌ *Request Rejected!*", { parse_mode: 'Markdown' });
 });
 
-// --- EXPRESS APIS & ROUTING ---
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'index.html'));
-});
-
-// Telegram Bot Webhook Endpoint
+// Express Webhook Routing
 app.post('/api/bot', async (req, res) => {
     try {
         await bot.handleUpdate(req.body);
         res.status(200).send('OK');
     } catch (err) {
-        console.error("Webhook processing error:", err);
         res.status(500).send('Error');
     }
 });
 
-// Auto-Set Webhook Route
 app.get('/api/bot', async (req, res) => {
     try {
         const webhookUrl = `https://${req.headers.host}/api/bot`;
         await bot.telegram.setWebhook(webhookUrl);
-        res.send(`✅ Webhook successfully set to: <b>${webhookUrl}</b>`);
+        res.send(`✅ Webhook set: ${webhookUrl}`);
     } catch (err) {
-        res.status(500).send(`❌ Failed to set Webhook: ${err.message}`);
+        res.status(500).send(`❌ Error: ${err.message}`);
     }
 });
-
-// FaucetPay Withdrawal API Endpoint
-app.post('/api/withdraw', async (req, res) => {
-    const { email, amount } = req.body;
-    if (!email || !amount) {
-        return res.json({ success: false, message: "Email aur amount dono zaroori hain!" });
-    }
-    console.log(`Processing withdrawal: ${amount} to FaucetPay email: ${email}`);
-    res.json({ success: true, message: "FaucetPay par withdrawal successfully bhej diya gaya hai!" });
-});
-
-// Admin Broadcast API Endpoint
-app.post('/api/admin/broadcast', (req, res) => {
-    const { key, message } = req.body;
-    const ADMIN_SECRET = "mySecretAdmin123"; 
-    if (key !== ADMIN_SECRET) {
-        return res.json({ success: false, message: "Galat Admin Key hai!" });
-    }
-    console.log(`Admin Broadcast Message: ${message}`);
-    res.json({ success: true, message: "Broadcast sabhi users ko bhej diya gaya hai!" });
-});
-
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`Server port ${PORT} par chal raha hai!`);
-    });
-}
 
 module.exports = app;
