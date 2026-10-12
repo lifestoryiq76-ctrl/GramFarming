@@ -87,7 +87,7 @@ async function sendBroadcastMessage(chatId, title, body) {
 
 // Helper Function: Send Stylish Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
-  const { userId, userName, amount, currency, method, txUrl, date } = withdrawalData;
+  const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date } = withdrawalData;
   
   const formattedDate = date || new Date().toLocaleDateString('en-US', {
     weekday: 'short',
@@ -96,12 +96,14 @@ async function sendPayoutNotification(withdrawalData) {
     day: 'numeric'
   });
 
-  const displayName = userName || (userId ? `User_${userId.toString().slice(0, 4)}***` : 'Member');
+  const finalName = userName || name || (userId ? `User_${userId.toString().slice(0, 4)}***` : 'Member');
+  const finalAmount = amount || tonAmount || '0.00';
+  const finalMethod = method || 'TON Wallet / FaucetPay';
 
   const message = `✅ <b>Withdrawal Success</b>\n` +
-                  `🗣 <b>User:</b> ${displayName}\n` +
-                  `💸 <b>Amount:</b> <b>${amount} ${currency || 'GRAM'}</b>\n` +
-                  `💳 <b>Method:</b> ${method || 'FaucetPay / TON'}\n` +
+                  `🗣 <b>User:</b> ${finalName}\n` +
+                  `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'TON'}</b>\n` +
+                  `💳 <b>Method:</b> ${finalMethod}\n` +
                   `📅 <b>Date:</b> ${formattedDate}`;
 
   const buttonUrl = txUrl || MINI_APP_URL;
@@ -141,13 +143,18 @@ async function pollBroadcasts() {
 }
 setInterval(pollBroadcasts, 10000);
 
-// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER
+// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER (Updated for all status types)
 async function pollPayouts() {
   const withdrawals = await getFirebaseData('withdrawals');
   if (withdrawals) {
     for (let key in withdrawals) {
       let data = withdrawals[key];
-      if (data && data.status === 'approved' && !data.postedToChannel) {
+      if (!data) continue;
+
+      const statusText = String(data.status || '').toLowerCase();
+      const isApproved = statusText.includes('approved') || statusText.includes('success');
+
+      if (isApproved && !data.postedToChannel) {
         await sendPayoutNotification(data);
         await updateFirebaseData(`withdrawals/${key}`, { postedToChannel: true });
       }
@@ -188,6 +195,7 @@ bot.command(['start', 'admin'], (ctx) => {
 app.post('/api/bot', async (req, res) => {
     try {
         await bot.handleUpdate(req.body);
+        await pollPayouts(); // Force payout check on update
         res.status(200).send('OK');
     } catch (err) {
         res.status(500).send('Error');
@@ -198,7 +206,8 @@ app.get('/api/bot', async (req, res) => {
     try {
         const webhookUrl = `https://${req.headers.host}/api/bot`;
         await bot.telegram.setWebhook(webhookUrl);
-        res.send(`✅ Webhook set: ${webhookUrl}`);
+        await pollPayouts(); // Force check payouts when endpoint is opened in browser
+        res.send(`✅ Webhook set & Payout Checked: ${webhookUrl}`);
     } catch (err) {
         res.status(500).send(`❌ Error: ${err.message}`);
     }
