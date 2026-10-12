@@ -958,8 +958,11 @@ update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: 
 document.getElementById('manualTonAddress').value = savedTonAddress;
 document.getElementById('manualTonAddress').readOnly = true;
 
-if (document.getElementById('withdrawMethod').value === 'ton') {
-document.getElementById('withdrawDestination').value = savedTonAddress;
+// Automatically populate in withdrawal destination input if TON method is active
+let withdrawMethodVal = document.getElementById('withdrawMethod').value;
+let withdrawDestInput = document.getElementById('withdrawDestination');
+if (withdrawDestInput && withdrawMethodVal === 'ton') {
+withdrawDestInput.value = savedTonAddress;
 }
 
 showToast("✅ TON Wallet address successfully save ho gaya hai!", "success");
@@ -975,6 +978,13 @@ update(ref(db, 'tonAddresses/' + userId), { address: "" });
 
 document.getElementById('manualTonAddress').value = "";
 document.getElementById('manualTonAddress').readOnly = false;
+
+let withdrawDestInput = document.getElementById('withdrawDestination');
+let withdrawMethodVal = document.getElementById('withdrawMethod').value;
+if (withdrawDestInput && withdrawMethodVal === 'ton') {
+withdrawDestInput.value = "";
+}
+
 showToast("🔄 Wallet successfully disconnect ho gaya hai.", "success");
 toggleWithdrawFields();
 }
@@ -1039,10 +1049,10 @@ if (document.getElementById('rewardClickadu')) document.getElementById('rewardCl
 if (document.getElementById('rewardHilltopads')) document.getElementById('rewardHilltopads').innerText = `+${rewards.hilltopads} Coin`;
 
 let manInput = document.getElementById('manualTonAddress');
-if (savedTonAddress) {
+if (savedTonAddress && manInput) {
 manInput.value = savedTonAddress;
 manInput.readOnly = true;
-} else {
+} else if (manInput) {
 manInput.value = "";
 manInput.readOnly = false;
 }
