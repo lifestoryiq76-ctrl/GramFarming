@@ -77,7 +77,7 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// Payout Polling Logic
+// Payout Polling Logic with Broad Status Matching
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals', 'tonWithdrawals', 'faucetpayWithdrawals'];
   
@@ -90,7 +90,12 @@ async function checkAndSendPayouts() {
           if (!data) continue;
 
           const statusText = String(data.status || '').toLowerCase();
-          const isApproved = statusText.includes('approved') || statusText.includes('success');
+          const isApproved = statusText.includes('approved') || 
+                             statusText.includes('success') || 
+                             statusText.includes('completed') || 
+                             statusText.includes('paid') || 
+                             statusText.includes('sent') ||
+                             statusText.includes('done');
 
           if (isApproved && !data.postedToChannel) {
             const success = await sendPayoutNotification(data);
