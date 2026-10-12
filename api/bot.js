@@ -85,94 +85,110 @@ async function sendBroadcastMessage(chatId, title, body) {
   }
 }
 
-// Helper Function: Send Stylish Payout Proof to Telegram Channel
+// Helper Function: Send Stylish Payout Proof to Telegram Channel (Safe)
 async function sendPayoutNotification(withdrawalData) {
-  const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date } = withdrawalData;
-  
-  const formattedDate = date || new Date().toLocaleDateString('en-US', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-
-  const finalName = userName || name || (userId ? `User_${userId.toString().slice(0, 4)}***` : 'Member');
-  const finalAmount = amount || tonAmount || '0.00';
-  const finalMethod = method || 'TON Wallet / FaucetPay';
-
-  const message = `✅ <b>Withdrawal Success</b>\n` +
-                  `🗣 <b>User:</b> ${finalName}\n` +
-                  `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'TON'}</b>\n` +
-                  `💳 <b>Method:</b> ${finalMethod}\n` +
-                  `📅 <b>Date:</b> ${formattedDate}`;
-
-  const buttonUrl = txUrl || MINI_APP_URL;
-  const keyboard = Markup.inlineKeyboard([
-    [Markup.button.url('👀 View transaction', buttonUrl)]
-  ]);
-
   try {
+    const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date } = withdrawalData || {};
+    
+    const formattedDate = date || new Date().toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+
+    const finalName = userName || name || (userId ? `User_${String(userId).slice(0, 4)}***` : 'Member');
+    const finalAmount = amount || tonAmount || '0.00';
+    const finalMethod = method || 'TON Wallet / FaucetPay';
+
+    const message = `✅ <b>Withdrawal Success</b>\n` +
+                    `🗣 <b>User:</b> ${finalName}\n` +
+                    `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'TON'}</b>\n` +
+                    `💳 <b>Method:</b> ${finalMethod}\n` +
+                    `📅 <b>Date:</b> ${formattedDate}`;
+
+    const buttonUrl = txUrl || MINI_APP_URL;
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.url('👀 View transaction', buttonUrl)]
+    ]);
+
     await bot.telegram.sendMessage(PAYOUT_CHANNEL, message, {
       parse_mode: 'HTML',
       ...keyboard
     });
     console.log('Stylish payout proof posted successfully to channel!');
+    return true;
   } catch (error) {
     console.error('Failed to post payout proof to channel:', error.message);
+    return false;
   }
 }
 
 // 1. BROADCAST NOTIFICATION LISTENER
 async function pollBroadcasts() {
-  const broadcasts = await getFirebaseData('botBroadcasts');
-  if (broadcasts) {
-    for (let key in broadcasts) {
-      let data = broadcasts[key];
-      if (data && data.status === 'pending') {
-        const { title, body } = data;
-        const users = await getFirebaseData('users');
-        if (users) {
-          for (let userId in users) {
-            await sendBroadcastMessage(userId, title, body);
+  try {
+    const broadcasts = await getFirebaseData('botBroadcasts');
+    if (broadcasts) {
+      for (let key in broadcasts) {
+        let data = broadcasts[key];
+        if (data && data.status === 'pending') {
+          const { title, body } = data;
+          const users = await getFirebaseData('users');
+          if (users) {
+            for (let userId in users) {
+              await sendBroadcastMessage(userId, title, body);
+            }
           }
+          await updateFirebaseData(`botBroadcasts/${key}`, { status: 'sent' });
         }
-        await updateFirebaseData(`botBroadcasts/${key}`, { status: 'sent' });
       }
     }
+  } catch (e) {
+    console.error('pollBroadcasts error:', e.message);
   }
 }
 setInterval(pollBroadcasts, 10000);
 
-// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER (Updated for all status types)
+// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER (Safe Try-Catch)
 async function pollPayouts() {
-  const withdrawals = await getFirebaseData('withdrawals');
-  if (withdrawals) {
-    for (let key in withdrawals) {
-      let data = withdrawals[key];
-      if (!data) continue;
+  try {
+    const withdrawals = await getFirebaseData('withdrawals');
+    if (withdrawals) {
+      for (let key in withdrawals) {
+        let data = withdrawals[key];
+        if (!data) continue;
 
-      const statusText = String(data.status || '').toLowerCase();
-      const isApproved = statusText.includes('approved') || statusText.includes('success');
+        const statusText = String(data.status || '').toLowerCase();
+        const isApproved = statusText.includes('approved') || statusText.includes('success');
 
-      if (isApproved && !data.postedToChannel) {
-        await sendPayoutNotification(data);
-        await updateFirebaseData(`withdrawals/${key}`, { postedToChannel: true });
+        if (isApproved && !data.postedToChannel) {
+          const success = await sendPayoutNotification(data);
+          if (success) {
+            await updateFirebaseData(`withdrawals/${key}`, { postedToChannel: true });
+          }
+        }
       }
     }
+  } catch (err) {
+    console.error('pollPayouts error:', err.message);
   }
 }
 setInterval(pollPayouts, 5000);
 
 // 3. DAILY AUTO CHECK-IN REMINDER (Cron Job)
 cron.schedule('0 10 * * *', async () => {
-  console.log('Sending Daily Check-in Reminders...');
-  const users = await getFirebaseData('users');
-  if (users) {
-    for (let userId in users) {
-      let userData = users[userId] || {};
-      let currentStreak = userData.streak || 1;
-      await sendDailyCheckinReminder(userId, currentStreak);
+  try {
+    console.log('Sending Daily Check-in Reminders...');
+    const users = await getFirebaseData('users');
+    if (users) {
+      for (let userId in users) {
+        let userData = users[userId] || {};
+        let currentStreak = userData.streak || 1;
+        await sendDailyCheckinReminder(userId, currentStreak);
+      }
     }
+  } catch (e) {
+    console.error('Cron job error:', e.message);
   }
 });
 
@@ -195,10 +211,11 @@ bot.command(['start', 'admin'], (ctx) => {
 app.post('/api/bot', async (req, res) => {
     try {
         await bot.handleUpdate(req.body);
-        await pollPayouts(); // Force payout check on update
+        await pollPayouts();
         res.status(200).send('OK');
     } catch (err) {
-        res.status(500).send('Error');
+        console.error('Webhook POST error:', err.message);
+        res.status(200).send('OK'); // 200 return karte hain taaki Telegram retry na kare
     }
 });
 
@@ -206,10 +223,11 @@ app.get('/api/bot', async (req, res) => {
     try {
         const webhookUrl = `https://${req.headers.host}/api/bot`;
         await bot.telegram.setWebhook(webhookUrl);
-        await pollPayouts(); // Force check payouts when endpoint is opened in browser
-        res.send(`✅ Webhook set & Payout Checked: ${webhookUrl}`);
+        await pollPayouts();
+        res.status(200).send(`✅ Webhook set & Payout Checked Successfully: ${webhookUrl}`);
     } catch (err) {
-        res.status(500).send(`❌ Error: ${err.message}`);
+        console.error('Webhook GET error:', err.message);
+        res.status(200).send(`❌ Error Handled: ${err.message}`);
     }
 });
 
