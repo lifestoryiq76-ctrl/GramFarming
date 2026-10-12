@@ -90,13 +90,21 @@ async function handleFaucetPayPayout(req, res) {
   }
 
   try {
-    // 1. FaucetPay API Call for Instant Direct Transfer
-    const faucetPayResponse = await axios.post('https://faucetpay.io/api/v1/send', new URLSearchParams({
+    const params = new URLSearchParams({
       api_key: FAUCETPAY_API_KEY,
       to: email,
-      amount: amount,
+      amount: String(amount),
       currency: currency || 'USDT'
-    }));
+    });
+
+    // 1. FaucetPay API Call for Instant Direct Transfer with 15 sec timeout
+    const faucetPayResponse = await axios.post('https://faucetpay.io/api/v1/send', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+      },
+      timeout: 15000
+    });
 
     if (faucetPayResponse.data && faucetPayResponse.data.status === 200) {
       const payoutData = {
@@ -109,8 +117,8 @@ async function handleFaucetPayPayout(req, res) {
         date: new Date().toLocaleString()
       };
 
-      // 2. Channel notification send karein
-      await sendPayoutNotification(payoutData);
+      // 2. Channel notification (background execution)
+      sendPayoutNotification(payoutData).catch(err => console.error("Notification Error:", err.message));
 
       return res.status(200).json({
         success: true,
@@ -125,7 +133,10 @@ async function handleFaucetPayPayout(req, res) {
     }
   } catch (error) {
     console.error("FaucetPay Payout Error:", error.message);
-    return res.status(500).json({ success: false, error: error.message });
+    const errorMsg = error.response && error.response.data && error.response.data.message 
+                     ? error.response.data.message 
+                     : error.message;
+    return res.status(500).json({ success: false, error: errorMsg });
   }
 }
 
