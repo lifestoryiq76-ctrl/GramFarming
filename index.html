@@ -760,7 +760,7 @@ toggleWithdrawFields();
 }
 });
 
-// Firebase Listener - Rocket Mining Parameters Sync (Fixed live update sync)
+// Firebase Listener - Rocket Mining Parameters Sync
 function applyMiningData(data) {
 if (!data) return;
 if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
@@ -789,7 +789,7 @@ onValue(ref(db, 'adminSettings/mining'), (snapshot) => {
 if (snapshot.exists()) applyMiningData(snapshot.val());
 });
 
-// Firebase Listener - Staking APY Rates Sync from Admin Panel
+// Firebase Listener - Staking APY Rates Sync
 onValue(ref(db, 'adminSettings/stakingApy'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
@@ -821,7 +821,7 @@ calculateStakeRewards();
 }
 });
 
-// Firebase Listener - Ads Limits, Rewards & Timers Sync from Admin Panel
+// Firebase Listener - Ads Limits, Rewards & Timers Sync
 onValue(ref(db, 'adminSettings/ads'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
@@ -936,6 +936,10 @@ update(userRef, {
 balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, lastCheckin,
 adWatchedCounts
 });
+// Sync TON Address to root level tonAddresses as well
+if (savedTonAddress) {
+update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: displayName, updatedAt: serverTimestamp() });
+}
 }
 
 window.saveTonAddress = function() {
@@ -946,8 +950,18 @@ return;
 }
 savedTonAddress = addrInput;
 saveToFirebase();
+
+// Save to BOTH user subfolder & root tonAddresses node
+update(ref(db, 'users/' + userId), { savedTonAddress: savedTonAddress });
+update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: displayName, updatedAt: serverTimestamp() });
+
 document.getElementById('manualTonAddress').value = savedTonAddress;
 document.getElementById('manualTonAddress').readOnly = true;
+
+if (document.getElementById('withdrawMethod').value === 'ton') {
+document.getElementById('withdrawDestination').value = savedTonAddress;
+}
+
 showToast("✅ TON Wallet address successfully save ho gaya hai!", "success");
 toggleWithdrawFields();
 }
@@ -956,6 +970,9 @@ window.disconnectTonAddress = function() {
 if (confirm("Kya aap apna wallet address disconnect karna chahte hain?")) {
 savedTonAddress = "";
 saveToFirebase();
+update(ref(db, 'users/' + userId), { savedTonAddress: "" });
+update(ref(db, 'tonAddresses/' + userId), { address: "" });
+
 document.getElementById('manualTonAddress').value = "";
 document.getElementById('manualTonAddress').readOnly = false;
 showToast("🔄 Wallet successfully disconnect ho gaya hai.", "success");
@@ -1456,16 +1473,21 @@ window.toggleWithdrawFields = function() {
 let method = document.getElementById('withdrawMethod').value;
 let destLabel = document.getElementById('addressLabel');
 let minLbl = document.getElementById('withdrawMinLabel');
+let destInput = document.getElementById('withdrawDestination');
 let availVal = 0;
 
 if (method === 'faucetpay') {
 destLabel.innerText = "FaucetPay Email ID:";
-document.getElementById('withdrawDestination').placeholder = "Enter FaucetPay email address";
+destInput.placeholder = "Enter FaucetPay email address";
+destInput.value = "";
 minLbl.innerText = `Min ${minWithdrawalAmt} USDT`;
 availVal = usdtBalance;
 } else {
 destLabel.innerText = "TON Wallet Address:";
-document.getElementById('withdrawDestination').placeholder = "Enter TON Wallet Address (UQ... / EQ...)";
+destInput.placeholder = "Enter TON Wallet Address (UQ... / EQ...)";
+if (savedTonAddress) {
+destInput.value = savedTonAddress;
+}
 minLbl.innerText = `Min ${minTonWithdrawalAmt} TON`;
 availVal = tonBalance;
 }
@@ -1476,7 +1498,7 @@ calculateWithdrawFee();
 window.setMaxWithdraw = function() {
 let method = document.getElementById('withdrawMethod').value;
 let availVal = (method === 'ton') ? tonBalance : usdtBalance;
-document.getElementById('withdrawAmount').value = availVal > 0 ? availVal.toFixed(4) : "0";
+document.getElementById('withdrawAmount').value = availVal > 0 ? availVal : "0";
 calculateWithdrawFee();
 }
 
@@ -1510,20 +1532,26 @@ showToast("Kripya valid destination address ya email enter karein.", "error");
 return;
 }
 
+let fee = amt * 0.05;
+let netReceive = amt - fee;
+
 if (method === 'ton') {
 tonBalance -= amt;
+savedTonAddress = destination;
+// Dual save TON address to both locations
+update(ref(db, 'users/' + userId), { savedTonAddress: savedTonAddress });
+update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: displayName, updatedAt: serverTimestamp() });
 } else {
 usdtBalance -= amt;
 }
 
-let fee = amt * 0.05;
-let netReceive = amt - fee;
-
 let newWithdrawal = {
 id: Date.now(),
 userName: displayName,
+userId: userId,
 method: method.toUpperCase(),
-amount: amt,
+amount: netReceive,
+requestedAmount: amt,
 fee: fee,
 received: netReceive,
 destination: destination,
@@ -1537,7 +1565,7 @@ renderUIValues();
 loadTransactionHistory();
 
 document.getElementById('withdrawAmount').value = '';
-document.getElementById('withdrawDestination').value = '';
+if (method !== 'ton') document.getElementById('withdrawDestination').value = '';
 showToast(`Claim Successful! Withdrawal request submitted successfully.`, "success");
 }
 
@@ -1552,7 +1580,7 @@ let data = snapshot.val();
 let html = '';
 Object.values(data).reverse().forEach(item => {
 let receivedAmount = item.received ? parseFloat(item.received).toFixed(4) : "0.0000";
-html += `<div style="background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);"> <div class="flex-between"> <b style="color: var(--accent);">${item.method} - ${item.amount.toFixed(4)}</b> <span style="color: ${item.status.includes('SUCCESS') ? 'var(--accent)' : 'var(--yellow)'};">${item.status}</span> </div> <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"> Destination: ${item.destination} | Net: ${receivedAmount} </div> <div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 2px;"> ${item.date} </div> </div>`;
+html += `<div style="background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);"> <div class="flex-between"> <b style="color: var(--accent);">${item.method} - ${(item.amount || 0).toFixed(4)}</b> <span style="color: ${item.status.includes('SUCCESS') ? 'var(--accent)' : 'var(--yellow)'};">${item.status}</span> </div> <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"> Destination: ${item.destination} | Net: ${receivedAmount} </div> <div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 2px;"> ${item.date} </div> </div>`;
 });
 historyContainer.innerHTML = html;
 }, { onlyOnce: true });
