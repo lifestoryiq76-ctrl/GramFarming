@@ -97,7 +97,6 @@ async function handleFaucetPayPayout(req, res) {
       currency: currency || 'USDT'
     });
 
-    // 1. FaucetPay API Call for Instant Direct Transfer with 15 sec timeout
     const faucetPayResponse = await axios.post('https://faucetpay.io/api/v1/send', params, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -117,7 +116,6 @@ async function handleFaucetPayPayout(req, res) {
         date: new Date().toLocaleString()
       };
 
-      // 2. Channel notification (background execution)
       sendPayoutNotification(payoutData).catch(err => console.error("Notification Error:", err.message));
 
       return res.status(200).json({
@@ -192,17 +190,15 @@ async function checkAndSendPayouts() {
 // Webhook & Endpoint Handling
 app.post('/api/bot', async (req, res) => {
     try {
-        // Agar request Mini App ke FaucetPay payout button se aayi hai
         if (req.body && req.body.email && req.body.amount) {
             return await handleFaucetPayPayout(req, res);
         }
 
-        // Normal Telegram Webhook Updates
         await bot.handleUpdate(req.body);
         await checkAndSendPayouts();
         res.status(200).send('OK');
     } catch (err) {
-        res.status(200).send('OK');
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
