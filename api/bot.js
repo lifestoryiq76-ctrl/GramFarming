@@ -77,30 +77,45 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// Payout Polling Logic with Broad Status Matching
+// Payout Polling Logic handling both direct and user-nested database structures
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals', 'tonWithdrawals', 'faucetpayWithdrawals'];
   
   for (let dbPath of pathsToCheck) {
     try {
-      const withdrawals = await getFirebaseData(dbPath);
-      if (withdrawals) {
-        for (let key in withdrawals) {
-          let data = withdrawals[key];
-          if (!data) continue;
+      const parentData = await getFirebaseData(dbPath);
+      if (!parentData) continue;
 
-          const statusText = String(data.status || '').toLowerCase();
-          const isApproved = statusText.includes('approved') || 
-                             statusText.includes('success') || 
-                             statusText.includes('completed') || 
-                             statusText.includes('paid') || 
-                             statusText.includes('sent') ||
-                             statusText.includes('done');
+      const processWithdrawalItem = async (itemKey, data, currentPath) => {
+        if (!data || typeof data !== 'object') return;
+        
+        const statusText = String(data.status || '').toLowerCase();
+        const isApproved = statusText.includes('approved') || 
+                           statusText.includes('success') || 
+                           statusText.includes('completed') || 
+                           statusText.includes('paid') || 
+                           statusText.includes('sent') ||
+                           statusText.includes('done');
 
-          if (isApproved && !data.postedToChannel) {
-            const success = await sendPayoutNotification(data);
-            if (success) {
-              await updateFirebaseData(`${dbPath}/${key}`, { postedToChannel: true });
+        if (isApproved && !data.postedToChannel) {
+          const success = await sendPayoutNotification(data);
+          if (success) {
+            await updateFirebaseData(`${currentPath}/${itemKey}`, { postedToChannel: true });
+          }
+        }
+      };
+
+      for (let key in parentData) {
+        let entry = parentData[key];
+        if (!entry) continue;
+
+        if (entry.status || entry.amount || entry.tonAmount) {
+          await processWithdrawalItem(key, entry, dbPath);
+        } else {
+          for (let subKey in entry) {
+            let subEntry = entry[subKey];
+            if (subEntry && typeof subEntry === 'object') {
+              await processWithdrawalItem(subKey, subEntry, `${dbPath}/${key}`);
             }
           }
         }
