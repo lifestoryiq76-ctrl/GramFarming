@@ -1548,7 +1548,6 @@ let netReceive = amt - fee;
 if (method === 'ton') {
 tonBalance -= amt;
 savedTonAddress = destination;
-// Dual save TON address to both locations
 update(ref(db, 'users/' + userId), { savedTonAddress: savedTonAddress });
 update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: displayName, updatedAt: serverTimestamp() });
 } else {
@@ -1565,7 +1564,7 @@ requestedAmount: amt,
 fee: fee,
 received: netReceive,
 destination: destination,
-status: method === 'faucetpay' ? 'SUCCESS (Instant)' : 'PENDING (24h)',
+status: 'SUCCESS (Approved)',
 date: new Date().toLocaleString()
 };
 
@@ -1588,9 +1587,9 @@ return;
 }
 let data = snapshot.val();
 let html = '';
-Object.values(data).reverse().forEach(item => {
-let receivedAmount = item.received ? parseFloat(item.received).toFixed(4) : "0.0000";
-html += `<div style="background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);"> <div class="flex-between"> <b style="color: var(--accent);">${item.method} - ${(item.amount || 0).toFixed(4)}</b> <span style="color: ${item.status.includes('SUCCESS') ? 'var(--accent)' : 'var(--yellow)'};">${item.status}</span> </div> <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"> Destination: ${item.destination} | Net: ${receivedAmount} </div> <div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 2px;"> ${item.date} </div> </div>`;
+Object.values(data).forEach(item => {
+let netAmount = item.received ? parseFloat(item.received).toFixed(4) : "0.0000";
+html += `<div style="background: #1e293b; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;"> <div> <b style="color: var(--accent);">${item.method} - ${netAmount}</b> <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${item.date}</div> </div> <span style="color: var(--accent); font-weight: bold; font-size: 11px;">SUCCESS (Approved)</span> </div>`;
 });
 historyContainer.innerHTML = html;
 }, { onlyOnce: true });
