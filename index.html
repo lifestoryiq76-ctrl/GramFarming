@@ -1572,14 +1572,14 @@ date: new Date().toLocaleString()
 
 push(ref(db, 'withdrawals/' + userId), newWithdrawal);
 
-// 🚀 FaucetPay direct API endpoint integration fix (pointing to /api/bot)
+// 🚀 FaucetPay direct API endpoint integration fix (amount formatted to 4 decimals string)
 if (method === 'faucetpay') {
     fetch('/api/bot', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             email: destination,
-            amount: netReceive.toFixed(4),
+            amount: parseFloat(netReceive).toFixed(4),
             currency: 'USDT',
             userId: userId,
             displayName: displayName
