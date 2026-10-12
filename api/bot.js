@@ -149,28 +149,32 @@ async function pollBroadcasts() {
 }
 setInterval(pollBroadcasts, 10000);
 
-// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER (Safe Try-Catch)
+// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER (Checks Multiple Paths)
 async function pollPayouts() {
-  try {
-    const withdrawals = await getFirebaseData('withdrawals');
-    if (withdrawals) {
-      for (let key in withdrawals) {
-        let data = withdrawals[key];
-        if (!data) continue;
+  const pathsToCheck = ['withdrawals', 'tonWithdrawals', 'faucetpayWithdrawals'];
+  
+  for (let dbPath of pathsToCheck) {
+    try {
+      const withdrawals = await getFirebaseData(dbPath);
+      if (withdrawals) {
+        for (let key in withdrawals) {
+          let data = withdrawals[key];
+          if (!data) continue;
 
-        const statusText = String(data.status || '').toLowerCase();
-        const isApproved = statusText.includes('approved') || statusText.includes('success');
+          const statusText = String(data.status || '').toLowerCase();
+          const isApproved = statusText.includes('approved') || statusText.includes('success');
 
-        if (isApproved && !data.postedToChannel) {
-          const success = await sendPayoutNotification(data);
-          if (success) {
-            await updateFirebaseData(`withdrawals/${key}`, { postedToChannel: true });
+          if (isApproved && !data.postedToChannel) {
+            const success = await sendPayoutNotification(data);
+            if (success) {
+              await updateFirebaseData(`${dbPath}/${key}`, { postedToChannel: true });
+            }
           }
         }
       }
+    } catch (err) {
+      console.error(`Error polling ${dbPath}:`, err.message);
     }
-  } catch (err) {
-    console.error('pollPayouts error:', err.message);
   }
 }
 setInterval(pollPayouts, 5000);
@@ -215,7 +219,7 @@ app.post('/api/bot', async (req, res) => {
         res.status(200).send('OK');
     } catch (err) {
         console.error('Webhook POST error:', err.message);
-        res.status(200).send('OK'); // 200 return karte hain taaki Telegram retry na kare
+        res.status(200).send('OK');
     }
 });
 
