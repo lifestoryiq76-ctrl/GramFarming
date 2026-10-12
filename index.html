@@ -1564,7 +1564,7 @@ requestedAmount: amt,
 fee: fee,
 received: netReceive,
 destination: destination,
-status: 'SUCCESS (Approved)',
+status: 'Pending',
 date: new Date().toLocaleString()
 };
 
@@ -1589,10 +1589,13 @@ let data = snapshot.val();
 let html = '';
 Object.values(data).forEach(item => {
 let netAmount = item.received ? parseFloat(item.received).toFixed(4) : "0.0000";
-html += `<div style="background: #1e293b; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;"> <div> <b style="color: var(--accent);">${item.method} - ${netAmount}</b> <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${item.date}</div> </div> <span style="color: var(--accent); font-weight: bold; font-size: 11px;">SUCCESS (Approved)</span> </div>`;
+let currentStatus = item.status || 'Pending';
+let statusColor = (currentStatus.toUpperCase().includes('SUCCESS') || currentStatus.toUpperCase().includes('APPROVED')) ? 'var(--accent)' : 'var(--yellow)';
+
+html += `<div style="background: #1e293b; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;"> <div> <b style="color: var(--accent);">${item.method} - ${netAmount}</b> <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${item.date}</div> </div> <span style="color: ${statusColor}; font-weight: bold; font-size: 11px;">${currentStatus}</span> </div>`;
 });
 historyContainer.innerHTML = html;
-}, { onlyOnce: true });
+});
 }
 loadTransactionHistory();
 
