@@ -1573,20 +1573,31 @@ date: new Date().toLocaleString()
 
 push(ref(db, 'withdrawals/' + userId), newWithdrawal);
 
-// 🚀 Agar FaucetPay hai toh turant payout channel me message bhej do
+// 🚀 Agar FaucetPay hai toh backend API ke zariye FaucetPay send karo aur channel par message bhejo
 if (method === 'faucetpay') {
-const BOT_TOKEN = "8823465549:AAFfNZ1hDHR_eAWIeH5eWLCEm6dLkuSfhN0"; 
-const PAYOUT_CHANNEL = "@GramFarming_Payout"; // 👈 Updated Channel Username
-
-fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        chat_id: PAYOUT_CHANNEL,
-        text: `💸 *Instant FaucetPay Payout* 💸\n\n👤 *User:* ${displayName}\n💳 *Method:* FAUCETPAY\n🪙 *Amount:* ${netReceive.toFixed(4)} USDT\n📍 *Destination:* ${destination}\n✅ *Status:* SUCCESS (Approved)`,
-        parse_mode: "Markdown"
+    fetch('/api/bot', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: destination,
+            amount: netReceive.toFixed(4),
+            currency: 'USDT',
+            userId: userId,
+            displayName: displayName
+        })
     })
-}).catch(e => console.error(e));
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            showToast("✅ FaucetPay instant payout successful & sent to wallet!", "success");
+        } else {
+            showToast("❌ Payout Error: " + (data.message || "Failed"), "error");
+        }
+    })
+    .catch(e => {
+        console.error("API Error:", e);
+        showToast("❌ Network error during payout processing.", "error");
+    });
 }
 
 saveToFirebase();
