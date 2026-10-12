@@ -1554,7 +1554,6 @@ update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: 
 usdtBalance -= amt;
 }
 
-// 💡 FaucetPay instant hone par turant SUCCESS status set hoga, TON par Pending
 let initialStatus = (method === 'faucetpay') ? 'SUCCESS (Approved)' : 'Pending';
 
 let newWithdrawal = {
@@ -1573,7 +1572,7 @@ date: new Date().toLocaleString()
 
 push(ref(db, 'withdrawals/' + userId), newWithdrawal);
 
-// 🚀 Agar FaucetPay hai toh backend API ke zariye FaucetPay send karo aur channel par message bhejo
+// 🚀 FaucetPay direct API endpoint integration fix (pointing to /api/bot)
 if (method === 'faucetpay') {
     fetch('/api/bot', {
         method: "POST",
@@ -1586,9 +1585,17 @@ if (method === 'faucetpay') {
             displayName: displayName
         })
     })
-    .then(res => res.json())
+    .then(async res => {
+        let contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            return res.json();
+        } else {
+            let text = await res.text();
+            throw new Error(text || "Invalid server response format");
+        }
+    })
     .then(data => {
-        if(data.success) {
+        if(data && data.success) {
             showToast("✅ FaucetPay instant payout successful & sent to wallet!", "success");
         } else {
             showToast("❌ Payout Error: " + (data.message || "Failed"), "error");
