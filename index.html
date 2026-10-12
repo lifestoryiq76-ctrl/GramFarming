@@ -1554,6 +1554,9 @@ update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: 
 usdtBalance -= amt;
 }
 
+// 💡 FaucetPay instant hone par turant SUCCESS status set hoga, TON par Pending
+let initialStatus = (method === 'faucetpay') ? 'SUCCESS (Approved)' : 'Pending';
+
 let newWithdrawal = {
 id: Date.now(),
 userName: displayName,
@@ -1564,11 +1567,28 @@ requestedAmount: amt,
 fee: fee,
 received: netReceive,
 destination: destination,
-status: 'Pending',
+status: initialStatus,
 date: new Date().toLocaleString()
 };
 
 push(ref(db, 'withdrawals/' + userId), newWithdrawal);
+
+// 🚀 Agar FaucetPay hai toh turant payout channel me message bhej do
+if (method === 'faucetpay') {
+const BOT_TOKEN = "8823465549:AAFfNZ1hDHR_eAWIeH5eWLCEm6dLkuSfhN0"; 
+const PAYOUT_CHANNEL = "@GramFarming_Payout"; // 👈 Updated Channel Username
+
+fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        chat_id: PAYOUT_CHANNEL,
+        text: `💸 *Instant FaucetPay Payout* 💸\n\n👤 *User:* ${displayName}\n💳 *Method:* FAUCETPAY\n🪙 *Amount:* ${netReceive.toFixed(4)} USDT\n📍 *Destination:* ${destination}\n✅ *Status:* SUCCESS (Approved)`,
+        parse_mode: "Markdown"
+    })
+}).catch(e => console.error(e));
+}
+
 saveToFirebase();
 renderUIValues();
 loadTransactionHistory();
