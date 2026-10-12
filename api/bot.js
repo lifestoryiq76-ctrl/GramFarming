@@ -13,9 +13,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-// Firebase REST Setup
+// Firebase REST Setup (Using Native fetch directly without node-fetch)
 const FIREBASE_DATABASE_URL = "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com";
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 async function setFirebaseData(path, data) {
     try {
