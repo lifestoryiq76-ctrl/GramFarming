@@ -85,27 +85,42 @@ async function sendBroadcastMessage(chatId, title, body) {
   }
 }
 
-// Helper Function: Send Payout Proof to Telegram Channel
+// Helper Function: Send Stylish Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
-  const { userId, amount, currency, method } = withdrawalData;
-  const maskedUser = userId ? `${userId.toString().slice(0, 4)}***` : 'User';
+  const { userId, userName, amount, currency, method, txUrl, date } = withdrawalData;
+  
+  const formattedDate = date || new Date().toLocaleDateString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 
-  const message = `🎉 <b>NEW WITHDRAWAL APPROVED!</b> 🎉\n\n` +
-                  `👤 <b>User ID:</b> <code>${maskedUser}</code>\n` +
-                  `💰 <b>Amount:</b> <b>${amount} ${currency || 'GRAM'}</b>\n` +
-                  `💳 <b>Method:</b> ${method || 'FaucetPay / Wallet'}\n` +
-                  `⚡ <b>Status:</b> Completed ✅\n\n` +
-                  `🌐 <b>Play & Earn:</b> @gram_farmingbot`;
+  const displayName = userName || (userId ? `User_${userId.toString().slice(0, 4)}***` : 'Member');
+
+  const message = `✅ <b>Withdrawal Success</b>\n` +
+                  `🗣 <b>User:</b> ${displayName}\n` +
+                  `💸 <b>Amount:</b> <b>${amount} ${currency || 'GRAM'}</b>\n` +
+                  `💳 <b>Method:</b> ${method || 'FaucetPay / TON'}\n` +
+                  `📅 <b>Date:</b> ${formattedDate}`;
+
+  const buttonUrl = txUrl || MINI_APP_URL;
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.url('👀 View transaction', buttonUrl)]
+  ]);
 
   try {
-    await bot.telegram.sendMessage(PAYOUT_CHANNEL, message, { parse_mode: 'HTML' });
-    console.log('Payout proof posted successfully to channel!');
+    await bot.telegram.sendMessage(PAYOUT_CHANNEL, message, {
+      parse_mode: 'HTML',
+      ...keyboard
+    });
+    console.log('Stylish payout proof posted successfully to channel!');
   } catch (error) {
     console.error('Failed to post payout proof to channel:', error.message);
   }
 }
 
-// 1. BROADCAST NOTIFICATION LISTENER (From Admin Panel)
+// 1. BROADCAST NOTIFICATION LISTENER
 async function pollBroadcasts() {
   const broadcasts = await getFirebaseData('botBroadcasts');
   if (broadcasts) {
@@ -126,7 +141,7 @@ async function pollBroadcasts() {
 }
 setInterval(pollBroadcasts, 10000);
 
-// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER (From Admin Panel / Firebase)
+// 2. AUTOMATED PAYOUT NOTIFICATION LISTENER
 async function pollPayouts() {
   const withdrawals = await getFirebaseData('withdrawals');
   if (withdrawals) {
@@ -141,7 +156,7 @@ async function pollPayouts() {
 }
 setInterval(pollPayouts, 5000);
 
-// 3. DAILY AUTO CHECK-IN REMINDER (Cron Job - Daily at 10:00 AM)
+// 3. DAILY AUTO CHECK-IN REMINDER (Cron Job)
 cron.schedule('0 10 * * *', async () => {
   console.log('Sending Daily Check-in Reminders...');
   const users = await getFirebaseData('users');
