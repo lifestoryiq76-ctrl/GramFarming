@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { Telegraf, Markup } = require('telegraf');
+const axios = require('axios');
 
 const app = express();
 app.use(express.json());
@@ -33,8 +34,9 @@ async function updateFirebaseData(path, data) {
     } catch(e) { return false; }
 }
 
-// Telegram Bot Setup
-const BOT_TOKEN = process.env.BOT_TOKEN || '8887103142:AAEBZAe-bi4ylcSauB-mMGxf97iVxHaZrlE';
+// Configuration Credentials
+const BOT_TOKEN = process.env.BOT_TOKEN || '8823465549:AAFfNZ1hDHR_eAWIeH5eWLCEm6dLkuSfhN0';
+const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY || '54554fbd31a9a72c7e84e4418b59abcde50bd6921c4a89d8dd86ae9b7c8df90a';
 const bot = new Telegraf(BOT_TOKEN);
 const MINI_APP_URL = "https://gram-farming.vercel.app";
 const PAYOUT_CHANNEL = '@GramFarming_Payout';
@@ -42,7 +44,7 @@ const PAYOUT_CHANNEL = '@GramFarming_Payout';
 // Helper Function: Send Stylish Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
   try {
-    const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date } = withdrawalData || {};
+    const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination } = withdrawalData || {};
     
     const formattedDate = date || new Date().toLocaleDateString('en-US', {
       weekday: 'short',
@@ -55,15 +57,17 @@ async function sendPayoutNotification(withdrawalData) {
     const finalAmount = amount || tonAmount || '0.00';
     const finalMethod = method || 'TON Wallet / FaucetPay';
 
-    const message = `✅ <b>Withdrawal Success</b>\n` +
-                    `🗣 <b>User:</b> ${finalName}\n` +
-                    `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'TON'}</b>\n` +
+    const message = `💸 <b>Instant Payout Success</b> 💸\n\n` +
+                    `👤 <b>User:</b> ${finalName}\n` +
                     `💳 <b>Method:</b> ${finalMethod}\n` +
-                    `📅 <b>Date:</b> ${formattedDate}`;
+                    `🪙 <b>Amount:</b> <b>${finalAmount} ${currency || 'USDT'}</b>\n` +
+                    `📍 <b>Destination:</b> ${destination || 'N/A'}\n` +
+                    `📅 <b>Date:</b> ${formattedDate}\n` +
+                    `✅ <b>Status:</b> SUCCESS (Approved)`;
 
     const buttonUrl = txUrl || MINI_APP_URL;
     const keyboard = Markup.inlineKeyboard([
-      [Markup.button.url('👀 View transaction', buttonUrl)]
+      [Markup.button.url('🚀 Open Mini App', buttonUrl)]
     ]);
 
     await bot.telegram.sendMessage(PAYOUT_CHANNEL, message, {
@@ -74,6 +78,54 @@ async function sendPayoutNotification(withdrawalData) {
   } catch (error) {
     console.error('Failed to post payout proof:', error.message);
     return false;
+  }
+}
+
+// Automatic FaucetPay Merchant API Integration
+async function handleFaucetPayPayout(req, res) {
+  const { email, amount, currency, userId, displayName } = req.body;
+
+  if (!email || !amount) {
+    return res.status(400).json({ success: false, message: "Email and amount are required." });
+  }
+
+  try {
+    // 1. FaucetPay API Call for Instant Direct Transfer
+    const faucetPayResponse = await axios.post('https://faucetpay.io/api/v1/send', new URLSearchParams({
+      api_key: FAUCETPAY_API_KEY,
+      to: email,
+      amount: amount,
+      currency: currency || 'USDT'
+    }));
+
+    if (faucetPayResponse.data && faucetPayResponse.data.status === 200) {
+      const payoutData = {
+        userId: userId,
+        userName: displayName,
+        amount: amount,
+        currency: currency || 'USDT',
+        method: 'FAUCETPAY',
+        destination: email,
+        date: new Date().toLocaleString()
+      };
+
+      // 2. Channel notification send karein
+      await sendPayoutNotification(payoutData);
+
+      return res.status(200).json({
+        success: true,
+        message: "Payout sent successfully!",
+        payout_id: faucetPayResponse.data.payout_id
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: faucetPayResponse.data.message || "FaucetPay transfer failed."
+      });
+    }
+  } catch (error) {
+    console.error("FaucetPay Payout Error:", error.message);
+    return res.status(500).json({ success: false, error: error.message });
   }
 }
 
@@ -129,6 +181,12 @@ async function checkAndSendPayouts() {
 // Webhook & Endpoint Handling
 app.post('/api/bot', async (req, res) => {
     try {
+        // Agar request Mini App ke FaucetPay payout button se aayi hai
+        if (req.body && req.body.email && req.body.amount) {
+            return await handleFaucetPayPayout(req, res);
+        }
+
+        // Normal Telegram Webhook Updates
         await bot.handleUpdate(req.body);
         await checkAndSendPayouts();
         res.status(200).send('OK');
