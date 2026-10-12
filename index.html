@@ -463,7 +463,7 @@ Fee (5%): 0.00 | You will receive: 0.00
 <h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
 <span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
 </div>
-<div id="transactionHistoryList" style="font-size: 12px; color: var(--text-muted); min-height: 50px; display: flex; align-items: center; overflow-x: auto; gap: 8px; padding-bottom: 4px;">
+<div id="transactionHistoryList" style="font-size: 12px; color: var(--text-muted); min-height: 40px; display: flex; flex-direction: column; gap: 6px;">
 No recent withdrawals yet.
 </div>
 </div>
@@ -1589,7 +1589,7 @@ let data = snapshot.val();
 let html = '';
 Object.values(data).forEach(item => {
 let netAmount = item.received ? parseFloat(item.received).toFixed(4) : "0.0000";
-html += `<div style="background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid var(--border); min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: space-between;"> <div> <b style="color: var(--accent); font-size: 13px;">${item.method} - ${netAmount}</b> <div style="font-size: 11px; color: var(--accent); font-weight: bold; margin-top: 4px;">SUCCESS (Approved)</div> </div> <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px;">${item.date}</div> </div>`;
+html += `<div style="background: #1e293b; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;"> <div> <b style="color: var(--accent);">${item.method} - ${netAmount}</b> <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${item.date}</div> </div> <span style="color: var(--accent); font-weight: bold; font-size: 11px;">SUCCESS (Approved)</span> </div>`;
 });
 historyContainer.innerHTML = html;
 }, { onlyOnce: true });
