@@ -147,7 +147,7 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
-// Comprehensive Payout Polling Logic for TON & FaucetPay
+// Payout Polling Logic
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals', 'tonWithdrawals', 'faucetpayWithdrawals'];
   
@@ -201,6 +201,12 @@ app.post('/api/bot', async (req, res) => {
     try {
         if (req.body && req.body.email && req.body.amount) {
             return await handleFaucetPayPayout(req, res);
+        }
+
+        // Direct trigger from admin panel approval
+        if (req.body && req.body.action === 'admin_approval') {
+            await sendPayoutNotification(req.body);
+            return res.status(200).json({ success: true, message: "Notification sent!" });
         }
 
         await bot.handleUpdate(req.body);
