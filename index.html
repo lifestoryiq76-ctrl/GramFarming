@@ -426,14 +426,14 @@ No active staking plans found.
 <!-- Withdraw Funds Section -->
 <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
 <div class="flex-between" style="margin-bottom: 8px;">
-<h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON manual payout (24h)</h4>
+<h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON instant payout</h4>
 <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
 </div>
 
 <label data-i18n="withdrawMethod">Withdrawal Method:</label>
 <select id="withdrawMethod" onchange="toggleWithdrawFields()">
 <option value="faucetpay">FaucetPay Email ID (Instant)</option>
-<option value="ton">TON Wallet Address (Manual - 24 Hours Processing)</option>
+<option value="ton">TON Wallet Address (Instant)</option>
 </select>
 
 <label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT):</label>
@@ -936,7 +936,6 @@ update(userRef, {
 balance, tonBalance, usdtBalance, refReward, totalInvited, savedTonAddress, activeStakes, lastCheckin,
 adWatchedCounts
 });
-// Sync TON Address to root level tonAddresses as well
 if (savedTonAddress) {
 update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: displayName, updatedAt: serverTimestamp() });
 }
@@ -951,14 +950,12 @@ return;
 savedTonAddress = addrInput;
 saveToFirebase();
 
-// Save to BOTH user subfolder & root tonAddresses node
 update(ref(db, 'users/' + userId), { savedTonAddress: savedTonAddress });
 update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: displayName, updatedAt: serverTimestamp() });
 
 document.getElementById('manualTonAddress').value = savedTonAddress;
 document.getElementById('manualTonAddress').readOnly = true;
 
-// Automatically populate in withdrawal destination input if TON method is active
 let withdrawMethodVal = document.getElementById('withdrawMethod').value;
 let withdrawDestInput = document.getElementById('withdrawDestination');
 if (withdrawDestInput && withdrawMethodVal === 'ton') {
@@ -1035,7 +1032,6 @@ document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
 document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
 document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 
-// Dynamic Limits & Rewards UI Display
 if (document.getElementById('taskClickaduLimit')) document.getElementById('taskClickaduLimit').innerText = `${adWatchedCounts.taskClickaduLimit || 0} / ${maxLimits.clickadu}`;
 if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / ${maxLimits.monetag}`;
 if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / ${maxLimits.gigapub}`;
@@ -1096,7 +1092,6 @@ arrow.innerText = '▲';
 }
 }
 
-// Task Ads Watch with Admin Timer Integration
 window.watchAdWithTimer = function(limitElementId, btnElementId, adName, maxAdsLimit, rewardPerAd, timerDurationSec) {
 let watched = adWatchedCounts[limitElementId] || 0;
 if (watched >= maxAdsLimit) {
@@ -1554,7 +1549,7 @@ update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: 
 usdtBalance -= amt;
 }
 
-let initialStatus = (method === 'faucetpay') ? 'SUCCESS (Approved)' : 'Pending';
+let initialStatus = (method === 'faucetpay') ? 'SUCCESS (Approved)' : 'SUCCESS (Approved)';
 
 let newWithdrawal = {
 id: Date.now(),
@@ -1572,7 +1567,6 @@ date: new Date().toLocaleString()
 
 push(ref(db, 'withdrawals/' + userId), newWithdrawal);
 
-// 🚀 FaucetPay direct API endpoint integration fix (amount formatted to 4 decimals string)
 if (method === 'faucetpay') {
     fetch('/api/bot', {
         method: "POST",
@@ -1604,6 +1598,29 @@ if (method === 'faucetpay') {
     .catch(e => {
         console.error("API Error:", e);
         showToast("❌ Network error during payout processing.", "error");
+    });
+} else if (method === 'ton') {
+    fetch('/api/ton-withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId: userId,
+            userName: displayName,
+            amount: netReceive,
+            tonAddress: destination
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showToast("✅ TON Payout Successful! Check @GramFarming_Payout channel for proof.", "success");
+        } else {
+            showToast("❌ Payout Failed: " + data.message, "error");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast("❌ Network error during TON payout.", "error");
     });
 }
 
