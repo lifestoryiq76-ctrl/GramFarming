@@ -58,9 +58,9 @@ async function sendPayoutNotification(withdrawalData) {
     const finalMethod = method || 'TON Wallet / FaucetPay';
 
     const message = `💸 <b>Instant Payout Success</b> 💸\n\n` +
-                    `👤 <b>User:</b> ${finalName}\n` +
+                    `🗣️ <b>User:</b> ${finalName}\n` +
                     `💳 <b>Method:</b> ${finalMethod}\n` +
-                    `🪙 <b>Amount:</b> <b>${finalAmount} ${currency || 'USDT'}</b>\n` +
+                    `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'USDT'}</b>\n` +
                     `📍 <b>Destination:</b> ${destination || 'N/A'}\n` +
                     `📅 <b>Date:</b> ${formattedDate}\n` +
                     `✅ <b>Status:</b> SUCCESS (Approved)`;
