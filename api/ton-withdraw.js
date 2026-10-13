@@ -1,4 +1,4 @@
-import { TonClient, WalletContractV4, internal } from "@ton/ton";
+import { TonClient, WalletContractV4, internal, toNano } from "@ton/ton";
 import { mnemonicToPrivateKey } from "@ton/crypto";
 import TelegramBot from "node-telegram-bot-api";
 
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
             messages: [
                 internal({
                     to: tonAddress,
-                    value: String(amount),
+                    value: toNano(String(amount)), // Fixed: Converted amount to nanoTON using toNano()
                     bounce: false,
                     body: "Gram Farming Instant Payout",
                 })
