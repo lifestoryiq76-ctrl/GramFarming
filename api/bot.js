@@ -81,7 +81,7 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// Automatic FaucetPay Merchant API Integration
+// Automatic FaucetPay Merchant API Integration (Satoshi Integer Conversion Fix)
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName } = req.body;
 
@@ -90,17 +90,21 @@ async function handleFaucetPayPayout(req, res) {
   }
 
   try {
+    // Amount ko FaucetPay Satoshi format (Integer) mein convert karein
+    const numericAmount = parseFloat(amount);
+    const satoshiAmount = Math.round(numericAmount * 100000000); // 8 decimals Satoshi multiplier
+
     const params = new URLSearchParams({
       api_key: FAUCETPAY_API_KEY,
       to: email,
-      amount: String(amount),
+      amount: String(satoshiAmount), // Satoshi integer value
       currency: currency || 'USDT'
     });
 
     const faucetPayResponse = await axios.post('https://faucetpay.io/api/v1/send', params, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        'User-Agent': 'Mozilla/5.0'
       },
       timeout: 15000
     });
@@ -113,6 +117,7 @@ async function handleFaucetPayPayout(req, res) {
         currency: currency || 'USDT',
         method: 'FAUCETPAY',
         destination: email,
+        status: 'SUCCESS (Approved)',
         date: new Date().toLocaleString()
       };
 
@@ -126,13 +131,13 @@ async function handleFaucetPayPayout(req, res) {
     } else {
       return res.status(400).json({
         success: false,
-        message: faucetPayResponse.data.message || "FaucetPay transfer failed."
+        message: faucetPayResponse.data.html_message || faucetPayResponse.data.message || "FaucetPay transfer failed."
       });
     }
   } catch (error) {
     console.error("FaucetPay Payout Error:", error.message);
-    const errorMsg = error.response && error.response.data && error.response.data.message 
-                     ? error.response.data.message 
+    const errorMsg = error.response && error.response.data && (error.response.data.html_message || error.response.data.message)
+                     ? (error.response.data.html_message || error.response.data.message)
                      : error.message;
     return res.status(500).json({ success: false, error: errorMsg });
   }
