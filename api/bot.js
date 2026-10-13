@@ -44,23 +44,27 @@ const PAYOUT_CHANNEL = '@GramFarming_Payout';
 // Helper Function: Send Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
   try {
-    const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination } = withdrawalData || {};
+    const { userId, userName, name, amount, tonAmount, received, currency, method, txUrl, date, destination } = withdrawalData || {};
     
-    const formattedDate = date || new Date().toLocaleDateString('en-US', {
+    const formattedDate = date || new Date().toLocaleString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
     });
 
     const finalName = userName || name || (userId ? `User_${String(userId).slice(0, 4)}***` : 'Member');
-    const finalAmount = amount || tonAmount || '0.00';
+    const finalAmount = amount || tonAmount || received || '0.00';
+    const finalCurrency = currency || (method === 'TON' ? 'TON' : 'USDT');
     const finalMethod = method || 'TON Wallet / FaucetPay';
 
     const message = `💸 <b>Instant Payout Success</b> 💸\n\n` +
                     `🗣️ <b>User:</b> ${finalName}\n` +
                     `💳 <b>Method:</b> ${finalMethod}\n` +
-                    `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'USDT'}</b>\n` +
+                    `💸 <b>Amount:</b> <b>${finalAmount} ${finalCurrency}</b>\n` +
                     `📍 <b>Destination:</b> ${destination || 'N/A'}\n` +
                     `📅 <b>Date:</b> ${formattedDate}\n` +
                     `✅ <b>Status:</b> SUCCESS (Approved)`;
@@ -121,7 +125,6 @@ async function handleFaucetPayPayout(req, res) {
         date: new Date().toLocaleString()
       };
 
-      // Direct await notification
       await sendPayoutNotification(payoutData);
 
       return res.status(200).json({
@@ -144,7 +147,7 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
-// Payout Polling Logic
+// Comprehensive Payout Polling Logic for TON & FaucetPay
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals', 'tonWithdrawals', 'faucetpayWithdrawals'];
   
@@ -176,7 +179,7 @@ async function checkAndSendPayouts() {
         let entry = parentData[key];
         if (!entry) continue;
 
-        if (entry.status || entry.amount || entry.tonAmount) {
+        if (entry.status || entry.amount || entry.tonAmount || entry.received) {
           await processWithdrawalItem(key, entry, dbPath);
         } else {
           for (let subKey in entry) {
@@ -188,7 +191,7 @@ async function checkAndSendPayouts() {
         }
       }
     } catch (err) {
-      console.error(`Error in ${dbPath}:`, err.message);
+      console.error(`Error scanning ${dbPath}:`, err.message);
     }
   }
 }
