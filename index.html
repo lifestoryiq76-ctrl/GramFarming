@@ -646,8 +646,11 @@ adWatchedCounts = { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit:
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
+// Updated Toast Function to clear previous toasts and prevent stacking clutter
 function showToast(message, type = 'success') {
 const container = document.getElementById('toastContainer');
+// Clear existing toasts to prevent overlap/stacking bugs
+container.innerHTML = '';
 const toast = document.createElement('div');
 toast.style.cssText = `background: ${type === 'success' ? '#22c55e' : '#ef4444'}; color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: opacity 0.3s ease; opacity: 0;`;
 toast.innerText = message;
@@ -656,7 +659,7 @@ container.appendChild(toast);
 setTimeout(() => { toast.style.opacity = '1'; }, 10);
 setTimeout(() => {
 toast.style.opacity = '0';
-setTimeout(() => { container.removeChild(toast); }, 300);
+setTimeout(() => { if (toast.parentNode) container.removeChild(toast); }, 300);
 }, 3000);
 }
 
@@ -1659,7 +1662,6 @@ loadTransactionHistory();
 
 document.getElementById('withdrawAmount').value = '';
 if (method !== 'ton') document.getElementById('withdrawDestination').value = '';
-showToast(`Claim Successful! Withdrawal request submitted successfully.`, "success");
 }
 
 window.loadTransactionHistory = function() {
