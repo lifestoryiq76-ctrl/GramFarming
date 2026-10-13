@@ -399,6 +399,22 @@
         return `${days} days ago`;
     }
 
+    // Admin panel se TON approve karne ke baad notification trigger karne ka function
+    async function notifyAdminApproval(withdrawalData) {
+        try {
+            await fetch('/api/bot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'admin_approval',
+                    ...withdrawalData
+                })
+            });
+        } catch (e) {
+            console.error("Notification trigger error:", e);
+        }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
         remove(ref(db, 'adminSettings/announcement')).catch(() => {});
 
@@ -487,7 +503,7 @@
                             actionButtons = `<span style="color:#ef4444; font-weight:bold; margin-right:6px;">Rejected ❌</span>
                                              <button class="btn-delete" onclick="deleteWithdrawalHistory('${userId}', '${wId}')" title="Delete History">🗑️ Delete</button>`;
                         } else {
-                            actionButtons = `<button class="btn-success" onclick="processWithdrawal('${userId}', '${wId}', 'approve', '${w.method}', ${w.amount})">Approve ✅</button>
+                            actionButtons = `<button class="btn-success" onclick="processWithdrawal('${userId}', '${wId}', 'approve', '${w.method}', ${w.amount}, '${w.userName || w.name || 'User'}', '${w.destination || ''}')">Approve ✅</button>
                                              <button class="btn-danger" onclick="processWithdrawal('${userId}', '${wId}', 'reject', '${w.method}', ${w.amount})">Reject ❌</button>
                                              <button class="btn-delete" onclick="deleteWithdrawalHistory('${userId}', '${wId}')" title="Delete History">🗑️ Delete</button>`;
                         }
@@ -531,7 +547,6 @@
                     let u = child.val();
                     let nameDisplay = u.name ? u.name : 'No Name';
                     
-                    // Format Staking Details for each user
                     let stakingInfoHtml = '<span style="color:var(--text-muted);">0 (No Staking)</span>';
                     if (u.activeStakes && Array.isArray(u.activeStakes) && u.activeStakes.length > 0) {
                         stakingInfoHtml = '';
@@ -638,10 +653,23 @@
         });
     };
 
-    window.processWithdrawal = function(userId, wId, action, method, amount) {
+    window.processWithdrawal = function(userId, wId, action, method, amount, userName, destination) {
         let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED (Refunded)';
         update(ref(db, `withdrawals/${userId}/${wId}`), { status: statusText }).then(() => {
-            if (action === 'reject') {
+            if (action === 'approve') {
+                // Turant channel par notification bhejne ke liye function call
+                notifyAdminApproval({
+                    userId: userId,
+                    userName: userName,
+                    amount: amount,
+                    currency: (method || '').toUpperCase().includes('TON') ? 'TON' : 'USDT',
+                    method: method || 'TON',
+                    destination: destination,
+                    date: new Date().toLocaleString()
+                });
+                alert('Approved & Notification Sent!');
+                location.reload();
+            } else if (action === 'reject') {
                 get(ref(db, `users/${userId}`)).then((snapshot) => {
                     if (snapshot.exists()) {
                         let userData = snapshot.val();
@@ -657,9 +685,6 @@
                         });
                     } else { location.reload(); }
                 });
-            } else {
-                alert('Approved!');
-                location.reload();
             }
         });
     };
