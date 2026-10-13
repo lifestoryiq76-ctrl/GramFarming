@@ -6,14 +6,14 @@ const axios = require('axios');
 const app = express();
 app.use(express.json());
 
-// Root URL par HTML Web App (index.html) serve karein
+// Serve static files
 app.use(express.static(path.join(__dirname, '..')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-// Firebase REST Setup (Using built-in global fetch directly)
+// Firebase REST Setup
 const FIREBASE_DATABASE_URL = "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com";
 
 async function getFirebaseData(path) {
@@ -34,14 +34,14 @@ async function updateFirebaseData(path, data) {
     } catch(e) { return false; }
 }
 
-// Configuration Credentials
+// Credentials Configuration
 const BOT_TOKEN = process.env.BOT_TOKEN || '8823465549:AAFfNZ1hDHR_eAWIeH5eWLCEm6dLkuSfhN0';
 const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY || '54554fbd31a9a72c7e84e4418b59abcde50bd6921c4a89d8dd86ae9b7c8df90a';
 const bot = new Telegraf(BOT_TOKEN);
 const MINI_APP_URL = "https://gram-farming.vercel.app";
 const PAYOUT_CHANNEL = '@GramFarming_Payout';
 
-// Helper Function: Send Stylish Payout Proof to Telegram Channel
+// Helper Function: Send Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
   try {
     const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination } = withdrawalData || {};
@@ -74,14 +74,15 @@ async function sendPayoutNotification(withdrawalData) {
       parse_mode: 'HTML',
       ...keyboard
     });
+    console.log("✅ Channel Notification Sent Successfully!");
     return true;
   } catch (error) {
-    console.error('Failed to post payout proof:', error.message);
+    console.error('❌ Failed to post payout proof to channel:', error.description || error.message);
     return false;
   }
 }
 
-// Automatic FaucetPay Merchant API Integration (Satoshi Integer Conversion Fix)
+// Automatic FaucetPay Merchant API Integration
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName } = req.body;
 
@@ -90,14 +91,13 @@ async function handleFaucetPayPayout(req, res) {
   }
 
   try {
-    // Amount ko FaucetPay Satoshi format (Integer) mein convert karein
     const numericAmount = parseFloat(amount);
-    const satoshiAmount = Math.round(numericAmount * 100000000); // 8 decimals Satoshi multiplier
+    const satoshiAmount = Math.round(numericAmount * 100000000);
 
     const params = new URLSearchParams({
       api_key: FAUCETPAY_API_KEY,
       to: email,
-      amount: String(satoshiAmount), // Satoshi integer value
+      amount: String(satoshiAmount),
       currency: currency || 'USDT'
     });
 
@@ -121,7 +121,8 @@ async function handleFaucetPayPayout(req, res) {
         date: new Date().toLocaleString()
       };
 
-      sendPayoutNotification(payoutData).catch(err => console.error("Notification Error:", err.message));
+      // Direct await notification
+      await sendPayoutNotification(payoutData);
 
       return res.status(200).json({
         success: true,
@@ -143,7 +144,7 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
-// Payout Polling Logic handling both direct and user-nested database structures
+// Payout Polling Logic
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals', 'tonWithdrawals', 'faucetpayWithdrawals'];
   
