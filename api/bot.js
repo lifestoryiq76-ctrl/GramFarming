@@ -38,7 +38,9 @@ async function updateFirebaseData(path, data) {
 const BOT_TOKEN = process.env.BOT_TOKEN || '8823465549:AAFfNZ1hDHR_eAWIeH5eWLCEm6dLkuSfhN0';
 const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY || '54554fbd31a9a72c7e84e4418b59abcde50bd6921c4a89d8dd86ae9b7c8df90a';
 const bot = new Telegraf(BOT_TOKEN);
-const MINI_APP_URL = "https://gram-farming.vercel.app";
+
+// Telegram Direct Mini App Link (Fixes refresh issue)
+const MINI_APP_URL = "https://t.me/GramFarmingbot_bot/app";
 const PAYOUT_CHANNEL = '@GramFarming_Payout';
 
 // Helper Function: Send Payout Proof to Telegram Channel
