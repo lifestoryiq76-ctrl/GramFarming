@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
+const { TonClient, WalletContractV4, internal, toNano } = require('@ton/ton');
+const { mnemonicToPrivateKey } = require('@ton/crypto');
 
 const app = express();
 app.use(express.json());
@@ -43,6 +45,52 @@ const bot = new Telegraf(BOT_TOKEN);
 const MINI_APP_URL = "https://t.me/GramFarmingbot_bot/app";
 const PAYOUT_CHANNEL = '@GramFarming_Payout';
 
+// Initialize TON Client with Toncenter API Key
+const tonClient = new TonClient({
+    endpoint: 'https://toncenter.com/api/v2/jsonRPC',
+    apiKey: process.env.TON_API_KEY
+});
+
+// Automated TON Transfer via MyTonWallet Seed Phrase
+async function processTonBlockchainPayout(toAddress, amountInTon) {
+    try {
+        if (!process.env.TON_WALLET_MNEMONIC) {
+            throw new Error("TON_WALLET_MNEMONIC is missing in Vercel!");
+        }
+
+        const mnemonic = process.env.TON_WALLET_MNEMONIC.trim().split(/\s+/);
+        const key = await mnemonicToPrivateKey(mnemonic);
+
+        // WalletContractV4 for standard TON Wallets
+        const wallet = WalletContractV4.create({ 
+            publicKey: key.publicKey, 
+            workchain: 0 
+        });
+
+        const contract = tonClient.open(wallet);
+        const seqno = await contract.getSeqno();
+
+        // Send transaction
+        await contract.sendTransfer({
+            seqno: seqno,
+            secretKey: key.secretKey,
+            messages: [
+                internal({
+                    to: toAddress,
+                    value: toNano(String(amountInTon)),
+                    bounce: false,
+                    body: 'Gram Farming Instant Withdrawal',
+                })
+            ]
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error("TON Transfer Error:", error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 // Helper Function: Send Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
   try {
@@ -60,7 +108,7 @@ async function sendPayoutNotification(withdrawalData) {
 
     const finalName = userName || name || (userId ? `User_${String(userId).slice(0, 4)}***` : 'Member');
     const finalAmount = amount || tonAmount || received || '0.00';
-    const finalCurrency = currency || (method === 'TON' ? 'TON' : 'USDT');
+    const finalCurrency = currency || (method === 'TON' || method === 'TON Blockchain' ? 'TON' : 'USDT');
     const finalMethod = method || 'TON Wallet / FaucetPay';
 
     const message = `💸 <b>Instant Payout Success</b> 💸\n\n` +
@@ -87,6 +135,44 @@ async function sendPayoutNotification(withdrawalData) {
     return false;
   }
 }
+
+// Endpoint: Instant TON Withdrawal API Route
+app.post('/api/ton-withdraw', async (req, res) => {
+    const { userId, userName, displayName, amount, tonAddress } = req.body;
+
+    if (!tonAddress || !amount || amount <= 0) {
+        return res.status(400).json({ success: false, message: "Invalid address or amount" });
+    }
+
+    // 1. Execute Blockchain Transfer
+    const tonResult = await processTonBlockchainPayout(tonAddress, amount);
+
+    if (tonResult.success) {
+        const payoutDetails = {
+            userId: userId,
+            userName: userName || displayName,
+            amount: amount,
+            currency: 'TON',
+            method: 'TON Blockchain',
+            destination: tonAddress,
+            status: 'SUCCESS (Approved)',
+            date: new Date().toLocaleString()
+        };
+
+        // 2. Trigger Channel Notification Immediately
+        await sendPayoutNotification(payoutDetails);
+
+        return res.json({ 
+            success: true, 
+            message: "Instant TON Payout successful and posted to channel!" 
+        });
+    } else {
+        return res.status(500).json({ 
+            success: false, 
+            message: "TON Transfer failed: " + tonResult.error 
+        });
+    }
+});
 
 // Automatic FaucetPay Merchant API Integration
 async function handleFaucetPayPayout(req, res) {
