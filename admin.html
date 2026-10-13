@@ -399,10 +399,10 @@
         return `${days} days ago`;
     }
 
-    // Admin panel se TON approve karne ke baad notification trigger karne ka function
+    // Admin panel se TON approve karne ke baad notification trigger karne ka function (Fixed with Full Vercel Endpoint)
     async function notifyAdminApproval(withdrawalData) {
         try {
-            await fetch('/api/bot', {
+            await fetch('https://gram-farming.vercel.app/api/bot', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -410,6 +410,7 @@
                     ...withdrawalData
                 })
             });
+            console.log("✅ Admin approval notification sent to backend!");
         } catch (e) {
             console.error("Notification trigger error:", e);
         }
@@ -657,7 +658,6 @@
         let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED (Refunded)';
         update(ref(db, `withdrawals/${userId}/${wId}`), { status: statusText }).then(() => {
             if (action === 'approve') {
-                // Turant channel par notification bhejne ke liye function call
                 notifyAdminApproval({
                     userId: userId,
                     userName: userName,
