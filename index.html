@@ -1603,7 +1603,8 @@ if (method === 'faucetpay') {
 } else if (method === 'ton') {
     showToast("⌛ Processing TON Blockchain Payout...", "success");
 
-    fetch('/api/ton-withdraw', {
+    // FIXED: Updated endpoint path to match 'ton-withdwar.js' file name
+    fetch('/api/ton-withdwar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
