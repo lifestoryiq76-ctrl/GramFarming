@@ -1,5 +1,5 @@
-import { TonClient, WalletContractV4, internal, toNano } from "@ton/ton";
 import { mnemonicToPrivateKey } from "@ton/crypto";
+import { WalletContractV4, internal, toNano } from "@ton/ton";
 import TelegramBot from "node-telegram-bot-api";
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN);
@@ -21,19 +21,37 @@ export default async function handler(req, res) {
             return res.status(500).json({ success: false, message: 'Server wallet mnemonic missing in environment variables.' });
         }
 
-        const client = new TonClient({
-            endpoint: 'https://toncenter.com/api/v2/jsonRPC'
-        });
-
         const mnemonicArray = mnemonic.trim().split(/\s+/);
         const key = await mnemonicToPrivateKey(mnemonicArray);
         
         const wallet = WalletContractV4.create({ publicKey: key.publicKey, workchain: 0 });
-        const contract = client.open(wallet);
+        const walletAddress = wallet.address.toString({ bounceable: false });
 
-        const seqno = await contract.getSeqno();
-        
-        await contract.sendTransfer({
+        // Fetch seqno directly via TonCenter HTTP API to avoid Wasm/Axios node issues
+        const apiKey = process.env.TONCENTER_API_KEY ? `&api_key=${process.env.TONCENTER_API_KEY}` : '';
+        const seqnoRes = await fetch(`https://toncenter.com/api/v2/jsonRPC`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: 1,
+                jsonrpc: "2.0",
+                method: "run_get_method",
+                params: {
+                    address: walletAddress,
+                    method: "seqno",
+                    stack: []
+                }
+            })
+        });
+
+        const seqnoData = await seqnoRes.json();
+        let seqno = 0;
+        if (seqnoData && seqnoData.result && seqnoData.result.stack && seqnoData.result.stack[0]) {
+            seqno = parseInt(seqnoData.result.stack[0][1], 16) || 0;
+        }
+
+        // Build Transfer Message
+        const transfer = wallet.createTransfer({
             secretKey: key.secretKey,
             seqno: seqno,
             messages: [
@@ -45,6 +63,25 @@ export default async function handler(req, res) {
                 })
             ]
         });
+
+        const boc = transfer.toBoc().toString("base64");
+
+        // Send Boc via TonCenter API
+        const sendRes = await fetch(`https://toncenter.com/api/v2/jsonRPC`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: 1,
+                jsonrpc: "2.0",
+                method: "sendBoc",
+                params: { boc: boc }
+            })
+        });
+
+        const sendData = await sendRes.json();
+        if (!sendData.result) {
+            throw new Error("Failed to broadcast transaction to TON blockchain");
+        }
 
         const channelId = process.env.PAYOUT_CHANNEL_ID || '@GramFarming_Payout';
         const msgText = `🚀 <b>New TON Instant Payout!</b>\n\n` +
