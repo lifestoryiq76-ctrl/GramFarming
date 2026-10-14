@@ -6,10 +6,6 @@
       "use": "@vercel/node"
     },
     {
-      "src": "api/ton-withdrew.js",
-      "use": "@vercel/node"
-    },
-    {
       "src": "*.html",
       "use": "@vercel/static"
     }
@@ -20,8 +16,8 @@
       "dest": "api/bot.js"
     },
     {
-      "src": "/api/ton-withdrew",
-      "dest": "api/ton-withdrew.js"
+      "src": "/api/withdraw/ton",
+      "dest": "api/bot.js"
     },
     {
       "src": "/(.*)",
