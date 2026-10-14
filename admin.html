@@ -325,6 +325,9 @@
     <!-- 7B. TON Withdrawal Requests (Manual / Pending System) -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests (Manual)</h2>
+        <button type="button" onclick="approveAllTonWithdrawals()" style="background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 12px; width: 100%;">
+            🚀 Approve All Pending TON Requests
+        </button>
         <div class="table-container">
             <table>
                 <thead>
@@ -748,6 +751,71 @@
                 }
             });
         });
+    };
+
+    // Bulk Approve All Pending TON Requests Function
+    window.approveAllTonWithdrawals = async function() {
+        if (!confirm("Kya aap saari pending TON requests ko ek sath approve karke channel par post karna chahte hain?")) return;
+
+        try {
+            const snapshot = await get(ref(db, 'tonWithdrawals'));
+            if (!snapshot.exists()) {
+                alert("Koyi pending TON request nahi mili.");
+                return;
+            }
+
+            const data = snapshot.val();
+            let approvedCount = 0;
+
+            for (let key in data) {
+                let item = data[key];
+                // Check if status is PENDING or not SUCCESS/APPROVED
+                if (item && (!item.status || item.status === 'PENDING')) {
+                    // 1. Update status in tonWithdrawals
+                    await update(ref(db, `tonWithdrawals/${key}`), { status: 'SUCCESS (Approved)', postedToChannel: true });
+                    
+                    // 2. Sync status to user personal withdrawals
+                    if (item.userId) {
+                        const userW_snap = await get(ref(db, `withdrawals/${item.userId}`));
+                        if (userW_snap.exists()) {
+                            let updates = {};
+                            userW_snap.forEach((childSnap) => {
+                                let wItem = childSnap.val();
+                                if (wItem.destination === item.destination && Math.abs(wItem.amount - item.amount) < 0.0001) {
+                                    updates[`withdrawals/${item.userId}/${childSnap.key}/status`] = 'SUCCESS (Approved)';
+                                }
+                            });
+                            if (Object.keys(updates).length > 0) {
+                                await update(ref(db), updates);
+                            }
+                        }
+                    }
+
+                    // 3. Trigger Telegram Channel Notification
+                    await fetch('/api/bot', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'admin_approval',
+                            userId: item.userId || 'N/A',
+                            userName: item.userName || 'User',
+                            amount: item.amount || 0,
+                            currency: 'TON',
+                            method: 'TON Wallet',
+                            destination: item.destination || 'N/A',
+                            date: new Date().toLocaleString()
+                        })
+                    });
+
+                    approvedCount++;
+                }
+            }
+
+            alert(`✅ Total ${approvedCount} TON requests successfully approve ho gayi aur channel par post ho gayi!`);
+            location.reload();
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
     };
 
     window.deleteWithdrawalRecord = function(pathStr, type) {
