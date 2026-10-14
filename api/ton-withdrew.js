@@ -21,7 +21,6 @@ export default async function handler(req, res) {
             return res.status(500).json({ success: false, message: 'Server wallet mnemonic missing in environment variables.' });
         }
 
-        // Switched to TonApi endpoint which is stable on Vercel serverless
         const client = new TonClient({
             endpoint: 'https://toncenter.com/api/v2/jsonRPC'
         });
@@ -65,7 +64,7 @@ export default async function handler(req, res) {
 
         return res.status(200).json({ success: true, message: 'Payout sent successfully!' });
 
-    }, catch (error) {
+    } catch (error) {
         console.error("TON Withdraw Detailed Error:", error);
         return res.status(500).json({ 
             success: false, 
