@@ -399,23 +399,6 @@
         return `${days} days ago`;
     }
 
-    // Admin panel se TON approve karne ke baad notification trigger karne ka function
-    async function notifyAdminApproval(withdrawalData) {
-        try {
-            await fetch('https://gram-farming.vercel.app/api/bot', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'admin_approval',
-                    ...withdrawalData
-                })
-            });
-            console.log("✅ Admin approval notification sent to backend!");
-        } catch (e) {
-            console.error("Notification trigger error:", e);
-        }
-    }
-
     window.addEventListener('DOMContentLoaded', () => {
         remove(ref(db, 'adminSettings/announcement')).catch(() => {});
 
@@ -709,12 +692,48 @@
             let w = snapshot.val();
             let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED (Refunded)';
 
+            // 1. Update in tonWithdrawals
             update(ref(db, `tonWithdrawals/${wId}`), { status: statusText, postedToChannel: action === 'approve' ? false : true }).then(() => {
+                
+                // 2. Update user's personal withdrawal history so mini-app updates from PENDING to SUCCESS
+                if (w.userId) {
+                    get(ref(db, `withdrawals/${w.userId}`)).then((userW_snap) => {
+                        if (userW_snap.exists()) {
+                            let updates = {};
+                            userW_snap.forEach((childSnap) => {
+                                let item = childSnap.val();
+                                if (item.destination === w.destination && Math.abs(item.amount - w.amount) < 0.0001) {
+                                    updates[`withdrawals/${w.userId}/${childSnap.key}/status`] = statusText;
+                                }
+                            });
+                            if (Object.keys(updates).length > 0) {
+                                update(ref(db), updates);
+                            }
+                        }
+                    });
+                }
+
                 if (action === 'approve') {
-                    alert('TON Withdrawal Approved! Channel notification triggered via bot backend.');
+                    // Trigger channel notification via backend bot endpoint
+                    fetch('/api/bot', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'admin_approval',
+                            userId: w.userId,
+                            userName: w.userName,
+                            amount: w.amount,
+                            currency: 'TON',
+                            method: 'TON Wallet',
+                            destination: w.destination,
+                            date: new Date().toLocaleString()
+                        })
+                    }).catch(e => console.log(e));
+
+                    alert('TON Withdrawal Approved! Channel notification & user history updated.');
                     location.reload();
                 } else {
-                    // Refund to user tonBalance
+                    // Refund to user tonBalance if rejected
                     if (w.userId) {
                         get(ref(db, `users/${w.userId}`)).then((userSnap) => {
                             if (userSnap.exists()) {
