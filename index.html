@@ -426,17 +426,17 @@ No active staking plans found.
 <!-- Withdraw Funds Section -->
 <div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
 <div class="flex-between" style="margin-bottom: 8px;">
-<h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay instant or TON instant payout</h4>
+<h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay Instant & TON Manual Payout</h4>
 <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
 </div>
 
 <label data-i18n="withdrawMethod">Withdrawal Method:</label>
 <select id="withdrawMethod" onchange="toggleWithdrawFields()">
 <option value="faucetpay">FaucetPay Email ID (Instant)</option>
-<option value="ton">TON Wallet Address (Instant)</option>
+<option value="ton">TON Wallet Address (Manual / Admin Panel)</option>
 </select>
 
-<label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT):</label>
+<label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT/TON):</label>
 <input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001" oninput="calculateWithdrawFee()">
 
 <div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
@@ -649,7 +649,6 @@ localStorage.setItem('last_ads_reset_date', todayDateStr);
 // Updated Toast Function to clear previous toasts and prevent stacking clutter
 function showToast(message, type = 'success') {
 const container = document.getElementById('toastContainer');
-// Clear existing toasts to prevent overlap/stacking bugs
 container.innerHTML = '';
 const toast = document.createElement('div');
 toast.style.cssText = `background: ${type === 'success' ? '#22c55e' : '#ef4444'}; color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: opacity 0.3s ease; opacity: 0;`;
@@ -745,7 +744,6 @@ localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
 
 loadFromLocalStorage();
 
-// Firebase Listener - General & Economic Settings Sync
 onValue(ref(db, 'adminSettings/general'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
@@ -763,7 +761,6 @@ toggleWithdrawFields();
 }
 });
 
-// Firebase Listener - Rocket Mining Parameters Sync
 function applyMiningData(data) {
 if (!data) return;
 if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
@@ -792,7 +789,6 @@ onValue(ref(db, 'adminSettings/mining'), (snapshot) => {
 if (snapshot.exists()) applyMiningData(snapshot.val());
 });
 
-// Firebase Listener - Staking APY Rates Sync
 onValue(ref(db, 'adminSettings/stakingApy'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
@@ -824,7 +820,6 @@ calculateStakeRewards();
 }
 });
 
-// Firebase Listener - Ads Limits, Rewards & Timers Sync
 onValue(ref(db, 'adminSettings/ads'), (snapshot) => {
 if (snapshot.exists()) {
 const data = snapshot.val();
@@ -1601,17 +1596,18 @@ if (method === 'faucetpay') {
         showToast("❌ Network error during payout processing.", "error");
     });
 } else if (method === 'ton') {
-    showToast("⌛ Processing TON Blockchain Payout...", "success");
+    showToast("⌛ Submitting TON Withdrawal Request...", "success");
 
-    // FIXED: Updated endpoint path to match 'ton-withdrew.js' file name
-    fetch('/api/ton-withdrew', {
+    // UPDATED: Pointing to the new manual / pending endpoint in api/bot.js
+    fetch('/api/withdraw/ton', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             userId: userId,
-            userName: displayName,
+            displayName: displayName,
             amount: netReceive,
-            tonAddress: destination
+            currency: 'TON',
+            walletAddress: destination
         })
     })
     .then(async res => {
@@ -1629,21 +1625,21 @@ if (method === 'faucetpay') {
                 id: Date.now(),
                 userName: displayName,
                 userId: userId,
-                method: 'TON',
+                method: 'TON Wallet',
                 amount: netReceive,
                 requestedAmount: amt,
                 fee: fee,
                 received: netReceive,
                 destination: destination,
-                status: 'SUCCESS (Approved)',
+                status: 'PENDING',
                 date: new Date().toLocaleString()
             };
             push(ref(db, 'withdrawals/' + userId), newWithdrawal);
-            showToast("✅ TON Payout Successful! Check @GramFarming_Payout channel for proof.", "success");
+            showToast("✅ TON Withdrawal Request submitted successfully! Admin will process it soon.", "success");
         } else {
             tonBalance += amt;
             saveToFirebase();
-            showToast("❌ Payout Failed: " + data.message, "error");
+            showToast("❌ Payout Error: " + data.message, "error");
         }
         renderUIValues();
         loadTransactionHistory();
@@ -1653,7 +1649,7 @@ if (method === 'faucetpay') {
         tonBalance += amt;
         saveToFirebase();
         renderUIValues();
-        showToast("❌ Network error during TON payout.", "error");
+        showToast("❌ Network error during TON withdrawal request.", "error");
     });
 }
 
