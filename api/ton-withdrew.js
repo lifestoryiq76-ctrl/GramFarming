@@ -21,30 +21,42 @@ export default async function handler(req, res) {
             return res.status(500).json({ success: false, message: 'Server wallet mnemonic missing in environment variables.' });
         }
 
+        const apiKey = process.env.TONCENTER_API_KEY ? process.env.TONCENTER_API_KEY.trim() : '';
+
+        // TonCenter RPC with direct apiKey parameter & fallback support
         const client = new TonClient({
-            endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-            apiKey: process.env.TONCENTER_API_KEY || ''
+            endpoint: apiKey 
+                ? `https://toncenter.com/api/v2/jsonRPC?api_key=${apiKey}` 
+                : 'https://toncenter.com/api/v2/jsonRPC',
+            apiKey: apiKey
         });
 
-        const key = await mnemonicToPrivateKey(mnemonic.split(' '));
+        // 1. Convert Mnemonic to Private Key
+        const mnemonicArray = mnemonic.trim().split(/\s+/);
+        const key = await mnemonicToPrivateKey(mnemonicArray);
+        
+        // 2. Initialize WalletContractV4
         const wallet = WalletContractV4.create({ publicKey: key.publicKey, workchain: 0 });
         const contract = client.open(wallet);
 
+        // 3. Fetch Sequence Number
         const seqno = await contract.getSeqno();
         
+        // 4. Send Transfer Transaction
         await contract.sendTransfer({
             secretKey: key.secretKey,
             seqno: seqno,
             messages: [
                 internal({
                     to: tonAddress,
-                    value: toNano(String(amount)), // Fixed: Converted amount to nanoTON using toNano()
+                    value: toNano(String(amount)),
                     bounce: false,
                     body: "Gram Farming Instant Payout",
                 })
             ]
         });
 
+        // 5. Notify Telegram Channel
         const channelId = process.env.PAYOUT_CHANNEL_ID || '@GramFarming_Payout';
         const msgText = `🚀 <b>New TON Instant Payout!</b>\n\n` +
                         `👤 <b>User:</b> ${userName || 'User'} (ID: ${userId})\n` +
@@ -64,7 +76,10 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, message: 'Payout sent successfully!' });
 
     } catch (error) {
-        console.error("TON Withdraw Error:", error);
-        return res.status(500).json({ success: false, message: error.message || 'Internal server error during TON transfer' });
+        console.error("TON Withdraw Detailed Error:", error);
+        return res.status(500).json({ 
+            success: false, 
+            message: error.message || 'Internal server error during TON transfer' 
+        });
     }
 }
