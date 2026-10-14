@@ -21,28 +21,19 @@ export default async function handler(req, res) {
             return res.status(500).json({ success: false, message: 'Server wallet mnemonic missing in environment variables.' });
         }
 
-        const apiKey = process.env.TONCENTER_API_KEY ? process.env.TONCENTER_API_KEY.trim() : '';
-
-        // TonCenter RPC with direct apiKey parameter & fallback support
+        // Switched to TonApi endpoint which is stable on Vercel serverless
         const client = new TonClient({
-            endpoint: apiKey 
-                ? `https://toncenter.com/api/v2/jsonRPC?api_key=${apiKey}` 
-                : 'https://toncenter.com/api/v2/jsonRPC',
-            apiKey: apiKey
+            endpoint: 'https://toncenter.com/api/v2/jsonRPC'
         });
 
-        // 1. Convert Mnemonic to Private Key
         const mnemonicArray = mnemonic.trim().split(/\s+/);
         const key = await mnemonicToPrivateKey(mnemonicArray);
         
-        // 2. Initialize WalletContractV4
         const wallet = WalletContractV4.create({ publicKey: key.publicKey, workchain: 0 });
         const contract = client.open(wallet);
 
-        // 3. Fetch Sequence Number
         const seqno = await contract.getSeqno();
         
-        // 4. Send Transfer Transaction
         await contract.sendTransfer({
             secretKey: key.secretKey,
             seqno: seqno,
@@ -56,7 +47,6 @@ export default async function handler(req, res) {
             ]
         });
 
-        // 5. Notify Telegram Channel
         const channelId = process.env.PAYOUT_CHANNEL_ID || '@GramFarming_Payout';
         const msgText = `🚀 <b>New TON Instant Payout!</b>\n\n` +
                         `👤 <b>User:</b> ${userName || 'User'} (ID: ${userId})\n` +
@@ -75,7 +65,7 @@ export default async function handler(req, res) {
 
         return res.status(200).json({ success: true, message: 'Payout sent successfully!' });
 
-    } catch (error) {
+    }, catch (error) {
         console.error("TON Withdraw Detailed Error:", error);
         return res.status(500).json({ 
             success: false, 
