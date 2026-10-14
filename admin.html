@@ -322,16 +322,16 @@
         </div>
     </div>
 
-    <!-- 7B. TON Withdrawal Requests -->
+    <!-- 7B. TON Withdrawal Requests (Manual / Pending System) -->
     <div class="card">
-        <h2>💎 TON Withdrawal Requests</h2>
+        <h2>💎 TON Withdrawal Requests (Manual)</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>User Details</th>
+                        <th>Request ID / User</th>
                         <th>Amount (TON)</th>
-                        <th>Destination</th>
+                        <th>Destination Address</th>
                         <th>Method</th>
                         <th>Status & Time</th>
                         <th>Action</th>
@@ -399,7 +399,7 @@
         return `${days} days ago`;
     }
 
-    // Admin panel se TON approve karne ke baad notification trigger karne ka function (Fixed with Full Vercel Endpoint)
+    // Admin panel se TON approve karne ke baad notification trigger karne ka function
     async function notifyAdminApproval(withdrawalData) {
         try {
             await fetch('https://gram-farming.vercel.app/api/bot', {
@@ -476,15 +476,11 @@
             }
         }).catch(err => console.error("Load settings error:", err));
 
-        // Load Withdrawals
+        // 1. Load FaucetPay Withdrawals from user paths
         get(ref(db, 'withdrawals')).then((snapshot) => {
             const fpTableBody = document.getElementById('faucetpayTableBody');
-            const tonTableBody = document.getElementById('tonTableBody');
             fpTableBody.innerHTML = '';
-            tonTableBody.innerHTML = '';
-            
             let fpCount = 0;
-            let tonCount = 0;
 
             if (snapshot.exists()) {
                 snapshot.forEach((userSnapshot) => {
@@ -493,48 +489,81 @@
                         let wId = wSnapshot.key;
                         let w = wSnapshot.val();
                         let method = (w.method || '').toUpperCase();
-                        let isSuccess = w.status && w.status.includes('SUCCESS');
-                        let isRejected = w.status && w.status.includes('REJECTED');
                         
-                        let actionButtons = '';
-                        if (isSuccess) {
-                            actionButtons = `<span style="color:#22c55e; font-weight:bold; margin-right:6px;">Approved ✅</span>
-                                             <button class="btn-delete" onclick="deleteWithdrawalHistory('${userId}', '${wId}')" title="Delete History">🗑️ Delete</button>`;
-                        } else if (isRejected) {
-                            actionButtons = `<span style="color:#ef4444; font-weight:bold; margin-right:6px;">Rejected ❌</span>
-                                             <button class="btn-delete" onclick="deleteWithdrawalHistory('${userId}', '${wId}')" title="Delete History">🗑️ Delete</button>`;
-                        } else {
-                            actionButtons = `<button class="btn-success" onclick="processWithdrawal('${userId}', '${wId}', 'approve', '${w.method}', ${w.amount}, '${w.userName || w.name || 'User'}', '${w.destination || ''}')">Approve ✅</button>
-                                             <button class="btn-danger" onclick="processWithdrawal('${userId}', '${wId}', 'reject', '${w.method}', ${w.amount})">Reject ❌</button>
-                                             <button class="btn-delete" onclick="deleteWithdrawalHistory('${userId}', '${wId}')" title="Delete History">🗑️ Delete</button>`;
-                        }
-
-                        let timeAgo = formatTimeAgo(w.id || w.timestamp);
-                        let userName = w.userName || "User";
-                        let userDetailHtml = `<b>Name:</b> ${userName}<br><b>ID:</b> ${userId}`;
-                        let statusTimeHtml = `<b>Status:</b> ${w.status || 'PENDING'}<br><small style="color:var(--yellow);">⏱️ ${timeAgo}</small>`;
-
-                        let rowHtml = `<tr>
-                            <td>${userDetailHtml}</td>
-                            <td><b>${w.amount ? Number(w.amount).toFixed(4) : '0'}</b></td>
-                            <td>${w.destination || 'N/A'}</td>
-                            <td>${w.method || (method.includes('TON') ? 'TON' : 'FaucetPay')}</td>
-                            <td>${statusTimeHtml}</td>
-                            <td>${actionButtons}</td>
-                        </tr>`;
-
                         if (method.includes('FAUCETPAY') || method.includes('USDT') || (!method.includes('TON') && method !== '')) {
-                            fpTableBody.innerHTML += rowHtml;
+                            let isSuccess = w.status && w.status.includes('SUCCESS');
+                            let isRejected = w.status && w.status.includes('REJECTED');
+                            
+                            let actionButtons = '';
+                            if (isSuccess) {
+                                actionButtons = `<span style="color:#22c55e; font-weight:bold; margin-right:6px;">Approved ✅</span>
+                                                 <button class="btn-delete" onclick="deleteWithdrawalRecord('withdrawals/${userId}/${wId}', 'fp')" title="Delete">🗑️ Delete</button>`;
+                            } else if (isRejected) {
+                                actionButtons = `<span style="color:#ef4444; font-weight:bold; margin-right:6px;">Rejected ❌</span>
+                                                 <button class="btn-delete" onclick="deleteWithdrawalRecord('withdrawals/${userId}/${wId}', 'fp')" title="Delete">🗑️ Delete</button>`;
+                            } else {
+                                actionButtons = `<button class="btn-success" onclick="processFaucetPayWithdrawal('${userId}', '${wId}', 'approve', ${w.amount}, '${w.userName || 'User'}', '${w.destination || ''}')">Approve ✅</button>
+                                                 <button class="btn-danger" onclick="processFaucetPayWithdrawal('${userId}', '${wId}', 'reject', ${w.amount})">Reject ❌</button>
+                                                 <button class="btn-delete" onclick="deleteWithdrawalRecord('withdrawals/${userId}/${wId}', 'fp')" title="Delete">🗑️ Delete</button>`;
+                            }
+
+                            let timeAgo = formatTimeAgo(w.id || w.timestamp);
+                            let userDetailHtml = `<b>Name:</b> ${w.userName || "User"}<br><b>ID:</b> ${userId}`;
+                            let statusTimeHtml = `<b>Status:</b> ${w.status || 'PENDING'}<br><small style="color:var(--yellow);">⏱️ ${timeAgo}</small>`;
+
+                            fpTableBody.innerHTML += `<tr>
+                                <td>${userDetailHtml}</td>
+                                <td><b>${w.amount ? Number(w.amount).toFixed(4) : '0'}</b></td>
+                                <td>${w.destination || 'N/A'}</td>
+                                <td>${w.method || 'FAUCETPAY'}</td>
+                                <td>${statusTimeHtml}</td>
+                                <td>${actionButtons}</td>
+                            </tr>`;
                             fpCount++;
-                        } else {
-                            tonTableBody.innerHTML += rowHtml;
-                            tonCount++;
                         }
                     });
                 });
             }
-
             if (fpCount === 0) fpTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No FaucetPay withdrawals found.</td></tr>`;
+        });
+
+        // 2. Load TON Withdrawals from tonWithdrawals path
+        get(ref(db, 'tonWithdrawals')).then((snapshot) => {
+            const tonTableBody = document.getElementById('tonTableBody');
+            tonTableBody.innerHTML = '';
+            let tonCount = 0;
+
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    let wId = child.key;
+                    let w = child.val();
+                    let isSuccess = w.status && (w.status.includes('SUCCESS') || w.status.includes('APPROVED'));
+                    
+                    let actionButtons = '';
+                    if (isSuccess) {
+                        actionButtons = `<span style="color:#22c55e; font-weight:bold; margin-right:6px;">Approved ✅</span>
+                                         <button class="btn-delete" onclick="deleteWithdrawalRecord('tonWithdrawals/${wId}', 'ton')" title="Delete">🗑️ Delete</button>`;
+                    } else {
+                        actionButtons = `<button class="btn-success" onclick="processTonWithdrawal('${wId}', 'approve')">Approve ✅</button>
+                                         <button class="btn-danger" onclick="processTonWithdrawal('${wId}', 'reject')">Reject ❌</button>
+                                         <button class="btn-delete" onclick="deleteWithdrawalRecord('tonWithdrawals/${wId}', 'ton')" title="Delete">🗑️ Delete</button>`;
+                    }
+
+                    let timeAgo = formatTimeAgo(w.id || Date.now());
+                    let userDetailHtml = `<b>Name:</b> ${w.userName || "User"}<br><b>ID:</b> ${w.userId || 'N/A'}`;
+                    let statusTimeHtml = `<b>Status:</b> ${w.status || 'PENDING'}<br><small style="color:var(--yellow);">⏱️ ${timeAgo}</small>`;
+
+                    tonTableBody.innerHTML += `<tr>
+                        <td>${userDetailHtml}</td>
+                        <td><b>${w.amount ? Number(w.amount).toFixed(4) : '0'}</b> ${w.currency || 'TON'}</td>
+                        <td>${w.destination || 'N/A'}</td>
+                        <td>TON Wallet (Manual)</td>
+                        <td>${statusTimeHtml}</td>
+                        <td>${actionButtons}</td>
+                    </tr>`;
+                    tonCount++;
+                });
+            }
             if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No TON withdrawals found.</td></tr>`;
         });
 
@@ -654,32 +683,17 @@
         });
     };
 
-    window.processWithdrawal = function(userId, wId, action, method, amount, userName, destination) {
+    window.processFaucetPayWithdrawal = function(userId, wId, action, amount, userName, destination) {
         let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED (Refunded)';
         update(ref(db, `withdrawals/${userId}/${wId}`), { status: statusText }).then(() => {
             if (action === 'approve') {
-                notifyAdminApproval({
-                    userId: userId,
-                    userName: userName,
-                    amount: amount,
-                    currency: (method || '').toUpperCase().includes('TON') ? 'TON' : 'USDT',
-                    method: method || 'TON',
-                    destination: destination,
-                    date: new Date().toLocaleString()
-                });
-                alert('Approved & Notification Sent!');
+                alert('FaucetPay Withdrawal Approved!');
                 location.reload();
             } else if (action === 'reject') {
                 get(ref(db, `users/${userId}`)).then((snapshot) => {
                     if (snapshot.exists()) {
                         let userData = snapshot.val();
-                        let updateData = {};
-                        if ((method || '').toUpperCase().includes('TON')) {
-                            updateData.tonBalance = (userData.tonBalance || 0) + amount;
-                        } else {
-                            updateData.usdtBalance = (userData.usdtBalance || 0) + amount;
-                        }
-                        update(ref(db, `users/${userId}`), updateData).then(() => {
+                        update(ref(db, `users/${userId}`), { usdtBalance: (userData.usdtBalance || 0) + amount }).then(() => {
                             alert('Rejected & Refunded!');
                             location.reload();
                         });
@@ -689,10 +703,38 @@
         });
     };
 
-    window.deleteWithdrawalHistory = function(userId, wId) {
-        if (confirm("Kya aap is withdrawal history record ko admin panel se hatana chahte hain? (User Account/ID delete nahi hoga)")) {
-            remove(ref(db, `withdrawals/${userId}/${wId}`)).then(() => {
-                alert("🗑️ Withdrawal history successfully removed!");
+    window.processTonWithdrawal = function(wId, action) {
+        get(ref(db, `tonWithdrawals/${wId}`)).then((snapshot) => {
+            if (!snapshot.exists()) { alert("Request nahi mili!"); return; }
+            let w = snapshot.val();
+            let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED (Refunded)';
+
+            update(ref(db, `tonWithdrawals/${wId}`), { status: statusText, postedToChannel: action === 'approve' ? false : true }).then(() => {
+                if (action === 'approve') {
+                    alert('TON Withdrawal Approved! Channel notification triggered via bot backend.');
+                    location.reload();
+                } else {
+                    // Refund to user tonBalance
+                    if (w.userId) {
+                        get(ref(db, `users/${w.userId}`)).then((userSnap) => {
+                            if (userSnap.exists()) {
+                                let uData = userSnap.val();
+                                update(ref(db, `users/${w.userId}`), { tonBalance: (uData.tonBalance || 0) + parseFloat(w.amount || 0) }).then(() => {
+                                    alert('TON Request Rejected & Refunded to user balance!');
+                                    location.reload();
+                                });
+                            } else { location.reload(); }
+                        });
+                    } else { location.reload(); }
+                }
+            });
+        });
+    };
+
+    window.deleteWithdrawalRecord = function(pathStr, type) {
+        if (confirm("Kya aap is withdrawal record ko panel se hatana chahte hain?")) {
+            remove(ref(db, pathStr)).then(() => {
+                alert("🗑️ Record successfully removed!");
                 location.reload();
             }).catch((err) => {
                 alert("Error: " + err.message);
