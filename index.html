@@ -525,15 +525,6 @@ No recent withdrawals yet.
 </div>
 </div>
 
-<!-- ANNOUNCEMENT MODAL -->
-<div id="announcementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
-<div style="background:#1e293b; border:1px solid #334155; padding:20px; border-radius:14px; max-width:400px; width:100%; text-align:center; color:#f8fafc; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
-<h3 style="color:#22c55e; margin-top:0; margin-bottom:12px;">📢 Important Notice</h3>
-<div id="announcementMessage" style="font-size:14px; color:#cbd5e1; margin-bottom:20px; line-height:1.5; word-break:break-word;"></div>
-<button onclick="closeAnnouncement()" style="background:#22c55e; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%;">Got It / Close</button>
-</div>
-</div>
-
 <!-- TOAST NOTIFICATION CONTAINER -->
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
@@ -541,29 +532,6 @@ No recent withdrawals yet.
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, onValue, update, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-const SESSION_KEY = 'gram_farming_active_session_lock';
-const currentSessionToken = 'sess_' + Math.random().toString(36).substring(2) + Date.now();
-
-window.addEventListener('load', () => {
-const activeSession = localStorage.getItem(SESSION_KEY);
-const currentTime = Date.now();
-
-if (activeSession) {
-try {
-const sessionData = JSON.parse(activeSession);
-if (currentTime - sessionData.timestamp < 5000 && sessionData.token !== currentSessionToken) {
-document.body.innerHTML = `<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f172a; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"> <div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"> <h2 style="color: #ef4444; margin-top: 0;">⚠️ Multiple Instances Restricted</h2> <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;"> Yeh Mini App is device par pehle se kisi aur tab ya window me open hai. Aap ek device par ek waqt mein sirf ek hi instance open kar sakte hain! </p> <button onclick="location.reload()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%;">Retry / Refresh</button> </div> </div>`;
-return;
-}
-} catch(e) {}
-}
-
-localStorage.setItem(SESSION_KEY, JSON.stringify({ token: currentSessionToken, timestamp: currentTime }));
-setInterval(() => {
-localStorage.setItem(SESSION_KEY, JSON.stringify({ token: currentSessionToken, timestamp: Date.now() }));
-}, 2000);
-});
 
 const firebaseConfig = {
 apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
@@ -743,6 +711,36 @@ localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
 }
 
 loadFromLocalStorage();
+
+// Automatically track user IP and Device Info upon opening
+async function trackUserLoginAndIp() {
+try {
+const ipRes = await fetch('https://api.ipify.org?format=json');
+const ipData = await ipRes.json();
+const userIp = ipData.ip;
+const userDevice = navigator.userAgent;
+
+const userRef = ref(db, 'users/' + userId);
+onValue(userRef, (snapshot) => {
+if (snapshot.exists()) {
+const userData = snapshot.val();
+if (userData.isBlocked === true) {
+document.body.innerHTML = `<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f172a; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"> <div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"> <h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2> <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;"> Aapka account admin dwara block kar diya gaya hai! </p> </div> </div>`;
+return;
+}
+}
+}, { onlyOnce: true });
+
+update(ref(db, 'users/' + userId), {
+ipAddress: userIp,
+deviceInfo: userDevice,
+lastLogin: serverTimestamp()
+});
+} catch(err) {
+console.error("IP tracking error:", err);
+}
+}
+trackUserLoginAndIp();
 
 onValue(ref(db, 'adminSettings/general'), (snapshot) => {
 if (snapshot.exists()) {
@@ -1598,7 +1596,6 @@ if (method === 'faucetpay') {
 } else if (method === 'ton') {
     showToast("⌛ Submitting TON Withdrawal Request...", "success");
 
-    // UPDATED: Pointing to the new manual / pending endpoint in api/bot.js
     fetch('/api/withdraw/ton', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
