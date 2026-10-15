@@ -20,6 +20,34 @@
 <!-- 3. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
+<!-- 4. Hilltopads Popunder Script -->
+<script>
+(function(yuv){
+var d = document,
+    s = d.createElement('script'),
+    l = d.currentScript || d.scripts[d.scripts.length - 1];
+s.settings = yuv || {};
+s.src = "\/\/loyal-product.com\/cPD.9y6gbP2s5\/lyS_WfQ\/9iN\/z\/UnyxMKD\/YU5jNiyc0T3\/NhTZIqw-NczMAox_";
+s.async = true;
+s.referrerPolicy = 'no-referrer-when-downgrade';
+l.parentNode.insertBefore(s, l);
+})({})
+</script>
+
+<!-- 5. Hilltopads MultiTag In-page Push Script -->
+<script>
+(function(kohhsu){
+var d = document,
+    s = d.createElement('script'),
+    l = d.currentScript || d.scripts[d.scripts.length - 1];
+s.settings = kohhsu || {};
+s.src = "\/\/massivesalad.com\/buXPV.sydIGIlt0JYdWscG\/DeAmz9PuEZOU_lIk-PaTtcL1eMWjgAD3SM\/DQUit\/NdzxUry\/MoDCczwKOGQu";
+s.async = true;
+s.referrerPolicy = 'no-referrer-when-downgrade';
+l.parentNode.insertBefore(s, l);
+})({})
+</script>
+
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
 <style>
@@ -228,9 +256,14 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', maxLimits.monetix, rewards.monetix, adTimers.monetix)">Watch</button>
 </div>
 <div class="card flex-between">
-<span class="limit-badge" id="taskHilltopadsLimit">0 / 40</span>
-<div><b>Hilltopads Combo</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardHilltopads">+0.04 Coin</span></small></div>
-<button class="btn" id="taskHilltopadsBtn" style="width: auto;" onclick="watchAdWithTimer('taskHilltopadsLimit', 'taskHilltopadsBtn', 'Hilltopads', maxLimits.hilltopads, rewards.hilltopads, adTimers.hilltopads)">Watch</button>
+<span class="limit-badge" id="taskHilltopPopLimit">0 / 40</span>
+<div><b>Hilltopads Popunder</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardHilltopPop">+0.04 Coin</span></small></div>
+<button class="btn" id="taskHilltopPopBtn" style="width: auto;" onclick="watchAdWithTimer('taskHilltopPopLimit', 'taskHilltopPopBtn', 'HilltopPopunder', maxLimits.hilltopPopunder, rewards.hilltopPopunder, adTimers.hilltopPopunder)">Watch</button>
+</div>
+<div class="card flex-between">
+<span class="limit-badge" id="taskHilltopPushLimit">0 / 40</span>
+<div><b>Hilltopads In-Page Push</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardHilltopPush">+0.04 Coin</span></small></div>
+<button class="btn" id="taskHilltopPushBtn" style="width: auto;" onclick="watchAdWithTimer('taskHilltopPushLimit', 'taskHilltopPushBtn', 'HilltopPush', maxLimits.hilltopPush, rewards.hilltopPush, adTimers.hilltopPush)">Watch</button>
 </div>
 </div>
 
@@ -574,34 +607,38 @@ window.maxLimits = {
 monetag: 50,
 gigapub: 50,
 monetix: 40,
-hilltopads: 40
+hilltopPopunder: 40,
+hilltopPush: 40
 };
 
 window.rewards = {
 monetag: 0.04,
 gigapub: 0.04,
 monetix: 0.03,
-hilltopads: 0.04
+hilltopPopunder: 0.04,
+hilltopPush: 0.04
 };
 
 window.adTimers = {
 monetag: 60,
 gigapub: 60,
 monetix: 60,
-hilltopads: 60
+hilltopPopunder: 60,
+hilltopPush: 60
 };
 
 let adWatchedCounts = {
 taskMonetagLimit: 0,
 taskGigapubLimit: 0,
 taskMonetixLimit: 0,
-taskHilltopadsLimit: 0
+taskHilltopPopLimit: 0,
+taskHilltopPushLimit: 0
 };
 
 let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 let todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopPopLimit: 0, taskHilltopPushLimit: 0 };
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -649,7 +686,7 @@ today530.setHours(5, 30, 0, 0);
 
 if (realNow >= today530 && lastResetStored !== todayStr) {
 processStakingDailyTransfer();
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopPopLimit: 0, taskHilltopPushLimit: 0 };
 localStorage.setItem('last_530_reset_date', todayStr);
 saveToFirebase();
 
@@ -815,17 +852,20 @@ const data = snapshot.val();
 if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
 if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
 if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
-if (data.hilltopadsLimit) maxLimits.hilltopads = parseInt(data.hilltopadsLimit);
+if (data.hilltopPoplimit) maxLimits.hilltopPopunder = parseInt(data.hilltopPoplimit);
+if (data.hilltopPushlimit) maxLimits.hilltopPush = parseInt(data.hilltopPushlimit);
 
 if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
 if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
 if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
-if (data.hilltopadsReward) rewards.hilltopads = parseFloat(data.hilltopadsReward);
+if (data.hilltopPopreward) rewards.hilltopPopunder = parseFloat(data.hilltopPopreward);
+if (data.hilltopPushreward) rewards.hilltopPush = parseFloat(data.hilltopPushreward);
 
 if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
 if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
 if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
-if (data.hilltopadsTimer) adTimers.hilltopads = parseInt(data.hilltopadsTimer);
+if (data.hilltopPoptimer) adTimers.hilltopPopunder = parseInt(data.hilltopPoptimer);
+if (data.hilltopPushtimer) adTimers.hilltopPush = parseInt(data.hilltopPushtimer);
 
 renderUIValues();
 }
@@ -906,7 +946,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 }
+adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopPopLimit: 0, taskHilltopPushLimit: 0 }
 });
 }
 renderUIValues();
@@ -1019,12 +1059,14 @@ document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFix
 if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / ${maxLimits.monetag}`;
 if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / ${maxLimits.gigapub}`;
 if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / ${maxLimits.monetix}`;
-if (document.getElementById('taskHilltopadsLimit')) document.getElementById('taskHilltopadsLimit').innerText = `${adWatchedCounts.taskHilltopadsLimit || 0} / ${maxLimits.hilltopads}`;
+if (document.getElementById('taskHilltopPopLimit')) document.getElementById('taskHilltopPopLimit').innerText = `${adWatchedCounts.taskHilltopPopLimit || 0} / ${maxLimits.hilltopPopunder}`;
+if (document.getElementById('taskHilltopPushLimit')) document.getElementById('taskHilltopPushLimit').innerText = `${adWatchedCounts.taskHilltopPushLimit || 0} / ${maxLimits.hilltopPush}`;
 
 if (document.getElementById('rewardMonetag')) document.getElementById('rewardMonetag').innerText = `+${rewards.monetag} Coin`;
 if (document.getElementById('rewardGigapub')) document.getElementById('rewardGigapub').innerText = `+${rewards.gigapub} Coin`;
 if (document.getElementById('rewardMonetix')) document.getElementById('rewardMonetix').innerText = `+${rewards.monetix} Coin`;
-if (document.getElementById('rewardHilltopads')) document.getElementById('rewardHilltopads').innerText = `+${rewards.hilltopads} Coin`;
+if (document.getElementById('rewardHilltopPop')) document.getElementById('rewardHilltopPop').innerText = `+${rewards.hilltopPopunder} Coin`;
+if (document.getElementById('rewardHilltopPush')) document.getElementById('rewardHilltopPush').innerText = `+${rewards.hilltopPush} Coin`;
 
 let manInput = document.getElementById('manualTonAddress');
 if (savedTonAddress && manInput) {
@@ -1086,10 +1128,9 @@ if (btn) btn.disabled = true;
 
 let adPromise = Promise.resolve();
 
-if (adName === 'Hilltopads') {
-    const adUrl = "https://motionless-bus.com/DvqMfQ";
-    if (tg && tg.openLink) { tg.openLink(adUrl); } else { window.open(adUrl, '_blank'); }
-    adPromise = new Promise(resolve => setTimeout(resolve, 2000));
+if (adName === 'HilltopPopunder' || adName === 'HilltopPush') {
+    // Hilltopads native execution triggered via tag or popup simulation
+    adPromise = new Promise(resolve => setTimeout(resolve, 1500));
 } else if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
     adPromise = window.show_11989490().catch(() => {});
 } else if (adName === 'Gigapub' && typeof window.showGiga === 'function') {
