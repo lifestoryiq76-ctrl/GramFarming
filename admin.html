@@ -34,6 +34,9 @@
         .badge-live { background: #ef4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; float: right; }
         .net-box { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; }
         .net-box h3 { margin: 0 0 10px 0; color: var(--yellow); font-size: 15px; }
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; display: inline-block; }
+        .badge-danger { background: #ef4444; color: #fff; }
+        .badge-success { background: #22c55e; color: #fff; }
     </style>
 </head>
 <body>
@@ -347,18 +350,18 @@
         </div>
     </div>
 
-    <!-- 8. Registered Users List -->
+    <!-- 8. Registered Users List (Updated with IP Address, Device Info & Block/Unblock Option) -->
     <div class="card">
-        <h2>👥 Registered Users & Staking Details</h2>
+        <h2>👥 Registered Users, IP Address & Security Management</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
                         <th>User ID & Name</th>
-                        <th>Invites</th>
-                        <th>Coin Balance</th>
-                        <th>TON / USDT</th>
-                        <th>Staking Plans / Staked Coins</th>
+                        <th>IP Address & Device</th>
+                        <th>Invites / Balance</th>
+                        <th>Staking Plans</th>
+                        <th>Security Action</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
@@ -553,38 +556,78 @@
             if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No TON withdrawals found.</td></tr>`;
         });
 
-        // Load Registered Users & Staking Details
+        // Load Registered Users, IP Address, Device Info & Block/Unblock Management
         get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
+            
             if (snapshot.exists()) {
-                snapshot.forEach((child) => {
-                    let userIdKey = child.key;
-                    let u = child.val();
+                const usersData = snapshot.val();
+                
+                // Track IP counts to highlight same-IP multi accounts
+                const ipCounts = {};
+                for (let id in usersData) {
+                    let ip = usersData[id].ipAddress;
+                    if (ip) {
+                        ipCounts[ip] = (ipCounts[ip] || 0) + 1;
+                    }
+                }
+
+                for (let userIdKey in usersData) {
+                    let u = usersData[userIdKey];
                     let nameDisplay = u.name ? u.name : 'No Name';
+                    let userIp = u.ipAddress || 'Unknown IP';
+                    let isMultiple = ipCounts[userIp] > 1;
+                    let isBlocked = u.isBlocked || false;
                     
                     let stakingInfoHtml = '<span style="color:var(--text-muted);">0 (No Staking)</span>';
                     if (u.activeStakes && Array.isArray(u.activeStakes) && u.activeStakes.length > 0) {
                         stakingInfoHtml = '';
                         u.activeStakes.forEach(stk => {
                             let amt = stk.amount ? Number(stk.amount).toFixed(2) : '0';
-                            stakingInfoHtml += `<div style="margin-bottom:4px; font-size:12px;">💎 <b>${stk.planName}</b>: <span style="color:var(--yellow);">${amt} Coins</span> (APY: ${stk.apy}%)</div>`;
+                            stakingInfoHtml += `<div style="margin-bottom:4px; font-size:12px;">💎 <b>${stk.planName}</b>: <span style="color:var(--yellow);">${amt} Coins</span></div>`;
                         });
                     }
 
-                    tbody.innerHTML += `<tr>
+                    let rowBgStyle = isMultiple ? 'background-color: rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444;' : '';
+
+                    tbody.innerHTML += `<tr style="${rowBgStyle}">
                         <td><b>${userIdKey}</b><br><small style="color:var(--text-muted);">${nameDisplay}</small></td>
-                        <td>👥 ${u.totalInvited || 0}</td>
-                        <td>🪙 ${u.balance ? u.balance.toFixed(2) : '0.00'}</td>
-                        <td>TON: ${u.tonBalance ? u.tonBalance.toFixed(4) : '0.0000'}<br>USDT: ${u.usdtBalance ? u.usdtBalance.toFixed(4) : '0.0000'}</td>
+                        <td>
+                            🌍 <b>${userIp}</b> ${isMultiple ? '<span class="badge badge-danger">⚠️ Same IP (' + ipCounts[userIp] + ')</span>' : ''}<br>
+                            <small style="color:var(--text-muted); font-size:10px;">📱 ${u.deviceInfo ? u.deviceInfo.substring(0, 45) + '...' : 'Unknown Device'}</small>
+                        </td>
+                        <td>
+                            👥 Invites: <b>${u.totalInvited || 0}</b><br>
+                            🪙 Balance: <b style="color:var(--yellow);">${u.balance ? u.balance.toFixed(2) : '0.00'}</b><br>
+                            <small style="color:var(--text-muted);">TON: ${u.tonBalance ? u.tonBalance.toFixed(4) : '0.00'} | USDT: ${u.usdtBalance ? u.usdtBalance.toFixed(4) : '0.00'}</small>
+                        </td>
                         <td>${stakingInfoHtml}</td>
+                        <td>
+                            ${isBlocked ? '<span class="badge badge-danger" style="margin-bottom:4px;">BLOCKED</span><br>' : '<span class="badge badge-success" style="margin-bottom:4px;">ACTIVE</span><br>'}
+                            <button class="btn-sm ${isBlocked ? 'btn-success' : 'btn-danger'}" style="padding:5px 10px; font-size:11px; width:auto; border-radius:6px;" onclick="toggleBlockUser('${userIdKey}', ${isBlocked})">
+                                ${isBlocked ? 'Unblock User' : 'Block User'}
+                            </button>
+                        </td>
                     </tr>`;
-                });
+                }
             } else {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>`;
             }
         });
     });
+
+    // Block / Unblock User Functionality
+    window.toggleBlockUser = function(userId, currentStatus) {
+        let newStatus = !currentStatus;
+        let actionTxt = newStatus ? "Block" : "Unblock";
+        if (confirm(`Kya aap User ID: ${userId} ko ${actionTxt} karna chahte hain?`)) {
+            update(ref(db, 'users/' + userId), { isBlocked: newStatus }).then(() => {
+                alert(`User successfully ${actionTxt.toLowerCase()} ho gaya!`);
+                location.reload();
+            }).catch(err => alert("Error: " + err.message));
+        }
+    };
 
     window.saveSettings = function(type) {
         try {
@@ -695,10 +738,8 @@
             let w = snapshot.val();
             let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED (Refunded)';
 
-            // 1. Update in tonWithdrawals
             update(ref(db, `tonWithdrawals/${wId}`), { status: statusText, postedToChannel: action === 'approve' ? false : true }).then(() => {
                 
-                // 2. Update user's personal withdrawal history so mini-app updates from PENDING to SUCCESS
                 if (w.userId) {
                     get(ref(db, `withdrawals/${w.userId}`)).then((userW_snap) => {
                         if (userW_snap.exists()) {
@@ -717,7 +758,6 @@
                 }
 
                 if (action === 'approve') {
-                    // Trigger channel notification via backend bot endpoint
                     fetch('/api/bot', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -736,7 +776,6 @@
                     alert('TON Withdrawal Approved! Channel notification & user history updated.');
                     location.reload();
                 } else {
-                    // Refund to user tonBalance if rejected
                     if (w.userId) {
                         get(ref(db, `users/${w.userId}`)).then((userSnap) => {
                             if (userSnap.exists()) {
@@ -753,7 +792,6 @@
         });
     };
 
-    // Bulk Approve All Pending TON Requests Function
     window.approveAllTonWithdrawals = async function() {
         if (!confirm("Kya aap saari pending TON requests ko ek sath approve karke channel par post karna chahte hain?")) return;
 
@@ -769,12 +807,9 @@
 
             for (let key in data) {
                 let item = data[key];
-                // Check if status is PENDING or not SUCCESS/APPROVED
                 if (item && (!item.status || item.status === 'PENDING')) {
-                    // 1. Update status in tonWithdrawals
                     await update(ref(db, `tonWithdrawals/${key}`), { status: 'SUCCESS (Approved)', postedToChannel: true });
                     
-                    // 2. Sync status to user personal withdrawals
                     if (item.userId) {
                         const userW_snap = await get(ref(db, `withdrawals/${item.userId}`));
                         if (userW_snap.exists()) {
@@ -791,7 +826,6 @@
                         }
                     }
 
-                    // 3. Trigger Telegram Channel Notification
                     await fetch('/api/bot', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
