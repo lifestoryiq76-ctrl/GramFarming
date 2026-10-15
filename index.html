@@ -566,7 +566,7 @@ window.stakingApyRates = {
 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20
 };
 
-// Dynamic Admin Panel Controls (Clickadu removed)
+// Dynamic Admin Panel Controls
 window.maxLimits = {
 monetag: 50,
 gigapub: 50,
@@ -1093,8 +1093,14 @@ if (adName === 'Hilltopads') {
     adPromise = window.showGiga().catch(() => {});
 } else if (adName === 'Monetix') {
     adPromise = new Promise(resolve => {
-        if (typeof window.showMXAd === 'function') {
-            window.showMXAd(() => resolve());
+        if (typeof window.showRewardAd === 'function') {
+            window.showRewardAd(function(res) {
+                if (res && (res.status === "completed" || res.status === "closed")) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
         } else {
             setTimeout(resolve, 1500);
         }
