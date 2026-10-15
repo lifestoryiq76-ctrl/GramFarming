@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gram Farming Mini App</title>
 
-<!-- Clickadu Verification Meta Tag -->
-<meta name="clckd" content="1e748cebaa6a7cff39a2b5c1914804ef" />
-
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
 
@@ -226,11 +223,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <span class="limit-badge" id="taskMonetixLimit">0 / 40</span>
 <div><b>Monetix</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardMonetix">+0.03 Coin</span></small></div>
 <button class="btn" id="taskMonetixBtn" style="width: auto;" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', maxLimits.monetix, rewards.monetix, adTimers.monetix)">Watch</button>
-</div>
-<div class="card flex-between">
-<span class="limit-badge" id="taskClickaduLimit">0 / 40</span>
-<div><b>Clickadu</b><br><small style="color:var(--text-muted);">Reward: <span style="color:var(--accent);" id="rewardClickadu">+0.03 Coin</span></small></div>
-<button class="btn" id="taskClickaduBtn" style="width: auto;" onclick="watchAdWithTimer('taskClickaduLimit', 'taskClickaduBtn', 'Clickadu', maxLimits.clickadu, rewards.clickadu, adTimers.clickadu)">Watch</button>
 </div>
 <div class="card flex-between">
 <span class="limit-badge" id="taskHilltopadsLimit">0 / 40</span>
@@ -574,12 +566,11 @@ window.stakingApyRates = {
 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20
 };
 
-// Dynamic Admin Panel Controls
+// Dynamic Admin Panel Controls (Clickadu removed)
 window.maxLimits = {
 monetag: 50,
 gigapub: 50,
 monetix: 40,
-clickadu: 40,
 hilltopads: 40
 };
 
@@ -587,7 +578,6 @@ window.rewards = {
 monetag: 0.04,
 gigapub: 0.04,
 monetix: 0.03,
-clickadu: 0.03,
 hilltopads: 0.04
 };
 
@@ -595,12 +585,10 @@ window.adTimers = {
 monetag: 60,
 gigapub: 60,
 monetix: 60,
-clickadu: 60,
 hilltopads: 60
 };
 
 let adWatchedCounts = {
-taskClickaduLimit: 0,
 taskMonetagLimit: 0,
 taskGigapubLimit: 0,
 taskMonetixLimit: 0,
@@ -610,7 +598,7 @@ taskHilltopadsLimit: 0
 let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 let todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-adWatchedCounts = { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 };
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -658,7 +646,7 @@ today530.setHours(5, 30, 0, 0);
 
 if (realNow >= today530 && lastResetStored !== todayStr) {
 processStakingDailyTransfer();
-adWatchedCounts = { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 };
 localStorage.setItem('last_530_reset_date', todayStr);
 saveToFirebase();
 
@@ -824,19 +812,16 @@ const data = snapshot.val();
 if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
 if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
 if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
-if (data.clickaduLimit) maxLimits.clickadu = parseInt(data.clickaduLimit);
 if (data.hilltopadsLimit) maxLimits.hilltopads = parseInt(data.hilltopadsLimit);
 
 if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
 if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
 if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
-if (data.clickaduReward) rewards.clickadu = parseFloat(data.clickaduReward);
 if (data.hilltopadsReward) rewards.hilltopads = parseFloat(data.hilltopadsReward);
 
 if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
 if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
 if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
-if (data.clickaduTimer) adTimers.clickadu = parseInt(data.clickaduTimer);
 if (data.hilltopadsTimer) adTimers.hilltopads = parseInt(data.hilltopadsTimer);
 
 renderUIValues();
@@ -918,7 +903,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-adWatchedCounts: { taskClickaduLimit: 0, taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 }
+adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskHilltopadsLimit: 0 }
 });
 }
 renderUIValues();
@@ -1028,7 +1013,6 @@ document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
 document.getElementById('displayCoinVolume').innerText = `1 Coin = $${coinUsdtValue}`;
 document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 
-if (document.getElementById('taskClickaduLimit')) document.getElementById('taskClickaduLimit').innerText = `${adWatchedCounts.taskClickaduLimit || 0} / ${maxLimits.clickadu}`;
 if (document.getElementById('taskMonetagLimit')) document.getElementById('taskMonetagLimit').innerText = `${adWatchedCounts.taskMonetagLimit || 0} / ${maxLimits.monetag}`;
 if (document.getElementById('taskGigapubLimit')) document.getElementById('taskGigapubLimit').innerText = `${adWatchedCounts.taskGigapubLimit || 0} / ${maxLimits.gigapub}`;
 if (document.getElementById('taskMonetixLimit')) document.getElementById('taskMonetixLimit').innerText = `${adWatchedCounts.taskMonetixLimit || 0} / ${maxLimits.monetix}`;
@@ -1037,7 +1021,6 @@ if (document.getElementById('taskHilltopadsLimit')) document.getElementById('tas
 if (document.getElementById('rewardMonetag')) document.getElementById('rewardMonetag').innerText = `+${rewards.monetag} Coin`;
 if (document.getElementById('rewardGigapub')) document.getElementById('rewardGigapub').innerText = `+${rewards.gigapub} Coin`;
 if (document.getElementById('rewardMonetix')) document.getElementById('rewardMonetix').innerText = `+${rewards.monetix} Coin`;
-if (document.getElementById('rewardClickadu')) document.getElementById('rewardClickadu').innerText = `+${rewards.clickadu} Coin`;
 if (document.getElementById('rewardHilltopads')) document.getElementById('rewardHilltopads').innerText = `+${rewards.hilltopads} Coin`;
 
 let manInput = document.getElementById('manualTonAddress');
@@ -1100,7 +1083,7 @@ if (btn) btn.disabled = true;
 
 let adPromise = Promise.resolve();
 
-if (adName === 'Clickadu' || adName === 'Hilltopads') {
+if (adName === 'Hilltopads') {
     const adUrl = "https://motionless-bus.com/DvqMfQ";
     if (tg && tg.openLink) { tg.openLink(adUrl); } else { window.open(adUrl, '_blank'); }
     adPromise = new Promise(resolve => setTimeout(resolve, 2000));
@@ -1108,9 +1091,13 @@ if (adName === 'Clickadu' || adName === 'Hilltopads') {
     adPromise = window.show_11989490().catch(() => {});
 } else if (adName === 'Gigapub' && typeof window.showGiga === 'function') {
     adPromise = window.showGiga().catch(() => {});
-} else if (adName === 'Monetix' && typeof window.showRewardAd === 'function') {
+} else if (adName === 'Monetix') {
     adPromise = new Promise(resolve => {
-        window.showRewardAd(res => resolve());
+        if (typeof window.showMXAd === 'function') {
+            window.showMXAd(() => resolve());
+        } else {
+            setTimeout(resolve, 1500);
+        }
     });
 }
 
