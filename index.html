@@ -17,8 +17,18 @@
 <!-- 3. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
-<!-- 4. Adexium Integration Script -->
-<script src="https://adexium.com/script.js?id=adexium_default"></script>
+<!-- 4. Adexium Official Integration Script -->
+<script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+<script type="text/javascript">
+    let globalAdexiumWidget = null;
+    document.addEventListener('DOMContentLoaded', () => {
+        globalAdexiumWidget = new AdexiumWidget({
+            wid: 'e9aaf049-ad48-4385-bdf8-d8e963aff2f1', 
+            adFormat: 'interstitial'
+        });
+        globalAdexiumWidget.autoMode();
+    });
+</script>
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
@@ -1175,8 +1185,18 @@ let adPromise = Promise.resolve();
 if (adName === 'Adexium') {
     adPromise = new Promise((resolve) => {
         try {
-            if (typeof window.showAdexium === 'function') {
-                window.showAdexium(resolve);
+            if (globalAdexiumWidget && typeof globalAdexiumWidget.show === 'function') {
+                globalAdexiumWidget.show().then(resolve).catch(resolve);
+            } else if (typeof AdexiumWidget !== 'undefined') {
+                const tempWidget = new AdexiumWidget({
+                    wid: 'e9aaf049-ad48-4385-bdf8-d8e963aff2f1',
+                    adFormat: 'interstitial'
+                });
+                if (typeof tempWidget.show === 'function') {
+                    tempWidget.show().then(resolve).catch(resolve);
+                } else {
+                    setTimeout(resolve, 1500);
+                }
             } else {
                 setTimeout(resolve, 1500);
             }
