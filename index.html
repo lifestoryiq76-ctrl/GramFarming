@@ -20,13 +20,17 @@
 <!-- 4. Adexium Official Integration Script -->
 <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
 <script type="text/javascript">
-    let globalAdexiumWidget = null;
+    let adexiumWidget = null;
     document.addEventListener('DOMContentLoaded', () => {
-        globalAdexiumWidget = new AdexiumWidget({
-            wid: 'e9aaf049-ad48-4385-bdf8-d8e963aff2f1', 
-            adFormat: 'interstitial'
-        });
-        globalAdexiumWidget.autoMode();
+        try {
+            adexiumWidget = new AdexiumWidget({
+                wid: 'e9aaf049-ad48-4385-bdf8-d8e963aff2f1', 
+                adFormat: 'interstitial'
+            });
+            adexiumWidget.autoMode();
+        } catch(e) {
+            console.error("Adexium Init Error:", e);
+        }
     });
 </script>
 
@@ -1185,8 +1189,8 @@ let adPromise = Promise.resolve();
 if (adName === 'Adexium') {
     adPromise = new Promise((resolve) => {
         try {
-            if (globalAdexiumWidget && typeof globalAdexiumWidget.show === 'function') {
-                globalAdexiumWidget.show().then(resolve).catch(resolve);
+            if (adexiumWidget && typeof adexiumWidget.show === 'function') {
+                adexiumWidget.show().then(resolve).catch(resolve);
             } else if (typeof AdexiumWidget !== 'undefined') {
                 const tempWidget = new AdexiumWidget({
                     wid: 'e9aaf049-ad48-4385-bdf8-d8e963aff2f1',
@@ -1854,7 +1858,7 @@ let listEl = document.getElementById('dynamicTasksList');
 let defaultHtml = `<div class="card flex-between"> <div><span>📢 Join Telegram Channel</span><br><small style="color:var(--text-muted);">Reward: +10 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent);" onclick="completeTask(10, 'Telegram Channel')">Complete</button> </div>`;
 
 if (!snapshot.exists()) {
-listEl.innerHTML = defaultHtml;
+listListEl.innerHTML = defaultHtml;
 return;
 }
 
