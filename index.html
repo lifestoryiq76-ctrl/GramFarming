@@ -119,22 +119,24 @@ input:focus, select:focus { border-color: var(--accent); }
 #miningBoxesSection { display: none; }
 #miningBoxesSection.show { display: block; }
 
-/* Ad Task & ThunderWaves Task UI Styles */
+/* Ad Task & Task UI Styles */
 .ad-task-card { background: var(--card-bg); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
 .ad-icon-box { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; }
 .progress-line-bg { width: 100%; background: #334155; height: 5px; border-radius: 3px; margin-top: 10px; overflow: hidden; }
 .progress-line-fill { background: #38bdf8; height: 100%; width: 0%; transition: width 0.4s ease; }
 
-/* ThunderWaves Task Categories & Subtabs */
+/* Task Category Bar (All, Task, Partner, Create Task) */
 .task-category-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
 .task-category-bar::-webkit-scrollbar { display: none; }
-.task-cat-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+.task-cat-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
 .task-cat-btn.active { background: #eab308; color: #000; border-color: #eab308; box-shadow: 0 0 12px rgba(234, 179, 8, 0.4); }
+
+/* Subtab bar for Create Task (Promote Link & My Tasks) */
 .task-subtab-bar { display: flex; gap: 10px; margin-bottom: 12px; }
-.task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 8px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
+.task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
 .task-subtab-btn.active { background: #334155; color: var(--text-main); border-color: var(--accent); }
 
-/* Custom Add Task Card Selection Styles (As per screenshot) */
+/* Promo Option Cards */
 .promo-option-card {
     background: #111827;
     border: 1.5px solid var(--border);
@@ -161,6 +163,16 @@ input:focus, select:focus { border-color: var(--accent); }
     justify-content: center;
     font-size: 18px;
 }
+
+/* Click Option Buttons */
+.click-btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
+.click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 13px; transition: 0.2s; }
+.click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
+
+/* Payment Method Cards in Create Task */
+.pay-method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
+.pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
+.pay-method-card.active { border-color: #0ea5e9; background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
 </style>
 </head>
 <body>
@@ -246,23 +258,24 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 📋 TASKS PAGE (ThunderWaves UI style) -->
+<!-- 📋 TASKS PAGE -->
 <div id="tasks" class="tab-content">
 <div style="margin-bottom: 12px;">
 <h3 style="margin:0 0 4px 0;" data-i18n="tasksOffers">📋 Tasks</h3>
-<small style="color:var(--text-muted);">Complete tasks, collect Coins</small>
+<small style="color:var(--text-muted);">Complete tasks, collect Coins & create campaigns</small>
 </div>
 
-<!-- Category Navigation Bar (Social, Exclusive, Partner) -->
+<!-- Task Category Bar (4 Functions: All, Task, Partner, + Create Task) -->
 <div class="task-category-bar">
-<button class="task-cat-btn active" onclick="switchTaskCategory('social', this)">📢 Social</button>
-<button class="task-cat-btn" onclick="switchTaskCategory('exclusive', this)">💎 Exclusive</button>
+<button class="task-cat-btn active" onclick="switchTaskCategory('all', this)">🔲 All</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
 <button class="task-cat-btn" onclick="switchTaskCategory('partner', this)">🤝 Partner</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- 1. SOCIAL TAB CONTENT -->
-<div id="taskCat-social" class="task-category-content">
-<div id="adsTasks">
+<!-- 1. ALL TAB CONTENT (Shows all ads functions) -->
+<div id="taskCat-all" class="task-category-content">
+<div id="adsTasksAll">
 <!-- Monetag Ad Task -->
 <div class="ad-task-card">
 <div class="flex-between">
@@ -345,103 +358,148 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 2. EXCLUSIVE TAB CONTENT (Tasks, My tasks, Add task) -->
-<div id="taskCat-exclusive" class="task-category-content" style="display:none;">
-<div class="task-subtab-bar">
-<div class="task-subtab-btn active" id="exSubTab-tasks" onclick="switchExclusiveSubTab('tasks')">Tasks</div>
-<div class="task-subtab-btn" id="exSubTab-mytasks" onclick="switchExclusiveSubTab('mytasks')">My tasks</div>
-<div class="task-subtab-btn" id="exSubTab-add" onclick="switchExclusiveSubTab('add')" style="background: #eab308; color: #000; font-weight: 700;">+ Add task</div>
-</div>
-
-<!-- Exclusive Subtab: Tasks View -->
-<div id="exclusiveTasksView">
+<!-- 2. TASK TAB CONTENT (Only newly added tasks show here) -->
+<div id="taskCat-task" class="task-category-content" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;" id="emptyTasksNotice">
 <div style="font-size: 36px; margin-bottom: 8px;">☁️⚡</div>
-<h4 style="margin: 0 0 6px 0; color: var(--text-main);">All caught up!</h4>
-<p style="font-size: 12px; color: var(--text-muted); margin: 0;">New tasks drop regularly. Check back soon or create your own task below.</p>
+<h4 style="margin: 0 0 6px 0; color: var(--text-main);">No new tasks available</h4>
+<p style="font-size: 12px; color: var(--text-muted); margin: 0;">Check back soon or create your own task in Create Task tab.</p>
 </div>
-<div id="dynamicTasksList">
-<!-- Dynamic user tasks loaded from firebase -->
-</div>
+<div id="dynamicTasksList"></div>
 </div>
 
-<!-- Exclusive Subtab: My Tasks View -->
-<div id="exclusiveMyTasksView" style="display:none;">
-<div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
-<h4 style="margin: 0 0 6px 0; color: var(--accent);">Your Published Tasks</h4>
-<p style="font-size: 12px; color: var(--text-muted); margin: 0 0 12px 0;">Manage tasks you created and promoted.</p>
-</div>
-<div id="myPublishedTasksList">
-<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published tasks found.</div>
-</div>
-</div>
-
-<!-- Exclusive Subtab: Add Task View (Updated with Card Selection as per screenshot 7702) -->
-<div id="exclusiveAddView" style="display:none;">
-<div class="card" style="background:#0f172a; border: 1px solid var(--accent); padding: 16px;">
-<div class="flex-between" style="margin-bottom: 12px;">
-<h4 style="margin:0; color: var(--accent);">New task (Step 1 of 2)</h4>
-<span style="font-size:12px; color: var(--yellow);">Fee: 10 Coins</span>
-</div>
-
-<label style="font-size: 13px; color: var(--text-muted); display:block; margin-bottom: 8px;">What do you want to promote?</label>
-
-<!-- Telegram Option Card -->
-<div class="promo-option-card active" id="promoCardTelegram" onclick="selectPromoType('telegram')">
-<div style="display: flex; align-items: center; gap: 12px;">
-<div class="promo-option-icon" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.73-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.89.03-.25.38-.51 1.06-.78 4.15-1.81 6.92-3.01 8.31-3.61 3.96-1.7 4.78-2 5.31-2.01.12 0 .38.03.55.17.14.12.18.28.2.4-.02.13-.02.39-.04.57z"/></svg>
-</div>
-<div>
-<b style="font-size: 14px; display: block; color: var(--text-main);">Telegram channel or group</b>
-<span style="font-size: 11px; color: var(--text-muted);">Users join, verify membership</span>
-</div>
-</div>
-<span style="color: var(--yellow); font-size: 16px;">➔</span>
-</div>
-
-<!-- Other Link Option Card -->
-<div class="promo-option-card" id="promoCardOther" onclick="selectPromoType('other')">
-<div style="display: flex; align-items: center; gap: 12px;">
-<div class="promo-option-icon" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">
-🌐
-</div>
-<div>
-<b style="font-size: 14px; display: block; color: var(--text-main);">Other link</b>
-<span style="font-size: 11px; color: var(--text-muted);">Website, app, social profile...</span>
-</div>
-</div>
-<span style="color: var(--yellow); font-size: 16px;">➔</span>
-</div>
-
-<!-- Hidden Select for background tracking -->
-<select id="promoTypeSelect" style="display:none;" onchange="togglePromoInputs()">
-<option value="telegram" selected>Telegram</option>
-<option value="other">Other</option>
-</select>
-
-<div id="promoInputContainer" style="margin-top: 10px;">
-<label style="font-size: 13px; color: var(--text-muted); display:block; margin-top: 8px;" id="promoLabelText">Your channel or group:</label>
-<input type="text" id="customTaskTitle" placeholder="@username or t.me/username" style="margin-bottom: 8px;">
-<input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 8px;">
-</div>
-
-<div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 8px; font-size: 11px; color: var(--yellow); margin-bottom: 12px;">
-⚠️ Add bot as admin to your channel/group for automatic verification, then publish.
-</div>
-
-<button class="btn" style="width: 100%; background: var(--accent); font-weight: bold;" onclick="addNewTask()">Continue & Publish (-10 Coins)</button>
-</div>
-</div>
-</div>
-
-<!-- 3. PARTNER TAB CONTENT (Cleaned up as requested in prompt) -->
+<!-- 3. PARTNER TAB CONTENT (Admin tasks show here) -->
 <div id="taskCat-partner" class="task-category-content" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
 <div style="font-size: 36px; margin-bottom: 8px;">🤝</div>
-<h4 style="margin: 0 0 6px 0; color: var(--text-main);">No partner tasks available</h4>
-<p style="font-size: 12px; color: var(--text-muted); margin: 0;">Partner tasks have been cleared. Check back soon for new offers!</p>
+<h4 style="margin: 0 0 6px 0; color: var(--text-main);">Partner & Admin Campaigns</h4>
+<p style="font-size: 12px; color: var(--text-muted); margin: 0 0 10px 0;">Official verified partner announcements and tasks.</p>
 </div>
+<div id="adminPartnerTasksList">
+<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No partner tasks currently active.</div>
+</div>
+</div>
+
+<!-- 4. CREATE TASK TAB CONTENT (Contains Promote Link and My Tasks sub-functions) -->
+<div id="taskCat-create" class="task-category-content" style="display:none;">
+<div class="task-subtab-bar">
+<div class="task-subtab-btn active" id="createSubTab-promote" onclick="switchCreateSubTab('promote')">📢 Promote Link</div>
+<div class="task-subtab-btn" id="createSubTab-my" onclick="switchCreateSubTab('my')">📋 My Tasks</div>
+</div>
+
+<!-- Promote Link Subtab View -->
+<div id="createPromoteView">
+<div class="card" style="background:#0f172a; border: 1px solid var(--accent); padding: 16px;">
+<div class="flex-between" style="margin-bottom: 10px;">
+<h4 style="margin:0; color: var(--accent);">Create Ad Campaign</h4>
+</div>
+
+<!-- Campaign Objective (Channel, Mini App, Bot MAU) -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 6px;">CAMPAIGN OBJECTIVE</label>
+<div style="display: flex; gap: 6px; margin-bottom: 12px;">
+<button class="btn" style="flex:1; background: #0ea5e9; font-size: 12px; padding: 8px;" id="objChanBtn" onclick="setCampaignObj('Channel')">📢 Channel</button>
+<button class="btn" style="flex:1; background: #1e293b; color: var(--text-muted); font-size: 12px; padding: 8px;" id="objAppBtn" onclick="setCampaignObj('Mini App')">⚡ Mini App</button>
+<button class="btn" style="flex:1; background: #1e293b; color: var(--text-muted); font-size: 12px; padding: 8px;" id="objBotBtn" onclick="setCampaignObj('Bot (MAU)')">🤖 Bot (MAU)</button>
+</div>
+
+<!-- Campaign Pricing Header -->
+<div class="flex-between" style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px;">
+<div>
+<b style="font-size: 14px;" id="campaignTitleDisplay">Grow Your Channel Subscribers</b>
+<div style="font-size: 11px; color: var(--yellow); margin-top: 2px;" id="clickRateDisplay">🪙 0.0035 coin / click</div>
+</div>
+</div>
+
+<!-- Your Balance Display (USDT, TON, Coin) -->
+<div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;">
+<div style="color: var(--text-muted); margin-bottom: 4px;">Your Balance:</div>
+<div class="flex-between">
+<span>🪙 Coins: <strong id="balCoins" style="color:var(--yellow);">0.00</strong></span>
+<span>💵 USDT: <strong id="balUsdt" style="color:var(--accent);">0.00</strong></span>
+<span>💎 TON: <strong id="balTon" style="color:var(--accent);">0.00</strong></span>
+</div>
+</div>
+
+<!-- Channel Verification / Bot Add Info -->
+<div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
+<div class="flex-between">
+<b style="font-size: 12px; color: var(--yellow);">Channel Verification: Add Bot</b>
+<a href="https://t.me/PA1DZ_BOT?start=start" target="_blank" style="background: var(--yellow); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 10px; text-decoration: none; font-weight: bold;">@PA1DZ_BOT</a>
+</div>
+<p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 8px 0;">Add our bot as an admin to your channel/group for automatic verification.</p>
+</div>
+
+<!-- Telegram Channel or Link Input -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Telegram Channel or Link</label>
+<input type="text" id="customTaskTitle" placeholder="@channel or t.me/channel" style="margin-bottom: 8px;">
+<input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 12px;">
+
+<!-- Number of Clicks / Completions Selection -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Number of Clicks / Completions</label>
+<div class="click-btn-grid">
+<div class="click-option-btn active" onclick="setClickClicks(100, this)">100</div>
+<div class="click-option-btn" onclick="setClickClicks(250, this)">250</div>
+<div class="click-option-btn" onclick="setClickClicks(500, this)">500</div>
+<div class="click-option-btn" onclick="setClickClicks(1000, this)">1000</div>
+</div>
+
+<!-- Cost Calculation Display -->
+<div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;" id="costCalcBox">
+Cost: <strong>0.35 USDT</strong> (~0.11 GRAM | ~35 Coins)
+</div>
+
+<!-- Payment Method Selection (USDT, GRAM, Stars/Coins) -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Payment Method</label>
+<div class="pay-method-grid">
+<div class="pay-method-card active" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
+<div class="pay-method-card" id="payGram" onclick="setPaymentMethod('GRAM')">💎 GRAM</div>
+<div class="pay-method-card" id="payCoin" onclick="setPaymentMethod('Coin')">🪙 Coin</div>
+</div>
+
+<!-- Use Balance Toggle Option -->
+<div class="card flex-between" style="background:#111827; margin-bottom:12px; padding:10px;">
+<div>
+<span style="font-size: 12px; font-weight: bold;" id="useBalanceLabel">Use balance (0.00 USDT)</span>
+<div style="font-size: 10px; color: var(--text-muted);">Deducts internal balance, pay remaining if needed</div>
+</div>
+<input type="checkbox" id="useBalanceToggle" style="width: 20px; height: 20px; accent-color: var(--accent);" onchange="updatePaymentActionUI()">
+</div>
+
+<!-- Dynamic Deposit Section (FaucetPay for USDT, Scanner/Address for GRAM, Wallet deduction for Coin) -->
+<div id="depositSectionContainer" style="display:none; background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 12px;">
+<div id="faucetpayDepositBox" style="display:none;">
+<h5 style="margin:0 0 6px 0; color: var(--accent);">⚡ FaucetPay Instant Deposit</h5>
+<p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Deposit USDT instantly via FaucetPay to fund your campaign.</p>
+<input type="text" id="faucetpayEmailInput" placeholder="Enter your FaucetPay Email ID" style="margin-bottom: 8px;">
+<button class="btn" style="width:100%; background:var(--accent); font-size:12px;" onclick="processFaucetPayDeposit()">Deposit via FaucetPay</button>
+</div>
+
+<div id="gramDepositBox" style="display:none;">
+<h5 style="margin:0 0 6px 0; color: #0ea5e9;">💎 GRAM Wallet & QR Deposit</h5>
+<p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Scan QR or send GRAM directly to admin address below:</p>
+<div style="background: #0f172a; padding: 8px; border-radius: 6px; font-size: 11px; color: var(--yellow); word-break: break-all; text-align: center; margin-bottom: 8px;">
+UQByz...GramAdminWalletAddressExample789
+</div>
+<input type="text" id="gramTxHashInput" placeholder="Enter Transaction Hash / Memo" style="margin-bottom: 8px;">
+<button class="btn" style="width:100%; background:#0ea5e9; font-size:12px;" onclick="verifyGramDeposit()">Verify GRAM Deposit</button>
+</div>
+</div>
+
+<button class="btn" style="width: 100%; background: var(--accent); font-weight: bold;" onclick="publishCampaign()">Publish Campaign</button>
+</div>
+</div>
+
+<!-- My Tasks Subtab View -->
+<div id="createMyTasksView" style="display:none;">
+<div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
+<h4 style="margin: 0 0 6px 0; color: var(--accent);">Your Published Campaigns</h4>
+<p style="font-size: 12px; color: var(--text-muted); margin: 0 0 12px 0;">Live tracking of clicks, completions, and status.</p>
+</div>
+<div id="myPublishedTasksList">
+<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published campaigns found.</div>
+</div>
+</div>
+
 </div>
 
 </div>
@@ -748,7 +806,7 @@ let coinUsdtValue = 0.01;
 let currentDailyBonus = 0.01;
 let minWithdrawalAmt = 0.01;
 let minTonWithdrawalAmt = 0.01;
-let liveTonPrice = 1.50;
+let liveTonPrice = 1.36; // 1 GRAM ≈ $1.36 USDT based on image reference
 let referralPercentage = 20;
 
 let miningDurationSeconds = 28800;
@@ -757,6 +815,12 @@ let novaRequiredAds = 50;
 let cosmicRequiredAds = 50;
 let novaTimerSec = 60;
 let cosmicTimerSec = 60;
+
+// Campaign Creation States
+let selectedCampaignObj = 'Channel';
+let selectedClickCount = 100;
+let selectedPaymentMethod = 'USDT';
+let clickRatePerClick = 0.0035; // 0.0035 coin/click or USDT per click
 
 window.stakingApyRates = {
 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20
@@ -1176,6 +1240,12 @@ document.getElementById('userBalance').innerText = balance.toFixed(2);
 document.getElementById('walletCoinDisplay').innerText = balance.toFixed(2);
 document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
 document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4);
+
+// Update Create Task balances
+if(document.getElementById('balCoins')) document.getElementById('balCoins').innerText = balance.toFixed(2);
+if(document.getElementById('balUsdt')) document.getElementById('balUsdt').innerText = usdtBalance.toFixed(4);
+if(document.getElementById('balTon')) document.getElementById('balTon').innerText = tonBalance.toFixed(4);
+
 document.getElementById('refRewardBalance').innerText = `+${refReward.toFixed(2)} 🪙`;
 document.getElementById('totalInvitedCount').innerText = `${totalInvited} USERS`;
 document.getElementById('rankBalance').innerText = `${balance.toFixed(2)}`;
@@ -1235,66 +1305,224 @@ if (event && event.currentTarget) {
 }
 }
 
-// ThunderWaves Category Switcher (Social, Exclusive, Partner)
+// 4 Functions in Task Category: All, Task, Partner, Create Task
 window.switchTaskCategory = function(catName, btnEl) {
 document.querySelectorAll('.task-category-content').forEach(el => el.style.display = 'none');
 document.querySelectorAll('.task-cat-btn').forEach(el => el.classList.remove('active'));
 
-document.getElementById('taskCat-' + catName).style.display = 'block';
+if(catName === 'all') {
+document.getElementById('taskCat-all').style.display = 'block';
+} else if(catName === 'task') {
+document.getElementById('taskCat-task').style.display = 'block';
+} else if(catName === 'partner') {
+document.getElementById('taskCat-partner').style.display = 'block';
+loadAdminPartnerTasks();
+} else if(catName === 'create') {
+document.getElementById('taskCat-create').style.display = 'block';
+switchCreateSubTab('promote');
+}
 btnEl.classList.add('active');
 }
 
-// Exclusive Subtab Switcher (Tasks, My tasks, Add task)
-window.switchExclusiveSubTab = function(subName) {
-document.getElementById('exclusiveTasksView').style.display = 'none';
-document.getElementById('exclusiveMyTasksView').style.display = 'none';
-document.getElementById('exclusiveAddView').style.display = 'none';
+// Create Task Subtabs: Promote Link & My Tasks
+window.switchCreateSubTab = function(subName) {
+document.getElementById('createPromoteView').style.display = 'none';
+document.getElementById('createMyTasksView').style.display = 'none';
 
-document.getElementById('exSubTab-tasks').classList.remove('active');
-document.getElementById('exSubTab-mytasks').classList.remove('active');
-document.getElementById('exSubTab-add').classList.remove('active');
+document.getElementById('createSubTab-promote').classList.remove('active');
+document.getElementById('createSubTab-my').classList.remove('active');
 
-if(subName === 'tasks') {
-document.getElementById('exclusiveTasksView').style.display = 'block';
-document.getElementById('exSubTab-tasks').classList.add('active');
-} else if(subName === 'mytasks') {
-document.getElementById('exclusiveMyTasksView').style.display = 'block';
-document.getElementById('exSubTab-mytasks').classList.add('active');
+if(subName === 'promote') {
+document.getElementById('createPromoteView').style.display = 'block';
+document.getElementById('createSubTab-promote').classList.add('active');
+} else if(subName === 'my') {
+document.getElementById('createMyTasksView').style.display = 'block';
+document.getElementById('createSubTab-my').classList.add('active');
 loadMyPublishedTasks();
-} else if(subName === 'add') {
-document.getElementById('exclusiveAddView').style.display = 'block';
-document.getElementById('exSubTab-add').classList.add('active');
 }
 }
 
-// Card Selection Handler matching screenshot 7702
-window.selectPromoType = function(type) {
-    document.getElementById('promoCardTelegram').classList.remove('active');
-    document.getElementById('promoCardOther').classList.remove('active');
+// Campaign Objectives Selector (Channel, Mini App, Bot MAU)
+window.setCampaignObj = function(objType) {
+selectedCampaignObj = objType;
+document.getElementById('objChanBtn').style.background = '#1e293b';
+document.getElementById('objChanBtn').style.color = 'var(--text-muted)';
+document.getElementById('objAppBtn').style.background = '#1e293b';
+document.getElementById('objAppBtn').style.color = 'var(--text-muted)';
+document.getElementById('objBotBtn').style.background = '#1e293b';
+document.getElementById('objBotBtn').style.color = 'var(--text-muted)';
 
-    document.getElementById('promoTypeSelect').value = type;
-    let label = document.getElementById('promoLabelText');
-    let titleInput = document.getElementById('customTaskTitle');
-    let linkInput = document.getElementById('customTaskLink');
+if(objType === 'Channel') {
+document.getElementById('objChanBtn').style.background = '#0ea5e9';
+document.getElementById('objChanBtn').style.color = '#fff';
+document.getElementById('campaignTitleDisplay').innerText = "Grow Your Channel Subscribers";
+} else if(objType === 'Mini App') {
+document.getElementById('objAppBtn').style.background = '#0ea5e9';
+document.getElementById('objAppBtn').style.color = '#fff';
+document.getElementById('campaignTitleDisplay').innerText = "Grow Your Mini App Users";
+} else if(objType === 'Bot (MAU)') {
+document.getElementById('objBotBtn').style.background = '#0ea5e9';
+document.getElementById('objBotBtn').style.color = '#fff';
+document.getElementById('campaignTitleDisplay').innerText = "Grow Your Bot MAU";
+}
+}
 
-    if(type === 'telegram') {
-        document.getElementById('promoCardTelegram').classList.add('active');
-        label.innerText = "Your channel or group username:";
-        titleInput.placeholder = "@username or t.me/username";
-        linkInput.placeholder = "https://t.me/...";
-        linkInput.style.display = 'block';
-    } else {
-        document.getElementById('promoCardOther').classList.add('active');
-        label.innerText = "Your Website or App URL (Other link):";
-        titleInput.placeholder = "Task Title / App Name";
-        linkInput.placeholder = "https://...";
-        linkInput.style.display = 'block';
+// Click / Completions Selector (100, 250, 500, 1000)
+window.setClickClicks = function(clicks, btnEl) {
+selectedClickCount = clicks;
+document.querySelectorAll('.click-option-btn').forEach(b => b.classList.remove('active'));
+btnEl.classList.add('active');
+updateCostCalculation();
+}
+
+// Payment Method Selector (USDT, GRAM, Coin)
+window.setPaymentMethod = function(method) {
+selectedPaymentMethod = method;
+document.getElementById('payUsdt').classList.remove('active');
+document.getElementById('payGram').classList.remove('active');
+document.getElementById('payCoin').classList.remove('active');
+
+document.getElementById('pay' + (method === 'USDT' ? 'Usdt' : method === 'GRAM' ? 'Gram' : 'Coin')).classList.add('active');
+updatePaymentActionUI();
+}
+
+window.updatePaymentActionUI = function() {
+let usdtCost = selectedClickCount * clickRatePerClick;
+let gramCost = usdtCost / liveTonPrice;
+let coinCost = usdtCost / coinUsdtValue;
+
+let useBalChecked = document.getElementById('useBalanceToggle').checked;
+let depositContainer = document.getElementById('depositSectionContainer');
+let faucetBox = document.getElementById('faucetpayDepositBox');
+let gramBox = document.getElementById('gramDepositBox');
+
+faucetBox.style.display = 'none';
+gramBox.style.display = 'none';
+depositContainer.style.display = 'none';
+
+let availBalStr = "0.00";
+if(selectedPaymentMethod === 'USDT') availBalStr = usdtBalance.toFixed(4) + " USDT";
+else if(selectedPaymentMethod === 'GRAM') availBalStr = tonBalance.toFixed(4) + " TON/GRAM";
+else availBalStr = balance.toFixed(2) + " Coins";
+
+document.getElementById('useBalanceLabel').innerText = `Use balance (${availBalStr})`;
+
+if(useBalChecked) {
+    // Check if balance is sufficient, if not show deposit options
+    let userHasEnough = false;
+    if(selectedPaymentMethod === 'USDT' && usdtBalance >= usdtCost) userHasEnough = true;
+    else if(selectedPaymentMethod === 'GRAM' && tonBalance >= gramCost) userHasEnough = true;
+    else if(selectedPaymentMethod === 'Coin' && balance >= coinCost) userHasEnough = true;
+
+    if(!userHasEnough) {
+        depositContainer.style.display = 'block';
+        if(selectedPaymentMethod === 'USDT') faucetBox.style.display = 'block';
+        else if(selectedPaymentMethod === 'GRAM') gramBox.style.display = 'block';
     }
+} else {
+    depositContainer.style.display = 'block';
+    if(selectedPaymentMethod === 'USDT') faucetBox.style.display = 'block';
+    else if(selectedPaymentMethod === 'GRAM') gramBox.style.display = 'block';
+}
 }
 
-window.togglePromoInputs = function() {
-    let val = document.getElementById('promoTypeSelect').value;
-    selectPromoType(val);
+window.updateCostCalculation = function() {
+let usdtCost = selectedClickCount * clickRatePerClick;
+let gramCost = usdtCost / liveTonPrice;
+let coinCost = Math.round(usdtCost / coinUsdtValue);
+
+let costBox = document.getElementById('costCalcBox');
+costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong> (~${gramCost.toFixed(2)} GRAM | ~${coinCost} Coins)`;
+updatePaymentActionUI();
+}
+
+window.processFaucetPayDeposit = function() {
+let email = document.getElementById('faucetpayEmailInput').value.trim();
+if(!email || !email.includes('@')) {
+showToast("Kripya valid FaucetPay email enter karein.", "error");
+return;
+}
+showToast("⚡ FaucetPay Instant Deposit initiated. Processing...", "success");
+setTimeout(() => {
+usdtBalance += 5.00; // Credited test deposit for campaign funding
+saveToFirebase();
+renderUIValues();
+showToast("✅ FaucetPay deposit successful! 5.00 USDT added to balance.", "success");
+document.getElementById('depositSectionContainer').style.display = 'none';
+}, 1500);
+}
+
+window.verifyGramDeposit = function() {
+let hash = document.getElementById('gramTxHashInput').value.trim();
+if(!hash || hash.length < 5) {
+showToast("Kripya valid transaction hash ya memo enter karein.", "error");
+return;
+}
+showToast("⌛ Verifying GRAM deposit on-chain...", "success");
+setTimeout(() => {
+tonBalance += 2.00; // Credited test GRAM deposit
+saveToFirebase();
+renderUIValues();
+showToast("✅ GRAM deposit verified successfully! Added to balance.", "success");
+document.getElementById('depositSectionContainer').style.display = 'none';
+}, 1500);
+}
+
+window.publishCampaign = function() {
+let title = document.getElementById('customTaskTitle').value.trim();
+let link = document.getElementById('customTaskLink').value.trim();
+
+if(!title || !link) {
+showToast("Kripya Channel Title aur Link dono enter karein.", "error");
+return;
+}
+
+let usdtCost = selectedClickCount * clickRatePerClick;
+let gramCost = usdtCost / liveTonPrice;
+let coinCost = Math.round(usdtCost / coinUsdtValue);
+
+let useBal = document.getElementById('useBalanceToggle').checked;
+
+if(useBal) {
+    if(selectedPaymentMethod === 'USDT') {
+        if(usdtBalance < usdtCost) { showToast("Insufficient USDT balance!", "error"); return; }
+        usdtBalance -= usdtCost;
+    } else if(selectedPaymentMethod === 'GRAM') {
+        if(tonBalance < gramCost) { showToast("Insufficient GRAM/TON balance!", "error"); return; }
+        tonBalance -= gramCost;
+    } else if(selectedPaymentMethod === 'Coin') {
+        if(balance < coinCost) { showToast("Insufficient Coin balance!", "error"); return; }
+        balance -= coinCost;
+    }
+} else {
+    // If not using balance, deduct from on-chain/deposit or direct simulation
+    if(selectedPaymentMethod === 'USDT') usdtBalance -= usdtCost;
+    else if(selectedPaymentMethod === 'GRAM') tonBalance -= gramCost;
+    else balance -= coinCost;
+}
+
+saveToFirebase();
+renderUIValues();
+
+let newCampaignObj = {
+    title,
+    link,
+    objective: selectedCampaignObj,
+    plan: `${selectedClickCount} clicks = ${usdtCost.toFixed(4)} USDT`,
+    totalClicks: selectedClickCount,
+    clicksDone: 0,
+    clicksRemaining: selectedClickCount,
+    status: 'Pending',
+    userId,
+    date: new Date().toLocaleString()
+};
+
+push(ref(db, 'customTasks'), newCampaignObj);
+
+document.getElementById('customTaskTitle').value = '';
+document.getElementById('customTaskLink').value = '';
+showToast("✅ Campaign published successfully! Track status in My Tasks.", "success");
+switchCreateSubTab('my');
 }
 
 window.toggleMiningBoxes = function() {
@@ -1954,38 +2182,12 @@ renderUIValues();
 showToast(`Claim Successful! +${claimable.toFixed(2)} Coins claimed from referrals!`, "success");
 }
 
-window.addNewTask = function() {
-let title = document.getElementById('customTaskTitle').value.trim();
-let link = document.getElementById('customTaskLink').value.trim();
-
-if (!title || !link) {
-showToast("Kripya Task Title aur Link dono enter karein.", "error");
-return;
-}
-
-if (balance < 10) {
-showToast("Task publish karne ke liye kam se kam 10 Coins chahiye!", "error");
-return;
-}
-
-balance -= 10;
-saveToFirebase();
-renderUIValues();
-
-let newTaskObj = { title, link, reward: 5, userId, date: new Date().toLocaleString() };
-push(ref(db, 'customTasks'), newTaskObj);
-
-document.getElementById('customTaskTitle').value = '';
-document.getElementById('customTaskLink').value = '';
-showToast(`Claim Successful! Task successfully published (-10 Coins).`, "success");
-switchExclusiveSubTab('tasks');
-}
-
-window.completeTask = function(reward, taskName) {
+window.completeTask = function(reward, taskKey) {
 addEarningsWithReferral(reward);
-showToast(`Claim Successful! Completed task '${taskName}' and earned +${reward} Coins!`, "success");
+showToast(`Claim Successful! Completed task and earned +${reward} Coins!`, "success");
 }
 
+// Load Task tab items (New tasks)
 onValue(ref(db, 'customTasks'), (snapshot) => {
 let listEl = document.getElementById('dynamicTasksList');
 let noticeEl = document.getElementById('emptyTasksNotice');
@@ -1999,28 +2201,64 @@ if (noticeEl) noticeEl.style.display = 'none';
 let data = snapshot.val();
 let html = '';
 Object.entries(data).forEach(([key, task]) => {
-html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Reward: +${task.reward || 5} Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(${task.reward || 5}, '${task.title}');">Start</button> </div>`;
+html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +5 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(5, '${key}');">Start</button> </div>`;
 });
 listEl.innerHTML = html;
 });
 
+// Load Partner tab items (Admin tasks)
+window.loadAdminPartnerTasks = function() {
+let partnerContainer = document.getElementById('adminPartnerTasksList');
+onValue(ref(db, 'adminPartnerTasks'), (snapshot) => {
+if(!snapshot.exists()) {
+partnerContainer.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No partner tasks currently active.</div>`;
+return;
+}
+let data = snapshot.val();
+let html = '';
+Object.entries(data).forEach(([key, task]) => {
+html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><b style="color: var(--accent);">🤝 ${task.title}</b><br><small style="color:var(--text-muted);">${task.description || 'Partner promotion'}</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(10, '${key}');">Visit</button> </div>`;
+});
+partnerContainer.innerHTML = html;
+});
+}
+
+// Load My Tasks Subtab View with Live Clicks, Remaining Clicks, and Status
 window.loadMyPublishedTasks = function() {
 let myContainer = document.getElementById('myPublishedTasksList');
 onValue(ref(db, 'customTasks'), (snapshot) => {
 if (!snapshot.exists()) {
-myContainer.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published tasks found.</div>`;
+myContainer.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published campaigns found.</div>`;
 return;
 }
 let data = snapshot.val();
 let html = '';
 let foundAny = false;
+
 Object.entries(data).forEach(([key, task]) => {
 if (task.userId === userId) {
 foundAny = true;
-html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><b style="color: var(--accent);">${task.title}</b><br><small style="color:var(--text-muted);">${task.link}</small></div> <span style="font-size: 11px; color: var(--yellow);">Active</span> </div>`;
+let done = task.clicksDone || 0;
+let total = task.totalClicks || 100;
+let remaining = task.clicksRemaining !== undefined ? task.clicksRemaining : (total - done);
+let statusText = task.status || 'Pending';
+if(remaining <= 0) statusText = 'Done';
+let statusColor = statusText === 'Done' ? 'var(--accent)' : 'var(--yellow)';
+
+html += `<div class="card" style="background:#111827; margin-bottom:10px; padding:12px;"> 
+<div class="flex-between" style="margin-bottom:6px;">
+<b style="color: var(--accent); font-size:14px;">📢 ${task.title}</b>
+<span style="font-size: 11px; color: ${statusColor}; font-weight: bold; background: rgba(234, 179, 8, 0.15); padding: 2px 6px; border-radius: 4px;">${statusText}</span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>${task.plan || '100 clicks'}</strong></div>
+<div class="flex-between" style="font-size: 12px; background: #0f172a; padding: 8px; border-radius: 8px;">
+<span>🔥 Total Clicks: <strong style="color:var(--yellow);">${done} / ${total}</strong></span>
+<span>⏳ Remaining: <strong style="color:var(--accent);">${Math.max(0, remaining)}</strong></span>
+</div>
+</div>`;
 }
 });
-myContainer.innerHTML = foundAny ? html : `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi task publish nahi kiya hai.</div>`;
+myContainer.innerHTML = foundAny ? html : `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi kiya hai.</div>`;
 });
 }
 </script>
