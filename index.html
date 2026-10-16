@@ -119,11 +119,20 @@ input:focus, select:focus { border-color: var(--accent); }
 #miningBoxesSection { display: none; }
 #miningBoxesSection.show { display: block; }
 
-/* Ad Task Custom Card Style matching Screenshot */
+/* Ad Task & ThunderWaves Task UI Styles */
 .ad-task-card { background: var(--card-bg); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
 .ad-icon-box { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; }
 .progress-line-bg { width: 100%; background: #334155; height: 5px; border-radius: 3px; margin-top: 10px; overflow: hidden; }
 .progress-line-fill { background: #38bdf8; height: 100%; width: 0%; transition: width 0.4s ease; }
+
+/* ThunderWaves Task Categories & Subtabs */
+.task-category-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
+.task-category-bar::-webkit-scrollbar { display: none; }
+.task-cat-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+.task-cat-btn.active { background: #eab308; color: #000; border-color: #eab308; box-shadow: 0 0 12px rgba(234, 179, 8, 0.4); }
+.task-subtab-bar { display: flex; gap: 10px; margin-bottom: 12px; }
+.task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 8px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
+.task-subtab-btn.active { background: #334155; color: var(--text-main); border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -209,25 +218,32 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 📋 TASKS PAGE -->
+<!-- 📋 TASKS PAGE (ThunderWaves UI style) -->
 <div id="tasks" class="tab-content">
-<h3 data-i18n="tasksOffers">📋 Tasks & Offers</h3>
-<div style="display:flex; gap:10px; margin-bottom:12px;">
-<button class="btn" onclick="toggleTaskTab('adsTasks')" style="flex:1; background: var(--accent);" data-i18n="adsTasksTab">Ads Tasks</button>
-<button class="btn" onclick="toggleTaskTab('userTasks')" style="flex:1; background:#334155;" data-i18n="userTasksTab">User Tasks</button>
+<div style="margin-bottom: 12px;">
+<h3 style="margin:0 0 4px 0;" data-i18n="tasksOffers">📋 Tasks</h3>
+<small style="color:var(--text-muted);">Complete tasks, collect Coins</small>
 </div>
 
+<!-- Category Navigation Bar (Social, Exclusive, Partner) -->
+<div class="task-category-bar">
+<button class="task-cat-btn active" onclick="switchTaskCategory('social', this)">📢 Social</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('exclusive', this)">💎 Exclusive</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('partner', this)">🤝 Partner</button>
+</div>
+
+<!-- 1. SOCIAL TAB CONTENT -->
+<div id="taskCat-social" class="task-category-content">
 <div id="adsTasks">
-<!-- 1. Monetag Task -->
+<!-- Monetag Ad Task -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
 <div class="ad-icon-box" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">🌐</div>
 <div>
-<b style="font-size: 15px;">Monetag</b><br>
+<b style="font-size: 15px;">Monetag Ads</b><br>
 <small style="color:var(--text-muted);">Interactive premium mini-app ads</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetagVal">0.04</span> 🪙 / view</span> &nbsp;
-<small style="color:var(--text-muted);">Max: <span id="maxMonetagVal">0.0200</span> 🪙</small>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetagVal">0.04</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskMonetagBtn" onclick="watchAdWithTimer('taskMonetagLimit', 'taskMonetagBtn', 'Monetag', maxLimits.monetag, rewards.monetag, adTimers.monetag)">▶ Watch</button>
@@ -239,16 +255,15 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 2. Gigapub Task -->
+<!-- Gigapub Ad Task -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
 <div class="ad-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">⚡</div>
 <div>
-<b style="font-size: 15px;">Gigapub</b><br>
+<b style="font-size: 15px;">Gigapub Network</b><br>
 <small style="color:var(--text-muted);">Universal sponsor video network</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardGigapubVal">0.04</span> 🪙 / view</span> &nbsp;
-<small style="color:var(--text-muted);">Max: <span id="maxGigapubVal">0.0200</span> 🪙</small>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardGigapubVal">0.04</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskGigapubBtn" onclick="watchAdWithTimer('taskGigapubLimit', 'taskGigapubBtn', 'Gigapub', maxLimits.gigapub, rewards.gigapub, adTimers.gigapub)">▶ Watch</button>
@@ -260,16 +275,15 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 3. Monetix Task -->
+<!-- Monetix Ad Task -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
 <div class="ad-icon-box" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">📡</div>
 <div>
-<b style="font-size: 15px;">Monetix</b><br>
+<b style="font-size: 15px;">Monetix Streams</b><br>
 <small style="color:var(--text-muted);">Direct publisher video streams</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetixVal">0.03</span> 🪙 / view</span> &nbsp;
-<small style="color:var(--text-muted);">Max: <span id="maxMonetixVal">0.0120</span> 🪙</small>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetixVal">0.03</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskMonetixBtn" onclick="watchAdWithTimer('taskMonetixLimit', 'taskMonetixBtn', 'Monetix', maxLimits.monetix, rewards.monetix, adTimers.monetix)">▶ Watch</button>
@@ -281,7 +295,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetixFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 4. RichAds Task -->
+<!-- RichAds Task -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -289,8 +303,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div>
 <b style="font-size: 15px;">RichAds Stream</b><br>
 <small style="color:var(--text-muted);">Watch sponsored video ad</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardRichadsVal">0.04</span> 🪙 / view</span> &nbsp;
-<small style="color:var(--text-muted);">Max: <span id="maxRichadsVal">0.0180</span> 🪙</small>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardRichadsVal">0.04</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskRichadsBtn" onclick="watchAdWithTimer('taskRichadsLimit', 'taskRichadsBtn', 'RichAds', maxLimits.richads, rewards.richads, adTimers.richads)">▶ Watch</button>
@@ -302,23 +315,99 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progRichadsFill" style="width: 0%;"></div></div>
 </div>
 </div>
-
-<div id="userTasks" style="display:none;">
-<div class="card" style="background:#0f172a; border: 1px dashed var(--accent); text-align: center;">
-<h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="addYourTask">➕ Add Your Task</h4>
-<input type="text" id="customTaskTitle" placeholder="Task Name (e.g., Join Channel)">
-<input type="text" id="customTaskLink" placeholder="Your Link (https://t.me/...)">
-<button class="btn" style="margin-top:10px; background: var(--accent);" onclick="addNewTask()" data-i18n="publishTaskBtn">Publish Task (-10 Coin)</button>
 </div>
 
+<!-- 2. EXCLUSIVE TAB CONTENT (Tasks, My tasks, Add task) -->
+<div id="taskCat-exclusive" class="task-category-content" style="display:none;">
+<div class="task-subtab-bar">
+<div class="task-subtab-btn active" id="exSubTab-tasks" onclick="switchExclusiveSubTab('tasks')">Tasks</div>
+<div class="task-subtab-btn" id="exSubTab-mytasks" onclick="switchExclusiveSubTab('mytasks')">My tasks</div>
+<div class="task-subtab-btn" id="exSubTab-add" onclick="switchExclusiveSubTab('add')" style="background: #eab308; color: #000; font-weight: 700;">+ Add task</div>
+</div>
+
+<!-- Exclusive Subtab: Tasks View -->
+<div id="exclusiveTasksView">
+<div class="card" style="text-align: center; padding: 25px 15px; background: #111827;" id="emptyTasksNotice">
+<div style="font-size: 36px; margin-bottom: 8px;">☁️⚡</div>
+<h4 style="margin: 0 0 6px 0; color: var(--text-main);">All caught up!</h4>
+<p style="font-size: 12px; color: var(--text-muted); margin: 0;">New tasks drop regularly. Check back soon or create your own task below.</p>
+</div>
 <div id="dynamicTasksList">
-<div class="card flex-between">
-<div><span data-i18n="joinTelegram">📢 Join Telegram Channel</span><br>
-<small style="color:var(--text-muted);" data-i18n="reward10Coins">Reward: +10 Coin</small></div>
-<button class="btn" style="width: auto; background: var(--accent);" onclick="completeTask(10, 'Telegram Channel')" data-i18n="completeBtn">Complete</button>
+<!-- Dynamic user tasks loaded from firebase -->
+</div>
+</div>
+
+<!-- Exclusive Subtab: My Tasks View -->
+<div id="exclusiveMyTasksView" style="display:none;">
+<div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
+<h4 style="margin: 0 0 6px 0; color: var(--accent);">Your Published Tasks</h4>
+<p style="font-size: 12px; color: var(--text-muted); margin: 0 0 12px 0;">Manage tasks you created and promoted.</p>
+</div>
+<div id="myPublishedTasksList">
+<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published tasks found.</div>
+</div>
+</div>
+
+<!-- Exclusive Subtab: Add Task View -->
+<div id="exclusiveAddView" style="display:none;">
+<div class="card" style="background:#0f172a; border: 1px solid var(--accent); padding: 16px;">
+<div class="flex-between" style="margin-bottom: 10px;">
+<h4 style="margin:0; color: var(--accent);">New task (Step 1 of 2)</h4>
+<span style="font-size:12px; color: var(--yellow);">Fee: 10 Coins</span>
+</div>
+
+<label style="font-size: 13px; color: var(--text-muted); display:block; margin-bottom: 6px;">What do you want to promote?</label>
+<select id="promoTypeSelect" onchange="togglePromoInputs()" style="margin-bottom: 10px;">
+<option value="telegram">Telegram channel or group (Users join, verify membership)</option>
+<option value="other">Other link (Website, app, social profile...)</option>
+</select>
+
+<div id="promoInputContainer">
+<label style="font-size: 13px; color: var(--text-muted); display:block; margin-top: 8px;" id="promoLabelText">Your channel or group:</label>
+<input type="text" id="customTaskTitle" placeholder="@username or t.me/username" style="margin-bottom: 8px;">
+<input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 8px;">
+</div>
+
+<div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 8px; font-size: 11px; color: var(--yellow); margin-bottom: 12px;">
+⚠️ Add bot as admin to your channel/group for automatic verification, then publish.
+</div>
+
+<button class="btn" style="width: 100%; background: var(--accent); font-weight: bold;" onclick="addNewTask()">Continue & Publish (-10 Coins)</button>
 </div>
 </div>
 </div>
+
+<!-- 3. PARTNER TAB CONTENT -->
+<div id="taskCat-partner" class="task-category-content" style="display:none;">
+<div class="ad-task-card">
+<div class="flex-between">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="ad-icon-box" style="background: rgba(234, 179, 8, 0.15); color: var(--yellow);">🤝</div>
+<div>
+<b style="font-size: 15px;">RG Crypto Lab</b><br>
+<small style="color:var(--text-muted);">Join our partner telegram channel</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+75 Coins</span>
+</div>
+</div>
+<button class="btn btn-yellow" onclick="window.open('https://t.me/', '_blank'); completeTask(75, 'RG Crypto Lab')">Start</button>
+</div>
+</div>
+
+<div class="ad-task-card">
+<div class="flex-between">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="ad-icon-box" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">🚀</div>
+<div>
+<b style="font-size: 15px;">Boinkers Partner</b><br>
+<small style="color:var(--text-muted);">Spin the slot to claim your bonus</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+100 Coins</span>
+</div>
+</div>
+<button class="btn btn-yellow" onclick="window.open('https://t.me/', '_blank'); completeTask(100, 'Boinkers Partner')">Start</button>
+</div>
+</div>
+</div>
+
 </div>
 
 <!-- 💎 STAKING PAGE -->
@@ -899,44 +988,20 @@ renderUIValues();
 const translations = {
 en: {
 homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw",
-clickToClaim: "Click to Claim!", watchBtn: "Watch", tasksOffers: "📋 Tasks & Offers", adsTasksTab: "Ads Tasks", userTasksTab: "User Tasks",
-addYourTask: "➕ Add Your Task", publishTaskBtn: "Publish Task (-10 Coin)", joinTelegram: "📢 Join Telegram Channel", reward10Coins: "Reward: +10 Coin", completeBtn: "Complete",
-stakingOptions: "💎 Staking Options", stakingCalc: "🧮 Staking Calculator & Preview", enterStakingCoins: "Enter Staking Coins:",
-selectPlan: "Select Plan:", dailyReward: "Daily Reward", totalPeriodReward: "Total Period Reward", flexHeader: "1. Flexible Staking",
-flexTitle: "Flexible Staking", flexDesc: "Unstake anytime with zero locking period.", stakeBtn: "Stake", fixedHeader: "2. Fixed Staking (Up to 20% APY)",
-referralProgram: "👥 REFERRAL PROGRAM", friendsTitle: "Friends", totalInvited: "Total invited", rewardsTitle: "Rewards",
-minClaim1Coin: "Min. claim 1 Coin", claimBtn: "Claim", inviteEarn: "Invite & Earn", copyLinkBtn: "Copy Link", shareBtn: "Share",
-walletExchange: "💼 Wallet & Exchange", exchangeCoin: "🔄 Exchange Coin (Live Rate)", convertCoinTo: "Convert Coin to:",
-coinAmountExchange: "Coin Amount to Exchange:", youWillGet: "You will get", exchangeNowBtn: "Exchange Now",
-topEarnersRank: "Top Earners Rank", liveRankingStats: "Your live ranking and stats", yourRank: "Your Rank:", rankPlace: "#1 place",
+clickToClaim: "Click to Claim!", watchBtn: "Watch", tasksOffers: "📋 Tasks", stakingOptions: "💎 Staking Options",
+referralProgram: "👥 REFERRAL PROGRAM", walletExchange: "💼 Wallet & Exchange", topEarnersRank: "Top Earners Rank",
 navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank"
 },
 hi: {
 homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी",
-clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", tasksOffers: "📋 टास्क और ऑफर्स", adsTasksTab: "एड्स टास्क", userTasksTab: "यूजर टास्क",
-addYourTask: "➕ अपना टास्क जोड़ें", publishTaskBtn: "टास्क पब्लिश करें (-10 कॉइन)", joinTelegram: "📢 टेलीग्राम चैनल ज्वाइन करें", reward10Coins: "इनाम: +10 कॉइन", completeBtn: "पूरा करें",
-stakingOptions: "💎 स्टेकिंग विकल्प", stakingCalc: "🧮 स्टेकिंग कैलकुलेटर और पूर्वावलोकन", enterStakingCoins: "स्टेकिंग कॉइन दर्ज करें:",
-selectPlan: "प्लान चुनें:", dailyReward: "दैनिक इनाम", totalPeriodReward: "कुल अवधि इनाम", flexHeader: "1. फ्लैक्सिबल स्टेकिंग",
-flexTitle: "फ्लैक्सिबल स्टेकिंग", flexDesc: "बिना किसी लॉक अवधि के कभी भी अनस्टेक करें।", stakeBtn: "स्टेक करें", fixedHeader: "2. फिक्स्ड स्टेकिंग (20% तक APY)",
-referralProgram: "👥 रेफरल प्रोग्राम", friendsTitle: "मित्र", totalInvited: "कुल आमंत्रित", rewardsTitle: "इनाम",
-minClaim1Coin: "न्यूनतम क्लेम 1 कॉइन", claimBtn: "क्लेम", inviteEarn: "आमंत्रित करें और कमाएं", copyLinkBtn: "लिंक कॉपी करें", shareBtn: "शेयर करें",
-walletExchange: "💼 वॉलेट और एक्सचेंज", exchangeCoin: "🔄 कॉइन एक्सचेंज करें (Live Rate)", convertCoinTo: "इसमें कॉइन बदलें:",
-coinAmountExchange: "एक्सचेंज करने के लिए कॉइन मात्रा:", youWillGet: "आपको मिलेगा", exchangeNowBtn: "अभी एक्सचेंज करें",
-topEarnersRank: "शीर्ष कमाई करने वाले", liveRankingStats: "आपकी लाइव रैंकिंग और आंकड़े", yourRank: "आपकी रैंक:", rankPlace: "#1 स्थान",
+clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", tasksOffers: "📋 टास्क", stakingOptions: "💎 स्टेकिंग विकल्प",
+referralProgram: "👥 रेफरल प्रोग्राम", walletExchange: "💼 वॉलेट और एक्सचेंज", topEarnersRank: "शीर्ष कमाई करने वाले",
 navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक"
 },
 ru: {
 homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод",
-clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", tasksOffers: "📋 Задания", adsTasksTab: "Реклама", userTasksTab: "Пользовательские",
-addYourTask: "➕ Добавить", publishTaskBtn: "Опубликовать", joinTelegram: "📢 Подписаться", reward10Coins: "Награда: +10", completeBtn: "Выполнить",
-stakingOptions: "💎 Стейкинг", stakingCalc: "🧮 Калькулятор", enterStakingCoins: "Введите монеты:",
-selectPlan: "План:", dailyReward: "Дневная", totalPeriodReward: "Общая", flexHeader: "1. Гибкий",
-flexTitle: "Гибкий стейкинг", flexDesc: "Без лока.", stakeBtn: "В стейкинг", fixedHeader: "2. Фиксированный стейкинг",
-referralProgram: "👥 РЕФЕРАЛЫ", friendsTitle: "Друзья", totalInvited: "Приглашено", rewardsTitle: "Награды",
-minClaim1Coin: "Мин 1", claimBtn: "Забрать", inviteEarn: "Приглашай", copyLinkBtn: "Копировать", shareBtn: "Поделиться",
-walletExchange: "💼 Кошелек", exchangeCoin: "🔄 Обмен (Live Rate)", convertCoinTo: "В:",
-coinAmountExchange: "Сумма:", youWillGet: "Получите", exchangeNowBtn: "Обменять",
-topEarnersRank: "Рейтинг", liveRankingStats: "Ваша статистика", yourRank: "Ваш ранг:", rankPlace: "#1 место",
+clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", tasksOffers: "📋 Задания", stakingOptions: "💎 Стейкинг",
+referralProgram: "👥 РЕФЕРАЛЫ", walletExchange: "💼 Кошелек", topEarnersRank: "Рейтинг",
 navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRating: "Рейтинг"
 }
 };
@@ -1093,19 +1158,15 @@ let rMax = maxLimits.richads;
 
 document.getElementById('textMonetagLimit').innerText = `${mCount} / ${mMax} (${Math.round((mCount/mMax)*100)}%)`;
 document.getElementById('progMonetagFill').style.width = `${Math.min(100, (mCount/mMax)*100)}%`;
-document.getElementById('maxMonetagVal').innerText = (mMax * rewards.monetag).toFixed(4);
 
 document.getElementById('textGigapubLimit').innerText = `${gCount} / ${gMax} (${Math.round((gCount/gMax)*100)}%)`;
 document.getElementById('progGigapubFill').style.width = `${Math.min(100, (gCount/gMax)*100)}%`;
-document.getElementById('maxGigapubVal').innerText = (gMax * rewards.gigapub).toFixed(4);
 
 document.getElementById('textMonetixLimit').innerText = `${moCount} / ${moMax} (${Math.round((moCount/moMax)*100)}%)`;
 document.getElementById('progMonetixFill').style.width = `${Math.min(100, (moCount/moMax)*100)}%`;
-document.getElementById('maxMonetixVal').innerText = (moMax * rewards.monetix).toFixed(4);
 
 document.getElementById('textRichadsLimit').innerText = `${rCount} / ${rMax} (${Math.round((rCount/rMax)*100)}%)`;
 document.getElementById('progRichadsFill').style.width = `${Math.min(100, (rCount/rMax)*100)}%`;
-document.getElementById('maxRichadsVal').innerText = (rMax * rewards.richads).toFixed(4);
 
 document.getElementById('rewardMonetagVal').innerText = rewards.monetag;
 document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
@@ -1138,13 +1199,48 @@ if (event && event.currentTarget) {
 }
 }
 
-window.toggleTaskTab = function(subTab) {
-if(subTab === 'adsTasks') {
-document.getElementById('adsTasks').style.display = 'block';
-document.getElementById('userTasks').style.display = 'none';
+// ThunderWaves Category Switcher (Social, Exclusive, Partner)
+window.switchTaskCategory = function(catName, btnEl) {
+document.querySelectorAll('.task-category-content').forEach(el => el.style.display = 'none');
+document.querySelectorAll('.task-cat-btn').forEach(el => el.classList.remove('active'));
+
+document.getElementById('taskCat-' + catName).style.display = 'block';
+btnEl.classList.add('active');
+}
+
+// Exclusive Subtab Switcher (Tasks, My tasks, Add task)
+window.switchExclusiveSubTab = function(subName) {
+document.getElementById('exclusiveTasksView').style.display = 'none';
+document.getElementById('exclusiveMyTasksView').style.display = 'none';
+document.getElementById('exclusiveAddView').style.display = 'none';
+
+document.getElementById('exSubTab-tasks').classList.remove('active');
+document.getElementById('exSubTab-mytasks').classList.remove('active');
+document.getElementById('exSubTab-add').classList.remove('active');
+
+if(subName === 'tasks') {
+document.getElementById('exclusiveTasksView').style.display = 'block';
+document.getElementById('exSubTab-tasks').classList.add('active');
+} else if(subName === 'mytasks') {
+document.getElementById('exclusiveMyTasksView').style.display = 'block';
+document.getElementById('exSubTab-mytasks').classList.add('active');
+loadMyPublishedTasks();
+} else if(subName === 'add') {
+document.getElementById('exclusiveAddView').style.display = 'block';
+document.getElementById('exSubTab-add').classList.add('active');
+}
+}
+
+window.togglePromoInputs = function() {
+let val = document.getElementById('promoTypeSelect').value;
+let label = document.getElementById('promoLabelText');
+let linkInput = document.getElementById('customTaskLink');
+if(val === 'telegram') {
+label.innerText = "Your channel or group username:";
+linkInput.style.display = 'block';
 } else {
-document.getElementById('adsTasks').style.display = 'none';
-document.getElementById('userTasks').style.display = 'block';
+label.innerText = "Your Website or App URL:";
+linkInput.style.display = 'block';
 }
 }
 
@@ -1175,12 +1271,10 @@ let adPromise = Promise.resolve();
 if (adName === 'RichAds') {
     adPromise = new Promise((resolve) => {
         try {
-            // Check for RichAds trigger or create silent background trigger
             if (typeof window.richads_pu_show === 'function') {
                 window.richads_pu_show();
                 resolve();
             } else {
-                // Background script injection to prevent direct file open
                 var s = document.createElement('script');
                 s.type = 'text/javascript';
                 s.async = true;
@@ -1812,7 +1906,7 @@ let title = document.getElementById('customTaskTitle').value.trim();
 let link = document.getElementById('customTaskLink').value.trim();
 
 if (!title || !link) {
-showToast("Kripya Task Name aur Link dono enter karein.", "error");
+showToast("Kripya Task Title aur Link dono enter karein.", "error");
 return;
 }
 
@@ -1825,12 +1919,13 @@ balance -= 10;
 saveToFirebase();
 renderUIValues();
 
-let newTaskObj = { title, link, reward: 5, userId };
+let newTaskObj = { title, link, reward: 5, userId, date: new Date().toLocaleString() };
 push(ref(db, 'customTasks'), newTaskObj);
 
 document.getElementById('customTaskTitle').value = '';
 document.getElementById('customTaskLink').value = '';
 showToast(`Claim Successful! Task successfully published (-10 Coins).`, "success");
+switchExclusiveSubTab('tasks');
 }
 
 window.completeTask = function(reward, taskName) {
@@ -1840,20 +1935,41 @@ showToast(`Claim Successful! Completed task '${taskName}' and earned +${reward} 
 
 onValue(ref(db, 'customTasks'), (snapshot) => {
 let listEl = document.getElementById('dynamicTasksList');
-let defaultHtml = `<div class="card flex-between"> <div><span>📢 Join Telegram Channel</span><br><small style="color:var(--text-muted);">Reward: +10 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent);" onclick="completeTask(10, 'Telegram Channel')">Complete</button> </div>`;
-
+let noticeEl = document.getElementById('emptyTasksNotice');
 if (!snapshot.exists()) {
-listEl.innerHTML = defaultHtml;
+listEl.innerHTML = "";
+if (noticeEl) noticeEl.style.display = 'block';
 return;
 }
 
+if (noticeEl) noticeEl.style.display = 'none';
 let data = snapshot.val();
-let html = defaultHtml;
-Object.values(data).forEach(task => {
-html += `<div class="card flex-between"> <div><span>📢 ${task.title}</span><br><small style="color:var(--text-muted);">Reward: +${task.reward} Coin</small></div> <button class="btn" style="width: auto; background: var(--accent);" onclick="window.open('${task.link}', '_blank'); completeTask(${task.reward}, '${task.title}');">Complete</button> </div>`;
+let html = '';
+Object.entries(data).forEach(([key, task]) => {
+html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Reward: +${task.reward || 5} Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(${task.reward || 5}, '${task.title}');">Start</button> </div>`;
 });
 listEl.innerHTML = html;
 });
+
+window.loadMyPublishedTasks = function() {
+let myContainer = document.getElementById('myPublishedTasksList');
+onValue(ref(db, 'customTasks'), (snapshot) => {
+if (!snapshot.exists()) {
+myContainer.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published tasks found.</div>`;
+return;
+}
+let data = snapshot.val();
+let html = '';
+let foundAny = false;
+Object.entries(data).forEach(([key, task]) => {
+if (task.userId === userId) {
+foundAny = true;
+html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><b style="color: var(--accent);">${task.title}</b><br><small style="color:var(--text-muted);">${task.link}</small></div> <span style="font-size: 11px; color: var(--yellow);">Active</span> </div>`;
+}
+});
+myContainer.innerHTML = foundAny ? html : `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi task publish nahi kiya hai.</div>`;
+});
+}
 </script>
 </body>
 </html>
