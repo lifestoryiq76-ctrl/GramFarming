@@ -17,8 +17,8 @@
 <!-- 3. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
-<!-- 4. Tads SDK Integration -->
-<script src="https://tads.me/sdk.js" async></script>
+<!-- 4. RichAds SDK Integration -->
+<script src="https://richinfo.co/richpartners/pops/js/richads-pu-ob.js" data-pubid="1025816" data-siteid="410175" async data-cfasync="false"></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
@@ -281,25 +281,25 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetixFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 4. Tads Task (Replaced Adexium) -->
+<!-- 4. RichAds Task (Replaced Tads) -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: rgba(234, 179, 8, 0.15); color: #eab308;">🎯</div>
+<div class="ad-icon-box" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">🎬</div>
 <div>
-<b style="font-size: 15px;">Tads Ads</b><br>
-<small style="color:var(--text-muted);">Telegram sponsored banner ads</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardTadsVal">0.04</span> 🪙 / view</span> &nbsp;
-<small style="color:var(--text-muted);">Max: <span id="maxTadsVal">0.0180</span> 🪙</small>
+<b style="font-size: 15px;">RichAds Stream</b><br>
+<small style="color:var(--text-muted);">Watch sponsored video ad</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardRichadsVal">0.04</span> 🪙 / view</span> &nbsp;
+<small style="color:var(--text-muted);">Max: <span id="maxRichadsVal">0.0180</span> 🪙</small>
 </div>
 </div>
-<button class="btn" id="taskTadsBtn" onclick="watchAdWithTimer('taskTadsLimit', 'taskTadsBtn', 'Tads', maxLimits.tads, rewards.tads, adTimers.tads)">▶ Watch</button>
+<button class="btn" id="taskRichadsBtn" onclick="watchAdWithTimer('taskRichadsLimit', 'taskRichadsBtn', 'RichAds', maxLimits.richads, rewards.richads, adTimers.richads)">▶ Watch</button>
 </div>
 <div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
 <span>Daily Limit</span>
-<span id="textTadsLimit">0 / 40 (0%)</span>
+<span id="textRichadsLimit">0 / 40 (0%)</span>
 </div>
-<div class="progress-line-bg"><div class="progress-line-fill" id="progTadsFill" style="width: 0%;"></div></div>
+<div class="progress-line-bg"><div class="progress-line-fill" id="progRichadsFill" style="width: 0%;"></div></div>
 </div>
 </div>
 
@@ -641,34 +641,34 @@ window.maxLimits = {
 monetag: 50,
 gigapub: 50,
 monetix: 40,
-tads: 40
+richads: 40
 };
 
 window.rewards = {
 monetag: 0.04,
 gigapub: 0.04,
 monetix: 0.03,
-tads: 0.04
+richads: 0.04
 };
 
 window.adTimers = {
 monetag: 60,
 gigapub: 60,
 monetix: 60,
-tads: 60
+richads: 60
 };
 
 let adWatchedCounts = {
 taskMonetagLimit: 0,
 taskGigapubLimit: 0,
 taskMonetixLimit: 0,
-taskTadsLimit: 0
+taskRichadsLimit: 0
 };
 
 let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 let todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskTadsLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskRichadsLimit: 0 };
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -715,7 +715,7 @@ today530.setHours(5, 30, 0, 0);
 
 if (realNow >= today530 && lastResetStored !== todayStr) {
 processStakingDailyTransfer();
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskTadsLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskRichadsLimit: 0 };
 localStorage.setItem('last_530_reset_date', todayStr);
 saveToFirebase();
 
@@ -880,17 +880,17 @@ const data = snapshot.val();
 if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
 if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
 if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
-if (data.tadsLimit) maxLimits.tads = parseInt(data.tadsLimit);
+if (data.richadsLimit) maxLimits.richads = parseInt(data.richadsLimit);
 
 if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
 if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
 if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
-if (data.tadsReward) rewards.tads = parseFloat(data.tadsReward);
+if (data.richadsReward) rewards.richads = parseFloat(data.richadsReward);
 
 if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
 if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
 if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
-if (data.tadsTimer) adTimers.tads = parseInt(data.tadsTimer);
+if (data.richadsTimer) adTimers.richads = parseInt(data.richadsTimer);
 
 renderUIValues();
 }
@@ -971,7 +971,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.00, usdtBalance: 0.00, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskTadsLimit: 0 }
+adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskRichadsLimit: 0 }
 });
 }
 renderUIValues();
@@ -1084,12 +1084,12 @@ document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFix
 let mCount = adWatchedCounts.taskMonetagLimit || 0;
 let gCount = adWatchedCounts.taskGigapubLimit || 0;
 let moCount = adWatchedCounts.taskMonetixLimit || 0;
-let tCount = adWatchedCounts.taskTadsLimit || 0;
+let rCount = adWatchedCounts.taskRichadsLimit || 0;
 
 let mMax = maxLimits.monetag;
 let gMax = maxLimits.gigapub;
 let moMax = maxLimits.monetix;
-let tMax = maxLimits.tads;
+let rMax = maxLimits.richads;
 
 document.getElementById('textMonetagLimit').innerText = `${mCount} / ${mMax} (${Math.round((mCount/mMax)*100)}%)`;
 document.getElementById('progMonetagFill').style.width = `${Math.min(100, (mCount/mMax)*100)}%`;
@@ -1103,14 +1103,14 @@ document.getElementById('textMonetixLimit').innerText = `${moCount} / ${moMax} (
 document.getElementById('progMonetixFill').style.width = `${Math.min(100, (moCount/moMax)*100)}%`;
 document.getElementById('maxMonetixVal').innerText = (moMax * rewards.monetix).toFixed(4);
 
-document.getElementById('textTadsLimit').innerText = `${tCount} / ${tMax} (${Math.round((tCount/tMax)*100)}%)`;
-document.getElementById('progTadsFill').style.width = `${Math.min(100, (tCount/tMax)*100)}%`;
-document.getElementById('maxTadsVal').innerText = (tMax * rewards.tads).toFixed(4);
+document.getElementById('textRichadsLimit').innerText = `${rCount} / ${rMax} (${Math.round((rCount/rMax)*100)}%)`;
+document.getElementById('progRichadsFill').style.width = `${Math.min(100, (rCount/rMax)*100)}%`;
+document.getElementById('maxRichadsVal').innerText = (rMax * rewards.richads).toFixed(4);
 
 document.getElementById('rewardMonetagVal').innerText = rewards.monetag;
 document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
 document.getElementById('rewardMonetixVal').innerText = rewards.monetix;
-document.getElementById('rewardTadsVal').innerText = rewards.tads;
+document.getElementById('rewardRichadsVal').innerText = rewards.richads;
 
 let manInput = document.getElementById('manualTonAddress');
 if (savedTonAddress && manInput) {
@@ -1172,22 +1172,12 @@ if (btn) btn.disabled = true;
 
 let adPromise = Promise.resolve();
 
-if (adName === 'Tads') {
+if (adName === 'RichAds') {
     adPromise = new Promise((resolve) => {
         try {
-            if (window.TADS && typeof window.TADS.render === 'function') {
-                window.TADS.render({
-                    id: '12561',
-                    type: 'fullscreen',
-                    onShowReward: resolve,
-                    onAdsNotFound: resolve
-                });
-            } else if (window.TADS && typeof window.TADS.show === 'function') {
-                window.TADS.show({
-                    widgetId: '12561',
-                    onSuccess: resolve,
-                    onError: resolve
-                });
+            if (typeof window.richads_pu_show === 'function') {
+                window.richads_pu_show();
+                resolve();
             } else {
                 setTimeout(resolve, 1500);
             }
