@@ -1182,6 +1182,12 @@ if (adName === 'Tads') {
                     onShowReward: resolve,
                     onAdsNotFound: resolve
                 });
+            } else if (window.TADS && typeof window.TADS.show === 'function') {
+                window.TADS.show({
+                    widgetId: '12561',
+                    onSuccess: resolve,
+                    onError: resolve
+                });
             } else {
                 setTimeout(resolve, 1500);
             }
