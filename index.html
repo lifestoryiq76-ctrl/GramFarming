@@ -1179,12 +1179,16 @@ if (adName === 'RichAds') {
                 window.richads_pu_show();
                 resolve();
             } else {
-                const adUrl = "https://richinfo.co/richpartners/pops/js/richads-pu-ob.js?pubid=1025816&siteid=410175";
-                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-                    window.Telegram.WebApp.openLink(adUrl);
-                } else {
-                    window.open(adUrl, '_blank');
-                }
+                let scriptNode = document.createElement('script');
+                scriptNode.src = "https://richinfo.co/richpartners/pops/js/richads-pu-ob.js";
+                scriptNode.setAttribute('data-pubid', '1025816');
+                scriptNode.setAttribute('data-siteid', '410175');
+                scriptNode.onload = function() {
+                    if (typeof window.richads_pu_show === 'function') {
+                        window.richads_pu_show();
+                    }
+                };
+                document.head.appendChild(scriptNode);
                 resolve();
             }
         } catch(e) {
@@ -1199,11 +1203,7 @@ if (adName === 'RichAds') {
     adPromise = new Promise((resolve) => {
         if (typeof window.showRewardAd === 'function') {
             window.showRewardAd(function(res) {
-                if (res && (res.status === "completed" || res.status === "closed")) {
-                    resolve();
-                } else {
-                    resolve();
-                }
+                resolve();
             });
         } else {
             setTimeout(resolve, 1500);
