@@ -133,6 +133,34 @@ input:focus, select:focus { border-color: var(--accent); }
 .task-subtab-bar { display: flex; gap: 10px; margin-bottom: 12px; }
 .task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 8px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
 .task-subtab-btn.active { background: #334155; color: var(--text-main); border-color: var(--accent); }
+
+/* Custom Add Task Card Selection Styles (As per screenshot) */
+.promo-option-card {
+    background: #111827;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+}
+.promo-option-card.active {
+    border-color: var(--yellow);
+    background: rgba(234, 179, 8, 0.05);
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.15);
+}
+.promo-option-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
 </style>
 </head>
 <body>
@@ -348,21 +376,51 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Exclusive Subtab: Add Task View -->
+<!-- Exclusive Subtab: Add Task View (Updated with Card Selection as per screenshot 7702) -->
 <div id="exclusiveAddView" style="display:none;">
 <div class="card" style="background:#0f172a; border: 1px solid var(--accent); padding: 16px;">
-<div class="flex-between" style="margin-bottom: 10px;">
+<div class="flex-between" style="margin-bottom: 12px;">
 <h4 style="margin:0; color: var(--accent);">New task (Step 1 of 2)</h4>
 <span style="font-size:12px; color: var(--yellow);">Fee: 10 Coins</span>
 </div>
 
-<label style="font-size: 13px; color: var(--text-muted); display:block; margin-bottom: 6px;">What do you want to promote?</label>
-<select id="promoTypeSelect" onchange="togglePromoInputs()" style="margin-bottom: 10px;">
-<option value="telegram">Telegram channel or group (Users join, verify membership)</option>
-<option value="other">Other link (Website, app, social profile...)</option>
+<label style="font-size: 13px; color: var(--text-muted); display:block; margin-bottom: 8px;">What do you want to promote?</label>
+
+<!-- Telegram Option Card -->
+<div class="promo-option-card active" id="promoCardTelegram" onclick="selectPromoType('telegram')">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="promo-option-icon" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.73-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.89.03-.25.38-.51 1.06-.78 4.15-1.81 6.92-3.01 8.31-3.61 3.96-1.7 4.78-2 5.31-2.01.12 0 .38.03.55.17.14.12.18.28.2.4-.02.13-.02.39-.04.57z"/></svg>
+</div>
+<div>
+<b style="font-size: 14px; display: block; color: var(--text-main);">Telegram channel or group</b>
+<span style="font-size: 11px; color: var(--text-muted);">Users join, verify membership</span>
+</div>
+</div>
+<span style="color: var(--yellow); font-size: 16px;">➔</span>
+</div>
+
+<!-- Other Link Option Card -->
+<div class="promo-option-card" id="promoCardOther" onclick="selectPromoType('other')">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="promo-option-icon" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">
+🌐
+</div>
+<div>
+<b style="font-size: 14px; display: block; color: var(--text-main);">Other link</b>
+<span style="font-size: 11px; color: var(--text-muted);">Website, app, social profile...</span>
+</div>
+</div>
+<span style="color: var(--yellow); font-size: 16px;">➔</span>
+</div>
+
+<!-- Hidden Select for background tracking -->
+<select id="promoTypeSelect" style="display:none;" onchange="togglePromoInputs()">
+<option value="telegram" selected>Telegram</option>
+<option value="other">Other</option>
 </select>
 
-<div id="promoInputContainer">
+<div id="promoInputContainer" style="margin-top: 10px;">
 <label style="font-size: 13px; color: var(--text-muted); display:block; margin-top: 8px;" id="promoLabelText">Your channel or group:</label>
 <input type="text" id="customTaskTitle" placeholder="@username or t.me/username" style="margin-bottom: 8px;">
 <input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 8px;">
@@ -377,34 +435,12 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 3. PARTNER TAB CONTENT -->
+<!-- 3. PARTNER TAB CONTENT (Cleaned up as requested in prompt) -->
 <div id="taskCat-partner" class="task-category-content" style="display:none;">
-<div class="ad-task-card">
-<div class="flex-between">
-<div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: rgba(234, 179, 8, 0.15); color: var(--yellow);">🤝</div>
-<div>
-<b style="font-size: 15px;">RG Crypto Lab</b><br>
-<small style="color:var(--text-muted);">Join our partner telegram channel</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+75 Coins</span>
-</div>
-</div>
-<button class="btn btn-yellow" onclick="window.open('https://t.me/', '_blank'); completeTask(75, 'RG Crypto Lab')">Start</button>
-</div>
-</div>
-
-<div class="ad-task-card">
-<div class="flex-between">
-<div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">🚀</div>
-<div>
-<b style="font-size: 15px;">Boinkers Partner</b><br>
-<small style="color:var(--text-muted);">Spin the slot to claim your bonus</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+100 Coins</span>
-</div>
-</div>
-<button class="btn btn-yellow" onclick="window.open('https://t.me/', '_blank'); completeTask(100, 'Boinkers Partner')">Start</button>
-</div>
+<div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
+<div style="font-size: 36px; margin-bottom: 8px;">🤝</div>
+<h4 style="margin: 0 0 6px 0; color: var(--text-main);">No partner tasks available</h4>
+<p style="font-size: 12px; color: var(--text-muted); margin: 0;">Partner tasks have been cleared. Check back soon for new offers!</p>
 </div>
 </div>
 
@@ -1231,17 +1267,34 @@ document.getElementById('exSubTab-add').classList.add('active');
 }
 }
 
-window.togglePromoInputs = function() {
-let val = document.getElementById('promoTypeSelect').value;
-let label = document.getElementById('promoLabelText');
-let linkInput = document.getElementById('customTaskLink');
-if(val === 'telegram') {
-label.innerText = "Your channel or group username:";
-linkInput.style.display = 'block';
-} else {
-label.innerText = "Your Website or App URL:";
-linkInput.style.display = 'block';
+// Card Selection Handler matching screenshot 7702
+window.selectPromoType = function(type) {
+    document.getElementById('promoCardTelegram').classList.remove('active');
+    document.getElementById('promoCardOther').classList.remove('active');
+
+    document.getElementById('promoTypeSelect').value = type;
+    let label = document.getElementById('promoLabelText');
+    let titleInput = document.getElementById('customTaskTitle');
+    let linkInput = document.getElementById('customTaskLink');
+
+    if(type === 'telegram') {
+        document.getElementById('promoCardTelegram').classList.add('active');
+        label.innerText = "Your channel or group username:";
+        titleInput.placeholder = "@username or t.me/username";
+        linkInput.placeholder = "https://t.me/...";
+        linkInput.style.display = 'block';
+    } else {
+        document.getElementById('promoCardOther').classList.add('active');
+        label.innerText = "Your Website or App URL (Other link):";
+        titleInput.placeholder = "Task Title / App Name";
+        linkInput.placeholder = "https://...";
+        linkInput.style.display = 'block';
+    }
 }
+
+window.togglePromoInputs = function() {
+    let val = document.getElementById('promoTypeSelect').value;
+    selectPromoType(val);
 }
 
 window.toggleMiningBoxes = function() {
