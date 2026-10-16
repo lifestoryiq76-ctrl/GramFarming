@@ -281,7 +281,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetixFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 4. RichAds Task (Replaced Tads) -->
+<!-- 4. RichAds Task -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -1179,10 +1179,16 @@ if (adName === 'RichAds') {
                 window.richads_pu_show();
                 resolve();
             } else {
-                setTimeout(resolve, 1500);
+                const adUrl = "https://richinfo.co/richpartners/pops/js/richads-pu-ob.js?pubid=1025816&siteid=410175";
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+                    window.Telegram.WebApp.openLink(adUrl);
+                } else {
+                    window.open(adUrl, '_blank');
+                }
+                resolve();
             }
         } catch(e) {
-            setTimeout(resolve, 1500);
+            resolve();
         }
     });
 } else if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
