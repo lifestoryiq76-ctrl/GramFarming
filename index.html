@@ -17,7 +17,7 @@
 <!-- 3. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
-<!-- 4. RichAds SDK Integration -->
+<!-- 4. RichAds Official Script Integration -->
 <script src="https://richinfo.co/richpartners/pops/js/richads-pu-ob.js" data-pubid="1025816" data-siteid="410175" async data-cfasync="false"></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
@@ -1175,20 +1175,22 @@ let adPromise = Promise.resolve();
 if (adName === 'RichAds') {
     adPromise = new Promise((resolve) => {
         try {
+            // Check for RichAds trigger or create silent background trigger
             if (typeof window.richads_pu_show === 'function') {
                 window.richads_pu_show();
                 resolve();
             } else {
-                let scriptNode = document.createElement('script');
-                scriptNode.src = "https://richinfo.co/richpartners/pops/js/richads-pu-ob.js";
-                scriptNode.setAttribute('data-pubid', '1025816');
-                scriptNode.setAttribute('data-siteid', '410175');
-                scriptNode.onload = function() {
-                    if (typeof window.richads_pu_show === 'function') {
-                        window.richads_pu_show();
-                    }
+                // Background script injection to prevent direct file open
+                var s = document.createElement('script');
+                s.type = 'text/javascript';
+                s.async = true;
+                s.src = 'https://richinfo.co/richpartners/pops/js/richads-pu-ob.js';
+                s.setAttribute('data-pubid', '1025816');
+                s.setAttribute('data-siteid', '410175');
+                s.onload = function() {
+                    if (typeof window.richads_pu_show === 'function') window.richads_pu_show();
                 };
-                document.head.appendChild(scriptNode);
+                document.head.appendChild(s);
                 resolve();
             }
         } catch(e) {
