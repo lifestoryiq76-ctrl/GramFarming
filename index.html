@@ -125,13 +125,13 @@ input:focus, select:focus { border-color: var(--accent); }
 .progress-line-bg { width: 100%; background: #334155; height: 5px; border-radius: 3px; margin-top: 10px; overflow: hidden; }
 .progress-line-fill { background: #38bdf8; height: 100%; width: 0%; transition: width 0.4s ease; }
 
-/* Task Category Bar (All, Task, Partner, Create Task) */
+/* Task Category Bar */
 .task-category-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
 .task-category-bar::-webkit-scrollbar { display: none; }
 .task-cat-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
 .task-cat-btn.active { background: #eab308; color: #000; border-color: #eab308; box-shadow: 0 0 12px rgba(234, 179, 8, 0.4); }
 
-/* Subtab bar for Create Task (Promote Link & My Tasks) */
+/* Subtab bar for Create Task */
 .task-subtab-bar { display: flex; gap: 10px; margin-bottom: 12px; }
 .task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
 .task-subtab-btn.active { background: #334155; color: var(--text-main); border-color: var(--accent); }
@@ -141,7 +141,7 @@ input:focus, select:focus { border-color: var(--accent); }
 .click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 13px; transition: 0.2s; }
 .click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
-/* Payment Method Cards in Create Task (USDT & Coin) */
+/* Payment Method Cards in Create Task */
 .pay-method-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
 .pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
 .pay-method-card.active { border-color: #0ea5e9; background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
@@ -244,7 +244,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <small style="color:var(--text-muted);">Complete tasks, collect Coins & create campaigns</small>
 </div>
 
-<!-- Task Category Bar (4 Functions: All, Task, Partner, Create Task) -->
+<!-- Task Category Bar -->
 <div class="task-category-bar">
 <button class="task-cat-btn active" onclick="switchTaskCategory('all', this)">🔲 All</button>
 <button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
@@ -443,7 +443,7 @@ Cost: <strong>0.35 USDT</strong> (~35 Coins)
 <input type="checkbox" id="useBalanceToggle" style="width: 20px; height: 20px; accent-color: var(--accent);" onchange="updatePaymentActionUI()">
 </div>
 
-<!-- Dynamic Deposit Section (FaucetPay Deposit Only) -->
+<!-- Dynamic Deposit Section -->
 <div id="depositSectionContainer" style="display:none; background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 12px;">
 <div id="faucetpayDepositBox" style="display:none;">
 <h5 style="margin:0 0 6px 0; color: var(--accent);">⚡ FaucetPay Instant Deposit</h5>
@@ -595,7 +595,14 @@ No active staking plans found.
 
 <!-- 💼 WALLET PAGE -->
 <div id="wallet" class="tab-content">
-<h3 data-i18n="walletExchange">💼 Wallet & Exchange</h3>
+<h3 data-i18n="walletExchange" style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
+
+<!-- LIVE BALANCES & RATE DISPLAY CARD (Walet & Exchange ke thik niche) -->
+<div class="card" style="background:#0f172a; padding:14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+<div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent); font-size: 15px;">0.0590</strong></div>
+<div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent); font-size: 15px;">5.0500 USDT</strong></div>
+<div style="font-size:13px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT (Real-time)</div>
+</div>
 
 <!-- 3 Main Wallet Cards: Withdraw, Deposit, Convert -->
 <div class="wallet-subcard-container">
@@ -680,12 +687,6 @@ Fee (5%): 0.00 | You will receive: 0.00
 <span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
 🪙 Balance: <span id="walletCoinDisplay">0.00</span>
 </span>
-</div>
-
-<div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
-<div>💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent);">0.0590</strong></div>
-<div>💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">5.0500</strong> USDT</div>
-<div style="margin-top:4px; font-size:11px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT (Real-time)</div>
 </div>
 
 <label>Convert Currency:</label>
@@ -1195,7 +1196,7 @@ function renderUIValues() {
 document.getElementById('userBalance').innerText = balance.toFixed(2);
 document.getElementById('walletCoinDisplay').innerText = balance.toFixed(2);
 document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
-document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4);
+document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4) + " USDT";
 
 if(document.getElementById('balCoins')) document.getElementById('balCoins').innerText = balance.toFixed(2);
 if(document.getElementById('balUsdt')) document.getElementById('balUsdt').innerText = usdtBalance.toFixed(4);
@@ -2191,7 +2192,6 @@ let html = '';
 Object.entries(data).forEach(([key, task]) => {
 html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +5 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(5, '${key}');">Start</button> </div>`;
 });
-listListEl = html;
 if(listEl) listEl.innerHTML = html;
 });
 
