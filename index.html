@@ -1449,38 +1449,56 @@ setTimeout(() => {
 }, 4000);
 }
 
-// 2 & 3. GRAM Deposit with custom amount & Admin panel reflection
+// 2 & 3. Automated TON Blockchain Verification for GRAM Deposit
 window.verifyGramDeposit = function() {
-let gramAmount = parseFloat(document.getElementById('gramAmountInput').value) || 0;
-if(gramAmount <= 0) {
-showToast("Kripya valid GRAM amount enter karein.", "error");
-return;
-}
+  let gramAmount = parseFloat(document.getElementById('gramAmountInput').value) || 0;
+  if (gramAmount <= 0) {
+    showToast("Kripya valid GRAM amount enter karein.", "error");
+    return;
+  }
 
-showToast("⌛ Submitting GRAM deposit request...", "success");
+  showToast("🔍 Verifying transaction on TON Blockchain...", "success");
 
-let depositReq = {
-    id: Date.now(),
-    userId: userId,
-    userName: displayName,
-    amount: gramAmount,
-    method: 'TON/GRAM Wallet',
-    status: 'PENDING',
-    date: new Date().toLocaleString()
-};
+  fetch('/api/verify-ton', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userId: userId,
+      displayName: displayName,
+      amount: gramAmount
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      tonBalance += gramAmount;
+      saveToFirebase();
+      renderUIValues();
 
-push(ref(db, 'deposits'), depositReq)
-.then(() => {
-    push(ref(db, 'deposits/' + userId), depositReq);
-    showToast("✅ GRAM Deposit Request Submitted! Admin verify karte hi balance update ho jayega.", "success");
-    document.getElementById('gramAmountInput').value = '';
-    document.getElementById('depositSectionContainer').style.display = 'none';
-    loadTransactionHistory();
-})
-.catch((err) => {
+      let depositRecord = {
+        id: Date.now(),
+        userName: displayName,
+        userId: userId,
+        method: 'TON/GRAM Wallet (Auto-Verified)',
+        amount: gramAmount,
+        status: 'SUCCESS',
+        date: new Date().toLocaleString()
+      };
+
+      push(ref(db, 'deposits/' + userId), depositRecord);
+
+      showToast(`✅ Payment Verified! +${gramAmount} GRAM added to your balance.`, "success");
+      document.getElementById('gramAmountInput').value = '';
+      document.getElementById('depositSectionContainer').style.display = 'none';
+      loadTransactionHistory();
+    } else {
+      showToast("❌ " + data.message, "error");
+    }
+  })
+  .catch(err => {
     console.error(err);
-    showToast("❌ Network error. Please try again.", "error");
-});
+    showToast("❌ Verification error. Please try again in a few seconds.", "error");
+  });
 }
 
 window.publishCampaign = function() {
