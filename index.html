@@ -142,8 +142,8 @@ input:focus, select:focus { border-color: var(--accent); }
 .click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
 /* Payment Method Cards in Create Task */
-.pay-method-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
-.pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
+.pay-method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
+.pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
 .pay-method-card.active { border-color: #0ea5e9; background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
 
 /* Wallet Sub-card Container Styles */
@@ -391,11 +391,11 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <!-- Your Balance Display -->
 <div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;">
-<div style="color: var(--text-muted); margin-bottom: 4px;">Your Balance:</div>
+<div style="color: var(--text-muted); margin-bottom: 4px;">Your Main Wallet Balance:</div>
 <div class="flex-between">
 <span>🪙 Coins: <strong id="balCoins" style="color:var(--yellow);">0.00</strong></span>
 <span>💵 USDT: <strong id="balUsdt" style="color:var(--accent);">0.00</strong></span>
-<span>💎 TON: <strong id="balTon" style="color:var(--accent);">0.00</strong></span>
+<span>💎 Gram: <strong id="balTon" style="color:var(--accent);">0.00</strong></span>
 </div>
 </div>
 
@@ -427,34 +427,15 @@ input:focus, select:focus { border-color: var(--accent); }
 Cost: <strong>0.35 USDT</strong> (~35 Coins)
 </div>
 
-<!-- Payment Method Selection (USDT & Coin) -->
+<!-- Payment Method Selection (USDT, Coin & Gram) -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Payment Method</label>
 <div class="pay-method-grid">
 <div class="pay-method-card active" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
 <div class="pay-method-card" id="payCoin" onclick="setPaymentMethod('Coin')">🪙 Coin</div>
+<div class="pay-method-card" id="payGram" onclick="setPaymentMethod('Gram')">💎 Gram</div>
 </div>
 
-<!-- Use Balance Toggle Option -->
-<div class="card flex-between" style="background:#111827; margin-bottom:12px; padding:10px;">
-<div>
-<span style="font-size: 12px; font-weight: bold;" id="useBalanceLabel">Use balance (0.00 USDT)</span>
-<div style="font-size: 10px; color: var(--text-muted);">Deducts internal balance, pay remaining if needed</div>
-</div>
-<input type="checkbox" id="useBalanceToggle" style="width: 20px; height: 20px; accent-color: var(--accent);" onchange="updatePaymentActionUI()">
-</div>
-
-<!-- Dynamic Deposit Section -->
-<div id="depositSectionContainer" style="display:none; background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 12px;">
-<div id="faucetpayDepositBox" style="display:none;">
-<h5 style="margin:0 0 6px 0; color: var(--accent);">⚡ FaucetPay Instant Deposit</h5>
-<p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Deposit USDT via FaucetPay link. Complete deposit on FaucetPay and return to bot.</p>
-<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Deposit Amount (USDT)</label>
-<input type="number" id="faucetpayDepositAmount" placeholder="Enter USDT amount to deposit" step="0.01" style="margin-bottom: 8px;">
-<button class="btn" style="width:100%; background:var(--accent); font-size:12px;" onclick="processFaucetPayDeposit()">Deposit via FaucetPay</button>
-</div>
-</div>
-
-<button class="btn" style="width: 100%; background: var(--accent); font-weight: bold;" onclick="publishCampaign()">Publish Campaign</button>
+<button class="btn" style="width: 100%; background: var(--accent); font-weight: bold; margin-top: 6px;" onclick="publishCampaign()">Publish Campaign</button>
 </div>
 </div>
 
@@ -1365,87 +1346,25 @@ window.setPaymentMethod = function(method) {
 selectedPaymentMethod = method;
 document.getElementById('payUsdt').classList.remove('active');
 document.getElementById('payCoin').classList.remove('active');
+document.getElementById('payGram').classList.remove('active');
 
-document.getElementById('pay' + (method === 'USDT' ? 'Usdt' : 'Coin')).classList.add('active');
-updatePaymentActionUI();
-}
-
-window.updatePaymentActionUI = function() {
-let usdtCost = selectedClickCount * clickRatePerClick;
-let coinCost = usdtCost / coinUsdtValue;
-
-let useBalChecked = document.getElementById('useBalanceToggle').checked;
-let depositContainer = document.getElementById('depositSectionContainer');
-let faucetBox = document.getElementById('faucetpayDepositBox');
-
-faucetBox.style.display = 'none';
-depositContainer.style.display = 'none';
-
-let availBalStr = (selectedPaymentMethod === 'USDT') ? (usdtBalance.toFixed(4) + " USDT") : (balance.toFixed(2) + " Coins");
-document.getElementById('useBalanceLabel').innerText = `Use balance (${availBalStr})`;
-
-if(useBalChecked) {
-    let userHasEnough = false;
-    if(selectedPaymentMethod === 'USDT' && usdtBalance >= usdtCost) userHasEnough = true;
-    else if(selectedPaymentMethod === 'Coin' && balance >= coinCost) userHasEnough = true;
-
-    if(!userHasEnough) {
-        depositContainer.style.display = 'block';
-        if(selectedPaymentMethod === 'USDT') faucetBox.style.display = 'block';
-    }
-} else {
-    depositContainer.style.display = 'block';
-    if(selectedPaymentMethod === 'USDT') faucetBox.style.display = 'block';
-}
+document.getElementById('pay' + method).classList.add('active');
+updateCostCalculation();
 }
 
 window.updateCostCalculation = function() {
 let usdtCost = selectedClickCount * clickRatePerClick;
 let coinCost = Math.round(usdtCost / coinUsdtValue);
+let gramCost = (usdtCost / liveTonPrice).toFixed(4);
 
 let costBox = document.getElementById('costCalcBox');
-costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong> (~${coinCost} Coins)`;
-updatePaymentActionUI();
+if(selectedPaymentMethod === 'USDT') {
+    costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong>`;
+} else if(selectedPaymentMethod === 'Coin') {
+    costBox.innerHTML = `Cost: <strong>${coinCost} Coins</strong> (~${usdtCost.toFixed(4)} USDT)`;
+} else if(selectedPaymentMethod === 'Gram') {
+    costBox.innerHTML = `Cost: <strong>${gramCost} Gram</strong> (~${usdtCost.toFixed(4)} USDT)`;
 }
-
-window.processFaucetPayDeposit = function() {
-let amountInput = parseFloat(document.getElementById('faucetpayDepositAmount').value) || 0;
-if(amountInput <= 0) {
-showToast("Kripya valid deposit amount enter karein.", "error");
-return;
-}
-
-showToast("⚡ FaucetPay link open ho raha hai...", "success");
-
-let faucetPayUrl = `https://faucetpay.io/merchant/withdraw?merchant=gramfarming&amount=${amountInput}&currency=USDT`;
-
-if (tg.openLink) {
-    tg.openLink(faucetPayUrl);
-} else {
-    window.open(faucetPayUrl, '_blank');
-}
-
-setTimeout(() => {
-    usdtBalance += amountInput;
-    saveToFirebase();
-    renderUIValues();
-    
-    let depositRecord = {
-        id: Date.now(),
-        userName: displayName,
-        userId: userId,
-        method: 'FaucetPay USDT',
-        amount: amountInput,
-        status: 'SUCCESS',
-        date: new Date().toLocaleString()
-    };
-    push(ref(db, 'deposits/' + userId), depositRecord);
-
-    showToast(`✅ Successfully deposited ${amountInput} USDT via FaucetPay!`, "success");
-    document.getElementById('faucetpayDepositAmount').value = '';
-    document.getElementById('depositSectionContainer').style.display = 'none';
-    loadTransactionHistory();
-}, 4000);
 }
 
 window.processDeposit = function() {
@@ -1491,20 +1410,17 @@ return;
 
 let usdtCost = selectedClickCount * clickRatePerClick;
 let coinCost = Math.round(usdtCost / coinUsdtValue);
+let gramCost = parseFloat((usdtCost / liveTonPrice).toFixed(4));
 
-let useBal = document.getElementById('useBalanceToggle').checked;
-
-if(useBal) {
-    if(selectedPaymentMethod === 'USDT') {
-        if(usdtBalance < usdtCost) { showToast("Insufficient USDT balance!", "error"); return; }
-        usdtBalance -= usdtCost;
-    } else if(selectedPaymentMethod === 'Coin') {
-        if(balance < coinCost) { showToast("Insufficient Coin balance!", "error"); return; }
-        balance -= coinCost;
-    }
-} else {
-    if(selectedPaymentMethod === 'USDT') usdtBalance -= usdtCost;
-    else balance -= coinCost;
+if(selectedPaymentMethod === 'USDT') {
+    if(usdtBalance < usdtCost) { showToast("Insufficient USDT balance in main wallet!", "error"); return; }
+    usdtBalance -= usdtCost;
+} else if(selectedPaymentMethod === 'Coin') {
+    if(balance < coinCost) { showToast("Insufficient Coin balance in main wallet!", "error"); return; }
+    balance -= coinCost;
+} else if(selectedPaymentMethod === 'Gram') {
+    if(tonBalance < gramCost) { showToast("Insufficient Gram balance in main wallet!", "error"); return; }
+    tonBalance -= gramCost;
 }
 
 saveToFirebase();
@@ -1527,7 +1443,7 @@ push(ref(db, 'customTasks'), newCampaignObj);
 
 document.getElementById('customTaskTitle').value = '';
 document.getElementById('customTaskLink').value = '';
-showToast("✅ Campaign published successfully! Track status in My Tasks.", "success");
+showToast("✅ Campaign published successfully! Cost deducted from wallet.", "success");
 switchCreateSubTab('my');
 }
 
@@ -2190,7 +2106,7 @@ if (noticeEl) noticeEl.style.display = 'none';
 let data = snapshot.val();
 let html = '';
 Object.entries(data).forEach(([key, task]) => {
-html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +5 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(5, '${key}');">Start</button> </div>`;
+html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +0.05 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(0.05, '${key}');">Start</button> </div>`;
 });
 if(listEl) listEl.innerHTML = html;
 });
@@ -2205,7 +2121,7 @@ return;
 let data = snapshot.val();
 let html = '';
 Object.entries(data).forEach(([key, task]) => {
-html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><b style="color: var(--accent);">🤝 ${task.title}</b><br><small style="color:var(--text-muted);">${task.description || 'Partner promotion'}</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(10, '${key}');">Visit</button> </div>`;
+html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><b style="color: var(--accent);">🤝 ${task.title}</b><br><small style="color:var(--text-muted);">${task.description || 'Partner promotion'} | Reward: +0.08 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(0.08, '${key}');">Visit</button> </div>`;
 });
 partnerContainer.innerHTML = html;
 });
