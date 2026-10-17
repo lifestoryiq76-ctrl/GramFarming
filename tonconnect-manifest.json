@@ -1,7 +1,7 @@
 {
-  "url": "https://gram-farming-bot.vercel.app",
+  "url": "https://gram-farming.vercel.app",
   "name": "Gram Farming Mini App",
-  "iconUrl": "https://gram-farming-bot.vercel.app/icon.png",
-  "termsOfServiceUrl": "https://gram-farming-bot.vercel.app/terms",
-  "privacyPolicyUrl": "https://gram-farming-bot.vercel.app/privacy"
+  "iconUrl": "https://gram-farming.vercel.app/icon.png",
+  "termsOfServiceUrl": "https://gram-farming.vercel.app/terms",
+  "privacyPolicyUrl": "https://gram-farming.vercel.app/privacy"
 }
