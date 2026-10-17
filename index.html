@@ -424,7 +424,7 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <!-- Cost Calculation Display -->
 <div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;" id="costCalcBox">
-Cost: <strong>0.35 USDT</strong> (~35 Coins)
+Cost: <strong>0.3500 USDT</strong>
 </div>
 
 <!-- Payment Method Selection (USDT, Coin & Gram) -->
@@ -1155,6 +1155,7 @@ if(data && data['the-open-network'] && data['the-open-network'].usd) {
 liveTonPrice = data['the-open-network'].usd;
 document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice} USDT (Real-time)`;
 calculateExchange();
+updateCostCalculation();
 return;
 }
 } catch (error) {}
@@ -1166,6 +1167,7 @@ if(backupData && backupData.price) {
 liveTonPrice = parseFloat(backupData.price);
 document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice.toFixed(2)} USDT (Binance)`;
 calculateExchange();
+updateCostCalculation();
 return;
 }
 } catch (error) {
@@ -1304,6 +1306,7 @@ document.getElementById('createSubTab-my').classList.remove('active');
 if(subName === 'promote') {
 document.getElementById('createPromoteView').style.display = 'block';
 document.getElementById('createSubTab-promote').classList.add('active');
+updateCostCalculation();
 } else if(subName === 'my') {
 document.getElementById('createMyTasksView').style.display = 'block';
 document.getElementById('createSubTab-my').classList.add('active');
@@ -1348,7 +1351,9 @@ document.getElementById('payUsdt').classList.remove('active');
 document.getElementById('payCoin').classList.remove('active');
 document.getElementById('payGram').classList.remove('active');
 
-document.getElementById('pay' + method).classList.add('active');
+let activeBtn = document.getElementById('pay' + method);
+if(activeBtn) activeBtn.classList.add('active');
+
 updateCostCalculation();
 }
 
@@ -1358,6 +1363,8 @@ let coinCost = Math.round(usdtCost / coinUsdtValue);
 let gramCost = (usdtCost / liveTonPrice).toFixed(4);
 
 let costBox = document.getElementById('costCalcBox');
+if(!costBox) return;
+
 if(selectedPaymentMethod === 'USDT') {
     costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong>`;
 } else if(selectedPaymentMethod === 'Coin') {
