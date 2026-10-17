@@ -610,7 +610,7 @@ No active staking plans found.
 </div>
 <div class="wallet-subcard" id="wCardConvert" onclick="switchWalletCard('convert')" style="margin-bottom: 12px;">
 <div style="font-size: 20px;">🔄</div>
-<b style="font-size: 13px; color: #0ea5e9;">Convert (Exchange)</b>
+<b style="font-size: 13px; color: #0ea5e9;">Convert</b>
 </div>
 
 <!-- 1. WITHDRAW CARD CONTENT -->
@@ -676,27 +676,26 @@ Fee (5%): 0.00 | You will receive: 0.00
 <!-- 3. CONVERT CARD CONTENT -->
 <div id="wContentConvert" class="wallet-subcard-content card" style="border: 1px solid #0ea5e9; box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15);">
 <div class="flex-between" style="margin-bottom: 10px;">
-<h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange & Convert</h4>
+<h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Convert Balance</h4>
 <span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
 🪙 Balance: <span id="walletCoinDisplay">0.00</span>
 </span>
 </div>
 
 <div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
-<div>💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong></div>
+<div>💎 Gram Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong></div>
 <div>💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">0.00</strong> USDT</div>
 <div style="margin-top:4px; font-size:11px; color:var(--text-muted);" id="liveRateStatus">📡 Fetching Live TON Rate...</div>
 </div>
 
-<label>Convert Direction:</label>
+<label>Convert Currency:</label>
 <select id="exchangeCurrency" onchange="calculateExchange()">
-<option value="USDT">Coin = USDT or Gram Exchange</option>
-<option value="TON">USDT = Coin or Gram Exchange</option>
-<option value="Gram">Gram = Coin or USDT Exchange</option>
+<option value="USDT">USDT (1 Coin = $0.01)</option>
+<option value="TON">Gram / TON (Based on Live Rate)</option>
 </select>
 
 <label style="margin-top:8px; display:block;">Amount to Exchange:</label>
-<input type="number" id="exchangeAmount" placeholder="Enter amount" oninput="calculateExchange()">
+<input type="number" id="exchangeAmount" placeholder="Enter coin amount" oninput="calculateExchange()">
 
 <p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
 
@@ -1913,11 +1912,9 @@ let totalUsdtValue = amt * coinUsdtValue;
 
 if(curr === 'USDT') {
 document.getElementById('previewExchange').innerText = `${totalUsdtValue.toFixed(4)} USDT`;
-} else if(curr === 'TON') {
-let tonReceived = totalUsdtValue / liveTonPrice;
-document.getElementById('previewExchange').innerText = `${tonReceived.toFixed(4)} TON (Worth $${totalUsdtValue.toFixed(2)})`;
 } else {
-document.getElementById('previewExchange').innerText = `${(amt * 1.5).toFixed(4)} Gram Exchange`;
+let tonReceived = totalUsdtValue / liveTonPrice;
+document.getElementById('previewExchange').innerText = `${tonReceived.toFixed(4)} Gram / TON`;
 }
 }
 
@@ -1940,13 +1937,10 @@ let totalUsdtValue = amt * coinUsdtValue;
 if (curr === 'USDT') {
 usdtBalance += totalUsdtValue;
 showToast(`Claim Successful! Exchanged ${amt} Coins for ${totalUsdtValue.toFixed(4)} USDT!`, "success");
-} else if(curr === 'TON') {
+} else {
 let tonReceived = totalUsdtValue / liveTonPrice;
 tonBalance += tonReceived;
 showToast(`Claim Successful! Exchanged ${amt} Coins for ${tonReceived.toFixed(4)} Gram!`, "success");
-} else {
-tonBalance += amt * 1.5;
-showToast(`Claim Successful! Exchanged ${amt} Coins for Gram Exchange!`, "success");
 }
 
 document.getElementById('exchangeAmount').value = '';
