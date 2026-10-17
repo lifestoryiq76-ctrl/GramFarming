@@ -265,7 +265,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <small style="color:var(--text-muted);">Complete tasks, collect Coins & create campaigns</small>
 </div>
 
-<!-- Task Category Bar (4 Functions: All, Task, Partner, + Create Task) -->
+<!-- Task Category Bar (4 Functions: All, Task, Partner, Create Task) -->
 <div class="task-category-bar">
 <button class="task-cat-btn active" onclick="switchTaskCategory('all', this)">🔲 All</button>
 <button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
@@ -478,7 +478,7 @@ Cost: <strong>0.35 USDT</strong> (~0.11 GRAM | ~35 Coins)
 <h5 style="margin:0 0 6px 0; color: #0ea5e9;">💎 GRAM Wallet & QR Deposit</h5>
 <p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Scan QR or send GRAM directly to admin address below:</p>
 <div style="background: #0f172a; padding: 8px; border-radius: 6px; font-size: 11px; color: var(--yellow); word-break: break-all; text-align: center; margin-bottom: 8px;">
-UQByz...GramAdminWalletAddressExample789
+UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd
 </div>
 <input type="text" id="gramTxHashInput" placeholder="Enter Transaction Hash / Memo" style="margin-bottom: 8px;">
 <button class="btn" style="width:100%; background:#0ea5e9; font-size:12px;" onclick="verifyGramDeposit()">Verify GRAM Deposit</button>
@@ -1408,7 +1408,6 @@ else availBalStr = balance.toFixed(2) + " Coins";
 document.getElementById('useBalanceLabel').innerText = `Use balance (${availBalStr})`;
 
 if(useBalChecked) {
-    // Check if balance is sufficient, if not show deposit options
     let userHasEnough = false;
     if(selectedPaymentMethod === 'USDT' && usdtBalance >= usdtCost) userHasEnough = true;
     else if(selectedPaymentMethod === 'GRAM' && tonBalance >= gramCost) userHasEnough = true;
@@ -1444,7 +1443,7 @@ return;
 }
 showToast("⚡ FaucetPay Instant Deposit initiated. Processing...", "success");
 setTimeout(() => {
-usdtBalance += 5.00; // Credited test deposit for campaign funding
+usdtBalance += 5.00;
 saveToFirebase();
 renderUIValues();
 showToast("✅ FaucetPay deposit successful! 5.00 USDT added to balance.", "success");
@@ -1458,14 +1457,27 @@ if(!hash || hash.length < 5) {
 showToast("Kripya valid transaction hash ya memo enter karein.", "error");
 return;
 }
-showToast("⌛ Verifying GRAM deposit on-chain...", "success");
-setTimeout(() => {
-tonBalance += 2.00; // Credited test GRAM deposit
-saveToFirebase();
-renderUIValues();
-showToast("✅ GRAM deposit verified successfully! Added to balance.", "success");
-document.getElementById('depositSectionContainer').style.display = 'none';
-}, 1500);
+showToast("⌛ Submitting GRAM deposit request for admin verification...", "success");
+
+let depositReq = {
+    userId: userId,
+    userName: displayName,
+    txHash: hash,
+    method: 'TON/GRAM Wallet',
+    status: 'PENDING',
+    date: new Date().toLocaleString()
+};
+
+push(ref(db, 'deposits'), depositReq)
+.then(() => {
+    showToast("✅ Deposit Request Submitted! Admin verify karte hi balance add ho jayega.", "success");
+    document.getElementById('gramTxHashInput').value = '';
+    document.getElementById('depositSectionContainer').style.display = 'none';
+})
+.catch((err) => {
+    console.error(err);
+    showToast("❌ Network error. Please try again.", "error");
+});
 }
 
 window.publishCampaign = function() {
@@ -1495,7 +1507,6 @@ if(useBal) {
         balance -= coinCost;
     }
 } else {
-    // If not using balance, deduct from on-chain/deposit or direct simulation
     if(selectedPaymentMethod === 'USDT') usdtBalance -= usdtCost;
     else if(selectedPaymentMethod === 'GRAM') tonBalance -= gramCost;
     else balance -= coinCost;
