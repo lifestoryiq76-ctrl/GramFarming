@@ -22,6 +22,9 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
+<!-- TON Connect UI SDK -->
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
 <style>
 :root {
 --bg-color: #0f172a;
@@ -32,6 +35,7 @@
 --text-main: #f8fafc;
 --text-muted: #94a3b8;
 --border: #334155;
+--ton-blue: #0098ea;
 }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 90px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
@@ -152,6 +156,10 @@ input:focus, select:focus { border-color: var(--accent); }
 .wallet-subcard.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.08); }
 .wallet-subcard-content { display: none; margin-top: 10px; }
 .wallet-subcard-content.active { display: block; }
+
+/* Connect Wallet Style overlay */
+.gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+.gram-pay-info { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -578,7 +586,7 @@ No active staking plans found.
 <div id="wallet" class="tab-content">
 <h3 data-i18n="walletExchange" style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
 
-<!-- LIVE BALANCES & RATE DISPLAY CARD (Walet & Exchange ke thik niche) -->
+<!-- LIVE BALANCES & RATE DISPLAY CARD -->
 <div class="card" style="background:#0f172a; padding:14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
 <div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent); font-size: 15px;">0.0590</strong></div>
 <div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent); font-size: 15px;">5.0500 USDT</strong></div>
@@ -655,10 +663,41 @@ Fee (5%): 0.00 | You will receive: 0.00
 </div>
 </div>
 
-<label style="margin-top:8px; display:block;">Deposit Amount:</label>
+<!-- FAUCETPAY DEPOSIT UI -->
+<div id="faucetpayDepositSection">
+<label style="margin-top:8px; display:block;">Deposit Amount (USDT):</label>
 <input type="number" id="depositAmountInput" placeholder="Enter amount to deposit" step="0.01">
-
 <button class="btn btn-yellow" style="margin-top:12px; width:100%;" onclick="processDeposit()">Proceed Deposit</button>
+</div>
+
+<!-- GRAM (TON CONNECT) DEPOSIT UI (As requested from screenshot) -->
+<div id="gramDepositSection" style="display:none;">
+<div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5;">
+Enter the amount in USD, then pay the equivalent in TON from your connected wallet. Your User ID is added as the transaction comment.
+</div>
+
+<button class="gram-connect-btn" id="btnGramConnectWallet" onclick="handleGramWalletConnect()">
+<span id="tonIconBtn">💎</span> <span id="tonWalletBtnText">Connect Wallet</span>
+</button>
+
+<label style="margin-top:12px; display:block; font-size:12px; color:var(--text-muted);">Amount in USD / USDT:</label>
+<input type="number" id="gramDepositUsdInput" placeholder="Enter USD Amount" step="0.01" oninput="calculateGramPayAmount()">
+
+<div class="gram-pay-info">
+<div class="flex-between" style="margin-bottom:4px;">
+<span>You will pay:</span>
+<strong id="gramPayAmountTon" style="color:var(--accent);">0.0000 TON</strong>
+</div>
+<div class="flex-between">
+<span>Rate:</span>
+<span id="gramRateDisplay">1 TON = $1.35</span>
+</div>
+</div>
+
+<button class="btn" style="margin-top:12px; width:100%; background: var(--ton-blue); font-weight:bold; padding:12px;" onclick="sendGramDepositTransaction()">Send Deposit</button>
+<button class="btn" style="margin-top:8px; width:100%; background: #334155; color: var(--text-muted);" onclick="resetGramDepositForm()">Cancel</button>
+</div>
+
 </div>
 
 <!-- 3. CONVERT CARD CONTENT -->
@@ -796,6 +835,11 @@ let cosmicRequiredAds = 50;
 let novaTimerSec = 60;
 let cosmicTimerSec = 60;
 
+// TON Connect Integration State
+let tonConnectUI = null;
+let isWalletConnected = false;
+let userConnectedAddress = "";
+
 // Campaign Creation States
 let selectedCampaignObj = 'Channel';
 let selectedClickCount = 100;
@@ -910,6 +954,115 @@ displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '')
 userId = String(user.id);
 }
 document.getElementById('telegramUserName').innerText = displayName;
+
+// TON Connect UI Initialization
+function initTonConnectUI() {
+try {
+if (window.TON_CONNECT_UI) {
+tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+manifestUrl: 'https://gram-farming-bot.vercel.app/tonconnect-manifest.json',
+buttonRootId: null
+});
+
+tonConnectUI.onStatusChange(wallet => {
+if (wallet) {
+isWalletConnected = true;
+userConnectedAddress = wallet.account.address;
+let shortAddr = userConnectedAddress.substring(0, 4) + '...' + userConnectedAddress.substring(userConnectedAddress.length - 4);
+document.getElementById('tonWalletBtnText').innerText = `Connected: ${shortAddr}`;
+showToast("Wallet Connected!", "success");
+} else {
+isWalletConnected = false;
+userConnectedAddress = "";
+document.getElementById('tonWalletBtnText').innerText = "Connect Wallet";
+}
+});
+}
+} catch(e) {}
+}
+setTimeout(initTonConnectUI, 1000);
+
+window.handleGramWalletConnect = async function() {
+if (!tonConnectUI) {
+initTonConnectUI();
+}
+if (tonConnectUI) {
+if (isWalletConnected) {
+await tonConnectUI.disconnect();
+} else {
+await tonConnectUI.openModal();
+}
+} else {
+showToast("Wallet Connection SDK is initializing, try again in a moment.", "error");
+}
+}
+
+window.calculateGramPayAmount = function() {
+let usdAmt = parseFloat(document.getElementById('gramDepositUsdInput').value) || 0;
+let payTon = usdAmt > 0 ? (usdAmt / liveTonPrice) : 0;
+document.getElementById('gramPayAmountTon').innerText = `${payTon.toFixed(4)} TON`;
+document.getElementById('gramRateDisplay').innerText = `1 TON = $${liveTonPrice.toFixed(2)}`;
+}
+
+window.sendGramDepositTransaction = async function() {
+let usdAmt = parseFloat(document.getElementById('gramDepositUsdInput').value) || 0;
+if (usdAmt <= 0) {
+showToast("Kripya valid USD amount enter karein.", "error");
+return;
+}
+
+if (!isWalletConnected || !tonConnectUI) {
+showToast("Kripya pehle apna TON Wallet connect karein!", "error");
+handleGramWalletConnect();
+return;
+}
+
+let payTon = usdAmt / liveTonPrice;
+let nanoTon = Math.floor(payTon * 1000000000);
+
+const transaction = {
+validUntil: Math.floor(Date.now() / 1000) + 360,
+messages: [
+{
+address: "UQC_YOUR_OFFICIAL_DEPOSIT_TON_ADDRESS_HERE", // Replace with your merchant wallet address
+amount: nanoTon.toString(),
+payload: "" // Transaction comment user ID
+}
+]
+};
+
+try {
+showToast("Confirming transaction in wallet...", "success");
+const result = await tonConnectUI.sendTransaction(transaction);
+if (result) {
+tonBalance += payTon;
+saveToFirebase();
+renderUIValues();
+showToast(`✅ Successfully deposited ${payTon.toFixed(4)} Gram (TON)!`, "success");
+
+let depositRecord = {
+id: Date.now(),
+userName: displayName,
+userId: userId,
+method: 'Gram (TON) Deposit',
+amount: payTon,
+usdAmount: usdAmt,
+status: 'SUCCESS',
+date: new Date().toLocaleString()
+};
+push(ref(db, 'deposits/' + userId), depositRecord);
+loadTransactionHistory();
+resetGramDepositForm();
+}
+} catch (e) {
+showToast("Transaction cancelled or failed.", "error");
+}
+}
+
+window.resetGramDepositForm = function() {
+document.getElementById('gramDepositUsdInput').value = '';
+calculateGramPayAmount();
+}
 
 const CACHE_KEY = 'gram_farming_cache_' + userId;
 
@@ -1156,6 +1309,7 @@ liveTonPrice = data['the-open-network'].usd;
 document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice} USDT (Real-time)`;
 calculateExchange();
 updateCostCalculation();
+calculateGramPayAmount();
 return;
 }
 } catch (error) {}
@@ -1168,6 +1322,7 @@ liveTonPrice = parseFloat(backupData.price);
 document.getElementById('liveRateStatus').innerText = `📡 Live TON Rate: $${liveTonPrice.toFixed(2)} USDT (Binance)`;
 calculateExchange();
 updateCostCalculation();
+calculateGramPayAmount();
 return;
 }
 } catch (error) {
@@ -1273,8 +1428,13 @@ document.getElementById('dSubMethodGram').style.borderColor = 'var(--border)';
 
 if(subMethod === 'faucetpay') {
 document.getElementById('dSubMethodFaucetpay').style.borderColor = 'var(--yellow)';
+document.getElementById('faucetpayDepositSection').style.display = 'block';
+document.getElementById('gramDepositSection').style.display = 'none';
 } else {
 document.getElementById('dSubMethodGram').style.borderColor = 'var(--accent)';
+document.getElementById('faucetpayDepositSection').style.display = 'none';
+document.getElementById('gramDepositSection').style.display = 'block';
+calculateGramPayAmount();
 }
 }
 
