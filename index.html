@@ -145,6 +145,13 @@ input:focus, select:focus { border-color: var(--accent); }
 .pay-method-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
 .pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
 .pay-method-card.active { border-color: #0ea5e9; background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
+
+/* Wallet Sub-card Container Styles */
+.wallet-subcard-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.wallet-subcard { background: #111827; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+.wallet-subcard.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.08); }
+.wallet-subcard-content { display: none; margin-top: 10px; }
+.wallet-subcard-content.active { display: block; }
 </style>
 </head>
 <body>
@@ -590,62 +597,40 @@ No active staking plans found.
 <div id="wallet" class="tab-content">
 <h3 data-i18n="walletExchange">💼 Wallet & Exchange</h3>
 
-<div class="card">
-<div class="flex-between" style="margin-bottom: 10px;">
-<h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange Coin (Live Rate)</h4>
-<span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
-🪙 Balance: <span id="walletCoinDisplay">0.00</span>
-</span>
+<!-- 3 Main Wallet Cards: Withdraw, Deposit, Convert -->
+<div class="wallet-subcard-container">
+<div class="wallet-subcard active" id="wCardWithdraw" onclick="switchWalletCard('withdraw')">
+<div style="font-size: 20px;">🪙</div>
+<b style="font-size: 13px; color: var(--accent);">Withdraw</b>
 </div>
-
-<div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
-<div>💎 TON Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong> TON</div>
-<div>💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">0.00</strong> USDT</div>
-<div style="margin-top:4px; font-size:11px; color:var(--text-muted);" id="liveRateStatus">📡 Fetching Live TON Rate...</div>
-</div>
-
-<label data-i18n="convertCoinTo">Convert Coin to:</label>
-<select id="exchangeCurrency" onchange="calculateExchange()">
-<option value="USDT">USDT (1 Coin = $0.01)</option>
-<option value="TON">TON (Based on Live TON Price)</option>
-</select>
-
-<label style="margin-top:8px; display:block;" data-i18n="coinAmountExchange">Coin Amount to Exchange:</label>
-<input type="number" id="exchangeAmount" placeholder="Enter coins" oninput="calculateExchange()">
-
-<p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
-
-<button class="btn" style="margin-top:10px; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
-</div>
-
-<!-- Manual Wallet Address Card -->
-<div class="card" style="background:#111827; border: 1px solid var(--accent); text-align: center;">
-<h4 style="margin:0 0 8px 0; color: var(--accent);">⚡ Manual Wallet Address</h4>
-<p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;">Apna TON wallet address manually yahan save karein.</p>
-<div style="text-align: left;">
-<label style="font-size: 13px; color: var(--text-muted);">Saved TON Wallet Address:</label>
-<input type="text" id="manualTonAddress" placeholder="UQ... ya EQ... apna address daalein">
-<div style="display: flex; gap: 8px; margin-top: 10px;">
-<button class="btn" style="background: var(--accent); flex: 1;" onclick="saveTonAddress()">Save Address</button>
-<button class="btn btn-red" style="flex: 1;" onclick="disconnectTonAddress()">Disconnect</button>
+<div class="wallet-subcard" id="wCardDeposit" onclick="switchWalletCard('deposit')">
+<div style="font-size: 20px;">💵</div>
+<b style="font-size: 13px; color: var(--yellow);">Deposit</b>
 </div>
 </div>
+<div class="wallet-subcard" id="wCardConvert" onclick="switchWalletCard('convert')" style="margin-bottom: 12px;">
+<div style="font-size: 20px;">🔄</div>
+<b style="font-size: 13px; color: #0ea5e9;">Convert (Exchange)</b>
 </div>
 
-<!-- Withdraw Funds Section -->
-<div class="card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
+<!-- 1. WITHDRAW CARD CONTENT -->
+<div id="wContentWithdraw" class="wallet-subcard-content active card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
 <div class="flex-between" style="margin-bottom: 8px;">
-<h4 style="margin:0; color: var(--accent);" id="withdrawHeaderTitle">⚡ FaucetPay Instant & TON Manual Payout</h4>
+<h4 style="margin:0; color: var(--accent);">⚡ Withdraw Funds</h4>
 <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
 </div>
 
-<label data-i18n="withdrawMethod">Withdrawal Method:</label>
-<select id="withdrawMethod" onchange="toggleWithdrawFields()">
-<option value="faucetpay">FaucetPay Email ID (Instant)</option>
-<option value="ton">TON Wallet Address (Manual / Admin Panel)</option>
-</select>
+<!-- 2 Cards inside Withdraw: 1. Faucetpay, 2. Gram -->
+<div class="grid-cards" style="margin-bottom: 10px;">
+<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--accent); cursor:pointer;" onclick="setWithdrawSubMethod('faucetpay')" id="wSubMethodFaucetpay">
+<b style="font-size:12px; color:var(--accent);">1. Faucetpay</b>
+</div>
+<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--border); cursor:pointer;" onclick="setWithdrawSubMethod('gram')" id="wSubMethodGram">
+<b style="font-size:12px; color:var(--yellow);">2. Gram</b>
+</div>
+</div>
 
-<label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT/TON):</label>
+<label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT/Gram):</label>
 <input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001" oninput="calculateWithdrawFee()">
 
 <div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
@@ -663,7 +648,59 @@ Fee (5%): 0.00 | You will receive: 0.00
 <label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
 <input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
 
-<button class="btn" style="margin-top:12px; background: var(--accent); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
+<button class="btn" style="margin-top:12px; width:100%; background: var(--accent); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
+</div>
+
+<!-- 2. DEPOSIT CARD CONTENT -->
+<div id="wContentDeposit" class="wallet-subcard-content card" style="border: 1px solid var(--yellow); box-shadow: 0 4px 20px rgba(234, 179, 8, 0.15);">
+<div class="flex-between" style="margin-bottom: 8px;">
+<h4 style="margin:0; color: var(--yellow);">💵 Deposit Funds</h4>
+</div>
+
+<!-- 2 Cards inside Deposit: 1. Faucetpay, 2. Gram -->
+<div class="grid-cards" style="margin-bottom: 10px;">
+<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--yellow); cursor:pointer;" onclick="setDepositSubMethod('faucetpay')" id="dSubMethodFaucetpay">
+<b style="font-size:12px; color:var(--yellow);">1. Faucetpay</b>
+</div>
+<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--border); cursor:pointer;" onclick="setDepositSubMethod('gram')" id="dSubMethodGram">
+<b style="font-size:12px; color:var(--accent);">2. Gram</b>
+</div>
+</div>
+
+<label style="margin-top:8px; display:block;">Deposit Amount:</label>
+<input type="number" id="depositAmountInput" placeholder="Enter amount to deposit" step="0.01">
+
+<button class="btn btn-yellow" style="margin-top:12px; width:100%;" onclick="processDeposit()">Proceed Deposit</button>
+</div>
+
+<!-- 3. CONVERT CARD CONTENT -->
+<div id="wContentConvert" class="wallet-subcard-content card" style="border: 1px solid #0ea5e9; box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15);">
+<div class="flex-between" style="margin-bottom: 10px;">
+<h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Exchange & Convert</h4>
+<span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
+🪙 Balance: <span id="walletCoinDisplay">0.00</span>
+</span>
+</div>
+
+<div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid var(--border);">
+<div>💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent);">0.00</strong></div>
+<div>💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">0.00</strong> USDT</div>
+<div style="margin-top:4px; font-size:11px; color:var(--text-muted);" id="liveRateStatus">📡 Fetching Live TON Rate...</div>
+</div>
+
+<label>Convert Direction:</label>
+<select id="exchangeCurrency" onchange="calculateExchange()">
+<option value="USDT">Coin = USDT or Gram Exchange</option>
+<option value="TON">USDT = Coin or Gram Exchange</option>
+<option value="Gram">Gram = Coin or USDT Exchange</option>
+</select>
+
+<label style="margin-top:8px; display:block;">Amount to Exchange:</label>
+<input type="number" id="exchangeAmount" placeholder="Enter amount" oninput="calculateExchange()">
+
+<p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
+
+<button class="btn" style="margin-top:10px; width:100%; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
 </div>
 
 <!-- TRANSACTION HISTORY SECTION -->
@@ -783,6 +820,10 @@ let selectedCampaignObj = 'Channel';
 let selectedClickCount = 100;
 let selectedPaymentMethod = 'USDT';
 let clickRatePerClick = 0.0035;
+
+// Wallet Sub-methods
+let currentWithdrawSubMethod = 'faucetpay';
+let currentDepositSubMethod = 'faucetpay';
 
 window.stakingApyRates = {
 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20
@@ -1117,52 +1158,6 @@ update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: 
 }
 }
 
-window.saveTonAddress = function() {
-let addrInput = document.getElementById('manualTonAddress').value.trim();
-if (!addrInput || addrInput.length < 15) {
-showToast("Kripya ek valid TON wallet address enter karein.", "error");
-return;
-}
-savedTonAddress = addrInput;
-saveToFirebase();
-
-update(ref(db, 'users/' + userId), { savedTonAddress: savedTonAddress });
-update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: displayName, updatedAt: serverTimestamp() });
-
-document.getElementById('manualTonAddress').value = savedTonAddress;
-document.getElementById('manualTonAddress').readOnly = true;
-
-let withdrawMethodVal = document.getElementById('withdrawMethod').value;
-let withdrawDestInput = document.getElementById('withdrawDestination');
-if (withdrawDestInput && withdrawMethodVal === 'ton') {
-withdrawDestInput.value = savedTonAddress;
-}
-
-showToast("✅ TON Wallet address successfully save ho gaya hai!", "success");
-toggleWithdrawFields();
-}
-
-window.disconnectTonAddress = function() {
-if (confirm("Kya aap apna wallet address disconnect karna chahte hain?")) {
-savedTonAddress = "";
-saveToFirebase();
-update(ref(db, 'users/' + userId), { savedTonAddress: "" });
-update(ref(db, 'tonAddresses/' + userId), { address: "" });
-
-document.getElementById('manualTonAddress').value = "";
-document.getElementById('manualTonAddress').readOnly = false;
-
-let withdrawDestInput = document.getElementById('withdrawDestination');
-let withdrawMethodVal = document.getElementById('withdrawMethod').value;
-if (withdrawDestInput && withdrawMethodVal === 'ton') {
-withdrawDestInput.value = "";
-}
-
-showToast("🔄 Wallet successfully disconnect ho gaya hai.", "success");
-toggleWithdrawFields();
-}
-}
-
 function addEarningsWithReferral(earnedAmount) {
 balance += earnedAmount;
 let refCommission = earnedAmount * (referralPercentage / 100);
@@ -1240,17 +1235,7 @@ document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
 document.getElementById('rewardMonetixVal').innerText = rewards.monetix;
 document.getElementById('rewardRichadsVal').innerText = rewards.richads;
 
-let manInput = document.getElementById('manualTonAddress');
-if (savedTonAddress && manInput) {
-manInput.value = savedTonAddress;
-manInput.readOnly = true;
-} else if (manInput) {
-manInput.value = "";
-manInput.readOnly = false;
-}
-
-let method = document.getElementById('withdrawMethod').value;
-let availVal = (method === 'ton') ? tonBalance : usdtBalance;
+let availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
 document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
 }
 
@@ -1263,6 +1248,50 @@ document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active
 document.getElementById(tabId).classList.add('active');
 if (event && event.currentTarget) {
     event.currentTarget.classList.add('active');
+}
+}
+
+// Wallet Sub-cards Navigation
+window.switchWalletCard = function(cardName) {
+document.querySelectorAll('.wallet-subcard-content').forEach(el => el.classList.remove('active'));
+document.getElementById('wCardWithdraw').classList.remove('active');
+document.getElementById('wCardDeposit').classList.remove('active');
+document.getElementById('wCardConvert').classList.remove('active');
+
+if(cardName === 'withdraw') {
+document.getElementById('wContentWithdraw').classList.add('active');
+document.getElementById('wCardWithdraw').classList.add('active');
+} else if(cardName === 'deposit') {
+document.getElementById('wContentDeposit').classList.add('active');
+document.getElementById('wCardDeposit').classList.add('active');
+} else if(cardName === 'convert') {
+document.getElementById('wContentConvert').classList.add('active');
+document.getElementById('wCardConvert').classList.add('active');
+}
+}
+
+window.setWithdrawSubMethod = function(subMethod) {
+currentWithdrawSubMethod = subMethod;
+document.getElementById('wSubMethodFaucetpay').style.borderColor = 'var(--border)';
+document.getElementById('wSubMethodGram').style.borderColor = 'var(--border)';
+
+if(subMethod === 'faucetpay') {
+document.getElementById('wSubMethodFaucetpay').style.borderColor = 'var(--accent)';
+} else {
+document.getElementById('wSubMethodGram').style.borderColor = 'var(--yellow)';
+}
+toggleWithdrawFields();
+}
+
+window.setDepositSubMethod = function(subMethod) {
+currentDepositSubMethod = subMethod;
+document.getElementById('dSubMethodFaucetpay').style.borderColor = 'var(--border)';
+document.getElementById('dSubMethodGram').style.borderColor = 'var(--border)';
+
+if(subMethod === 'faucetpay') {
+document.getElementById('dSubMethodFaucetpay').style.borderColor = 'var(--yellow)';
+} else {
+document.getElementById('dSubMethodGram').style.borderColor = 'var(--accent)';
 }
 }
 
@@ -1417,6 +1446,38 @@ setTimeout(() => {
     document.getElementById('depositSectionContainer').style.display = 'none';
     loadTransactionHistory();
 }, 4000);
+}
+
+window.processDeposit = function() {
+let amountInput = parseFloat(document.getElementById('depositAmountInput').value) || 0;
+if(amountInput <= 0) {
+showToast("Kripya valid amount enter karein.", "error");
+return;
+}
+
+if(currentDepositSubMethod === 'faucetpay') {
+    usdtBalance += amountInput;
+    showToast(`✅ Successfully deposited ${amountInput} USDT via Faucetpay!`, "success");
+} else {
+    tonBalance += amountInput;
+    showToast(`✅ Successfully deposited ${amountInput} Gram!`, "success");
+}
+
+saveToFirebase();
+renderUIValues();
+document.getElementById('depositAmountInput').value = '';
+
+let depositRecord = {
+    id: Date.now(),
+    userName: displayName,
+    userId: userId,
+    method: currentDepositSubMethod === 'faucetpay' ? 'Faucetpay Deposit' : 'Gram Deposit',
+    amount: amountInput,
+    status: 'SUCCESS',
+    date: new Date().toLocaleString()
+};
+push(ref(db, 'deposits/' + userId), depositRecord);
+loadTransactionHistory();
 }
 
 window.publishCampaign = function() {
@@ -1852,9 +1913,11 @@ let totalUsdtValue = amt * coinUsdtValue;
 
 if(curr === 'USDT') {
 document.getElementById('previewExchange').innerText = `${totalUsdtValue.toFixed(4)} USDT`;
-} else {
+} else if(curr === 'TON') {
 let tonReceived = totalUsdtValue / liveTonPrice;
 document.getElementById('previewExchange').innerText = `${tonReceived.toFixed(4)} TON (Worth $${totalUsdtValue.toFixed(2)})`;
+} else {
+document.getElementById('previewExchange').innerText = `${(amt * 1.5).toFixed(4)} Gram Exchange`;
 }
 }
 
@@ -1877,10 +1940,13 @@ let totalUsdtValue = amt * coinUsdtValue;
 if (curr === 'USDT') {
 usdtBalance += totalUsdtValue;
 showToast(`Claim Successful! Exchanged ${amt} Coins for ${totalUsdtValue.toFixed(4)} USDT!`, "success");
-} else {
+} else if(curr === 'TON') {
 let tonReceived = totalUsdtValue / liveTonPrice;
 tonBalance += tonReceived;
-showToast(`Claim Successful! Exchanged ${amt} Coins for ${tonReceived.toFixed(4)} TON!`, "success");
+showToast(`Claim Successful! Exchanged ${amt} Coins for ${tonReceived.toFixed(4)} Gram!`, "success");
+} else {
+tonBalance += amt * 1.5;
+showToast(`Claim Successful! Exchanged ${amt} Coins for Gram Exchange!`, "success");
 }
 
 document.getElementById('exchangeAmount').value = '';
@@ -1890,25 +1956,21 @@ calculateExchange();
 }
 
 window.toggleWithdrawFields = function() {
-let method = document.getElementById('withdrawMethod').value;
 let destLabel = document.getElementById('addressLabel');
 let minLbl = document.getElementById('withdrawMinLabel');
 let destInput = document.getElementById('withdrawDestination');
 let availVal = 0;
 
-if (method === 'faucetpay') {
+if (currentWithdrawSubMethod === 'faucetpay') {
 destLabel.innerText = "FaucetPay Email ID:";
 destInput.placeholder = "Enter FaucetPay email address";
 destInput.value = "";
 minLbl.innerText = `Min ${minWithdrawalAmt} USDT`;
 availVal = usdtBalance;
 } else {
-destLabel.innerText = "TON Wallet Address:";
-destInput.placeholder = "Enter TON Wallet Address (UQ... / EQ...)";
-if (savedTonAddress) {
-destInput.value = savedTonAddress;
-}
-minLbl.innerText = `Min ${minTonWithdrawalAmt} TON`;
+destLabel.innerText = "Gram Destination Address:";
+destInput.placeholder = "Enter Gram Address / Tag";
+minLbl.innerText = `Min ${minTonWithdrawalAmt} Gram`;
 availVal = tonBalance;
 }
 document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
@@ -1916,8 +1978,7 @@ calculateWithdrawFee();
 }
 
 window.setMaxWithdraw = function() {
-let method = document.getElementById('withdrawMethod').value;
-let availVal = (method === 'ton') ? tonBalance : usdtBalance;
+let availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
 document.getElementById('withdrawAmount').value = availVal > 0 ? availVal : "0";
 calculateWithdrawFee();
 }
@@ -1931,23 +1992,22 @@ document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFix
 }
 
 window.requestWithdrawal = function() {
-let method = document.getElementById('withdrawMethod').value;
 let amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
 let destination = document.getElementById('withdrawDestination').value.trim();
-let minLimit = method === 'faucetpay' ? minWithdrawalAmt : minTonWithdrawalAmt;
+let minLimit = currentWithdrawSubMethod === 'faucetpay' ? minWithdrawalAmt : minTonWithdrawalAmt;
 
 if (amt < minLimit) {
-showToast(`Minimum withdrawal amount is ${minLimit} ${method === 'faucetpay' ? 'USDT' : 'TON'}.`, "error");
+showToast(`Minimum withdrawal amount is ${minLimit} ${currentWithdrawSubMethod === 'faucetpay' ? 'USDT' : 'Gram'}.`, "error");
 return;
 }
 
-let availVal = (method === 'ton') ? tonBalance : usdtBalance;
+let availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
 if (amt > availVal) {
 showToast("Insufficient balance for this withdrawal!", "error");
 return;
 }
 
-if (!destination || destination.length < 5) {
+if (!destination || destination.length < 3) {
 showToast("Kripya valid destination address ya email enter karein.", "error");
 return;
 }
@@ -1955,16 +2015,13 @@ return;
 let fee = amt * 0.05;
 let netReceive = parseFloat((amt - fee).toFixed(4));
 
-if (method === 'ton') {
+if (currentWithdrawSubMethod === 'gram') {
 tonBalance -= amt;
-savedTonAddress = destination;
-update(ref(db, 'users/' + userId), { savedTonAddress: savedTonAddress });
-update(ref(db, 'tonAddresses/' + userId), { address: savedTonAddress, userName: displayName, updatedAt: serverTimestamp() });
 } else {
 usdtBalance -= amt;
 }
 
-if (method === 'faucetpay') {
+if (currentWithdrawSubMethod === 'faucetpay') {
     let newWithdrawal = {
         id: Date.now(),
         userName: displayName,
@@ -2012,61 +2069,24 @@ if (method === 'faucetpay') {
         console.error("API Error:", e);
         showToast("❌ Network error during payout processing.", "error");
     });
-} else if (method === 'ton') {
-    showToast("⌛ Submitting TON Withdrawal Request...", "success");
+} else if (currentWithdrawSubMethod === 'gram') {
+    showToast("⌛ Submitting Gram Withdrawal Request...", "success");
 
-    fetch('/api/withdraw/ton', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            userId: userId,
-            displayName: displayName,
-            amount: netReceive,
-            currency: 'TON',
-            walletAddress: destination
-        })
-    })
-    .then(async res => {
-        let contentType = res.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-            return res.json();
-        } else {
-            let text = await res.text();
-            throw new Error(text || "Invalid server response format");
-        }
-    })
-    .then(data => {
-        if (data.success) {
-            let newWithdrawal = {
-                id: Date.now(),
-                userName: displayName,
-                userId: userId,
-                method: 'TON Wallet',
-                amount: netReceive,
-                requestedAmount: amt,
-                fee: fee,
-                received: netReceive,
-                destination: destination,
-                status: 'PENDING',
-                date: new Date().toLocaleString()
-            };
-            push(ref(db, 'withdrawals/' + userId), newWithdrawal);
-            showToast("✅ TON Withdrawal Request submitted successfully! Admin will process it soon.", "success");
-        } else {
-            tonBalance += amt;
-            saveToFirebase();
-            showToast("❌ Payout Error: " + data.message, "error");
-        }
-        renderUIValues();
-        loadTransactionHistory();
-    })
-    .catch(err => {
-        console.error(err);
-        tonBalance += amt;
-        saveToFirebase();
-        renderUIValues();
-        showToast("❌ Network error during TON withdrawal request.", "error");
-    });
+    let newWithdrawal = {
+        id: Date.now(),
+        userName: displayName,
+        userId: userId,
+        method: 'Gram',
+        amount: netReceive,
+        requestedAmount: amt,
+        fee: fee,
+        received: netReceive,
+        destination: destination,
+        status: 'PENDING',
+        date: new Date().toLocaleString()
+    };
+    push(ref(db, 'withdrawals/' + userId), newWithdrawal);
+    showToast("✅ Gram Withdrawal Request submitted successfully!", "success");
 }
 
 saveToFirebase();
@@ -2074,7 +2094,7 @@ renderUIValues();
 loadTransactionHistory();
 
 document.getElementById('withdrawAmount').value = '';
-if (method !== 'ton') document.getElementById('withdrawDestination').value = '';
+document.getElementById('withdrawDestination').value = '';
 }
 
 window.loadTransactionHistory = function() {
