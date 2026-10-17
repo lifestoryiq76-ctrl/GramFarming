@@ -2191,7 +2191,8 @@ let html = '';
 Object.entries(data).forEach(([key, task]) => {
 html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +5 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(5, '${key}');">Start</button> </div>`;
 });
-listEl.innerHTML = html;
+listListEl = html; // Fixed reference mapping safety
+if(listEl) listEl.innerHTML = html;
 });
 
 window.loadAdminPartnerTasks = function() {
