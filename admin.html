@@ -260,17 +260,21 @@
         <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
     </div>
 
-    <!-- 5. Task Creator -->
+    <!-- 5. Task Creator & List Management (Updated with Coins & Number of Clicks / Completions) -->
     <div class="card">
-        <h2>📋 Add New Custom Task (Telegram/YouTube/Ads)</h2>
-        <div class="grid-2">
+        <h2>📋 Add & Manage Custom Tasks (Telegram / YouTube / Ads)</h2>
+        <div class="grid-3">
             <div>
                 <label>Task Title:</label>
                 <input type="text" id="taskTitle" placeholder="e.g. Join Channel">
             </div>
             <div>
-                <label>Reward Amount (Coins):</label>
+                <label>Reward Per Task (Coins):</label>
                 <input type="number" id="taskReward" step="0.01" placeholder="e.g. 5.00">
+            </div>
+            <div>
+                <label>Number of Clicks / Completions:</label>
+                <input type="number" id="taskTotalClicks" step="1" value="100" placeholder="e.g. 100">
             </div>
         </div>
         <div>
@@ -278,6 +282,23 @@
             <input type="text" id="taskLink" placeholder="https://t.me/...">
         </div>
         <button type="button" class="btn-blue" onclick="addNewTask()">➕ Create & Publish Task</button>
+
+        <h3 style="margin-top: 20px; font-size: 15px; color: var(--yellow);">📑 Active Custom Tasks List</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title & Link</th>
+                        <th>Reward (Coins)</th>
+                        <th>Clicks / Completions</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="adminCustomTasksTableBody">
+                    <tr><td colspan="4" style="text-align: center;">Loading tasks...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- 6. User Balance Manual Manager (With Add / Deduct Options) -->
@@ -303,7 +324,7 @@
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 7. Pending GRAM/TON Deposits Verification Section (NEW) -->
+    <!-- 7. Pending GRAM/TON Deposits Verification Section -->
     <div class="card" style="border: 1px solid var(--yellow);">
         <h2 style="color: var(--yellow);">💎 Pending Deposits (GRAM Wallet Verification)</h2>
         <div class="table-container">
@@ -486,6 +507,36 @@
             }
         }).catch(err => console.error("Load settings error:", err));
 
+        // Load Custom Tasks List in Admin Panel
+        get(ref(db, 'customTasks')).then((snapshot) => {
+            const adminTaskTable = document.getElementById('adminCustomTasksTableBody');
+            adminTaskTable.innerHTML = '';
+            let count = 0;
+
+            if (snapshot.exists()) {
+                snapshot.forEach((childSnap) => {
+                    let tId = childSnap.key;
+                    let task = childSnap.val();
+                    let doneClicks = task.clicksDone || 0;
+                    let totalClicks = task.totalClicks || 100;
+                    let rewardVal = task.reward || 5.00;
+
+                    adminTaskTable.innerHTML += `<tr>
+                        <td><b>${task.title || 'Task'}</b><br><small style="color:var(--text-muted);">${task.link || ''}</small></td>
+                        <td><b style="color:var(--yellow);">${rewardVal} Coins</b></td>
+                        <td>🔥 <b>${doneClicks} / ${totalClicks}</b> Clicks</td>
+                        <td>
+                            <button class="btn-delete" onclick="deleteCustomTask('${tId}')">🗑️ Delete</button>
+                        </td>
+                    </tr>`;
+                    count++;
+                });
+            }
+            if (count === 0) {
+                adminTaskTable.innerHTML = `<tr><td colspan="4" style="text-align: center;">No custom tasks added yet.</td></tr>`;
+            }
+        });
+
         // Load Pending Deposits (GRAM Wallet Verification)
         get(ref(db, 'deposits')).then((snapshot) => {
             const depositsTableBody = document.getElementById('depositsTableBody');
@@ -496,7 +547,6 @@
                 snapshot.forEach((childSnap) => {
                     let dId = childSnap.key;
                     let dep = childSnap.val();
-                    let isPending = !dep.status || dep.status === 'PENDING';
                     let isSuccess = dep.status === 'SUCCESS (Approved)';
                     let isRejected = dep.status === 'REJECTED';
 
@@ -685,7 +735,6 @@
         let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED';
         update(ref(db, `deposits/${dId}`), { status: statusText }).then(() => {
             if (action === 'approve') {
-                // Add TON/GRAM balance or campaign funds if needed upon approval
                 if (targetUserId) {
                     get(ref(db, `users/${targetUserId}`)).then((snapshot) => {
                         if (snapshot.exists()) {
@@ -800,14 +849,40 @@
     window.addNewTask = function() {
         let title = document.getElementById('taskTitle').value.trim();
         let reward = parseFloat(document.getElementById('taskReward').value);
+        let totalClicks = parseInt(document.getElementById('taskTotalClicks').value) || 100;
         let link = document.getElementById('taskLink').value.trim();
-        if(!title || isNaN(reward) || !link) { alert('Sabhi fields bharein.'); return; }
-        push(ref(db, 'customTasks'), { title, reward, link }).then(() => {
-            alert('Task created!');
+
+        if(!title || isNaN(reward) || !link) { 
+            alert('Kripya Task Title, Reward aur Link sahi se bharein.'); 
+            return; 
+        }
+
+        push(ref(db, 'customTasks'), { 
+            title: title, 
+            reward: reward, 
+            link: link, 
+            totalClicks: totalClicks, 
+            clicksDone: 0, 
+            clicksRemaining: totalClicks,
+            status: 'Active',
+            date: new Date().toLocaleString()
+        }).then(() => {
+            alert('✅ New Task successfully created & published!');
             document.getElementById('taskTitle').value = '';
             document.getElementById('taskReward').value = '';
+            document.getElementById('taskTotalClicks').value = '100';
             document.getElementById('taskLink').value = '';
+            location.reload();
         });
+    };
+
+    window.deleteCustomTask = function(taskId) {
+        if (confirm("Kya aap is task ko delete karna chahte hain?")) {
+            remove(ref(db, `customTasks/${taskId}`)).then(() => {
+                alert("🗑️ Task successfully deleted!");
+                location.reload();
+            }).catch(err => alert("Error: " + err.message));
+        }
     };
 
     window.processFaucetPayWithdrawal = function(userId, wId, action, amount, userName, destination) {
