@@ -141,8 +141,8 @@ input:focus, select:focus { border-color: var(--accent); }
 .click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 13px; transition: 0.2s; }
 .click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
-/* Payment Method Cards in Create Task */
-.pay-method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
+/* Payment Method Cards in Create Task (USDT & Coin) */
+.pay-method-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
 .pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
 .pay-method-card.active { border-color: #0ea5e9; background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
 </style>
@@ -245,7 +245,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- 1. ALL TAB CONTENT (Shows all ads functions) -->
+<!-- 1. ALL TAB CONTENT -->
 <div id="taskCat-all" class="task-category-content">
 <div id="adsTasksAll">
 <!-- Monetag Ad Task -->
@@ -330,7 +330,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 2. TASK TAB CONTENT (Only newly added tasks show here) -->
+<!-- 2. TASK TAB CONTENT -->
 <div id="taskCat-task" class="task-category-content" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;" id="emptyTasksNotice">
 <div style="font-size: 36px; margin-bottom: 8px;">☁️⚡</div>
@@ -340,7 +340,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="dynamicTasksList"></div>
 </div>
 
-<!-- 3. PARTNER TAB CONTENT (Admin tasks show here) -->
+<!-- 3. PARTNER TAB CONTENT -->
 <div id="taskCat-partner" class="task-category-content" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
 <div style="font-size: 36px; margin-bottom: 8px;">🤝</div>
@@ -352,7 +352,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 4. CREATE TASK TAB CONTENT (Contains Promote Link and My Tasks sub-functions) -->
+<!-- 4. CREATE TASK TAB CONTENT -->
 <div id="taskCat-create" class="task-category-content" style="display:none;">
 <div class="task-subtab-bar">
 <div class="task-subtab-btn active" id="createSubTab-promote" onclick="switchCreateSubTab('promote')">📢 Promote Link</div>
@@ -366,7 +366,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <h4 style="margin:0; color: var(--accent);">Create Ad Campaign</h4>
 </div>
 
-<!-- Campaign Objective (Channel, Mini App, Bot MAU) -->
+<!-- Campaign Objective -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 6px;">CAMPAIGN OBJECTIVE</label>
 <div style="display: flex; gap: 6px; margin-bottom: 12px;">
 <button class="btn" style="flex:1; background: #0ea5e9; font-size: 12px; padding: 8px;" id="objChanBtn" onclick="setCampaignObj('Channel')">📢 Channel</button>
@@ -382,7 +382,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Your Balance Display (USDT, TON, Coin) -->
+<!-- Your Balance Display -->
 <div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;">
 <div style="color: var(--text-muted); margin-bottom: 4px;">Your Balance:</div>
 <div class="flex-between">
@@ -417,14 +417,13 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <!-- Cost Calculation Display -->
 <div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;" id="costCalcBox">
-Cost: <strong>0.35 USDT</strong> (~0.11 GRAM | ~35 Coins)
+Cost: <strong>0.35 USDT</strong> (~35 Coins)
 </div>
 
-<!-- Payment Method Selection (USDT, GRAM, Coins) -->
+<!-- Payment Method Selection (USDT & Coin) -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Payment Method</label>
 <div class="pay-method-grid">
 <div class="pay-method-card active" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
-<div class="pay-method-card" id="payGram" onclick="setPaymentMethod('GRAM')">💎 GRAM</div>
 <div class="pay-method-card" id="payCoin" onclick="setPaymentMethod('Coin')">🪙 Coin</div>
 </div>
 
@@ -437,7 +436,7 @@ Cost: <strong>0.35 USDT</strong> (~0.11 GRAM | ~35 Coins)
 <input type="checkbox" id="useBalanceToggle" style="width: 20px; height: 20px; accent-color: var(--accent);" onchange="updatePaymentActionUI()">
 </div>
 
-<!-- Dynamic Deposit Section (FaucetPay & GRAM Amount Deposit with Scanner QR) -->
+<!-- Dynamic Deposit Section (FaucetPay Deposit Only) -->
 <div id="depositSectionContainer" style="display:none; background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 12px;">
 <div id="faucetpayDepositBox" style="display:none;">
 <h5 style="margin:0 0 6px 0; color: var(--accent);">⚡ FaucetPay Instant Deposit</h5>
@@ -445,22 +444,6 @@ Cost: <strong>0.35 USDT</strong> (~0.11 GRAM | ~35 Coins)
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Deposit Amount (USDT)</label>
 <input type="number" id="faucetpayDepositAmount" placeholder="Enter USDT amount to deposit" step="0.01" style="margin-bottom: 8px;">
 <button class="btn" style="width:100%; background:var(--accent); font-size:12px;" onclick="processFaucetPayDeposit()">Deposit via FaucetPay</button>
-</div>
-
-<div id="gramDepositBox" style="display:none;">
-<h5 style="margin:0 0 6px 0; color: #0ea5e9;">💎 GRAM Wallet & Amount Deposit</h5>
-<p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Scan QR code or send GRAM to admin address and enter deposit amount below:</p>
-
-<!-- QR Code Scanner Image Added Here -->
-<div style="text-align: center; margin-bottom: 10px;">
-<img src="7777.png" alt="GRAM QR Scanner" style="width: 140px; height: 140px; border-radius: 8px; border: 1px solid var(--border); background: #fff; padding: 4px;">
-</div>
-<div style="background: #0f172a; padding: 8px; border-radius: 6px; font-size: 11px; color: var(--yellow); word-break: break-all; text-align: center; margin-bottom: 8px;" id="adminGramWalletAddress">
-UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd
-</div>
-<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Enter GRAM Amount</label>
-<input type="number" id="gramAmountInput" placeholder="Enter GRAM amount sent" step="0.0001" style="margin-bottom: 8px;">
-<button class="btn" style="width:100%; background:#0ea5e9; font-size:12px;" onclick="verifyGramDeposit()">Verify GRAM Deposit</button>
 </div>
 </div>
 
@@ -1352,63 +1335,50 @@ updateCostCalculation();
 window.setPaymentMethod = function(method) {
 selectedPaymentMethod = method;
 document.getElementById('payUsdt').classList.remove('active');
-document.getElementById('payGram').classList.remove('active');
 document.getElementById('payCoin').classList.remove('active');
 
-document.getElementById('pay' + (method === 'USDT' ? 'Usdt' : method === 'GRAM' ? 'Gram' : 'Coin')).classList.add('active');
+document.getElementById('pay' + (method === 'USDT' ? 'Usdt' : 'Coin')).classList.add('active');
 updatePaymentActionUI();
 }
 
 window.updatePaymentActionUI = function() {
 let usdtCost = selectedClickCount * clickRatePerClick;
-let gramCost = usdtCost / liveTonPrice;
 let coinCost = usdtCost / coinUsdtValue;
 
 let useBalChecked = document.getElementById('useBalanceToggle').checked;
 let depositContainer = document.getElementById('depositSectionContainer');
 let faucetBox = document.getElementById('faucetpayDepositBox');
-let gramBox = document.getElementById('gramDepositBox');
 
 faucetBox.style.display = 'none';
-gramBox.style.display = 'none';
 depositContainer.style.display = 'none';
 
-let availBalStr = "0.00";
-if(selectedPaymentMethod === 'USDT') availBalStr = usdtBalance.toFixed(4) + " USDT";
-else if(selectedPaymentMethod === 'GRAM') availBalStr = tonBalance.toFixed(4) + " TON/GRAM";
-else availBalStr = balance.toFixed(2) + " Coins";
-
+let availBalStr = (selectedPaymentMethod === 'USDT') ? (usdtBalance.toFixed(4) + " USDT") : (balance.toFixed(2) + " Coins");
 document.getElementById('useBalanceLabel').innerText = `Use balance (${availBalStr})`;
 
 if(useBalChecked) {
     let userHasEnough = false;
     if(selectedPaymentMethod === 'USDT' && usdtBalance >= usdtCost) userHasEnough = true;
-    else if(selectedPaymentMethod === 'GRAM' && tonBalance >= gramCost) userHasEnough = true;
     else if(selectedPaymentMethod === 'Coin' && balance >= coinCost) userHasEnough = true;
 
     if(!userHasEnough) {
         depositContainer.style.display = 'block';
         if(selectedPaymentMethod === 'USDT') faucetBox.style.display = 'block';
-        else if(selectedPaymentMethod === 'GRAM') gramBox.style.display = 'block';
     }
 } else {
     depositContainer.style.display = 'block';
     if(selectedPaymentMethod === 'USDT') faucetBox.style.display = 'block';
-    else if(selectedPaymentMethod === 'GRAM') gramBox.style.display = 'block';
 }
 }
 
 window.updateCostCalculation = function() {
 let usdtCost = selectedClickCount * clickRatePerClick;
-let gramCost = usdtCost / liveTonPrice;
 let coinCost = Math.round(usdtCost / coinUsdtValue);
 
 let costBox = document.getElementById('costCalcBox');
-costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong> (~${gramCost.toFixed(2)} GRAM | ~${coinCost} Coins)`;
+costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong> (~${coinCost} Coins)`;
 updatePaymentActionUI();
 }
 
-// 1. FaucetPay Deposit with redirect link and return to mini bot
 window.processFaucetPayDeposit = function() {
 let amountInput = parseFloat(document.getElementById('faucetpayDepositAmount').value) || 0;
 if(amountInput <= 0) {
@@ -1449,58 +1419,6 @@ setTimeout(() => {
 }, 4000);
 }
 
-// 2 & 3. Automated TON Blockchain Verification for GRAM Deposit
-window.verifyGramDeposit = function() {
-  let gramAmount = parseFloat(document.getElementById('gramAmountInput').value) || 0;
-  if (gramAmount <= 0) {
-    showToast("Kripya valid GRAM amount enter karein.", "error");
-    return;
-  }
-
-  showToast("🔍 Verifying transaction on TON Blockchain...", "success");
-
-  fetch('/api/verify-ton', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      userId: userId,
-      displayName: displayName,
-      amount: gramAmount
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      tonBalance += gramAmount;
-      saveToFirebase();
-      renderUIValues();
-
-      let depositRecord = {
-        id: Date.now(),
-        userName: displayName,
-        userId: userId,
-        method: 'TON/GRAM Wallet (Auto-Verified)',
-        amount: gramAmount,
-        status: 'SUCCESS',
-        date: new Date().toLocaleString()
-      };
-
-      push(ref(db, 'deposits/' + userId), depositRecord);
-
-      showToast(`✅ Payment Verified! +${gramAmount} GRAM added to your balance.`, "success");
-      document.getElementById('gramAmountInput').value = '';
-      document.getElementById('depositSectionContainer').style.display = 'none';
-      loadTransactionHistory();
-    } else {
-      showToast("❌ " + data.message, "error");
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    showToast("❌ Verification error. Please try again in a few seconds.", "error");
-  });
-}
-
 window.publishCampaign = function() {
 let title = document.getElementById('customTaskTitle').value.trim();
 let link = document.getElementById('customTaskLink').value.trim();
@@ -1511,7 +1429,6 @@ return;
 }
 
 let usdtCost = selectedClickCount * clickRatePerClick;
-let gramCost = usdtCost / liveTonPrice;
 let coinCost = Math.round(usdtCost / coinUsdtValue);
 
 let useBal = document.getElementById('useBalanceToggle').checked;
@@ -1520,16 +1437,12 @@ if(useBal) {
     if(selectedPaymentMethod === 'USDT') {
         if(usdtBalance < usdtCost) { showToast("Insufficient USDT balance!", "error"); return; }
         usdtBalance -= usdtCost;
-    } else if(selectedPaymentMethod === 'GRAM') {
-        if(tonBalance < gramCost) { showToast("Insufficient GRAM/TON balance!", "error"); return; }
-        tonBalance -= gramCost;
     } else if(selectedPaymentMethod === 'Coin') {
         if(balance < coinCost) { showToast("Insufficient Coin balance!", "error"); return; }
         balance -= coinCost;
     }
 } else {
     if(selectedPaymentMethod === 'USDT') usdtBalance -= usdtCost;
-    else if(selectedPaymentMethod === 'GRAM') tonBalance -= gramCost;
     else balance -= coinCost;
 }
 
