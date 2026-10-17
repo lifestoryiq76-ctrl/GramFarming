@@ -303,7 +303,28 @@
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 7A. FaucetPay Withdrawal Requests -->
+    <!-- 7. Pending GRAM/TON Deposits Verification Section (NEW) -->
+    <div class="card" style="border: 1px solid var(--yellow);">
+        <h2 style="color: var(--yellow);">💎 Pending Deposits (GRAM Wallet Verification)</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Details</th>
+                        <th>Method</th>
+                        <th>Transaction Hash / Memo</th>
+                        <th>Status & Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="depositsTableBody">
+                    <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 8A. FaucetPay Withdrawal Requests -->
     <div class="card">
         <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
@@ -325,7 +346,7 @@
         </div>
     </div>
 
-    <!-- 7B. TON Withdrawal Requests (Manual / Pending System) -->
+    <!-- 8B. TON Withdrawal Requests (Manual / Pending System) -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests (Manual)</h2>
         <button type="button" onclick="approveAllTonWithdrawals()" style="background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 12px; width: 100%;">
@@ -350,7 +371,7 @@
         </div>
     </div>
 
-    <!-- 8. Registered Users List (Updated with IP Address, Device Info & Block/Unblock Option) -->
+    <!-- 9. Registered Users List (Updated with IP Address, Device Info & Block/Unblock Option) -->
     <div class="card">
         <h2>👥 Registered Users, IP Address & Security Management</h2>
         <div class="table-container">
@@ -465,6 +486,49 @@
             }
         }).catch(err => console.error("Load settings error:", err));
 
+        // Load Pending Deposits (GRAM Wallet Verification)
+        get(ref(db, 'deposits')).then((snapshot) => {
+            const depositsTableBody = document.getElementById('depositsTableBody');
+            depositsTableBody.innerHTML = '';
+            let depCount = 0;
+
+            if (snapshot.exists()) {
+                snapshot.forEach((childSnap) => {
+                    let dId = childSnap.key;
+                    let dep = childSnap.val();
+                    let isPending = !dep.status || dep.status === 'PENDING';
+                    let isSuccess = dep.status === 'SUCCESS (Approved)';
+                    let isRejected = dep.status === 'REJECTED';
+
+                    let actionButtons = '';
+                    if (isSuccess) {
+                        actionButtons = `<span style="color:#22c55e; font-weight:bold; margin-right:6px;">Approved ✅</span>
+                                         <button class="btn-delete" onclick="deleteDepositRecord('${dId}')" title="Delete">🗑️ Delete</button>`;
+                    } else if (isRejected) {
+                        actionButtons = `<span style="color:#ef4444; font-weight:bold; margin-right:6px;">Rejected ❌</span>
+                                         <button class="btn-delete" onclick="deleteDepositRecord('${dId}')" title="Delete">🗑️ Delete</button>`;
+                    } else {
+                        actionButtons = `<button class="btn-success" onclick="processDeposit('${dId}', 'approve', '${dep.userId}')">Approve ✅</button>
+                                         <button class="btn-danger" onclick="processDeposit('${dId}', 'reject', '${dep.userId}')">Reject ❌</button>
+                                         <button class="btn-delete" onclick="deleteDepositRecord('${dId}')" title="Delete">🗑️ Delete</button>`;
+                    }
+
+                    let userDetailHtml = `<b>Name:</b> ${dep.userName || "User"}<br><b>ID:</b> ${dep.userId || 'N/A'}`;
+                    let statusTimeHtml = `<b>Status:</b> ${dep.status || 'PENDING'}<br><small style="color:var(--yellow);">⏱️ ${dep.date || 'N/A'}</small>`;
+
+                    depositsTableBody.innerHTML += `<tr>
+                        <td>${userDetailHtml}</td>
+                        <td>${dep.method || 'TON/GRAM Wallet'}</td>
+                        <td><code style="background:#0f172a; padding:4px; border-radius:4px; color:var(--yellow);">${dep.txHash || 'N/A'}</code></td>
+                        <td>${statusTimeHtml}</td>
+                        <td>${actionButtons}</td>
+                    </tr>`;
+                    depCount++;
+                });
+            }
+            if (depCount === 0) depositsTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No pending deposits found.</td></tr>`;
+        });
+
         // 1. Load FaucetPay Withdrawals from user paths
         get(ref(db, 'withdrawals')).then((snapshot) => {
             const fpTableBody = document.getElementById('faucetpayTableBody');
@@ -564,7 +628,6 @@
             if (snapshot.exists()) {
                 const usersData = snapshot.val();
                 
-                // Track IP counts to highlight same-IP multi accounts
                 const ipCounts = {};
                 for (let id in usersData) {
                     let ip = usersData[id].ipAddress;
@@ -617,7 +680,42 @@
         });
     });
 
-    // Block / Unblock User Functionality
+    // Process GRAM Deposit Approval / Rejection
+    window.processDeposit = function(dId, action, targetUserId) {
+        let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED';
+        update(ref(db, `deposits/${dId}`), { status: statusText }).then(() => {
+            if (action === 'approve') {
+                // Add TON/GRAM balance or campaign funds if needed upon approval
+                if (targetUserId) {
+                    get(ref(db, `users/${targetUserId}`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            let userData = snapshot.val();
+                            update(ref(db, `users/${targetUserId}`), { tonBalance: (userData.tonBalance || 0) + 1.00 }).then(() => {
+                                alert('✅ Deposit Approved & 1 TON added to user balance!');
+                                location.reload();
+                            });
+                        } else { location.reload(); }
+                    });
+                } else {
+                    alert('✅ Deposit Approved!');
+                    location.reload();
+                }
+            } else {
+                alert('❌ Deposit Rejected!');
+                location.reload();
+            }
+        });
+    };
+
+    window.deleteDepositRecord = function(dId) {
+        if (confirm("Kya aap is deposit record ko hatana chahte hain?")) {
+            remove(ref(db, `deposits/${dId}`)).then(() => {
+                alert("🗑️ Record successfully removed!");
+                location.reload();
+            }).catch((err) => alert("Error: " + err.message));
+        }
+    };
+
     window.toggleBlockUser = function(userId, currentStatus) {
         let newStatus = !currentStatus;
         let actionTxt = newStatus ? "Block" : "Unblock";
