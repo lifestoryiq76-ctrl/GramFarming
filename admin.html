@@ -260,9 +260,46 @@
         <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
     </div>
 
-    <!-- 5. Task Creator & Click/Completion Rates Setup -->
+    <!-- 5. User Campaign Click Rates Control (NEW FEATURE) -->
+    <div class="card" style="border: 1px solid var(--accent);">
+        <h2>⚙️ User Campaign Publish Rates (Clicks Pricing)</h2>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">Yahan se aap set kar sakte hain ki User jab mini-app mein campaign create karega toh use per click ya package ka kitna rate pay karna hoga.</p>
+        <div class="grid-4">
+            <div class="net-box">
+                <h3>100 Clicks</h3>
+                <label>USDT Rate ($):</label>
+                <input type="number" id="rateUsdt100" step="0.0001" value="0.35">
+                <label>Coin Rate:</label>
+                <input type="number" id="rateCoin100" step="0.1" value="35">
+            </div>
+            <div class="net-box">
+                <h3>250 Clicks</h3>
+                <label>USDT Rate ($):</label>
+                <input type="number" id="rateUsdt250" step="0.0001" value="0.875">
+                <label>Coin Rate:</label>
+                <input type="number" id="rateCoin250" step="0.1" value="87.5">
+            </div>
+            <div class="net-box">
+                <h3>500 Clicks</h3>
+                <label>USDT Rate ($):</label>
+                <input type="number" id="rateUsdt500" step="0.0001" value="1.75">
+                <label>Coin Rate:</label>
+                <input type="number" id="rateCoin500" step="0.1" value="175">
+            </div>
+            <div class="net-box">
+                <h3>1000 Clicks</h3>
+                <label>USDT Rate ($):</label>
+                <input type="number" id="rateUsdt1000" step="0.0001" value="3.50">
+                <label>Coin Rate:</label>
+                <input type="number" id="rateCoin1000" step="0.1" value="350">
+            </div>
+        </div>
+        <button type="button" onclick="saveSettings('clickRates')">💾 Save Click Rates</button>
+    </div>
+
+    <!-- 6. Add Custom Task -->
     <div class="card">
-        <h2>📋 Add & Manage Custom Tasks (Telegram / YouTube / Ads)</h2>
+        <h2>📋 Add New Custom Task (Telegram / YouTube / Ads)</h2>
         <div class="grid-2">
             <div>
                 <label>Task Title:</label>
@@ -277,52 +314,7 @@
             <label>Task Link / Ad URL:</label>
             <input type="text" id="taskLink" placeholder="https://t.me/...">
         </div>
-
-        <h3 style="margin-top: 15px; font-size: 14px; color: var(--yellow);">⚙️ Number of Clicks & Payment Currency Rates (USDT / Coin)</h3>
-        <div class="grid-4" style="margin-top: 10px;">
-            <div class="net-box" style="margin-bottom:0;">
-                <label><b>1. Clicks: 100</b></label>
-                <label>Currency Option:</label>
-                <select id="rateCurr100">
-                    <option value="USDT">💵 USDT</option>
-                    <option value="Coin">🪙 Coin</option>
-                </select>
-                <label>Rate / Price Amount:</label>
-                <input type="number" id="rateVal100" step="0.0001" value="0.35">
-            </div>
-            <div class="net-box" style="margin-bottom:0;">
-                <label><b>2. Clicks: 250</b></label>
-                <label>Currency Option:</label>
-                <select id="rateCurr250">
-                    <option value="USDT">💵 USDT</option>
-                    <option value="Coin">🪙 Coin</option>
-                </select>
-                <label>Rate / Price Amount:</label>
-                <input type="number" id="rateVal250" step="0.0001" value="0.85">
-            </div>
-            <div class="net-box" style="margin-bottom:0;">
-                <label><b>3. Clicks: 500</b></label>
-                <label>Currency Option:</label>
-                <select id="rateCurr500">
-                    <option value="USDT">💵 USDT</option>
-                    <option value="Coin">🪙 Coin</option>
-                </select>
-                <label>Rate / Price Amount:</label>
-                <input type="number" id="rateVal500" step="0.0001" value="1.65">
-            </div>
-            <div class="net-box" style="margin-bottom:0;">
-                <label><b>4. Clicks: 1000</b></label>
-                <label>Currency Option:</label>
-                <select id="rateCurr1000">
-                    <option value="USDT">💵 USDT</option>
-                    <option value="Coin">🪙 Coin</option>
-                </select>
-                <label>Rate / Price Amount:</label>
-                <input type="number" id="rateVal1000" step="0.0001" value="3.20">
-            </div>
-        </div>
-
-        <button type="button" class="btn-blue" style="margin-top: 15px;" onclick="addNewTask()">➕ Create & Publish Task</button>
+        <button type="button" class="btn-blue" onclick="addNewTask()">➕ Create & Publish Task</button>
 
         <h3 style="margin-top: 20px; font-size: 15px; color: var(--yellow);">📑 Active Custom Tasks List</h3>
         <div class="table-container">
@@ -331,18 +323,17 @@
                     <tr>
                         <th>Title & Link</th>
                         <th>Reward (Coins)</th>
-                        <th>Clicks Configuration</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="adminCustomTasksTableBody">
-                    <tr><td colspan="4" style="text-align: center;">Loading tasks...</td></tr>
+                    <tr><td colspan="3" style="text-align: center;">Loading tasks...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- 6. User Balance Manual Manager (With Add / Deduct Options) -->
+    <!-- 7. User Balance Manual Manager -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚡ User Balance Modifier</h2>
         <div class="grid-3">
@@ -365,7 +356,7 @@
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 7A. FaucetPay Withdrawal Requests -->
+    <!-- 8A. FaucetPay Withdrawal Requests -->
     <div class="card">
         <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
@@ -387,7 +378,7 @@
         </div>
     </div>
 
-    <!-- 7B. TON Withdrawal Requests (Manual / Pending System) -->
+    <!-- 8B. TON Withdrawal Requests -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests (Manual)</h2>
         <button type="button" onclick="approveAllTonWithdrawals()" style="background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 12px; width: 100%;">
@@ -412,7 +403,7 @@
         </div>
     </div>
 
-    <!-- 8. Registered Users List (Updated with IP Address, Device Info & Block/Unblock Option) -->
+    <!-- 9. Registered Users List -->
     <div class="card">
         <h2>👥 Registered Users, IP Address & Security Management</h2>
         <div class="table-container">
@@ -480,6 +471,16 @@
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? data.general.minWithdrawal ?? 0.01;
                     document.getElementById('minTon').value = data.general.minTon ?? data.general.minTonWithdrawal ?? 0.01;
                 }
+                if(data.clickRates) {
+                    document.getElementById('rateUsdt100').value = data.clickRates.usdt100 ?? 0.35;
+                    document.getElementById('rateCoin100').value = data.clickRates.coin100 ?? 35;
+                    document.getElementById('rateUsdt250').value = data.clickRates.usdt250 ?? 0.875;
+                    document.getElementById('rateCoin250').value = data.clickRates.coin250 ?? 87.5;
+                    document.getElementById('rateUsdt500').value = data.clickRates.usdt500 ?? 1.75;
+                    document.getElementById('rateCoin500').value = data.clickRates.coin500 ?? 175;
+                    document.getElementById('rateUsdt1000').value = data.clickRates.usdt1000 ?? 3.50;
+                    document.getElementById('rateCoin1000').value = data.clickRates.coin1000 ?? 350;
+                }
                 if(data.mining) {
                     document.getElementById('novaReward').value = data.mining.novaReward ?? 1.0;
                     document.getElementById('novaDuration').value = data.mining.novaDuration ?? 8;
@@ -491,7 +492,6 @@
                     document.getElementById('cosmicReqAds').value = data.mining.cosmicReqAds ?? 50;
                     document.getElementById('cosmicTimer').value = data.mining.cosmicTimer ?? 60;
                 }
-                
                 if(data.ads) {
                     document.getElementById('monetagLimit').value = data.ads.monetagLimit ?? 50;
                     document.getElementById('monetagReward').value = data.ads.monetagReward ?? 0.04;
@@ -513,7 +513,6 @@
                     document.getElementById('hilltopReward').value = data.ads.hilltopadsReward ?? 0.04;
                     document.getElementById('hilltopTimer').value = data.ads.hilltopadsTimer ?? 60;
                 }
-
                 if(data.stakingApy) {
                     document.getElementById('stakeApy0').value = data.stakingApy[0] ?? 4;
                     document.getElementById('stakeApy7').value = data.stakingApy[7] ?? 3;
@@ -537,14 +536,11 @@
                 snapshot.forEach((childSnap) => {
                     let tId = childSnap.key;
                     let task = childSnap.val();
-                    let doneClicks = task.clicksDone || 0;
-                    let totalClicks = task.totalClicks || 100;
                     let rewardVal = task.reward || 5.00;
 
                     adminTaskTable.innerHTML += `<tr>
                         <td><b>${task.title || 'Task'}</b><br><small style="color:var(--text-muted);">${task.link || ''}</small></td>
                         <td><b style="color:var(--yellow);">${rewardVal} Coins</b></td>
-                        <td>🔥 <b>${doneClicks} / ${totalClicks}</b> Clicks (${task.currency || 'USDT'} - ${task.rate || '0.35'})</td>
                         <td>
                             <button class="btn-delete" onclick="deleteCustomTask('${tId}')">🗑️ Delete</button>
                         </td>
@@ -553,7 +549,7 @@
                 });
             }
             if (count === 0) {
-                adminTaskTable.innerHTML = `<tr><td colspan="4" style="text-align: center;">No custom tasks added yet.</td></tr>`;
+                adminTaskTable.innerHTML = `<tr><td colspan="3" style="text-align: center;">No custom tasks added yet.</td></tr>`;
             }
         });
 
@@ -648,20 +644,17 @@
             if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No TON withdrawals found.</td></tr>`;
         });
 
-        // Load Registered Users, IP Address, Device Info & Block/Unblock Management
+        // Load Registered Users, IP Address & Device Info
         get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
             
             if (snapshot.exists()) {
                 const usersData = snapshot.val();
-                
                 const ipCounts = {};
                 for (let id in usersData) {
                     let ip = usersData[id].ipAddress;
-                    if (ip) {
-                        ipCounts[ip] = (ipCounts[ip] || 0) + 1;
-                    }
+                    if (ip) ipCounts[ip] = (ipCounts[ip] || 0) + 1;
                 }
 
                 for (let userIdKey in usersData) {
@@ -734,7 +727,19 @@
                     'adminSettings/general/minTon': minT,
                     'adminSettings/general/minTonWithdrawal': minT
                 };
-                update(ref(db), data).then(() => alert('General Settings & Minimum Withdrawal Limits Saved Successfully!'));
+                update(ref(db), data).then(() => alert('General Settings Saved Successfully!'));
+            } else if (type === 'clickRates') {
+                let ratesData = {
+                    'adminSettings/clickRates/usdt100': parseFloat(document.getElementById('rateUsdt100').value) || 0.35,
+                    'adminSettings/clickRates/coin100': parseFloat(document.getElementById('rateCoin100').value) || 35,
+                    'adminSettings/clickRates/usdt250': parseFloat(document.getElementById('rateUsdt250').value) || 0.875,
+                    'adminSettings/clickRates/coin250': parseFloat(document.getElementById('rateCoin250').value) || 87.5,
+                    'adminSettings/clickRates/usdt500': parseFloat(document.getElementById('rateUsdt500').value) || 1.75,
+                    'adminSettings/clickRates/coin500': parseFloat(document.getElementById('rateCoin500').value) || 175,
+                    'adminSettings/clickRates/usdt1000': parseFloat(document.getElementById('rateUsdt1000').value) || 3.50,
+                    'adminSettings/clickRates/coin1000': parseFloat(document.getElementById('rateCoin1000').value) || 350
+                };
+                update(ref(db), ratesData).then(() => alert('✅ Campaign Click Rates Saved Successfully!'));
             } else if (type === 'mining') {
                 let data = {
                     'adminSettings/mining/novaReward': parseFloat(document.getElementById('novaReward').value) || 1.0,
@@ -794,9 +799,6 @@
         let reward = parseFloat(document.getElementById('taskReward').value);
         let link = document.getElementById('taskLink').value.trim();
 
-        let r100Curr = document.getElementById('rateCurr100').value;
-        let r100Val = parseFloat(document.getElementById('rateVal100').value) || 0.35;
-
         if(!title || isNaN(reward) || !link) { 
             alert('Kripya Task Title, Reward aur Link sahi se bharein.'); 
             return; 
@@ -806,11 +808,6 @@
             title: title, 
             reward: reward, 
             link: link, 
-            totalClicks: 100, 
-            clicksDone: 0, 
-            clicksRemaining: 100,
-            currency: r100Curr,
-            rate: r100Val,
             status: 'Active',
             date: new Date().toLocaleString()
         }).then(() => {
@@ -972,7 +969,7 @@
     };
 
     window.deleteWithdrawalRecord = function(pathStr, type) {
-        if (confirm("Kya aap is withdrawal record ko panel se hatana chahte hain?")) {
+        if (confirm("Kya aap is withdrawal record ko hatana chahte hain?")) {
             remove(ref(db, pathStr)).then(() => {
                 alert("🗑️ Record successfully removed!");
                 location.reload();
