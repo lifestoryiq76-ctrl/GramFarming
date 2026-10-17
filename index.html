@@ -136,34 +136,6 @@ input:focus, select:focus { border-color: var(--accent); }
 .task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
 .task-subtab-btn.active { background: #334155; color: var(--text-main); border-color: var(--accent); }
 
-/* Promo Option Cards */
-.promo-option-card {
-    background: #111827;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: all 0.2s ease;
-}
-.promo-option-card.active {
-    border-color: var(--yellow);
-    background: rgba(234, 179, 8, 0.05);
-    box-shadow: 0 0 10px rgba(234, 179, 8, 0.15);
-}
-.promo-option-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-}
-
 /* Click Option Buttons */
 .click-btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
 .click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 13px; transition: 0.2s; }
@@ -420,7 +392,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Channel Verification / Bot Add Info (Updated Bot ID Here) -->
+<!-- Channel Verification / Bot Add Info -->
 <div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between">
 <b style="font-size: 12px; color: var(--yellow);">Channel Verification: Add Bot</b>
@@ -448,7 +420,7 @@ input:focus, select:focus { border-color: var(--accent); }
 Cost: <strong>0.35 USDT</strong> (~0.11 GRAM | ~35 Coins)
 </div>
 
-<!-- Payment Method Selection (USDT, GRAM, Stars/Coins) -->
+<!-- Payment Method Selection (USDT, GRAM, Coins) -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Payment Method</label>
 <div class="pay-method-grid">
 <div class="pay-method-card active" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
@@ -465,22 +437,29 @@ Cost: <strong>0.35 USDT</strong> (~0.11 GRAM | ~35 Coins)
 <input type="checkbox" id="useBalanceToggle" style="width: 20px; height: 20px; accent-color: var(--accent);" onchange="updatePaymentActionUI()">
 </div>
 
-<!-- Dynamic Deposit Section (FaucetPay for USDT, Scanner/Address for GRAM, Wallet deduction for Coin) -->
+<!-- Dynamic Deposit Section (FaucetPay & GRAM Amount Deposit with Scanner QR) -->
 <div id="depositSectionContainer" style="display:none; background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 12px;">
 <div id="faucetpayDepositBox" style="display:none;">
 <h5 style="margin:0 0 6px 0; color: var(--accent);">⚡ FaucetPay Instant Deposit</h5>
-<p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Deposit USDT instantly via FaucetPay to fund your campaign.</p>
-<input type="text" id="faucetpayEmailInput" placeholder="Enter your FaucetPay Email ID" style="margin-bottom: 8px;">
+<p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Deposit USDT via FaucetPay link. Complete deposit on FaucetPay and return to bot.</p>
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Deposit Amount (USDT)</label>
+<input type="number" id="faucetpayDepositAmount" placeholder="Enter USDT amount to deposit" step="0.01" style="margin-bottom: 8px;">
 <button class="btn" style="width:100%; background:var(--accent); font-size:12px;" onclick="processFaucetPayDeposit()">Deposit via FaucetPay</button>
 </div>
 
 <div id="gramDepositBox" style="display:none;">
-<h5 style="margin:0 0 6px 0; color: #0ea5e9;">💎 GRAM Wallet & QR Deposit</h5>
-<p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Scan QR or send GRAM directly to admin address below:</p>
-<div style="background: #0f172a; padding: 8px; border-radius: 6px; font-size: 11px; color: var(--yellow); word-break: break-all; text-align: center; margin-bottom: 8px;">
+<h5 style="margin:0 0 6px 0; color: #0ea5e9;">💎 GRAM Wallet & Amount Deposit</h5>
+<p style="font-size: 11px; color: var(--text-muted); margin:0 0 8px 0;">Scan QR code or send GRAM to admin address and enter deposit amount below:</p>
+
+<!-- QR Code Scanner Image Added Here -->
+<div style="text-align: center; margin-bottom: 10px;">
+<img src="7777.png" alt="GRAM QR Scanner" style="width: 140px; height: 140px; border-radius: 8px; border: 1px solid var(--border); background: #fff; padding: 4px;">
+</div>
+<div style="background: #0f172a; padding: 8px; border-radius: 6px; font-size: 11px; color: var(--yellow); word-break: break-all; text-align: center; margin-bottom: 8px;" id="adminGramWalletAddress">
 UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd
 </div>
-<input type="text" id="gramTxHashInput" placeholder="Enter Transaction Hash / Memo" style="margin-bottom: 8px;">
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Enter GRAM Amount</label>
+<input type="number" id="gramAmountInput" placeholder="Enter GRAM amount sent" step="0.0001" style="margin-bottom: 8px;">
 <button class="btn" style="width:100%; background:#0ea5e9; font-size:12px;" onclick="verifyGramDeposit()">Verify GRAM Deposit</button>
 </div>
 </div>
@@ -711,7 +690,7 @@ Fee (5%): 0.00 | You will receive: 0.00
 <span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
 </div>
 <div id="transactionHistoryList" style="font-size: 12px; color: var(--text-muted); min-height: 40px; display: flex; flex-direction: column; gap: 6px;">
-No recent withdrawals yet.
+No recent transactions yet.
 </div>
 </div>
 </div>
@@ -806,7 +785,7 @@ let coinUsdtValue = 0.01;
 let currentDailyBonus = 0.01;
 let minWithdrawalAmt = 0.01;
 let minTonWithdrawalAmt = 0.01;
-let liveTonPrice = 1.36; // 1 GRAM ≈ $1.36 USDT based on image reference
+let liveTonPrice = 1.36; 
 let referralPercentage = 20;
 
 let miningDurationSeconds = 28800;
@@ -820,7 +799,7 @@ let cosmicTimerSec = 60;
 let selectedCampaignObj = 'Channel';
 let selectedClickCount = 100;
 let selectedPaymentMethod = 'USDT';
-let clickRatePerClick = 0.0035; // 0.0035 coin/click or USDT per click
+let clickRatePerClick = 0.0035;
 
 window.stakingApyRates = {
 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20
@@ -1241,7 +1220,6 @@ document.getElementById('walletCoinDisplay').innerText = balance.toFixed(2);
 document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
 document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4);
 
-// Update Create Task balances
 if(document.getElementById('balCoins')) document.getElementById('balCoins').innerText = balance.toFixed(2);
 if(document.getElementById('balUsdt')) document.getElementById('balUsdt').innerText = usdtBalance.toFixed(4);
 if(document.getElementById('balTon')) document.getElementById('balTon').innerText = tonBalance.toFixed(4);
@@ -1305,7 +1283,6 @@ if (event && event.currentTarget) {
 }
 }
 
-// 4 Functions in Task Category: All, Task, Partner, Create Task
 window.switchTaskCategory = function(catName, btnEl) {
 document.querySelectorAll('.task-category-content').forEach(el => el.style.display = 'none');
 document.querySelectorAll('.task-cat-btn').forEach(el => el.classList.remove('active'));
@@ -1324,7 +1301,6 @@ switchCreateSubTab('promote');
 btnEl.classList.add('active');
 }
 
-// Create Task Subtabs: Promote Link & My Tasks
 window.switchCreateSubTab = function(subName) {
 document.getElementById('createPromoteView').style.display = 'none';
 document.getElementById('createMyTasksView').style.display = 'none';
@@ -1342,7 +1318,6 @@ loadMyPublishedTasks();
 }
 }
 
-// Campaign Objectives Selector (Channel, Mini App, Bot MAU)
 window.setCampaignObj = function(objType) {
 selectedCampaignObj = objType;
 document.getElementById('objChanBtn').style.background = '#1e293b';
@@ -1367,7 +1342,6 @@ document.getElementById('campaignTitleDisplay').innerText = "Grow Your Bot MAU";
 }
 }
 
-// Click / Completions Selector (100, 250, 500, 1000)
 window.setClickClicks = function(clicks, btnEl) {
 selectedClickCount = clicks;
 document.querySelectorAll('.click-option-btn').forEach(b => b.classList.remove('active'));
@@ -1375,7 +1349,6 @@ btnEl.classList.add('active');
 updateCostCalculation();
 }
 
-// Payment Method Selector (USDT, GRAM, Coin)
 window.setPaymentMethod = function(method) {
 selectedPaymentMethod = method;
 document.getElementById('payUsdt').classList.remove('active');
@@ -1435,34 +1408,62 @@ costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong> (~${gram
 updatePaymentActionUI();
 }
 
+// 1. FaucetPay Deposit with redirect link and return to mini bot
 window.processFaucetPayDeposit = function() {
-let email = document.getElementById('faucetpayEmailInput').value.trim();
-if(!email || !email.includes('@')) {
-showToast("Kripya valid FaucetPay email enter karein.", "error");
+let amountInput = parseFloat(document.getElementById('faucetpayDepositAmount').value) || 0;
+if(amountInput <= 0) {
+showToast("Kripya valid deposit amount enter karein.", "error");
 return;
-}
-showToast("⚡ FaucetPay Instant Deposit initiated. Processing...", "success");
-setTimeout(() => {
-usdtBalance += 5.00;
-saveToFirebase();
-renderUIValues();
-showToast("✅ FaucetPay deposit successful! 5.00 USDT added to balance.", "success");
-document.getElementById('depositSectionContainer').style.display = 'none';
-}, 1500);
 }
 
+showToast("⚡ FaucetPay link open ho raha hai...", "success");
+
+let faucetPayUrl = `https://faucetpay.io/merchant/withdraw?merchant=gramfarming&amount=${amountInput}&currency=USDT`;
+
+if (tg.openLink) {
+    tg.openLink(faucetPayUrl);
+} else {
+    window.open(faucetPayUrl, '_blank');
+}
+
+setTimeout(() => {
+    usdtBalance += amountInput;
+    saveToFirebase();
+    renderUIValues();
+    
+    let depositRecord = {
+        id: Date.now(),
+        userName: displayName,
+        userId: userId,
+        method: 'FaucetPay USDT',
+        amount: amountInput,
+        status: 'SUCCESS',
+        date: new Date().toLocaleString()
+    };
+    push(ref(db, 'deposits/' + userId), depositRecord);
+
+    showToast(`✅ Successfully deposited ${amountInput} USDT via FaucetPay!`, "success");
+    document.getElementById('faucetpayDepositAmount').value = '';
+    document.getElementById('depositSectionContainer').style.display = 'none';
+    loadTransactionHistory();
+}, 4000);
+}
+
+// 2 & 3. GRAM Deposit with custom amount & Admin panel reflection
 window.verifyGramDeposit = function() {
-let hash = document.getElementById('gramTxHashInput').value.trim();
-if(!hash || hash.length < 5) {
-showToast("Kripya valid transaction hash ya memo enter karein.", "error");
+let gramAmount = parseFloat(document.getElementById('gramAmountInput').value) || 0;
+if(gramAmount <= 0) {
+showToast("Kripya valid GRAM amount enter karein.", "error");
 return;
 }
-showToast("⌛ Submitting GRAM deposit request for admin verification...", "success");
+
+showToast("⌛ Submitting GRAM deposit request...", "success");
 
 let depositReq = {
+    id: Date.now(),
     userId: userId,
     userName: displayName,
-    txHash: hash,
+    amount: gramAmount,
     method: 'TON/GRAM Wallet',
     status: 'PENDING',
     date: new Date().toLocaleString()
@@ -1470,9 +1471,11 @@ let depositReq = {
 
 push(ref(db, 'deposits'), depositReq)
 .then(() => {
-    showToast("✅ Deposit Request Submitted! Admin verify karte hi balance add ho jayega.", "success");
-    document.getElementById('gramTxHashInput').value = '';
+    push(ref(db, 'deposits/' + userId), depositReq);
+    showToast("✅ GRAM Deposit Request Submitted! Admin verify karte hi balance update ho jayega.", "success");
+    document.getElementById('gramAmountInput').value = '';
     document.getElementById('depositSectionContainer').style.display = 'none';
+    loadTransactionHistory();
 })
 .catch((err) => {
     console.error(err);
@@ -2145,21 +2148,51 @@ if (method !== 'ton') document.getElementById('withdrawDestination').value = '';
 
 window.loadTransactionHistory = function() {
 let historyContainer = document.getElementById('transactionHistoryList');
-onValue(ref(db, 'withdrawals/' + userId), (snapshot) => {
-if (!snapshot.exists()) {
-historyContainer.innerHTML = "No recent withdrawals yet.";
-return;
-}
-let data = snapshot.val();
-let html = '';
-Object.values(data).forEach(item => {
-let netAmount = item.received ? parseFloat(item.received).toFixed(4) : "0.0000";
-let currentStatus = item.status || 'Pending';
-let statusColor = (currentStatus.toUpperCase().includes('SUCCESS') || currentStatus.toUpperCase().includes('APPROVED')) ? 'var(--accent)' : 'var(--yellow)';
+let allTransactions = [];
 
-html += `<div style="background: #1e293b; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;"> <div> <b style="color: var(--accent);">${item.method} - ${netAmount}</b> <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${item.date}</div> </div> <span style="color: ${statusColor}; font-weight: bold; font-size: 11px;">${currentStatus}</span> </div>`;
+onValue(ref(db, 'withdrawals/' + userId), (withdrawSnap) => {
+if (withdrawSnap.exists()) {
+    let wData = withdrawSnap.val();
+    Object.values(wData).forEach(item => {
+        allTransactions.push({
+            type: 'Withdrawal',
+            method: item.method || 'Payout',
+            amount: item.received || item.amount || 0,
+            status: item.status || 'Pending',
+            date: item.date || ''
+        });
+    });
+}
+
+onValue(ref(db, 'deposits/' + userId), (depositSnap) => {
+    if (depositSnap.exists()) {
+        let dData = depositSnap.val();
+        Object.values(dData).forEach(item => {
+            allTransactions.push({
+                type: 'Deposit',
+                method: item.method || 'Deposit',
+                amount: item.amount || 0,
+                status: item.status || 'SUCCESS',
+                date: item.date || ''
+            });
+        });
+    }
+
+    if (allTransactions.length === 0) {
+        historyContainer.innerHTML = "No recent transactions yet.";
+        return;
+    }
+
+    let html = '';
+    allTransactions.forEach(item => {
+        let isDeposit = item.type === 'Deposit';
+        let badgeColor = isDeposit ? 'var(--accent)' : 'var(--yellow)';
+        let sign = isDeposit ? '+' : '-';
+
+        html += `<div style="background: #1e293b; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;"> <div> <b style="color: ${badgeColor};">${item.type} (${item.method}): ${sign}${parseFloat(item.amount).toFixed(4)}</b> <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${item.date}</div> </div> <span style="color: ${badgeColor}; font-weight: bold; font-size: 11px;">${item.status}</span> </div>`;
+    });
+    historyContainer.innerHTML = html;
 });
-historyContainer.innerHTML = html;
 });
 }
 loadTransactionHistory();
@@ -2198,7 +2231,6 @@ addEarningsWithReferral(reward);
 showToast(`Claim Successful! Completed task and earned +${reward} Coins!`, "success");
 }
 
-// Load Task tab items (New tasks)
 onValue(ref(db, 'customTasks'), (snapshot) => {
 let listEl = document.getElementById('dynamicTasksList');
 let noticeEl = document.getElementById('emptyTasksNotice');
@@ -2217,7 +2249,6 @@ html += `<div class="card flex-between" style="background:#111827; margin-bottom
 listEl.innerHTML = html;
 });
 
-// Load Partner tab items (Admin tasks)
 window.loadAdminPartnerTasks = function() {
 let partnerContainer = document.getElementById('adminPartnerTasksList');
 onValue(ref(db, 'adminPartnerTasks'), (snapshot) => {
@@ -2234,7 +2265,6 @@ partnerContainer.innerHTML = html;
 });
 }
 
-// Load My Tasks Subtab View with Live Clicks, Remaining Clicks, and Status
 window.loadMyPublishedTasks = function() {
 let myContainer = document.getElementById('myPublishedTasksList');
 onValue(ref(db, 'customTasks'), (snapshot) => {
