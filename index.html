@@ -163,7 +163,7 @@ input:focus, select:focus { border-color: var(--accent); }
 /* Payment Method Cards in Create Task */
 .pay-method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
 .pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
-.pay-method-card.active { border-color: #0ea5e9; background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
+.pay-method-card.active { border-color: #0098ea !important; background: rgba(0, 152, 234, 0.2) !important; color: #ffffff !important; box-shadow: 0 0 10px rgba(0, 152, 234, 0.4); }
 
 /* Wallet Sub-card Container Styles */
 .wallet-subcard-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
@@ -1646,7 +1646,9 @@ document.getElementById('payCoin').classList.remove('active');
 document.getElementById('payGram').classList.remove('active');
 
 let activeBtn = document.getElementById('pay' + method);
-if(activeBtn) activeBtn.classList.add('active');
+if(activeBtn) {
+  activeBtn.classList.add('active');
+}
 
 updateCostCalculation();
 }
