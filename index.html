@@ -550,7 +550,7 @@ Cost: <strong>0.3500 USDT</strong>
 <!-- 3 Staking Currency Cards: Coin, USDT, Gram -->
 <div class="stake-currency-grid">
 <div class="stake-currency-card active" id="stakeCardCoin" onclick="setStakingCurrency('Coin')">🪙 Coin</div>
-<div class="stake-currency-card" id="stakeCardUsdt" onclick="setStakingCurrency('USDT')">💵 USDT</div>
+<div class="stake-currency-card" id="stakeCardUSDT" onclick="setStakingCurrency('USDT')">💵 USDT</div>
 <div class="stake-currency-card" id="stakeCardGram" onclick="setStakingCurrency('Gram')">💎 Gram</div>
 </div>
 
@@ -1484,17 +1484,24 @@ if (event && event.currentTarget) {
 }
 }
 
-// Staking Currency Selector Function (Fixed for proper clicking)
+// Staking Currency Selector Function (Case Insensitive Match for USDT/Coin/Gram)
 window.setStakingCurrency = function(curr) {
 selectedStakingCurrency = curr;
-document.getElementById('stakeCardCoin').classList.remove('active');
-document.getElementById('stakeCardUsdt').classList.remove('active');
-document.getElementById('stakeCardGram').classList.remove('active');
 
-let targetCard = document.getElementById('stakeCard' + curr);
-if(targetCard) {
-    targetCard.classList.add('active');
-}
+// Remove active status from all 3 cards
+let cCard = document.getElementById('stakeCardCoin');
+let uCard = document.getElementById('stakeCardUSDT') || document.getElementById('stakeCardUsdt');
+let gCard = document.getElementById('stakeCardGram');
+
+if(cCard) cCard.classList.remove('active');
+if(uCard) uCard.classList.remove('active');
+if(gCard) gCard.classList.remove('active');
+
+// Activate selected currency card
+if (curr === 'Coin' && cCard) cCard.classList.add('active');
+if (curr === 'USDT' && uCard) uCard.classList.add('active');
+if (curr === 'Gram' && gCard) gCard.classList.add('active');
+
 document.getElementById('calcCurrencyLabel').innerText = curr;
 calculateStakeRewards();
 }
