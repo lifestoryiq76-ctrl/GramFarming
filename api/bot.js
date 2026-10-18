@@ -6,9 +6,17 @@ const axios = require('axios');
 const app = express();
 app.use(express.json());
 
-// Serve static files
+// Serve static files from root directory
 app.use(express.static(path.join(__dirname, '..')));
 
+// 1. Explicit Route for TON Connect Manifest (Fixes "Cannot GET /tonconnect-manifest.json")
+app.get('/tonconnect-manifest.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.sendFile(path.join(__dirname, '..', 'tonconnect-manifest.json'));
+});
+
+// 2. Serve main index.html for Root Path
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
@@ -37,7 +45,7 @@ async function updateFirebaseData(path, data) {
 // Credentials Configuration
 const BOT_TOKEN = process.env.BOT_TOKEN || '8823465549:AAFfNZ1hDHR_eAWIeH5eWLCEm6dLkuSfhN0';
 const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY || '54554fbd31a9a72c7e84e4418b59abcde50bd6921c4a89d8dd86ae9b7c8df90a';
-const ADMIN_ID = process.env.ADMIN_ID || 0; // Replace or set ADMIN_ID in Vercel Env Var
+const ADMIN_ID = process.env.ADMIN_ID || 0; // Set ADMIN_ID in Vercel Env Var
 const bot = new Telegraf(BOT_TOKEN);
 const MINI_APP_URL = "https://gram-farming.vercel.app";
 const PAYOUT_CHANNEL = '@GramFarming_Payout';
@@ -83,7 +91,7 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// 1. Automatic FaucetPay Merchant API Integration
+// Automatic FaucetPay Merchant API Integration
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName } = req.body;
 
@@ -122,11 +130,8 @@ async function handleFaucetPayPayout(req, res) {
         date: new Date().toLocaleString()
       };
 
-      // Save to Firebase Database
       const reqKey = `fp_${Date.now()}`;
       await updateFirebaseData(`faucetpayWithdrawals/${reqKey}`, { ...payoutData, postedToChannel: true });
-
-      // Direct await channel notification
       await sendPayoutNotification(payoutData);
 
       return res.status(200).json({
@@ -149,7 +154,7 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
-// 2. Manual TON Withdrawal Endpoint
+// Manual TON Withdrawal Endpoint
 app.post('/api/withdraw/ton', async (req, res) => {
   const { walletAddress, amount, currency, userId, displayName } = req.body;
 
