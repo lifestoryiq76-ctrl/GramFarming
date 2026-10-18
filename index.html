@@ -1024,13 +1024,13 @@ return;
 let payTon = usdAmt / liveTonPrice;
 let nanoTon = Math.floor(payTon * 1000000000);
 
+// Fixed transaction object without broken payload
 const transaction = {
 validUntil: Math.floor(Date.now() / 1000) + 360,
 messages: [
 {
-address: "UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd", // Updated Admin Wallet Address
-amount: nanoTon.toString(),
-payload: userId ? btoa(`user_${userId}`) : "" // Transaction comment user ID
+address: "UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd", // Admin Wallet Address
+amount: nanoTon.toString()
 }
 ]
 };
@@ -1059,6 +1059,7 @@ loadTransactionHistory();
 resetGramDepositForm();
 }
 } catch (e) {
+console.error("TON Deposit Error:", e);
 showToast("Transaction cancelled or failed.", "error");
 }
 }
