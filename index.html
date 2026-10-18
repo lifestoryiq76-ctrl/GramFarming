@@ -955,12 +955,14 @@ userId = String(user.id);
 }
 document.getElementById('telegramUserName').innerText = displayName;
 
-// TON Connect UI Initialization
+// TON Connect UI Initialization with Cache Buster
 function initTonConnectUI() {
 try {
 if (window.TON_CONNECT_UI) {
+const manifestUrl = 'https://gram-farming.vercel.app/tonconnect-manifest.json?v=' + Date.now();
+
 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-manifestUrl: 'https://gram-farming-bot.vercel.app/tonconnect-manifest.json',
+manifestUrl: manifestUrl,
 buttonRootId: null
 });
 
@@ -970,7 +972,7 @@ isWalletConnected = true;
 userConnectedAddress = wallet.account.address;
 let shortAddr = userConnectedAddress.substring(0, 4) + '...' + userConnectedAddress.substring(userConnectedAddress.length - 4);
 document.getElementById('tonWalletBtnText').innerText = `Connected: ${shortAddr}`;
-showToast("Wallet Connected!", "success");
+showToast("Wallet Connected Successfully!", "success");
 } else {
 isWalletConnected = false;
 userConnectedAddress = "";
@@ -978,7 +980,9 @@ document.getElementById('tonWalletBtnText').innerText = "Connect Wallet";
 }
 });
 }
-} catch(e) {}
+} catch(e) {
+console.error("TON Connect init error:", e);
+}
 }
 setTimeout(initTonConnectUI, 1000);
 
