@@ -502,17 +502,17 @@ input:focus, select:focus { border-color: var(--accent); }
 <input type="text" id="customTaskTitle" placeholder="@channel or t.me/channel" style="margin-bottom: 8px;">
 <input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 12px;">
 
-<!-- Number of Clicks / Completions Selection (All 8 Options Included) -->
+<!-- Number of Clicks / Completions Selection (All 8 Options with Dynamic IDs) -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Select Clicks / Completions Package</label>
 <div class="click-btn-grid">
-<div class="click-option-btn active" onclick="setClickPackage(100, 35, this)">100<br><small style="color:var(--yellow); font-weight:normal;">35 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(250, 87.5, this)">250<br><small style="color:var(--yellow); font-weight:normal;">87.5 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(500, 175, this)">500<br><small style="color:var(--yellow); font-weight:normal;">175 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(1000, 350, this)">1000<br><small style="color:var(--yellow); font-weight:normal;">350 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(2000, 600, this)">2000<br><small style="color:var(--yellow); font-weight:normal;">600 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(3000, 750, this)">3000<br><small style="color:var(--yellow); font-weight:normal;">750 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(4000, 900, this)">4000<br><small style="color:var(--yellow); font-weight:normal;">900 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(5000, 1100, this)">5000<br><small style="color:var(--yellow); font-weight:normal;">1100 🪙</small></div>
+<div class="click-option-btn active" onclick="setClickPackage(100, 35, this)">100<br><small id="clickBox-100" style="color:var(--yellow); font-weight:normal;">35 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(250, 87.5, this)">250<br><small id="clickBox-250" style="color:var(--yellow); font-weight:normal;">87.5 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(500, 175, this)">500<br><small id="clickBox-500" style="color:var(--yellow); font-weight:normal;">175 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(1000, 350, this)">1000<br><small id="clickBox-1000" style="color:var(--yellow); font-weight:normal;">350 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(2000, 600, this)">2000<br><small id="clickBox-2000" style="color:var(--yellow); font-weight:normal;">600 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(3000, 750, this)">3000<br><small id="clickBox-3000" style="color:var(--yellow); font-weight:normal;">750 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(4000, 900, this)">4000<br><small id="clickBox-4000" style="color:var(--yellow); font-weight:normal;">900 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(5000, 1100, this)">5000<br><small id="clickBox-5000" style="color:var(--yellow); font-weight:normal;">1100 🪙</small></div>
 </div>
 
 <!-- Cost Calculation Display -->
@@ -944,6 +944,18 @@ let selectedPaymentMethod = 'Coin';
 // Wallet Sub-methods
 let currentWithdrawSubMethod = 'faucetpay';
 let currentDepositSubMethod = 'faucetpay';
+
+// Click Packages Data List for Dynamic Calculation
+const clickPackagesData = [
+  { clicks: 100, coin: 35 },
+  { clicks: 250, coin: 87.5 },
+  { clicks: 500, coin: 175 },
+  { clicks: 1000, coin: 350 },
+  { clicks: 2000, coin: 600 },
+  { clicks: 3000, coin: 750 },
+  { clicks: 4000, coin: 900 },
+  { clicks: 5000, coin: 1100 }
+];
 
 window.stakingApyRates = {
 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20
@@ -1640,20 +1652,40 @@ updateCostCalculation();
 }
 
 window.updateCostCalculation = function() {
-let usdtCost = selectedCoinCost * coinUsdtValue;
-let coinCost = selectedCoinCost;
-let gramCost = (usdtCost / liveTonPrice).toFixed(4);
+  // Update all click package cards dynamically based on selected payment method
+  clickPackagesData.forEach(pkg => {
+    let el = document.getElementById('clickBox-' + pkg.clicks);
+    if (el) {
+      if (selectedPaymentMethod === 'Coin') {
+        el.innerText = `${pkg.coin} 🪙`;
+        el.style.color = "var(--yellow)";
+      } else if (selectedPaymentMethod === 'USDT') {
+        let usdtVal = pkg.coin * coinUsdtValue;
+        el.innerText = `$${usdtVal.toFixed(3)} 💵`;
+        el.style.color = "var(--accent)";
+      } else if (selectedPaymentMethod === 'Gram') {
+        let usdtVal = pkg.coin * coinUsdtValue;
+        let gramVal = usdtVal / liveTonPrice;
+        el.innerText = `${gramVal.toFixed(3)} 💎`;
+        el.style.color = "var(--ton-blue)";
+      }
+    }
+  });
 
-let costBox = document.getElementById('costCalcBox');
-if(!costBox) return;
+  let usdtCost = selectedCoinCost * coinUsdtValue;
+  let coinCost = selectedCoinCost;
+  let gramCost = (usdtCost / liveTonPrice).toFixed(4);
 
-if(selectedPaymentMethod === 'USDT') {
+  let costBox = document.getElementById('costCalcBox');
+  if(!costBox) return;
+
+  if(selectedPaymentMethod === 'USDT') {
     costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong> (${selectedClickCount} Clicks)`;
-} else if(selectedPaymentMethod === 'Coin') {
+  } else if(selectedPaymentMethod === 'Coin') {
     costBox.innerHTML = `Cost: <strong>${coinCost} Coins</strong> (~${usdtCost.toFixed(4)} USDT) (${selectedClickCount} Clicks)`;
-} else if(selectedPaymentMethod === 'Gram') {
+  } else if(selectedPaymentMethod === 'Gram') {
     costBox.innerHTML = `Cost: <strong>${gramCost} Gram</strong> (~${usdtCost.toFixed(4)} USDT) (${selectedClickCount} Clicks)`;
-}
+  }
 }
 
 window.processDeposit = function() {
