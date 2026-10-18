@@ -1,7 +1,7 @@
 {
   "url": "https://gram-farming.vercel.app",
   "name": "Gram Farming",
-  "iconUrl": "https://gram-farming.vercel.app/icon.png",
+  "iconUrl": "https://raw.githubusercontent.com/atomiclabs/cryptocurrency-icons/master/128/color/ton.png",
   "termsOfUrl": "https://gram-farming.vercel.app/terms.txt",
   "privacyPolicyUrl": "https://gram-farming.vercel.app/privacy.txt"
 }
