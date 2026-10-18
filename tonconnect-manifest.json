@@ -1,7 +1,4 @@
 {
   "url": "https://gram-farming.vercel.app",
-  "name": "Gram Farming Mini App",
-  "iconUrl": "https://gram-farming.vercel.app/icon.png",
-  "termsOfServiceUrl": "https://gram-farming.vercel.app/terms",
-  "privacyPolicyUrl": "https://gram-farming.vercel.app/privacy"
+  "name": "Gram Farming Mini App"
 }
