@@ -172,6 +172,11 @@ input:focus, select:focus { border-color: var(--accent); }
 .wallet-subcard-content { display: none; margin-top: 10px; }
 .wallet-subcard-content.active { display: block; }
 
+/* Staking Currency Sub-card Grid */
+.stake-currency-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.stake-currency-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
+.stake-currency-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
+
 /* Connect Wallet Style overlay */
 .gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
 .gram-pay-info { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
@@ -542,9 +547,16 @@ Cost: <strong>0.3500 USDT</strong>
 <div id="staking" class="tab-content">
 <h3 data-i18n="stakingOptions">💎 Staking Options</h3>
 
+<!-- 3 Staking Currency Cards: Coin, USDT, Gram -->
+<div class="stake-currency-grid">
+<div class="stake-currency-card active" id="stakeCardCoin" onclick="setStakingCurrency('Coin')">🪙 Coin</div>
+<div class="stake-currency-card" id="stakeCardUsdt" onclick="setStakingCurrency('USDT')">💵 USDT</div>
+<div class="stake-currency-card" id="stakeCardGram" onclick="setStakingCurrency('Gram')">💎 Gram</div>
+</div>
+
 <div class="card" style="background:#111827; border:1px solid var(--accent);">
 <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="stakingCalc">🧮 Staking Calculator & Preview</h4>
-<label style="font-size:13px; color:var(--text-muted);" data-i18n="enterStakingCoins">Enter Staking Coins:</label>
+<label style="font-size:13px; color:var(--text-muted);">Enter Staking <span id="calcCurrencyLabel">Coin</span>:</label>
 <input type="number" id="stakeCalcInput" placeholder="e.g. 100" oninput="calculateStakeRewards()">
 
 <label style="font-size:13px; color:var(--text-muted); margin-top:8px; display:block;" data-i18n="selectPlan">Select Plan:</label>
@@ -910,6 +922,9 @@ let novaRequiredAds = 50;
 let cosmicRequiredAds = 50;
 let novaTimerSec = 60;
 let cosmicTimerSec = 60;
+
+// Staking Currency State
+let selectedStakingCurrency = 'Coin';
 
 // TON Connect Integration State
 let tonConnectUI = null;
@@ -1469,6 +1484,18 @@ if (event && event.currentTarget) {
 }
 }
 
+// Staking Currency Selector
+window.setStakingCurrency = function(curr) {
+selectedStakingCurrency = curr;
+document.getElementById('stakeCardCoin').classList.remove('active');
+document.getElementById('stakeCardUsdt').classList.remove('active');
+document.getElementById('stakeCardGram').classList.remove('active');
+
+document.getElementById('stakeCard' + curr).classList.add('active');
+document.getElementById('calcCurrencyLabel').innerText = curr;
+calculateStakeRewards();
+}
+
 // Wallet Sub-cards Navigation
 window.switchWalletCard = function(cardName) {
 document.querySelectorAll('.wallet-subcard-content').forEach(el => el.classList.remove('active'));
@@ -1793,44 +1820,53 @@ runClaimAction();
 }
 
 window.calculateStakeRewards = function() {
-let coins = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
+let amount = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
 let planVal = document.getElementById('stakeCalcPlan').value.split('|');
 let days = parseInt(planVal[0]);
 let apy = parseFloat(planVal[1]);
 
-let totalRev = (coins * (apy / 100) * (days === 0 ? 1 : days / 365));
+let totalRev = (amount * (apy / 100) * (days === 0 ? 1 : days / 365));
 let dailyRev = days > 0 ? totalRev / days : totalRev / 365;
 
-document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)} Coin`;
-document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} Coin`;
+let unitLabel = selectedStakingCurrency === 'Coin' ? 'Coin' : (selectedStakingCurrency === 'USDT' ? 'USDT' : 'Gram');
+
+document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)} ${unitLabel}`;
+document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} ${unitLabel}`;
 }
 
 window.stake = function(planName, days, apy) {
-let amountInput = prompt(`Enter coin amount to stake in ${planName} (${apy}% APY):`, "100");
+let currency = selectedStakingCurrency;
+let unitLabel = currency === 'Coin' ? 'Coins' : (currency === 'USDT' ? 'USDT' : 'Gram');
+let amountInput = prompt(`Enter ${currency} amount to stake in ${planName} (${apy}% APY):`, "100");
 let stakeAmount = parseFloat(amountInput);
 
 if (!stakeAmount || isNaN(stakeAmount) || stakeAmount <= 0) {
-showToast("Please enter a valid coin amount.", "error");
+showToast("Please enter a valid amount.", "error");
 return;
 }
 
-if (balance < stakeAmount) {
-showToast("Insufficient coin balance to stake this amount!", "error");
-return;
+if (currency === 'Coin') {
+    if (balance < stakeAmount) { showToast("Insufficient coin balance!", "error"); return; }
+    balance -= stakeAmount;
+} else if (currency === 'USDT') {
+    if (usdtBalance < stakeAmount) { showToast("Insufficient USDT balance!", "error"); return; }
+    usdtBalance -= stakeAmount;
+} else if (currency === 'Gram') {
+    if (tonBalance < stakeAmount) { showToast("Insufficient Gram balance!", "error"); return; }
+    tonBalance -= stakeAmount;
 }
-
-balance -= stakeAmount;
 
 let totalPeriodRev = (stakeAmount * (apy / 100) * (days === 0 ? 1 : days / 365));
 let dailyRevAmt = days > 0 ? totalPeriodRev / days : totalPeriodRev / 365;
 
 let newStakeObj = {
 id: Date.now(),
+currency: currency,
 planName: planName,
 amount: stakeAmount,
 apy: apy,
 days: days,
-dailyCoin: dailyRevAmt,
+dailyReward: dailyRevAmt,
 lastClaimTime: Date.now(),
 date: new Date().toLocaleDateString()
 };
@@ -1840,7 +1876,7 @@ saveToFirebase();
 renderUIValues();
 renderStakingList();
 
-showToast(`✅ Successfully staked ${stakeAmount} Coins in ${planName}!`, "success");
+showToast(`✅ Successfully staked ${stakeAmount} ${unitLabel} in ${planName}!`, "success");
 }
 
 function processStakingDailyTransfer() {
@@ -1852,9 +1888,12 @@ activeStakes.forEach(stake => {
 let oneDayMs = 24 * 60 * 60 * 1000;
 if (currentTime - stake.lastClaimTime >= oneDayMs) {
 let daysPassed = Math.floor((currentTime - stake.lastClaimTime) / oneDayMs);
-let rewardToAdd = stake.dailyCoin * daysPassed;
+let rewardToAdd = stake.dailyReward * daysPassed;
 if (rewardToAdd > 0) {
-balance += rewardToAdd;
+if (stake.currency === 'Coin') balance += rewardToAdd;
+else if (stake.currency === 'USDT') usdtBalance += rewardToAdd;
+else if (stake.currency === 'Gram') tonBalance += rewardToAdd;
+
 stake.lastClaimTime += (daysPassed * oneDayMs);
 updated = true;
 }
@@ -1878,8 +1917,11 @@ return;
 
 let html = '';
 activeStakes.forEach((stake, idx) => {
-let dailyShow = stake.dailyCoin ? stake.dailyCoin.toFixed(4) : "0.0000";
-html += `<div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 12px;"> <div class="flex-between"> <strong style="color: var(--accent);">${stake.planName}</strong> <span style="color: var(--yellow);">🪙 Total Stake: ${stake.amount.toFixed(2)} Coins</span> </div> <div style="margin-top: 4px; color: var(--accent);"> ☀ Daily Coin Earned: <strong>+${dailyShow} Coin/day</strong> (Auto-transferred to wallet) </div> <div class="flex-between" style="margin-top: 4px; color: var(--text-muted);"> <span>APY: ${stake.apy}% | Date: ${stake.date}</span> <button onclick="unstake(${stake.id})" style="background: #ef4444; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Unstake</button> </div> </div>`;
+let curr = stake.currency || 'Coin';
+let dailyShow = stake.dailyReward ? stake.dailyReward.toFixed(4) : "0.0000";
+let symbolIcon = curr === 'Coin' ? '🪙' : (curr === 'USDT' ? '💵' : '💎');
+
+html += `<div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 12px;"> <div class="flex-between"> <strong style="color: var(--accent);">${stake.planName} (${curr})</strong> <span style="color: var(--yellow);">${symbolIcon} Total Stake: ${stake.amount.toFixed(2)} ${curr}</span> </div> <div style="margin-top: 4px; color: var(--accent);"> ☀ Daily Reward: <strong>+${dailyShow} ${curr}/day</strong> (Auto-transferred) </div> <div class="flex-between" style="margin-top: 4px; color: var(--text-muted);"> <span>APY: ${stake.apy}% | Date: ${stake.date}</span> <button onclick="unstake(${stake.id})" style="background: #ef4444; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Unstake</button> </div> </div>`;
 });
 listContainer.innerHTML = html;
 }
@@ -1887,13 +1929,19 @@ listContainer.innerHTML = html;
 window.unstake = function(stakeId) {
 let index = activeStakes.findIndex(s => s.id === stakeId);
 if (index !== -1) {
-let refundedAmount = activeStakes[index].amount;
-balance += refundedAmount;
+let stakeObj = activeStakes[index];
+let refundedAmount = stakeObj.amount;
+let curr = stakeObj.currency || 'Coin';
+
+if (curr === 'Coin') balance += refundedAmount;
+else if (curr === 'USDT') usdtBalance += refundedAmount;
+else if (curr === 'Gram') tonBalance += refundedAmount;
+
 activeStakes.splice(index, 1);
 saveToFirebase();
 renderUIValues();
 renderStakingList();
-showToast(`🔓 Successfully unstaked and returned ${refundedAmount.toFixed(2)} Coins.`, "success");
+showToast(`🔓 Successfully unstaked and returned ${refundedAmount.toFixed(2)} ${curr}.`, "success");
 }
 }
 
