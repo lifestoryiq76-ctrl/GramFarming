@@ -1,40 +1,28 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/bot.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "tonconnect-manifest.json",
-      "use": "@vercel/static"
-    }
-  ],
   "headers": [
     {
       "source": "/tonconnect-manifest.json",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Content-Type", "value": "application/json" }
+        { "key": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-Requested-With, Content-Type, Accept" },
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" }
       ]
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/bot",
-      "dest": "api/bot.js"
+      "source": "/api/bot",
+      "destination": "/api/bot.js"
     },
     {
-      "src": "/api/withdraw/ton",
-      "dest": "api/bot.js"
+      "source": "/api/withdraw/ton",
+      "destination": "/api/bot.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/((?!api/)(?!tonconnect-manifest.json).*)",
+      "destination": "/index.html"
     }
   ]
 }
