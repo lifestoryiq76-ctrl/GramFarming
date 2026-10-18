@@ -155,9 +155,9 @@ input:focus, select:focus { border-color: var(--accent); }
 .task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
 .task-subtab-btn.active { background: #334155; color: var(--text-main); border-color: var(--accent); }
 
-/* Click Option Buttons */
-.click-btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
-.click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 13px; transition: 0.2s; }
+/* Click Option Buttons (4 Columns Grid for 8 Options) */
+.click-btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; margin-bottom: 12px; }
+.click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 2px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 12px; transition: 0.2s; }
 .click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
 /* Payment Method Cards in Create Task */
@@ -474,7 +474,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="flex-between" style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px;">
 <div>
 <b style="font-size: 14px;" id="campaignTitleDisplay">Grow Your Channel Subscribers</b>
-<div style="font-size: 11px; color: var(--yellow); margin-top: 2px;" id="clickRateDisplay">🪙 0.0035 coin / click</div>
+<div style="font-size: 11px; color: var(--yellow); margin-top: 2px;" id="clickRateDisplay">Select a campaign package below</div>
 </div>
 </div>
 
@@ -502,25 +502,29 @@ input:focus, select:focus { border-color: var(--accent); }
 <input type="text" id="customTaskTitle" placeholder="@channel or t.me/channel" style="margin-bottom: 8px;">
 <input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 12px;">
 
-<!-- Number of Clicks / Completions Selection -->
-<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Number of Clicks / Completions</label>
+<!-- Number of Clicks / Completions Selection (All 8 Options Included) -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Select Clicks / Completions Package</label>
 <div class="click-btn-grid">
-<div class="click-option-btn active" onclick="setClickClicks(100, this)">100</div>
-<div class="click-option-btn" onclick="setClickClicks(250, this)">250</div>
-<div class="click-option-btn" onclick="setClickClicks(500, this)">500</div>
-<div class="click-option-btn" onclick="setClickClicks(1000, this)">1000</div>
+<div class="click-option-btn active" onclick="setClickPackage(100, 35, this)">100<br><small style="color:var(--yellow); font-weight:normal;">35 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(250, 87.5, this)">250<br><small style="color:var(--yellow); font-weight:normal;">87.5 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(500, 175, this)">500<br><small style="color:var(--yellow); font-weight:normal;">175 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(1000, 350, this)">1000<br><small style="color:var(--yellow); font-weight:normal;">350 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(2000, 600, this)">2000<br><small style="color:var(--yellow); font-weight:normal;">600 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(3000, 750, this)">3000<br><small style="color:var(--yellow); font-weight:normal;">750 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(4000, 900, this)">4000<br><small style="color:var(--yellow); font-weight:normal;">900 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(5000, 1100, this)">5000<br><small style="color:var(--yellow); font-weight:normal;">1100 🪙</small></div>
 </div>
 
 <!-- Cost Calculation Display -->
 <div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;" id="costCalcBox">
-Cost: <strong>0.3500 USDT</strong>
+Cost: <strong>35 Coins</strong>
 </div>
 
 <!-- Payment Method Selection (USDT, Coin & Gram) -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Payment Method</label>
 <div class="pay-method-grid">
-<div class="pay-method-card active" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
-<div class="pay-method-card" id="payCoin" onclick="setPaymentMethod('Coin')">🪙 Coin</div>
+<div class="pay-method-card" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
+<div class="pay-method-card active" id="payCoin" onclick="setPaymentMethod('Coin')">🪙 Coin</div>
 <div class="pay-method-card" id="payGram" onclick="setPaymentMethod('Gram')">💎 Gram</div>
 </div>
 
@@ -931,11 +935,11 @@ let tonConnectUI = null;
 let isWalletConnected = false;
 let userConnectedAddress = "";
 
-// Campaign Creation States
+// Campaign Creation States (Supports all 8 packages)
 let selectedCampaignObj = 'Channel';
 let selectedClickCount = 100;
-let selectedPaymentMethod = 'USDT';
-let clickRatePerClick = 0.0035;
+let selectedCoinCost = 35;
+let selectedPaymentMethod = 'Coin';
 
 // Wallet Sub-methods
 let currentWithdrawSubMethod = 'faucetpay';
@@ -1233,6 +1237,7 @@ document.getElementById('refPercentText').innerText = `Get ${referralPercentage}
 renderUIValues();
 calculateExchange();
 toggleWithdrawFields();
+updateCostCalculation();
 }
 });
 
@@ -1484,11 +1489,10 @@ if (event && event.currentTarget) {
 }
 }
 
-// Staking Currency Selector Function (Case Insensitive Match for USDT/Coin/Gram)
+// Staking Currency Selector Function
 window.setStakingCurrency = function(curr) {
 selectedStakingCurrency = curr;
 
-// Remove active status from all 3 cards
 let cCard = document.getElementById('stakeCardCoin');
 let uCard = document.getElementById('stakeCardUSDT') || document.getElementById('stakeCardUsdt');
 let gCard = document.getElementById('stakeCardGram');
@@ -1497,7 +1501,6 @@ if(cCard) cCard.classList.remove('active');
 if(uCard) uCard.classList.remove('active');
 if(gCard) gCard.classList.remove('active');
 
-// Activate selected currency card
 if (curr === 'Coin' && cCard) cCard.classList.add('active');
 if (curr === 'USDT' && uCard) uCard.classList.add('active');
 if (curr === 'Gram' && gCard) gCard.classList.add('active');
@@ -1615,8 +1618,10 @@ document.getElementById('campaignTitleDisplay').innerText = "Grow Your Bot MAU";
 }
 }
 
-window.setClickClicks = function(clicks, btnEl) {
+// Universal Package Handler (Supports 100 to 5000 Clicks)
+window.setClickPackage = function(clicks, coinCost, btnEl) {
 selectedClickCount = clicks;
+selectedCoinCost = coinCost;
 document.querySelectorAll('.click-option-btn').forEach(b => b.classList.remove('active'));
 btnEl.classList.add('active');
 updateCostCalculation();
@@ -1635,19 +1640,19 @@ updateCostCalculation();
 }
 
 window.updateCostCalculation = function() {
-let usdtCost = selectedClickCount * clickRatePerClick;
-let coinCost = Math.round(usdtCost / coinUsdtValue);
+let usdtCost = selectedCoinCost * coinUsdtValue;
+let coinCost = selectedCoinCost;
 let gramCost = (usdtCost / liveTonPrice).toFixed(4);
 
 let costBox = document.getElementById('costCalcBox');
 if(!costBox) return;
 
 if(selectedPaymentMethod === 'USDT') {
-    costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong>`;
+    costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong> (${selectedClickCount} Clicks)`;
 } else if(selectedPaymentMethod === 'Coin') {
-    costBox.innerHTML = `Cost: <strong>${coinCost} Coins</strong> (~${usdtCost.toFixed(4)} USDT)`;
+    costBox.innerHTML = `Cost: <strong>${coinCost} Coins</strong> (~${usdtCost.toFixed(4)} USDT) (${selectedClickCount} Clicks)`;
 } else if(selectedPaymentMethod === 'Gram') {
-    costBox.innerHTML = `Cost: <strong>${gramCost} Gram</strong> (~${usdtCost.toFixed(4)} USDT)`;
+    costBox.innerHTML = `Cost: <strong>${gramCost} Gram</strong> (~${usdtCost.toFixed(4)} USDT) (${selectedClickCount} Clicks)`;
 }
 }
 
@@ -1692,8 +1697,8 @@ showToast("Kripya Channel Title aur Link dono enter karein.", "error");
 return;
 }
 
-let usdtCost = selectedClickCount * clickRatePerClick;
-let coinCost = Math.round(usdtCost / coinUsdtValue);
+let usdtCost = selectedCoinCost * coinUsdtValue;
+let coinCost = selectedCoinCost;
 let gramCost = parseFloat((usdtCost / liveTonPrice).toFixed(4));
 
 if(selectedPaymentMethod === 'USDT') {
@@ -1714,7 +1719,7 @@ let newCampaignObj = {
     title,
     link,
     objective: selectedCampaignObj,
-    plan: `${selectedClickCount} clicks = ${usdtCost.toFixed(4)} USDT`,
+    plan: `${selectedClickCount} clicks = ${coinCost} Coins`,
     totalClicks: selectedClickCount,
     clicksDone: 0,
     clicksRemaining: selectedClickCount,
