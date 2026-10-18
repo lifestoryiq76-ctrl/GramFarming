@@ -173,8 +173,8 @@ input:focus, select:focus { border-color: var(--accent); }
 .wallet-subcard-content.active { display: block; }
 
 /* Staking Currency Sub-card Grid */
-.stake-currency-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-.stake-currency-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
+.stake-currency-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; position: relative; z-index: 50; }
+.stake-currency-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; user-select: none; }
 .stake-currency-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
 /* Connect Wallet Style overlay */
@@ -1484,14 +1484,17 @@ if (event && event.currentTarget) {
 }
 }
 
-// Staking Currency Selector
+// Staking Currency Selector Function (Fixed for proper clicking)
 window.setStakingCurrency = function(curr) {
 selectedStakingCurrency = curr;
 document.getElementById('stakeCardCoin').classList.remove('active');
 document.getElementById('stakeCardUsdt').classList.remove('active');
 document.getElementById('stakeCardGram').classList.remove('active');
 
-document.getElementById('stakeCard' + curr).classList.add('active');
+let targetCard = document.getElementById('stakeCard' + curr);
+if(targetCard) {
+    targetCard.classList.add('active');
+}
 document.getElementById('calcCurrencyLabel').innerText = curr;
 calculateStakeRewards();
 }
@@ -1837,7 +1840,7 @@ document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} ${un
 window.stake = function(planName, days, apy) {
 let currency = selectedStakingCurrency;
 let unitLabel = currency === 'Coin' ? 'Coins' : (currency === 'USDT' ? 'USDT' : 'Gram');
-let amountInput = prompt(`Enter ${currency} amount to stake in ${planName} (${apy}% APY):`, "100");
+let amountInput = prompt(`Enter ${currency} amount to stake in ${planName} (${apy}% APY):`, "10");
 let stakeAmount = parseFloat(amountInput);
 
 if (!stakeAmount || isNaN(stakeAmount) || stakeAmount <= 0) {
