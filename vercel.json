@@ -8,6 +8,10 @@
     {
       "src": "*.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "tonconnect-manifest.json",
+      "use": "@vercel/static"
     }
   ],
   "headers": [
