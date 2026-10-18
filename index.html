@@ -1028,9 +1028,9 @@ const transaction = {
 validUntil: Math.floor(Date.now() / 1000) + 360,
 messages: [
 {
-address: "UQC_YOUR_OFFICIAL_DEPOSIT_TON_ADDRESS_HERE", // Replace with your merchant wallet address
+address: "UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd", // Updated Admin Wallet Address
 amount: nanoTon.toString(),
-payload: "" // Transaction comment user ID
+payload: userId ? btoa(`user_${userId}`) : "" // Transaction comment user ID
 }
 ]
 };
