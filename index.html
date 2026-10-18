@@ -133,13 +133,14 @@ input:focus, select:focus { border-color: var(--accent); }
     align-items: center; 
     justify-content: center; 
     overflow: hidden; 
-    background: #090e17; 
+    background: #000000; 
     border: 1px solid rgba(255, 255, 255, 0.1); 
     flex-shrink: 0;
 }
-.ad-icon-box svg {
+.ad-icon-box svg, .ad-icon-box img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
     border-radius: 10px;
 }
 .progress-line-bg { width: 100%; background: #334155; height: 5px; border-radius: 3px; margin-top: 10px; overflow: hidden; }
@@ -308,16 +309,17 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 2. Gigapub Network -> "G" Green/Yellow Icon -->
+<!-- 2. Gigapub Network -> Sidha "G" Green/White Icon -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
 <div class="ad-icon-box">
 <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect width="100" height="100" rx="20" fill="#000000"/>
-<path d="M50 15 A35 35 0 1 0 85 50 L50 50 Z" fill="#ccff00"/>
-<circle cx="50" cy="50" r="10" fill="#000000"/>
-<rect x="55" y="55" width="28" height="28" rx="4" fill="#ffffff"/>
+<!-- Sidha Perfect 'G' shape (Lime Green + White Square) -->
+<path d="M 50 15 A 35 35 0 1 1 50 85 A 35 35 0 0 1 85 50 L 50 50 Z" fill="#ccff00"/>
+<circle cx="50" cy="50" r="12" fill="#000000"/>
+<rect x="52" y="52" width="30" height="30" fill="#ffffff" rx="2"/>
 </svg>
 </div>
 <div>
@@ -335,19 +337,12 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 3. USL Ads -> Blue "USL" Coin Logo -->
+<!-- 3. USL Ads -> Updated HD "USL COIN" Logo -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
 <div class="ad-icon-box">
-<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="100" height="100" rx="20" fill="#040b19"/>
-<circle cx="50" cy="50" r="38" stroke="#1d89ff" stroke-width="4"/>
-<circle cx="50" cy="50" r="32" stroke="#00d2ff" stroke-width="2" stroke-dasharray="4 4"/>
-<text x="50" y="58" font-family="'Segoe UI', sans-serif" font-weight="900" font-size="24" fill="#38bdf8" text-anchor="middle">USL</text>
-<text x="50" y="24" font-family="'Segoe UI', sans-serif" font-size="7" font-weight="bold" fill="#00d2ff" text-anchor="middle">UPSTREAM LAB</text>
-<text x="50" y="80" font-family="'Segoe UI', sans-serif" font-size="7" font-weight="bold" fill="#00d2ff" text-anchor="middle">USL COIN</text>
-</svg>
+<img src="https://uslads.com/favicon.ico" alt="USL Coin" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3135/3135706.png';">
 </div>
 <div>
 <b style="font-size: 15px;">USL Ads</b><br>
