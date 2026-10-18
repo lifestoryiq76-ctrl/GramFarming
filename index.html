@@ -14,7 +14,10 @@
 <!-- 2. Gigapub SDK / Script Integration -->
 <script src="https://ad.gigapub.tech/script?id=8575"></script>
 
-<!-- 3. Monetix Official Script Integration -->
+<!-- 3. USL Ads Script Integration -->
+<script src="https://uslads.com/script.js" data-uslid="USL-DEFAULT"></script>
+
+<!-- 4. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
@@ -122,7 +125,8 @@ input:focus, select:focus { border-color: var(--accent); }
 
 /* Ad Task & Task UI Styles */
 .ad-task-card { background: var(--card-bg); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-.ad-icon-box { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; }
+.ad-icon-box { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); }
+.ad-icon-box img { width: 100%; height: 100%; object-fit: cover; }
 .progress-line-bg { width: 100%; background: #334155; height: 5px; border-radius: 3px; margin-top: 10px; overflow: hidden; }
 .progress-line-fill { background: #38bdf8; height: 100%; width: 0%; transition: width 0.4s ease; }
 
@@ -264,7 +268,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">🌐</div>
+<div class="ad-icon-box"><img src="data:image/jpeg;base64,..." alt="Monetag"></div>
 <div>
 <b style="font-size: 15px;">(1) Monetag Ads</b><br>
 <small style="color:var(--text-muted);">Interactive premium mini-app ads</small><br>
@@ -284,7 +288,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">⚡</div>
+<div class="ad-icon-box"><img src="data:image/jpeg;base64,..." alt="Gigapub"></div>
 <div>
 <b style="font-size: 15px;">(2) Gigapub Network</b><br>
 <small style="color:var(--text-muted);">Universal sponsor video network</small><br>
@@ -304,7 +308,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: rgba(234, 179, 8, 0.15); color: #eab308;">🔥</div>
+<div class="ad-icon-box"><img src="data:image/jpeg;base64,..." alt="USL Ads"></div>
 <div>
 <b style="font-size: 15px;">(3) USL Ads</b><br>
 <small style="color:var(--text-muted);">Universal sponsor link network</small><br>
@@ -324,7 +328,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">📡</div>
+<div class="ad-icon-box"><img src="data:image/jpeg;base64,..." alt="Monetix"></div>
 <div>
 <b style="font-size: 15px;">(4) Monetix Streams</b><br>
 <small style="color:var(--text-muted);">Direct publisher video streams</small><br>
