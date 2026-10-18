@@ -17,9 +17,6 @@
 <!-- 3. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
 
-<!-- 4. RichAds Official Script Integration -->
-<script src="https://richinfo.co/richpartners/pops/js/richads-pu-ob.js" data-pubid="1025816" data-siteid="410175" async data-cfasync="false"></script>
-
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
 <!-- TON Connect UI SDK -->
@@ -263,13 +260,13 @@ input:focus, select:focus { border-color: var(--accent); }
 <!-- 1. ALL TAB CONTENT -->
 <div id="taskCat-all" class="task-category-content">
 <div id="adsTasksAll">
-<!-- Monetag Ad Task -->
+<!-- (1) Monetag Ads -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
 <div class="ad-icon-box" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">🌐</div>
 <div>
-<b style="font-size: 15px;">Monetag Ads</b><br>
+<b style="font-size: 15px;">(1) Monetag Ads</b><br>
 <small style="color:var(--text-muted);">Interactive premium mini-app ads</small><br>
 <span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetagVal">0.04</span> 🪙 / view</span>
 </div>
@@ -283,13 +280,13 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- Gigapub Ad Task -->
+<!-- (2) Gigapub Network -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
 <div class="ad-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">⚡</div>
 <div>
-<b style="font-size: 15px;">Gigapub Network</b><br>
+<b style="font-size: 15px;">(2) Gigapub Network</b><br>
 <small style="color:var(--text-muted);">Universal sponsor video network</small><br>
 <span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardGigapubVal">0.04</span> 🪙 / view</span>
 </div>
@@ -303,13 +300,33 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- Monetix Ad Task -->
+<!-- (3) USL Ads -->
+<div class="ad-task-card">
+<div class="flex-between">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="ad-icon-box" style="background: rgba(234, 179, 8, 0.15); color: #eab308;">🔥</div>
+<div>
+<b style="font-size: 15px;">(3) USL Ads</b><br>
+<small style="color:var(--text-muted);">Universal sponsor link network</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardUslVal">0.04</span> 🪙 / view</span>
+</div>
+</div>
+<button class="btn" id="taskUslBtn" onclick="watchAdWithTimer('taskUslLimit', 'taskUslBtn', 'USL', maxLimits.usl || 40, rewards.usl || 0.04, adTimers.usl || 60)">▶ Watch</button>
+</div>
+<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
+<span>Daily Limit</span>
+<span id="textUslLimit">0 / 40 (0%)</span>
+</div>
+<div class="progress-line-bg"><div class="progress-line-fill" id="progUslFill" style="width: 0%;"></div></div>
+</div>
+
+<!-- (4) Monetix Streams -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
 <div class="ad-icon-box" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">📡</div>
 <div>
-<b style="font-size: 15px;">Monetix Streams</b><br>
+<b style="font-size: 15px;">(4) Monetix Streams</b><br>
 <small style="color:var(--text-muted);">Direct publisher video streams</small><br>
 <span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetixVal">0.03</span> 🪙 / view</span>
 </div>
@@ -321,26 +338,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <span id="textMonetixLimit">0 / 40 (0%)</span>
 </div>
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetixFill" style="width: 0%;"></div></div>
-</div>
-
-<!-- RichAds Task -->
-<div class="ad-task-card">
-<div class="flex-between">
-<div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">🎬</div>
-<div>
-<b style="font-size: 15px;">RichAds Stream</b><br>
-<small style="color:var(--text-muted);">Watch sponsored video ad</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardRichadsVal">0.04</span> 🪙 / view</span>
-</div>
-</div>
-<button class="btn" id="taskRichadsBtn" onclick="watchAdWithTimer('taskRichadsLimit', 'taskRichadsBtn', 'RichAds', maxLimits.richads, rewards.richads, adTimers.richads)">▶ Watch</button>
-</div>
-<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
-<span>Daily Limit</span>
-<span id="textRichadsLimit">0 / 40 (0%)</span>
-</div>
-<div class="progress-line-bg"><div class="progress-line-fill" id="progRichadsFill" style="width: 0%;"></div></div>
 </div>
 </div>
 </div>
@@ -670,7 +667,7 @@ Fee (5%): 0.00 | You will receive: 0.00
 <button class="btn btn-yellow" style="margin-top:12px; width:100%;" onclick="processDeposit()">Proceed Deposit</button>
 </div>
 
-<!-- GRAM (TON CONNECT) DEPOSIT UI (As requested from screenshot) -->
+<!-- GRAM (TON CONNECT) DEPOSIT UI -->
 <div id="gramDepositSection" style="display:none;">
 <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5;">
 Enter the amount in USD, then pay the equivalent in TON from your connected wallet. Your User ID is added as the transaction comment.
@@ -857,35 +854,35 @@ window.stakingApyRates = {
 window.maxLimits = {
 monetag: 50,
 gigapub: 50,
-monetix: 40,
-richads: 40
+usl: 40,
+monetix: 40
 };
 
 window.rewards = {
 monetag: 0.04,
 gigapub: 0.04,
-monetix: 0.03,
-richads: 0.04
+usl: 0.04,
+monetix: 0.03
 };
 
 window.adTimers = {
 monetag: 60,
 gigapub: 60,
-monetix: 60,
-richads: 60
+usl: 60,
+monetix: 60
 };
 
 let adWatchedCounts = {
 taskMonetagLimit: 0,
 taskGigapubLimit: 0,
-taskMonetixLimit: 0,
-taskRichadsLimit: 0
+taskUslLimit: 0,
+taskMonetixLimit: 0
 };
 
 let lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 let todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskRichadsLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskUslLimit: 0, taskMonetixLimit: 0 };
 localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -932,7 +929,7 @@ today530.setHours(5, 30, 0, 0);
 
 if (realNow >= today530 && lastResetStored !== todayStr) {
 processStakingDailyTransfer();
-adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskRichadsLimit: 0 };
+adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskUslLimit: 0, taskMonetixLimit: 0 };
 localStorage.setItem('last_530_reset_date', todayStr);
 saveToFirebase();
 
@@ -1024,12 +1021,11 @@ return;
 let payTon = usdAmt / liveTonPrice;
 let nanoTon = Math.floor(payTon * 1000000000);
 
-// Fixed transaction object without broken payload
 const transaction = {
 validUntil: Math.floor(Date.now() / 1000) + 360,
 messages: [
 {
-address: "UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd", // Admin Wallet Address
+address: "UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd",
 amount: nanoTon.toString()
 }
 ]
@@ -1210,18 +1206,18 @@ if (snapshot.exists()) {
 const data = snapshot.val();
 if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
 if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
+if (data.uslLimit) maxLimits.usl = parseInt(data.uslLimit);
 if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
-if (data.richadsLimit) maxLimits.richads = parseInt(data.richadsLimit);
 
 if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
 if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
+if (data.uslReward) rewards.usl = parseFloat(data.uslReward);
 if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
-if (data.richadsReward) rewards.richads = parseFloat(data.richadsReward);
 
 if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
 if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
+if (data.uslTimer) adTimers.usl = parseInt(data.uslTimer);
 if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
-if (data.richadsTimer) adTimers.richads = parseInt(data.richadsTimer);
 
 renderUIValues();
 }
@@ -1278,7 +1274,7 @@ saveToLocalStorage();
 set(userRef, {
 name: displayName,
 balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskRichadsLimit: 0 }
+adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskUslLimit: 0, taskMonetixLimit: 0 }
 });
 }
 renderUIValues();
@@ -1353,13 +1349,13 @@ document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFix
 
 let mCount = adWatchedCounts.taskMonetagLimit || 0;
 let gCount = adWatchedCounts.taskGigapubLimit || 0;
+let uCount = adWatchedCounts.taskUslLimit || 0;
 let moCount = adWatchedCounts.taskMonetixLimit || 0;
-let rCount = adWatchedCounts.taskRichadsLimit || 0;
 
 let mMax = maxLimits.monetag;
 let gMax = maxLimits.gigapub;
+let uMax = maxLimits.usl;
 let moMax = maxLimits.monetix;
-let rMax = maxLimits.richads;
 
 document.getElementById('textMonetagLimit').innerText = `${mCount} / ${mMax} (${Math.round((mCount/mMax)*100)}%)`;
 document.getElementById('progMonetagFill').style.width = `${Math.min(100, (mCount/mMax)*100)}%`;
@@ -1367,16 +1363,16 @@ document.getElementById('progMonetagFill').style.width = `${Math.min(100, (mCoun
 document.getElementById('textGigapubLimit').innerText = `${gCount} / ${gMax} (${Math.round((gCount/gMax)*100)}%)`;
 document.getElementById('progGigapubFill').style.width = `${Math.min(100, (gCount/gMax)*100)}%`;
 
+document.getElementById('textUslLimit').innerText = `${uCount} / ${uMax} (${Math.round((uCount/uMax)*100)}%)`;
+document.getElementById('progUslFill').style.width = `${Math.min(100, (uCount/uMax)*100)}%`;
+
 document.getElementById('textMonetixLimit').innerText = `${moCount} / ${moMax} (${Math.round((moCount/moMax)*100)}%)`;
 document.getElementById('progMonetixFill').style.width = `${Math.min(100, (moCount/moMax)*100)}%`;
 
-document.getElementById('textRichadsLimit').innerText = `${rCount} / ${rMax} (${Math.round((rCount/rMax)*100)}%)`;
-document.getElementById('progRichadsFill').style.width = `${Math.min(100, (rCount/rMax)*100)}%`;
-
 document.getElementById('rewardMonetagVal').innerText = rewards.monetag;
 document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
+document.getElementById('rewardUslVal').innerText = rewards.usl;
 document.getElementById('rewardMonetixVal').innerText = rewards.monetix;
-document.getElementById('rewardRichadsVal').innerText = rewards.richads;
 
 let availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
 document.getElementById('availableWithdrawBalance').innerText = `Available: ${availVal.toFixed(4)}`;
@@ -1643,33 +1639,12 @@ if (btn) btn.disabled = true;
 
 let adPromise = Promise.resolve();
 
-if (adName === 'RichAds') {
-    adPromise = new Promise((resolve) => {
-        try {
-            if (typeof window.richads_pu_show === 'function') {
-                window.richads_pu_show();
-                resolve();
-            } else {
-                var s = document.createElement('script');
-                s.type = 'text/javascript';
-                s.async = true;
-                s.src = 'https://richinfo.co/richpartners/pops/js/richads-pu-ob.js';
-                s.setAttribute('data-pubid', '1025816');
-                s.setAttribute('data-siteid', '410175');
-                s.onload = function() {
-                    if (typeof window.richads_pu_show === 'function') window.richads_pu_show();
-                };
-                document.head.appendChild(s);
-                resolve();
-            }
-        } catch(e) {
-            resolve();
-        }
-    });
-} else if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
+if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
     adPromise = window.show_11989490().catch(() => {});
 } else if (adName === 'Gigapub' && typeof window.showGiga === 'function') {
     adPromise = window.showGiga().catch(() => {});
+} else if (adName === 'USL') {
+    adPromise = new Promise((resolve) => { setTimeout(resolve, 1000); });
 } else if (adName === 'Monetix') {
     adPromise = new Promise((resolve) => {
         if (typeof window.showRewardAd === 'function') {
