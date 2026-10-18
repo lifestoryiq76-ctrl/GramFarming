@@ -1,4 +1,7 @@
 {
-  "url": "https://gram-farming.vercel.app",
-  "name": "Gram Farming Mini App"
+  "url": "https://your-domain.com",
+  "name": "Gram Farming",
+  "iconUrl": "https://your-domain.com/icon.png",
+  "termsOfUrl": "https://your-domain.com/terms.txt",
+  "privacyPolicyUrl": "https://your-domain.com/privacy.txt"
 }
