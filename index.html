@@ -41,7 +41,7 @@
 --border: #334155;
 --ton-blue: #0098ea;
 }
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 90px; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 110px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -54,8 +54,8 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 animation: floatRocket 3s ease-in-out infinite;
 display: inline-block;
 }
-.card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 1px solid var(--border); position: relative; }
-.btn { background: #0ea5e9; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; text-align: center; }
+.card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 1px solid var(--border); position: relative; z-index: 1; }
+.btn { background: #0ea5e9; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; text-align: center; position: relative; z-index: 2; }
 .btn:active { transform: scale(0.96); }
 .btn:disabled { background: #475569; cursor: not-allowed; }
 .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
@@ -68,15 +68,15 @@ display: inline-block;
     bottom: 0; 
     left: 0; 
     right: 0; 
-    background: rgba(15, 23, 42, 0.95); 
+    background: rgba(15, 23, 42, 0.98); 
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex; 
     justify-content: space-around; 
-    padding: 8px 4px 12px 4px; 
-    border-top: 1px solid rgba(51, 65, 85, 0.6); 
-    z-index: 100; 
-    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+    padding: 10px 4px 16px 4px; 
+    border-top: 1px solid rgba(51, 65, 85, 0.8); 
+    z-index: 9999; 
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.7);
 }
 .nav-item { 
     color: var(--text-muted); 
@@ -94,6 +94,7 @@ display: inline-block;
     transition: all 0.3s ease;
     border-radius: 10px;
     position: relative;
+    z-index: 10000;
 }
 .nav-item span {
     font-size: 10px;
@@ -116,7 +117,7 @@ display: inline-block;
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
+input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; position: relative; z-index: 2; }
 input:focus, select:focus { border-color: var(--accent); }
 .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
@@ -1302,7 +1303,6 @@ updateCostCalculation();
 }
 });
 
-// Admin Live Click Rates Listener
 onValue(ref(db, 'adminSettings/clickRates'), (snapshot) => {
   if (snapshot.exists()) {
     const rates = snapshot.val();
@@ -2325,7 +2325,7 @@ btn.style.color = "#000";
 function claimLiveMiningEarnings(index, rocketName) {
 let state = rocketStates[index];
 if (state.accumulated <= 0.0001) {
-showToast("Abhi tak kuch bhi coin accumulate nahi hua hai!", "error");
+showToast("Abhi तक kuch bhi coin accumulate nahi hua hai!", "error");
 return;
 }
 
