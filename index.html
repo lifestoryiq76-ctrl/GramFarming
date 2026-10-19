@@ -1843,21 +1843,30 @@ if (adName === 'Monetix') {
     };
 
     try {
+        let adLoadedSuccessfully = false;
+
         if (typeof window.showMxAd === 'function') {
+            adLoadedSuccessfully = true;
             window.showMxAd({
                 onSuccess: handleMonetixSuccess,
                 onError: handleMonetixFailure,
                 onDismiss: handleMonetixFailure
             });
         } else if (typeof window.showRewardAd === 'function') {
+            adLoadedSuccessfully = true;
             window.showRewardAd().then(handleMonetixSuccess).catch(handleMonetixFailure);
         } else if (typeof window.monetixShow === 'function') {
+            adLoadedSuccessfully = true;
             window.monetixShow(handleMonetixSuccess, handleMonetixFailure);
         } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
+            adLoadedSuccessfully = true;
             window.MonetixAds.show({ onComplete: handleMonetixSuccess, onError: handleMonetixFailure });
         } else if (window.MXAds && typeof window.MXAds.show === 'function') {
+            adLoadedSuccessfully = true;
             window.MXAds.show().then(handleMonetixSuccess).catch(handleMonetixFailure);
-        } else {
+        }
+
+        if (!adLoadedSuccessfully) {
             handleMonetixFailure();
         }
     } catch(err) {
@@ -2496,7 +2505,7 @@ let html = '';
 Object.entries(data).forEach(([key, task]) => {
 html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +0.05 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(0.05, '${key}');">Start</button> </div>`;
 });
-if(listEl) listEl.innerHTML = html;
+if(listel) listEl.innerHTML = html;
 });
 
 window.loadAdminPartnerTasks = function() {
