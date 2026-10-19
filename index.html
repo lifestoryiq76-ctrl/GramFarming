@@ -155,7 +155,7 @@ input:focus, select:focus { border-color: var(--accent); }
 .task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
 .task-subtab-btn.active { background: #334155; color: var(--text-main); border-color: var(--accent); }
 
-/* Click Option Buttons (4 Columns Grid for 8 Options) */
+/* Click Option Buttons */
 .click-btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; margin-bottom: 12px; }
 .click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 2px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 12px; transition: 0.2s; }
 .click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
@@ -193,7 +193,6 @@ input:focus, select:focus { border-color: var(--accent); }
 .stake-currency-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; user-select: none; }
 .stake-currency-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
-/* Connect Wallet Style overlay */
 .gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
 .gram-pay-info { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
 </style>
@@ -300,7 +299,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="taskCat-all" class="task-category-content">
 <div id="adsTasksAll">
 
-<!-- 1. Monetag Ads -> Green 'e' Icon -->
+<!-- 1. Monetag Ads -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -328,7 +327,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 2. Gigapub Network -> 100% Exact Matching Gigapub SVG Icon -->
+<!-- 2. Gigapub Network -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -356,7 +355,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 3. USL Ads -> Exact High-Detail USL UPSTREAM LAB COIN Vector SVG -->
+<!-- 3. USL Ads -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -397,7 +396,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progUslFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 4. Monetix Streams -> Blue/Cyan "M" Chart Icon -->
+<!-- 4. Monetix Streams -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -495,7 +494,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Channel Verification / Bot Add Info -->
+<!-- Channel Verification -->
 <div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between">
 <b style="font-size: 12px; color: var(--yellow);">Channel Verification: Add Bot</b>
@@ -509,17 +508,17 @@ input:focus, select:focus { border-color: var(--accent); }
 <input type="text" id="customTaskTitle" placeholder="@channel or t.me/channel" style="margin-bottom: 8px;">
 <input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 12px;">
 
-<!-- Number of Clicks / Completions Selection (All 8 Options with Dynamic IDs) -->
+<!-- Number of Clicks / Completions Selection -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Select Clicks / Completions Package</label>
 <div class="click-btn-grid">
-<div class="click-option-btn active" onclick="setClickPackage(100, 35, this)">100<br><small id="clickBox-100" style="color:var(--yellow); font-weight:normal;">35 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(250, 87.5, this)">250<br><small id="clickBox-250" style="color:var(--yellow); font-weight:normal;">87.5 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(500, 175, this)">500<br><small id="clickBox-500" style="color:var(--yellow); font-weight:normal;">175 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(1000, 350, this)">1000<br><small id="clickBox-1000" style="color:var(--yellow); font-weight:normal;">350 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(2000, 600, this)">2000<br><small id="clickBox-2000" style="color:var(--yellow); font-weight:normal;">600 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(3000, 750, this)">3000<br><small id="clickBox-3000" style="color:var(--yellow); font-weight:normal;">750 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(4000, 900, this)">4000<br><small id="clickBox-4000" style="color:var(--yellow); font-weight:normal;">900 🪙</small></div>
-<div class="click-option-btn" onclick="setClickPackage(5000, 1100, this)">5000<br><small id="clickBox-5000" style="color:var(--yellow); font-weight:normal;">1100 🪙</small></div>
+<div class="click-option-btn active" onclick="setClickPackage(100, this)">100<br><small id="clickBox-100" style="color:var(--yellow); font-weight:normal;">35 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(250, this)">250<br><small id="clickBox-250" style="color:var(--yellow); font-weight:normal;">87.5 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(500, this)">500<br><small id="clickBox-500" style="color:var(--yellow); font-weight:normal;">175 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(1000, this)">1000<br><small id="clickBox-1000" style="color:var(--yellow); font-weight:normal;">350 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(2000, this)">2000<br><small id="clickBox-2000" style="color:var(--yellow); font-weight:normal;">600 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(3000, this)">3000<br><small id="clickBox-3000" style="color:var(--yellow); font-weight:normal;">750 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(4000, this)">4000<br><small id="clickBox-4000" style="color:var(--yellow); font-weight:normal;">900 🪙</small></div>
+<div class="click-option-btn" onclick="setClickPackage(5000, this)">5000<br><small id="clickBox-5000" style="color:var(--yellow); font-weight:normal;">1100 🪙</small></div>
 </div>
 
 <!-- Cost Calculation Display -->
@@ -527,7 +526,7 @@ input:focus, select:focus { border-color: var(--accent); }
 Cost: <strong>35 Coins</strong>
 </div>
 
-<!-- Payment Method Selection (USDT, Coin & Gram) -->
+<!-- Payment Method Selection -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Payment Method</label>
 <div class="pay-method-grid">
 <div class="pay-method-card" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
@@ -558,7 +557,6 @@ Cost: <strong>35 Coins</strong>
 <div id="staking" class="tab-content">
 <h3 data-i18n="stakingOptions">💎 Staking Options</h3>
 
-<!-- 3 Staking Currency Cards: Coin, USDT, Gram -->
 <div class="stake-currency-grid">
 <div class="stake-currency-card active" id="stakeCardCoin" onclick="setStakingCurrency('Coin')">🪙 Coin</div>
 <div class="stake-currency-card" id="stakeCardUSDT" onclick="setStakingCurrency('USDT')">💵 USDT</div>
@@ -692,7 +690,6 @@ No active staking plans found.
 <div style="font-size:13px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT (Real-time)</div>
 </div>
 
-<!-- 3 Main Wallet Cards: Withdraw, Deposit, Convert -->
 <div class="wallet-subcard-container">
 <div class="wallet-subcard active" id="wCardWithdraw" onclick="switchWalletCard('withdraw')">
 <div style="font-size: 20px;">🪙</div>
@@ -715,7 +712,6 @@ No active staking plans found.
 <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
 </div>
 
-<!-- 2 Cards inside Withdraw: 1. Faucetpay, 2. Gram -->
 <div class="grid-cards" style="margin-bottom: 10px;">
 <div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--accent); cursor:pointer;" onclick="setWithdrawSubMethod('faucetpay')" id="wSubMethodFaucetpay">
 <b style="font-size:12px; color:var(--accent);">1. Faucetpay</b>
@@ -752,7 +748,6 @@ Fee (5%): 0.00 | You will receive: 0.00
 <h4 style="margin:0; color: var(--yellow);">💵 Deposit Funds</h4>
 </div>
 
-<!-- 2 Cards inside Deposit: 1. Faucetpay, 2. Gram -->
 <div class="grid-cards" style="margin-bottom: 10px;">
 <div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--yellow); cursor:pointer;" onclick="setDepositSubMethod('faucetpay')" id="dSubMethodFaucetpay">
 <b style="font-size:12px; color:var(--yellow);">1. Faucetpay</b>
@@ -762,14 +757,12 @@ Fee (5%): 0.00 | You will receive: 0.00
 </div>
 </div>
 
-<!-- FAUCETPAY DEPOSIT UI -->
 <div id="faucetpayDepositSection">
 <label style="margin-top:8px; display:block;">Deposit Amount (USDT):</label>
 <input type="number" id="depositAmountInput" placeholder="Enter amount to deposit" step="0.01">
 <button class="btn btn-yellow" style="margin-top:12px; width:100%;" onclick="processDeposit()">Proceed Deposit</button>
 </div>
 
-<!-- GRAM (TON CONNECT) DEPOSIT UI -->
 <div id="gramDepositSection" style="display:none;">
 <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5;">
 Enter the amount in USD, then pay the equivalent in TON from your connected wallet. Your User ID is added as the transaction comment.
@@ -942,7 +935,7 @@ let tonConnectUI = null;
 let isWalletConnected = false;
 let userConnectedAddress = "";
 
-// Campaign Creation States (Supports all 8 packages)
+// Campaign Creation States
 let selectedCampaignObj = 'Channel';
 let selectedClickCount = 100;
 let selectedCoinCost = 35;
@@ -952,8 +945,8 @@ let selectedPaymentMethod = 'Coin';
 let currentWithdrawSubMethod = 'faucetpay';
 let currentDepositSubMethod = 'faucetpay';
 
-// Click Packages Data List for Dynamic Calculation
-const clickPackagesData = [
+// Click Packages Data List
+let clickPackagesData = [
   { clicks: 100, coin: 35 },
   { clicks: 250, coin: 87.5 },
   { clicks: 500, coin: 175 },
@@ -1069,7 +1062,7 @@ userId = String(user.id);
 }
 document.getElementById('telegramUserName').innerText = displayName;
 
-// TON Connect UI Initialization with Cache Buster
+// TON Connect UI Initialization
 function initTonConnectUI() {
 try {
 if (window.TON_CONNECT_UI) {
@@ -1258,6 +1251,28 @@ calculateExchange();
 toggleWithdrawFields();
 updateCostCalculation();
 }
+});
+
+// Admin Live Click Rates Listener
+onValue(ref(db, 'adminSettings/clickRates'), (snapshot) => {
+  if (snapshot.exists()) {
+    const rates = snapshot.val();
+    if (rates.coin100 !== undefined) clickPackagesData[0].coin = parseFloat(rates.coin100);
+    if (rates.coin250 !== undefined) clickPackagesData[1].coin = parseFloat(rates.coin250);
+    if (rates.coin500 !== undefined) clickPackagesData[2].coin = parseFloat(rates.coin500);
+    if (rates.coin1000 !== undefined) clickPackagesData[3].coin = parseFloat(rates.coin1000);
+    if (rates.coin2000 !== undefined) clickPackagesData[4].coin = parseFloat(rates.coin2000);
+    if (rates.coin3000 !== undefined) clickPackagesData[5].coin = parseFloat(rates.coin3000);
+    if (rates.coin4000 !== undefined) clickPackagesData[6].coin = parseFloat(rates.coin4000);
+    if (rates.coin5000 !== undefined) clickPackagesData[7].coin = parseFloat(rates.coin5000);
+
+    let activePkg = clickPackagesData.find(p => p.clicks === selectedClickCount);
+    if (activePkg) {
+      selectedCoinCost = activePkg.coin;
+    }
+
+    updateCostCalculation();
+  }
 });
 
 function applyMiningData(data) {
@@ -1637,10 +1652,14 @@ document.getElementById('campaignTitleDisplay').innerText = "Grow Your Bot MAU";
 }
 }
 
-// Universal Package Handler (Supports 100 to 5000 Clicks)
-window.setClickPackage = function(clicks, coinCost, btnEl) {
+window.setClickPackage = function(clicks, btnEl) {
 selectedClickCount = clicks;
-selectedCoinCost = coinCost;
+
+let pkg = clickPackagesData.find(p => p.clicks === clicks);
+if (pkg) {
+    selectedCoinCost = pkg.coin;
+}
+
 document.querySelectorAll('.click-option-btn').forEach(b => b.classList.remove('active'));
 btnEl.classList.add('active');
 updateCostCalculation();
@@ -1649,7 +1668,6 @@ updateCostCalculation();
 window.setPaymentMethod = function(method) {
 selectedPaymentMethod = method;
 
-// Clear active class from all 3 payment cards explicitly
 const payUsdtBtn = document.getElementById('payUsdt');
 const payCoinBtn = document.getElementById('payCoin');
 const payGramBtn = document.getElementById('payGram');
@@ -1658,7 +1676,6 @@ if(payUsdtBtn) payUsdtBtn.classList.remove('active');
 if(payCoinBtn) payCoinBtn.classList.remove('active');
 if(payGramBtn) payGramBtn.classList.remove('active');
 
-// Add active class to clicked card
 if(method === 'USDT' && payUsdtBtn) payUsdtBtn.classList.add('active');
 if(method === 'Coin' && payCoinBtn) payCoinBtn.classList.add('active');
 if(method === 'Gram' && payGramBtn) payGramBtn.classList.add('active');
@@ -1667,7 +1684,6 @@ updateCostCalculation();
 }
 
 window.updateCostCalculation = function() {
-  // Update all click package cards dynamically based on selected payment method
   clickPackagesData.forEach(pkg => {
     let el = document.getElementById('clickBox-' + pkg.clicks);
     if (el) {
