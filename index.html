@@ -1822,32 +1822,43 @@ let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
 if (adName === 'Monetix') {
-    showToast("Loading Monetix Stream Ad...", "success");
+    showToast("Launching Monetix Stream Ad...", "success");
     
-    // Check if Monetix Ads object / function exists
-    let launched = false;
-    
+    let adTriggered = false;
+
+    // Check Official Monetix Methods
     try {
         if (typeof window.showMxAd === 'function') {
             window.showMxAd();
-            launched = true;
+            adTriggered = true;
         } else if (typeof window.showRewardAd === 'function') {
-            window.showRewardAd();
-            launched = true;
+            window.showRewardAd(function() {
+                finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+                startTaskCountdownTimer(btn, timerDurationSec);
+            });
+            return;
         } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
             window.MonetixAds.show();
-            launched = true;
+            adTriggered = true;
+        } else if (window.MXAds && typeof window.MXAds.show === 'function') {
+            window.MXAds.show();
+            adTriggered = true;
         }
     } catch(err) {
-        console.error("Monetix Launch Error:", err);
+        console.error("Monetix launch exception:", err);
     }
 
-    // If SDK is loaded, give user time to watch ad before claiming
-    setTimeout(() => {
-        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-        startTaskCountdownTimer(btn, timerDurationSec);
-    }, launched ? 8000 : 1500);
-
+    if (adTriggered) {
+        // Give time for ad video to play
+        setTimeout(() => {
+            finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+            startTaskCountdownTimer(btn, timerDurationSec);
+        }, 6000);
+    } else {
+        // Fallback: If SDK Script blocked or network error
+        showToast("Monetix Ad Network issue or Ad Blocked!", "error");
+        if(btn) btn.disabled = false;
+    }
     return;
 }
 
