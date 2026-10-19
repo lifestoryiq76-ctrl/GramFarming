@@ -1004,7 +1004,7 @@ function showToast(message, type = 'success') {
 const container = document.getElementById('toastContainer');
 container.innerHTML = '';
 const toast = document.createElement('div');
-toast.style.cssText = `background: ${type === 'success' ? '#22c55e' : '#ef4444'}; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid ${type === 'success' ? '#22c55e' : '#ef4444'}; display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease; opacity: 0;`;
+toast.style.cssText = `background: ${type === 'success' ? '#22c55e' : '#1e293b'}; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid ${type === 'success' ? '#22c55e' : '#ef4444'}; display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease; opacity: 0;`;
 
 let icon = type === 'success' ? '✅' : '⚠️';
 toast.innerHTML = `<span style="font-size:18px;">${icon}</span><span>${message}</span>`;
@@ -1830,43 +1830,37 @@ if (btn) btn.disabled = true;
 if (adName === 'Monetix') {
     if (btn) btn.innerText = "⏳ Loading Ad...";
 
+    // Screenshot ke anusar exact error message
     let noAdMessage = "No ads available in your region right now. Please try again later or select another network.";
 
+    // Success Callback (reward milne par)
     const handleMonetixSuccess = () => {
         finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
         startTaskCountdownTimer(btn, timerDurationSec);
     };
 
+    // Failure / Dismiss Callback (Ad load na hone par koi reward nahi, sirf timer chalega)
     const handleMonetixFailure = () => {
         showToast(noAdMessage, "error");
         startTaskCountdownTimer(btn, timerDurationSec);
     };
 
     try {
-        let adAttempted = false;
-
         if (typeof window.showMxAd === 'function') {
-            adAttempted = true;
             window.showMxAd({
                 onSuccess: handleMonetixSuccess,
                 onError: handleMonetixFailure,
                 onDismiss: handleMonetixFailure
             });
         } else if (typeof window.showRewardAd === 'function') {
-            adAttempted = true;
             window.showRewardAd().then(handleMonetixSuccess).catch(handleMonetixFailure);
         } else if (typeof window.monetixShow === 'function') {
-            adAttempted = true;
             window.monetixShow(handleMonetixSuccess, handleMonetixFailure);
         } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
-            adAttempted = true;
             window.MonetixAds.show({ onComplete: handleMonetixSuccess, onError: handleMonetixFailure });
         } else if (window.MXAds && typeof window.MXAds.show === 'function') {
-            adAttempted = true;
             window.MXAds.show().then(handleMonetixSuccess).catch(handleMonetixFailure);
-        }
-
-        if (!adAttempted) {
+        } else {
             handleMonetixFailure();
         }
     } catch(err) {
@@ -2494,7 +2488,7 @@ onValue(ref(db, 'customTasks'), (snapshot) => {
 let listEl = document.getElementById('dynamicTasksList');
 let noticeEl = document.getElementById('emptyTasksNotice');
 if (!snapshot.exists()) {
-if (listEl) listEl.innerHTML = "";
+listEl.innerHTML = "";
 if (noticeEl) noticeEl.style.display = 'block';
 return;
 }
@@ -2505,7 +2499,7 @@ let html = '';
 Object.entries(data).forEach(([key, task]) => {
 html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +0.05 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(0.05, '${key}');">Start</button> </div>`;
 });
-if (listEl) listEl.innerHTML = html;
+if(listEl) listEl.innerHTML = html;
 });
 
 window.loadAdminPartnerTasks = function() {
