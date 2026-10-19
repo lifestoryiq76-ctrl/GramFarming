@@ -1004,7 +1004,7 @@ function showToast(message, type = 'success') {
 const container = document.getElementById('toastContainer');
 container.innerHTML = '';
 const toast = document.createElement('div');
-toast.style.cssText = `background: ${type === 'success' ? '#22c55e' : '#1e293b'}; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid ${type === 'success' ? '#22c55e' : '#ef4444'}; display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease; opacity: 0;`;
+toast.style.cssText = `background: ${type === 'success' ? '#22c55e' : '#ef4444'}; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid ${type === 'success' ? '#22c55e' : '#ef4444'}; display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease; opacity: 0;`;
 
 let icon = type === 'success' ? '✅' : '⚠️';
 toast.innerHTML = `<span style="font-size:18px;">${icon}</span><span>${message}</span>`;
@@ -1843,30 +1843,30 @@ if (adName === 'Monetix') {
     };
 
     try {
-        let adLoadedSuccessfully = false;
+        let adAttempted = false;
 
         if (typeof window.showMxAd === 'function') {
-            adLoadedSuccessfully = true;
+            adAttempted = true;
             window.showMxAd({
                 onSuccess: handleMonetixSuccess,
                 onError: handleMonetixFailure,
                 onDismiss: handleMonetixFailure
             });
         } else if (typeof window.showRewardAd === 'function') {
-            adLoadedSuccessfully = true;
+            adAttempted = true;
             window.showRewardAd().then(handleMonetixSuccess).catch(handleMonetixFailure);
         } else if (typeof window.monetixShow === 'function') {
-            adLoadedSuccessfully = true;
+            adAttempted = true;
             window.monetixShow(handleMonetixSuccess, handleMonetixFailure);
         } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
-            adLoadedSuccessfully = true;
+            adAttempted = true;
             window.MonetixAds.show({ onComplete: handleMonetixSuccess, onError: handleMonetixFailure });
         } else if (window.MXAds && typeof window.MXAds.show === 'function') {
-            adLoadedSuccessfully = true;
+            adAttempted = true;
             window.MXAds.show().then(handleMonetixSuccess).catch(handleMonetixFailure);
         }
 
-        if (!adLoadedSuccessfully) {
+        if (!adAttempted) {
             handleMonetixFailure();
         }
     } catch(err) {
