@@ -1837,8 +1837,10 @@ if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
             window.showRewardAd(function(res) {
                 resolve();
             });
+        } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
+            window.MonetixAds.show().then(resolve).catch(resolve);
         } else {
-            setTimeout(resolve, 1500);
+            setTimeout(resolve, 1200);
         }
     });
 }
