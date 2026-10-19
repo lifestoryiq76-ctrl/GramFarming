@@ -123,20 +123,20 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 3. Task Ads Networks Control -->
+    <!-- 3. Task Ads Networks Control (Updated to match Monetag, Gigapub, USL Ads, Monetix Streams) -->
     <div class="card">
         <h2>📺 Task Ads Watch Networks Setup</h2>
         
         <div class="net-box">
-            <h3>🔵 Monetag Ad Network</h3>
+            <h3>🟢 Monetag Ads</h3>
             <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
-                    <input type="number" id="monetagLimit" step="1" value="50">
+                    <input type="number" id="monetagLimit" step="1" value="60">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
-                    <input type="number" id="monetagReward" step="0.001" value="0.04">
+                    <input type="number" id="monetagReward" step="0.001" value="0.05">
                 </div>
                 <div>
                     <label>Ad Timer (Seconds):</label>
@@ -146,11 +146,11 @@
         </div>
 
         <div class="net-box">
-            <h3>🟣 Gigapub Ad Network</h3>
+            <h3>🟡 Gigapub Network</h3>
             <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
-                    <input type="number" id="gigapubLimit" step="1" value="50">
+                    <input type="number" id="gigapubLimit" step="1" value="60">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
@@ -164,11 +164,29 @@
         </div>
 
         <div class="net-box">
-            <h3>🟢 Monetix Ad Network</h3>
+            <h3>🔵 USL Ads</h3>
             <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
-                    <input type="number" id="monetixLimit" step="1" value="40">
+                    <input type="number" id="uslLimit" step="1" value="40">
+                </div>
+                <div>
+                    <label>Reward Per Ad (Coin):</label>
+                    <input type="number" id="uslReward" step="0.001" value="0.04">
+                </div>
+                <div>
+                    <label>Ad Timer (Seconds):</label>
+                    <input type="number" id="uslTimer" step="1" value="60">
+                </div>
+            </div>
+        </div>
+
+        <div class="net-box">
+            <h3>🔷 Monetix Streams</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Daily Limit (Ads):</label>
+                    <input type="number" id="monetixLimit" step="1" value="30">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
@@ -177,42 +195,6 @@
                 <div>
                     <label>Ad Timer (Seconds):</label>
                     <input type="number" id="monetixTimer" step="1" value="60">
-                </div>
-            </div>
-        </div>
-
-        <div class="net-box">
-            <h3>🔴 Clickadu Ad Network</h3>
-            <div class="grid-3">
-                <div>
-                    <label>Daily Limit (Ads):</label>
-                    <input type="number" id="clickaduLimit" step="1" value="40">
-                </div>
-                <div>
-                    <label>Reward Per Ad (Coin):</label>
-                    <input type="number" id="clickaduReward" step="0.001" value="0.03">
-                </div>
-                <div>
-                    <label>Ad Timer (Seconds):</label>
-                    <input type="number" id="clickaduTimer" step="1" value="60">
-                </div>
-            </div>
-        </div>
-
-        <div class="net-box">
-            <h3>🟡 Hilltopads Combo Ad Network</h3>
-            <div class="grid-3">
-                <div>
-                    <label>Daily Limit (Ads):</label>
-                    <input type="number" id="hilltopLimit" step="1" value="40">
-                </div>
-                <div>
-                    <label>Reward Per Ad (Coin):</label>
-                    <input type="number" id="hilltopReward" step="0.001" value="0.04">
-                </div>
-                <div>
-                    <label>Ad Timer (Seconds):</label>
-                    <input type="number" id="hilltopTimer" step="1" value="60">
                 </div>
             </div>
         </div>
@@ -260,41 +242,58 @@
         <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
     </div>
 
-    <!-- 5. User Campaign Click Rates Control (NEW FEATURE) -->
+    <!-- 5. User Campaign Click Rates Control (Updated for all 8 packages) -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚙️ User Campaign Publish Rates (Clicks Pricing)</h2>
-        <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">Yahan se aap set kar sakte hain ki User jab mini-app mein campaign create karega toh use per click ya package ka kitna rate pay karna hoga.</p>
-        <div class="grid-4">
+        <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">Yahan se aap sabhi click packages (100 se 5000) ke Coin aur Coin cost/rates change kar sakte hain.</p>
+        
+        <div class="grid-4" style="margin-bottom: 12px;">
             <div class="net-box">
                 <h3>100 Clicks</h3>
-                <label>USDT Rate ($):</label>
-                <input type="number" id="rateUsdt100" step="0.0001" value="0.35">
-                <label>Coin Rate:</label>
+                <label>Coin Cost:</label>
                 <input type="number" id="rateCoin100" step="0.1" value="35">
             </div>
             <div class="net-box">
                 <h3>250 Clicks</h3>
-                <label>USDT Rate ($):</label>
-                <input type="number" id="rateUsdt250" step="0.0001" value="0.875">
-                <label>Coin Rate:</label>
+                <label>Coin Cost:</label>
                 <input type="number" id="rateCoin250" step="0.1" value="87.5">
             </div>
             <div class="net-box">
                 <h3>500 Clicks</h3>
-                <label>USDT Rate ($):</label>
-                <input type="number" id="rateUsdt500" step="0.0001" value="1.75">
-                <label>Coin Rate:</label>
+                <label>Coin Cost:</label>
                 <input type="number" id="rateCoin500" step="0.1" value="175">
             </div>
             <div class="net-box">
                 <h3>1000 Clicks</h3>
-                <label>USDT Rate ($):</label>
-                <input type="number" id="rateUsdt1000" step="0.0001" value="3.50">
-                <label>Coin Rate:</label>
+                <label>Coin Cost:</label>
                 <input type="number" id="rateCoin1000" step="0.1" value="350">
             </div>
         </div>
-        <button type="button" onclick="saveSettings('clickRates')">💾 Save Click Rates</button>
+
+        <div class="grid-4">
+            <div class="net-box">
+                <h3>2000 Clicks</h3>
+                <label>Coin Cost:</label>
+                <input type="number" id="rateCoin2000" step="0.1" value="600">
+            </div>
+            <div class="net-box">
+                <h3>3000 Clicks</h3>
+                <label>Coin Cost:</label>
+                <input type="number" id="rateCoin3000" step="0.1" value="750">
+            </div>
+            <div class="net-box">
+                <h3>4000 Clicks</h3>
+                <label>Coin Cost:</label>
+                <input type="number" id="rateCoin4000" step="0.1" value="900">
+            </div>
+            <div class="net-box">
+                <h3>5000 Clicks</h3>
+                <label>Coin Cost:</label>
+                <input type="number" id="rateCoin5000" step="0.1" value="1100">
+            </div>
+        </div>
+
+        <button type="button" style="margin-top: 12px;" onclick="saveSettings('clickRates')">💾 Save Click Rates</button>
     </div>
 
     <!-- 6. Add Custom Task -->
@@ -466,20 +465,20 @@
                 const data = snapshot.val();
                 if(data.general) {
                     document.getElementById('coinUsdtValue').value = data.general.coinUsdtValue ?? 0.01;
-                    document.getElementById('dailyBonus').value = data.general.dailyBonus ?? 2.00;
+                    document.getElementById('dailyBonus').value = data.general.dailyBonus ?? 0.01;
                     document.getElementById('refBonus').value = data.general.refPercent ?? 20;
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? data.general.minWithdrawal ?? 0.01;
                     document.getElementById('minTon').value = data.general.minTon ?? data.general.minTonWithdrawal ?? 0.01;
                 }
                 if(data.clickRates) {
-                    document.getElementById('rateUsdt100').value = data.clickRates.usdt100 ?? 0.35;
                     document.getElementById('rateCoin100').value = data.clickRates.coin100 ?? 35;
-                    document.getElementById('rateUsdt250').value = data.clickRates.usdt250 ?? 0.875;
                     document.getElementById('rateCoin250').value = data.clickRates.coin250 ?? 87.5;
-                    document.getElementById('rateUsdt500').value = data.clickRates.usdt500 ?? 1.75;
                     document.getElementById('rateCoin500').value = data.clickRates.coin500 ?? 175;
-                    document.getElementById('rateUsdt1000').value = data.clickRates.usdt1000 ?? 3.50;
                     document.getElementById('rateCoin1000').value = data.clickRates.coin1000 ?? 350;
+                    document.getElementById('rateCoin2000').value = data.clickRates.coin2000 ?? 600;
+                    document.getElementById('rateCoin3000').value = data.clickRates.coin3000 ?? 750;
+                    document.getElementById('rateCoin4000').value = data.clickRates.coin4000 ?? 900;
+                    document.getElementById('rateCoin5000').value = data.clickRates.coin5000 ?? 1100;
                 }
                 if(data.mining) {
                     document.getElementById('novaReward').value = data.mining.novaReward ?? 1.0;
@@ -493,25 +492,21 @@
                     document.getElementById('cosmicTimer').value = data.mining.cosmicTimer ?? 60;
                 }
                 if(data.ads) {
-                    document.getElementById('monetagLimit').value = data.ads.monetagLimit ?? 50;
-                    document.getElementById('monetagReward').value = data.ads.monetagReward ?? 0.04;
+                    document.getElementById('monetagLimit').value = data.ads.monetagLimit ?? 60;
+                    document.getElementById('monetagReward').value = data.ads.monetagReward ?? 0.05;
                     document.getElementById('monetagTimer').value = data.ads.monetagTimer ?? 60;
 
-                    document.getElementById('gigapubLimit').value = data.ads.gigapubLimit ?? 50;
+                    document.getElementById('gigapubLimit').value = data.ads.gigapubLimit ?? 60;
                     document.getElementById('gigapubReward').value = data.ads.gigapubReward ?? 0.04;
                     document.getElementById('gigapubTimer').value = data.ads.gigapubTimer ?? 60;
 
-                    document.getElementById('monetixLimit').value = data.ads.monetixLimit ?? 40;
+                    document.getElementById('uslLimit').value = data.ads.uslLimit ?? 40;
+                    document.getElementById('uslReward').value = data.ads.uslReward ?? 0.04;
+                    document.getElementById('uslTimer').value = data.ads.uslTimer ?? 60;
+
+                    document.getElementById('monetixLimit').value = data.ads.monetixLimit ?? 30;
                     document.getElementById('monetixReward').value = data.ads.monetixReward ?? 0.03;
                     document.getElementById('monetixTimer').value = data.ads.monetixTimer ?? 60;
-
-                    document.getElementById('clickaduLimit').value = data.ads.clickaduLimit ?? 40;
-                    document.getElementById('clickaduReward').value = data.ads.clickaduReward ?? 0.03;
-                    document.getElementById('clickaduTimer').value = data.ads.clickaduTimer ?? 60;
-
-                    document.getElementById('hilltopLimit').value = data.ads.hilltopadsLimit ?? 40;
-                    document.getElementById('hilltopReward').value = data.ads.hilltopadsReward ?? 0.04;
-                    document.getElementById('hilltopTimer').value = data.ads.hilltopadsTimer ?? 60;
                 }
                 if(data.stakingApy) {
                     document.getElementById('stakeApy0').value = data.stakingApy[0] ?? 4;
@@ -730,14 +725,14 @@
                 update(ref(db), data).then(() => alert('General Settings Saved Successfully!'));
             } else if (type === 'clickRates') {
                 let ratesData = {
-                    'adminSettings/clickRates/usdt100': parseFloat(document.getElementById('rateUsdt100').value) || 0.35,
                     'adminSettings/clickRates/coin100': parseFloat(document.getElementById('rateCoin100').value) || 35,
-                    'adminSettings/clickRates/usdt250': parseFloat(document.getElementById('rateUsdt250').value) || 0.875,
                     'adminSettings/clickRates/coin250': parseFloat(document.getElementById('rateCoin250').value) || 87.5,
-                    'adminSettings/clickRates/usdt500': parseFloat(document.getElementById('rateUsdt500').value) || 1.75,
                     'adminSettings/clickRates/coin500': parseFloat(document.getElementById('rateCoin500').value) || 175,
-                    'adminSettings/clickRates/usdt1000': parseFloat(document.getElementById('rateUsdt1000').value) || 3.50,
-                    'adminSettings/clickRates/coin1000': parseFloat(document.getElementById('rateCoin1000').value) || 350
+                    'adminSettings/clickRates/coin1000': parseFloat(document.getElementById('rateCoin1000').value) || 350,
+                    'adminSettings/clickRates/coin2000': parseFloat(document.getElementById('rateCoin2000').value) || 600,
+                    'adminSettings/clickRates/coin3000': parseFloat(document.getElementById('rateCoin3000').value) || 750,
+                    'adminSettings/clickRates/coin4000': parseFloat(document.getElementById('rateCoin4000').value) || 900,
+                    'adminSettings/clickRates/coin5000': parseFloat(document.getElementById('rateCoin5000').value) || 1100
                 };
                 update(ref(db), ratesData).then(() => alert('✅ Campaign Click Rates Saved Successfully!'));
             } else if (type === 'mining') {
@@ -755,25 +750,21 @@
                 update(ref(db), data).then(() => alert('Rocket Mining Settings Saved Successfully!'));
             } else if (type === 'adsNetworks') {
                 let adsData = {
-                    'adminSettings/ads/monetagLimit': parseInt(document.getElementById('monetagLimit').value) || 50,
-                    'adminSettings/ads/monetagReward': parseFloat(document.getElementById('monetagReward').value) || 0.04,
+                    'adminSettings/ads/monetagLimit': parseInt(document.getElementById('monetagLimit').value) || 60,
+                    'adminSettings/ads/monetagReward': parseFloat(document.getElementById('monetagReward').value) || 0.05,
                     'adminSettings/ads/monetagTimer': parseInt(document.getElementById('monetagTimer').value) || 60,
 
-                    'adminSettings/ads/gigapubLimit': parseInt(document.getElementById('gigapubLimit').value) || 50,
+                    'adminSettings/ads/gigapubLimit': parseInt(document.getElementById('gigapubLimit').value) || 60,
                     'adminSettings/ads/gigapubReward': parseFloat(document.getElementById('gigapubReward').value) || 0.04,
                     'adminSettings/ads/gigapubTimer': parseInt(document.getElementById('gigapubTimer').value) || 60,
 
-                    'adminSettings/ads/monetixLimit': parseInt(document.getElementById('monetixLimit').value) || 40,
+                    'adminSettings/ads/uslLimit': parseInt(document.getElementById('uslLimit').value) || 40,
+                    'adminSettings/ads/uslReward': parseFloat(document.getElementById('uslReward').value) || 0.04,
+                    'adminSettings/ads/uslTimer': parseInt(document.getElementById('uslTimer').value) || 60,
+
+                    'adminSettings/ads/monetixLimit': parseInt(document.getElementById('monetixLimit').value) || 30,
                     'adminSettings/ads/monetixReward': parseFloat(document.getElementById('monetixReward').value) || 0.03,
-                    'adminSettings/ads/monetixTimer': parseInt(document.getElementById('monetixTimer').value) || 60,
-
-                    'adminSettings/ads/clickaduLimit': parseInt(document.getElementById('clickaduLimit').value) || 40,
-                    'adminSettings/ads/clickaduReward': parseFloat(document.getElementById('clickaduReward').value) || 0.03,
-                    'adminSettings/ads/clickaduTimer': parseInt(document.getElementById('clickaduTimer').value) || 60,
-
-                    'adminSettings/ads/hilltopadsLimit': parseInt(document.getElementById('hilltopLimit').value) || 40,
-                    'adminSettings/ads/hilltopadsReward': parseFloat(document.getElementById('hilltopReward').value) || 0.04,
-                    'adminSettings/ads/hilltopadsTimer': parseInt(document.getElementById('hilltopTimer').value) || 60
+                    'adminSettings/ads/monetixTimer': parseInt(document.getElementById('monetixTimer').value) || 60
                 };
                 update(ref(db), adsData).then(() => alert('All Ad Networks Setup Saved Successfully!'));
             } else if (type === 'staking') {
