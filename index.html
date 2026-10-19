@@ -1826,43 +1826,47 @@ let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
 if (adName === 'Monetix') {
-    if (btn) btn.innerText = "⏳ Loading...";
+    if (btn) btn.innerText = "⏳ Loading Ad...";
     showToast("Launching Monetix Stream Ad...", "success");
-    
-    let adTriggered = false;
 
-    try {
-        if (typeof window.showMxAd === 'function') {
-            window.showMxAd();
-            adTriggered = true;
-        } else if (typeof window.showRewardAd === 'function') {
-            window.showRewardAd();
-            adTriggered = true;
-        } else if (typeof window.monetixShow === 'function') {
-            window.monetixShow();
-            adTriggered = true;
-        } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
-            window.MonetixAds.show();
-            adTriggered = true;
-        } else if (window.MXAds && typeof window.MXAds.show === 'function') {
-            window.MXAds.show();
-            adTriggered = true;
-        }
-    } catch(err) {
-        console.error("Monetix launch exception:", err);
-    }
+    let adPlayedSuccessfully = false;
 
-    if (adTriggered) {
-        setTimeout(() => {
-            finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-            startTaskCountdownTimer(btn, timerDurationSec);
-        }, 3000);
-    } else {
-        showToast("Monetix Ad script loading or blocked! Please try again.", "error");
+    // Direct callback handle function if Monetix SDK supports callback/promise
+    const handleMonetixSuccess = () => {
+        adPlayedSuccessfully = true;
+        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+        startTaskCountdownTimer(btn, timerDurationSec);
+    };
+
+    const handleMonetixFailure = (msg) => {
+        showToast(msg || "No Monetix Ad available right now. Please try again later!", "error");
         if(btn) {
             btn.disabled = false;
             btn.innerText = "▶ Watch";
         }
+    };
+
+    try {
+        if (typeof window.showMxAd === 'function') {
+            window.showMxAd({
+                onSuccess: handleMonetixSuccess,
+                onError: handleMonetixFailure,
+                onDismiss: handleMonetixFailure
+            });
+        } else if (typeof window.showRewardAd === 'function') {
+            window.showRewardAd().then(handleMonetixSuccess).catch(handleMonetixFailure);
+        } else if (typeof window.monetixShow === 'function') {
+            window.monetixShow(handleMonetixSuccess, handleMonetixFailure);
+        } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
+            window.MonetixAds.show({ onComplete: handleMonetixSuccess, onError: handleMonetixFailure });
+        } else if (window.MXAds && typeof window.MXAds.show === 'function') {
+            window.MXAds.show().then(handleMonetixSuccess).catch(handleMonetixFailure);
+        } else {
+            handleMonetixFailure("Monetix SDK failed to initialize!");
+        }
+    } catch(err) {
+        console.error("Monetix launch exception:", err);
+        handleMonetixFailure("Ad playback error occurred!");
     }
     return;
 }
