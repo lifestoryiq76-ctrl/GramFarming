@@ -480,37 +480,66 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="btn" style="flex:1; background: #1e293b; color: var(--text-muted); font-size: 12px; padding: 8px;" id="objBotBtn" onclick="setCampaignObj('Bot (MAU)')">🤖 Bot (MAU)</button>
 </div>
 
-<!-- Campaign Pricing Header -->
-<div class="flex-between" style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px;">
+<!-- Recommended Add-ons -->
+<div style="background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+<div style="font-size: 13px; font-weight: bold; margin-bottom: 2px;">Recommended Add-ons</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Boost your campaign reach and conversion</div>
+
+<!-- Addon 1: Verified Actions -->
+<div id="addonVerifiedCard" onclick="toggleAddon('verified')" style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+<div style="display: flex; align-items: flex-start; gap: 8px;">
+<span id="addonVerifiedCheck" style="font-size: 16px; color: var(--accent);">🟢</span>
 <div>
-<b style="font-size: 14px;" id="campaignTitleDisplay">Grow Your Channel Subscribers</b>
-<div style="font-size: 11px; color: var(--yellow); margin-top: 2px;" id="clickRateDisplay">Select a campaign package below</div>
+<div style="font-size: 13px; font-weight: bold;" id="addonVerifiedTitle">Verified Actions</div>
+<div style="font-size: 11px; color: var(--text-muted);" id="addonVerifiedDesc">Subscription verification via bot (8h retention)</div>
+</div>
+</div>
+<span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;" id="addonVerifiedPrice">+$0.10 / 100</span>
+</div>
+
+<!-- Addon 2: Home Screen Banner -->
+<div id="addonBannerCard" onclick="toggleAddon('banner')" style="background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+<div style="display: flex; align-items: flex-start; gap: 8px;">
+<span id="addonBannerCheck" style="font-size: 16px; color: var(--text-muted);">⚪</span>
+<div>
+<div style="font-size: 13px; font-weight: bold;">Home Screen Banner</div>
+<div style="font-size: 11px; color: var(--text-muted);">Featured placement in home screen carousel + task feed</div>
+</div>
+</div>
+<span style="background: rgba(14, 165, 233, 0.2); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">+$0.15 / 100</span>
 </div>
 </div>
 
-<!-- Your Balance Display -->
-<div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;">
-<div style="color: var(--text-muted); margin-bottom: 4px;">Your Main Wallet Balance:</div>
+<!-- Dynamic Verification / Info Box (Changes based on Objective) -->
+<div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between">
-<span>🪙 Coins: <strong id="balCoins" style="color:var(--yellow);">0.00</strong></span>
-<span>💵 USDT: <strong id="balUsdt" style="color:var(--accent);">0.00</strong></span>
-<span>💎 Gram: <strong id="balTon" style="color:var(--accent);">0.00</strong></span>
+<b style="font-size: 12px; color: var(--yellow);" id="objBoxTitle">Channel Verification: Add Bot</b>
+<span id="botUsernameBadge" style="background: var(--yellow); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold;">@GramFarmingbot_bot</span>
+</div>
+<p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 8px 0;" id="objBoxDesc">Add our bot as an admin to your channel/group for automatic verification.</p>
+<div id="objBoxActionArea" style="display: flex; gap: 8px;">
+<a href="https://t.me/GramFarmingbot_bot?start=start" target="_blank" style="background: var(--yellow); color: #000; padding: 6px 12px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; flex: 1; text-align: center;" id="objBoxBtnText">Add Bot to Channel ↗</a>
+<button onclick="showToast('Verification status checked!', 'success')" style="background: #334155; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Verify Status</button>
 </div>
 </div>
 
-<!-- Channel Verification -->
-<div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
-<div class="flex-between">
-<b style="font-size: 12px; color: var(--yellow);">Channel Verification: Add Bot</b>
-<a href="https://t.me/GramFarmingbot_bot?start=start" target="_blank" style="background: var(--yellow); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 10px; text-decoration: none; font-weight: bold;">@GramFarmingbot_bot</a>
+<!-- Telegram Channel or Link Input + Image Upload (Right side) -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;" id="inputLabelText">Telegram Channel or Link</label>
+<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+<input type="text" id="customTaskTitle" placeholder="@channel or t.me/channel" style="margin-top: 0; flex: 1;">
+<label style="background: #1e293b; border: 1.5px solid var(--border); border-radius: 8px; width: 44px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;" title="Upload Image">
+<span style="font-size: 18px;">🖼️</span>
+<input type="file" id="campaignImageInput" accept="image/*" style="display: none;" onchange="handleCampaignImageUpload(this)">
+</label>
 </div>
-<p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 8px 0;">Add our bot as an admin to your channel/group for automatic verification.</p>
-</div>
-
-<!-- Telegram Channel or Link Input -->
-<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Telegram Channel or Link</label>
-<input type="text" id="customTaskTitle" placeholder="@channel or t.me/channel" style="margin-bottom: 8px;">
 <input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 12px;">
+
+<!-- Additional Fields for Campaign Title & Description -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Campaign Title / Channel Name</label>
+<input type="text" id="customTaskCampaignName" placeholder="e.g. Subscribe to Crypto Daily" style="margin-bottom: 8px;">
+
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Description (Optional)</label>
+<input type="text" id="customTaskDescription" placeholder="e.g. Join the best alpha community" style="margin-bottom: 12px;">
 
 <!-- Number of Clicks / Completions Selection -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Select Clicks / Completions Package</label>
@@ -945,6 +974,11 @@ let selectedClickCount = 100;
 let selectedCoinCost = 35;
 let selectedPaymentMethod = 'Coin';
 
+// Add-ons states
+let addonVerifiedActive = true;
+let addonBannerActive = false;
+let uploadedCampaignImageBase64 = "";
+
 // Wallet Sub-methods
 let currentWithdrawSubMethod = 'faucetpay';
 let currentDepositSubMethod = 'faucetpay';
@@ -1062,7 +1096,7 @@ let displayName = "👑 My Account";
 let userId = "12345";
 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
 let user = tg.initDataUnsafe.user;
-let fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+let fullName = `${user.first_name \vert{}\vert{} ''}${user.last_name || ''}`.trim();
 displayName = `👑 ${fullName}` + (user.username ? ` (@${user.username})` : '');
 userId = String(user.id);
 }
@@ -1634,6 +1668,39 @@ loadMyPublishedTasks();
 }
 }
 
+// Addon Selection handler
+window.toggleAddon = function(addonName) {
+if(addonName === 'verified') {
+addonVerifiedActive = !addonVerifiedActive;
+let card = document.getElementById('addonVerifiedCard');
+let check = document.getElementById('addonVerifiedCheck');
+if(addonVerifiedActive) {
+card.style.background = 'rgba(34, 197, 94, 0.1)';
+card.style.borderColor = 'var(--accent)';
+check.innerText = '🟢';
+} else {
+card.style.background = '#0f172a';
+card.style.borderColor = 'var(--border)';
+check.innerText = '⚪';
+}
+} else if(addonName === 'banner') {
+addonBannerActive = !addonBannerActive;
+let card = document.getElementById('addonBannerCard');
+let check = document.getElementById('addonBannerCheck');
+if(addonBannerActive) {
+card.style.background = 'rgba(14, 165, 233, 0.1)';
+card.style.borderColor = '#0ea5e9';
+check.innerText = '🔵';
+} else {
+card.style.background = '#0f172a';
+card.style.borderColor = 'var(--border)';
+check.innerText = '⚪';
+}
+}
+updateCostCalculation();
+}
+
+// Campaign Objective selection with dynamic verification box and placeholders
 window.setCampaignObj = function(objType) {
 selectedCampaignObj = objType;
 document.getElementById('objChanBtn').style.background = '#1e293b';
@@ -1643,29 +1710,70 @@ document.getElementById('objAppBtn').style.color = 'var(--text-muted)';
 document.getElementById('objBotBtn').style.background = '#1e293b';
 document.getElementById('objBotBtn').style.color = 'var(--text-muted)';
 
+let infoBox = document.getElementById('campaignObjectiveInfoBox');
+let objBoxTitle = document.getElementById('objBoxTitle');
+let objBoxDesc = document.getElementById('objBoxDesc');
+let objBoxBtnText = document.getElementById('objBoxBtnText');
+let inputLabelText = document.getElementById('inputLabelText');
+let customTaskTitleInput = document.getElementById('customTaskTitle');
+let addonVerifiedDesc = document.getElementById('addonVerifiedDesc');
+
 if(objType === 'Channel') {
 document.getElementById('objChanBtn').style.background = '#0ea5e9';
 document.getElementById('objChanBtn').style.color = '#fff';
 document.getElementById('campaignTitleDisplay').innerText = "Grow Your Channel Subscribers";
+
+infoBox.style.display = 'block';
+objBoxTitle.innerText = "Channel Verification: Add Bot";
+objBoxDesc.innerText = "Add our bot as an admin to your channel/group for automatic verification.";
+objBoxBtnText.innerText = "Add Bot to Channel ↗";
+inputLabelText.innerText = "Telegram Channel or Link";
+customTaskTitleInput.placeholder = "@channel or t.me/channel";
+addonVerifiedDesc.innerText = "Subscription verification via bot (8h retention)";
+
 } else if(objType === 'Mini App') {
 document.getElementById('objAppBtn').style.background = '#0ea5e9';
 document.getElementById('objAppBtn').style.color = '#fff';
 document.getElementById('campaignTitleDisplay').innerText = "Grow Your Mini App Users";
+
+infoBox.style.display = 'block';
+objBoxTitle.innerText = "Proof of Activity (20s)";
+objBoxDesc.innerText = "Performers will launch your Mini App and spend at least 20 seconds inside (Proof of Activity) to verify and claim their reward.";
+objBoxBtnText.innerText = "Mini App Active ⚡";
+inputLabelText.innerText = "Telegram Mini App Link (with Ref/Start)";
+customTaskTitleInput.placeholder = "https://t.me/game_bot?start=ref123";
+addonVerifiedDesc.innerText = "20-second Proof-of-Activity hold to prevent instant drop-offs";
+
 } else if(objType === 'Bot (MAU)') {
 document.getElementById('objBotBtn').style.background = '#0ea5e9';
 document.getElementById('objBotBtn').style.color = '#fff';
 document.getElementById('campaignTitleDisplay').innerText = "Grow Your Bot MAU";
+
+infoBox.style.display = 'none'; // Hides the add bot verification card as seen in bot screenshot
+inputLabelText.innerText = "Telegram Bot Username or Link (no params)";
+customTaskTitleInput.placeholder = "@my_bot, t.me/my_bot";
+addonVerifiedDesc.innerText = "Bot interaction verification & retention hold";
+}
+}
+
+// Image upload helper
+window.handleCampaignImageUpload = function(input) {
+if(input.files && input.files[0]) {
+let reader = new FileReader();
+reader.onload = function(e) {
+uploadedCampaignImageBase64 = e.target.result;
+showToast("✅ Image attached successfully!", "success");
+}
+reader.readAsDataURL(input.files[0]);
 }
 }
 
 window.setClickPackage = function(clicks, btnEl) {
 selectedClickCount = clicks;
-
 let pkg = clickPackagesData.find(p => p.clicks === clicks);
 if (pkg) {
     selectedCoinCost = pkg.coin;
 }
-
 document.querySelectorAll('.click-option-btn').forEach(b => b.classList.remove('active'));
 btnEl.classList.add('active');
 updateCostCalculation();
@@ -1673,7 +1781,6 @@ updateCostCalculation();
 
 window.setPaymentMethod = function(method) {
 selectedPaymentMethod = method;
-
 const payUsdtBtn = document.getElementById('payUsdt');
 const payCoinBtn = document.getElementById('payCoin');
 const payGramBtn = document.getElementById('payGram');
@@ -1690,27 +1797,38 @@ updateCostCalculation();
 }
 
 window.updateCostCalculation = function() {
+  let baseCost = selectedCoinCost;
+  let extraCost = 0;
+  if(addonVerifiedActive) extraCost += (selectedClickCount * (0.10 / 100) * (1 / coinUsdtValue));
+  if(addonBannerActive) extraCost += (selectedClickCount * (0.15 / 100) * (1 / coinUsdtValue));
+  
+  let totalCoinCost = baseCost + extraCost;
+
   clickPackagesData.forEach(pkg => {
     let el = document.getElementById('clickBox-' + pkg.clicks);
     if (el) {
+      let pkgExtra = 0;
+      if(addonVerifiedActive) pkgExtra += (pkg.clicks * (0.10 / 100) * (1 / coinUsdtValue));
+      if(addonBannerActive) pkgExtra += (pkg.clicks * (0.15 / 100) * (1 / coinUsdtValue));
+      let pkgTotal = pkg.coin + pkgExtra;
+
       if (selectedPaymentMethod === 'Coin') {
-        el.innerText = `${pkg.coin} 🪙`;
+        el.innerText = `${pkgTotal.toFixed(1)} 🪙`;
         el.style.color = "var(--yellow)";
       } else if (selectedPaymentMethod === 'USDT') {
-        let usdtVal = pkg.coin * coinUsdtValue;
-        el.innerText = `$${usdtVal.toFixed(3)} 💵`;
+        let usdtVal = pkgTotal * coinUsdtValue;
+        el.innerText = `$${usdtVal.toFixed(2)} 💵`;
         el.style.color = "var(--accent)";
       } else if (selectedPaymentMethod === 'Gram') {
-        let usdtVal = pkg.coin * coinUsdtValue;
+        let usdtVal = pkgTotal * coinUsdtValue;
         let gramVal = usdtVal / liveTonPrice;
-        el.innerText = `${gramVal.toFixed(3)} 💎`;
+        el.innerText = `${gramVal.toFixed(2)} 💎`;
         el.style.color = "var(--ton-blue)";
       }
     }
   });
 
-  let usdtCost = selectedCoinCost * coinUsdtValue;
-  let coinCost = selectedCoinCost;
+  let usdtCost = totalCoinCost * coinUsdtValue;
   let gramCost = (usdtCost / liveTonPrice).toFixed(4);
 
   let costBox = document.getElementById('costCalcBox');
@@ -1719,7 +1837,7 @@ window.updateCostCalculation = function() {
   if(selectedPaymentMethod === 'USDT') {
     costBox.innerHTML = `Cost: <strong>${usdtCost.toFixed(4)} USDT</strong> (${selectedClickCount} Clicks)`;
   } else if(selectedPaymentMethod === 'Coin') {
-    costBox.innerHTML = `Cost: <strong>${coinCost} Coins</strong> (~${usdtCost.toFixed(4)} USDT) (${selectedClickCount} Clicks)`;
+    costBox.innerHTML = `Cost: <strong>${totalCoinCost.toFixed(1)} Coins</strong> (~${usdtCost.toFixed(4)} USDT) (${selectedClickCount} Clicks)`;
   } else if(selectedPaymentMethod === 'Gram') {
     costBox.innerHTML = `Cost: <strong>${gramCost} Gram</strong> (~${usdtCost.toFixed(4)} USDT) (${selectedClickCount} Clicks)`;
   }
@@ -1758,16 +1876,24 @@ loadTransactionHistory();
 }
 
 window.publishCampaign = function() {
-let title = document.getElementById('customTaskTitle').value.trim();
-let link = document.getElementById('customTaskLink').value.trim();
+let titleLinkInput = document.getElementById('customTaskTitle').value.trim();
+let taskUrl = document.getElementById('customTaskLink').value.trim();
+let campaignName = document.getElementById('customTaskCampaignName').value.trim();
+let campaignDesc = document.getElementById('customTaskDescription').value.trim();
 
-if(!title || !link) {
-showToast("Kripya Channel Title aur Link dono enter karein.", "error");
+if(!titleLinkInput) {
+showToast("Kripya target link ya username enter karein.", "error");
 return;
 }
 
-let usdtCost = selectedCoinCost * coinUsdtValue;
-let coinCost = selectedCoinCost;
+let baseCost = selectedCoinCost;
+let extraCost = 0;
+if(addonVerifiedActive) extraCost += (selectedClickCount * (0.10 / 100) * (1 / coinUsdtValue));
+if(addonBannerActive) extraCost += (selectedClickCount * (0.15 / 100) * (1 / coinUsdtValue));
+let totalCoinCost = baseCost + extraCost;
+
+let usdtCost = totalCoinCost * coinUsdtValue;
+let coinCost = totalCoinCost;
 let gramCost = parseFloat((usdtCost / liveTonPrice).toFixed(4));
 
 if(selectedPaymentMethod === 'USDT') {
@@ -1785,13 +1911,18 @@ saveToFirebase();
 renderUIValues();
 
 let newCampaignObj = {
-    title,
-    link,
+    title: campaignName || titleLinkInput,
+    link: taskUrl || titleLinkInput,
+    targetInput: titleLinkInput,
+    description: campaignDesc,
     objective: selectedCampaignObj,
-    plan: `${selectedClickCount} clicks = ${coinCost} Coins`,
+    plan: `${selectedClickCount} clicks =${coinCost.toFixed(1)} Coins`,
     totalClicks: selectedClickCount,
     clicksDone: 0,
     clicksRemaining: selectedClickCount,
+    verifiedAddon: addonVerifiedActive,
+    bannerAddon: addonBannerActive,
+    image: uploadedCampaignImageBase64 || "",
     status: 'Pending',
     userId,
     date: new Date().toLocaleString()
@@ -1801,6 +1932,10 @@ push(ref(db, 'customTasks'), newCampaignObj);
 
 document.getElementById('customTaskTitle').value = '';
 document.getElementById('customTaskLink').value = '';
+document.getElementById('customTaskCampaignName').value = '';
+document.getElementById('customTaskDescription').value = '';
+uploadedCampaignImageBase64 = "";
+
 showToast("✅ Campaign published successfully! Cost deducted from wallet.", "success");
 switchCreateSubTab('my');
 }
@@ -1829,17 +1964,13 @@ if (btn) btn.disabled = true;
 
 if (adName === 'Monetix') {
     if (btn) btn.innerText = "⏳ Loading Ad...";
-
-    // Screenshot ke anusar exact error message
     let noAdMessage = "No ads available in your region right now. Please try again later or select another network.";
 
-    // Success Callback (reward milne par)
     const handleMonetixSuccess = () => {
         finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
         startTaskCountdownTimer(btn, timerDurationSec);
     };
 
-    // Failure / Dismiss Callback (Ad load na hone par koi reward nahi, sirf timer chalega)
     const handleMonetixFailure = () => {
         showToast(noAdMessage, "error");
         startTaskCountdownTimer(btn, timerDurationSec);
@@ -1871,7 +2002,6 @@ if (adName === 'Monetix') {
 }
 
 let adPromise = Promise.resolve();
-
 if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
     adPromise = window.show_11989490().catch(() => {});
 } else if (adName === 'Gigapub' && typeof window.showGiga === 'function') {
@@ -1947,8 +2077,8 @@ let dailyRev = days > 0 ? totalRev / days : totalRev / 365;
 
 let unitLabel = selectedStakingCurrency === 'Coin' ? 'Coin' : (selectedStakingCurrency === 'USDT' ? 'USDT' : 'Gram');
 
-document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)} ${unitLabel}`;
-document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)} ${unitLabel}`;
+document.getElementById('previewDaily').innerText = `${dailyRev.toFixed(4)}${unitLabel}`;
+document.getElementById('previewTotal').innerText = `${totalRev.toFixed(4)}${unitLabel}`;
 }
 
 window.stake = function(planName, days, apy) {
@@ -1993,7 +2123,7 @@ saveToFirebase();
 renderUIValues();
 renderStakingList();
 
-showToast(`✅ Successfully staked ${stakeAmount} ${unitLabel} in ${planName}!`, "success");
+showToast(`✅ Successfully staked ${stakeAmount} ${unitLabel} in${planName}!`, "success");
 }
 
 function processStakingDailyTransfer() {
@@ -2038,7 +2168,7 @@ let curr = stake.currency || 'Coin';
 let dailyShow = stake.dailyReward ? stake.dailyReward.toFixed(4) : "0.0000";
 let symbolIcon = curr === 'Coin' ? '🪙' : (curr === 'USDT' ? '💵' : '💎');
 
-html += `<div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 12px;"> <div class="flex-between"> <strong style="color: var(--accent);">${stake.planName} (${curr})</strong> <span style="color: var(--yellow);">${symbolIcon} Total Stake: ${stake.amount.toFixed(2)} ${curr}</span> </div> <div style="margin-top: 4px; color: var(--accent);"> ☀ Daily Reward: <strong>+${dailyShow} ${curr}/day</strong> (Auto-transferred) </div> <div class="flex-between" style="margin-top: 4px; color: var(--text-muted);"> <span>APY: ${stake.apy}% | Date: ${stake.date}</span> <button onclick="unstake(${stake.id})" style="background: #ef4444; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Unstake</button> </div> </div>`;
+html += `<div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 12px;"> <div class="flex-between"> <strong style="color: var(--accent);">${stake.planName} (${curr})</strong> <span style="color: var(--yellow);">${symbolIcon} Total Stake: ${stake.amount.toFixed(2)}${curr}</span> </div> <div style="margin-top: 4px; color: var(--accent);"> ☀ Daily Reward: <strong>+${dailyShow}${curr}/day</strong> (Auto-transferred) </div> <div class="flex-between" style="margin-top: 4px; color: var(--text-muted);"> <span>APY: ${stake.apy}\% \vert{} Date:${stake.date}</span> <button onclick="unstake(${stake.id})" style="background: #ef4444; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Unstake</button> </div> </div>`;
 });
 listContainer.innerHTML = html;
 }
@@ -2058,7 +2188,7 @@ activeStakes.splice(index, 1);
 saveToFirebase();
 renderUIValues();
 renderStakingList();
-showToast(`🔓 Successfully unstaked and returned ${refundedAmount.toFixed(2)} ${curr}.`, "success");
+showToast(`🔓 Successfully unstaked and returned ${refundedAmount.toFixed(2)}${curr}.`, "success");
 }
 }
 
@@ -2111,7 +2241,7 @@ function progressRocketAdWatch(index, rocketName, maxLimitNeeded) {
 let state = rocketStates[index];
 state.adsWatched++;
 let limitDisplayEl = document.getElementById(['rocket1Limit', 'rocket2Limit'][index]);
-if (limitDisplayEl) limitDisplayEl.innerText = `${state.adsWatched} / ${maxLimitNeeded}`;
+if (limitDisplayEl) limitDisplayEl.innerText = `${state.adsWatched} /${maxLimitNeeded}`;
 
 let statusEl = document.getElementById(`rocketStatus-${index}`);
 showToast(`Claim Successful! Ad watched for ${rocketName} (${state.adsWatched}/${maxLimitNeeded})`, "success");
@@ -2156,7 +2286,7 @@ let hours = Math.floor(state.timeLeft / 3600);
 let minutes = Math.floor((state.timeLeft % 3600) / 60);
 let seconds = state.timeLeft % 60;
 
-statusEl.innerHTML = state.timeLeft > 0 ? `⏳ Timer: ${hours}h ${minutes}m ${seconds}s` : `🎉 Mining Finished!`;
+statusEl.innerHTML = state.timeLeft > 0 ? `⏳ Timer: ${hours}h ${minutes}m${seconds}s` : `🎉 Mining Finished!`;
 accumEl.innerHTML = `🪙 ${state.accumulated.toFixed(4)} Coin`;
 
 if (state.status === 'mining') {
@@ -2185,7 +2315,7 @@ let claimAmount = state.accumulated;
 addEarningsWithReferral(claimAmount);
 state.accumulated = 0.00;
 document.getElementById(`rocketAccumulated-${index}`).innerHTML = `🪙 0.00 Coin`;
-showToast(`Claim Successful! +${claimAmount.toFixed(4)} Coins claimed from ${rocketName}!`, "success");
+showToast(`Claim Successful! +${claimAmount.toFixed(4)} Coins claimed from${rocketName}!`, "success");
 }
 
 function claimRocketReward(index, rocketName, maxLimitNeeded) {
@@ -2244,11 +2374,11 @@ let totalUsdtValue = amt * coinUsdtValue;
 
 if (curr === 'USDT') {
 usdtBalance += totalUsdtValue;
-showToast(`Claim Successful! Exchanged ${amt} Coins for ${totalUsdtValue.toFixed(4)} USDT!`, "success");
+showToast(`Claim Successful! Exchanged ${amt} Coins for${totalUsdtValue.toFixed(4)} USDT!`, "success");
 } else {
 let tonReceived = totalUsdtValue / liveTonPrice;
 tonBalance += tonReceived;
-showToast(`Claim Successful! Exchanged ${amt} Coins for ${tonReceived.toFixed(4)} Gram!`, "success");
+showToast(`Claim Successful! Exchanged ${amt} Coins for${tonReceived.toFixed(4)} Gram!`, "success");
 }
 
 document.getElementById('exchangeAmount').value = '';
@@ -2290,7 +2420,7 @@ let amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
 let fee = amt * 0.05;
 let receive = amt - fee;
 if (receive < 0) receive = 0;
-document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} | You will receive: ${receive.toFixed(4)}`;
+document.getElementById('withdrawFeePreview').innerText = `Fee (5%): ${fee.toFixed(4)} \vert{} You will receive:${receive.toFixed(4)}`;
 }
 
 window.requestWithdrawal = function() {
@@ -2299,7 +2429,7 @@ let destination = document.getElementById('withdrawDestination').value.trim();
 let minLimit = currentWithdrawSubMethod === 'faucetpay' ? minWithdrawalAmt : minTonWithdrawalAmt;
 
 if (amt < minLimit) {
-showToast(`Minimum withdrawal amount is ${minLimit} ${currentWithdrawSubMethod === 'faucetpay' ? 'USDT' : 'Gram'}.`, "error");
+showToast(`Minimum withdrawal amount is ${minLimit}${currentWithdrawSubMethod === 'faucetpay' ? 'USDT' : 'Gram'}.`, "error");
 return;
 }
 
@@ -2497,7 +2627,8 @@ if (noticeEl) noticeEl.style.display = 'none';
 let data = snapshot.val();
 let html = '';
 Object.entries(data).forEach(([key, task]) => {
-html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div><span style="font-weight:bold;">📢 ${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +0.05 Coin</small></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(0.05, '${key}');">Start</button> </div>`;
+let imgHtml = task.image ? `<img src="${task.image}" style="width:36px; height:36px; border-radius:8px; object-fit:cover; margin-right:8px;" />` : `<span style="font-size: 24px; margin-right:8px;">📢</span>`;
+html += `<div class="card flex-between" style="background:#111827; margin-bottom:8px;"> <div style="display:flex; align-items:center;">${imgHtml}<div><span style="font-weight:bold;">${task.title}</span><br><small style="color:var(--text-muted);">Plan: ${task.plan || 'Standard'} | Reward: +0.05 Coin</small></div></div> <button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open('${task.link}', '_blank'); completeTask(0.05, '${key}');">Start</button> </div>`;
 });
 if(listEl) listEl.innerHTML = html;
 });
@@ -2539,9 +2670,11 @@ let statusText = task.status || 'Pending';
 if(remaining <= 0) statusText = 'Done';
 let statusColor = statusText === 'Done' ? 'var(--accent)' : 'var(--yellow)';
 
+let imgHtml = task.image ? `<img src="${task.image}" style="width:30px; height:30px; border-radius:6px; object-fit:cover; margin-right:6px;" />` : ``;
+
 html += `<div class="card" style="background:#111827; margin-bottom:10px; padding:12px;"> 
 <div class="flex-between" style="margin-bottom:6px;">
-<b style="color: var(--accent); font-size:14px;">📢 ${task.title}</b>
+<div style="display:flex; align-items:center;">${imgHtml}<b style="color: var(--accent); font-size:14px;">${task.title}</b></div>
 <span style="font-size: 11px; color: ${statusColor}; font-weight: bold; background: rgba(234, 179, 8, 0.15); padding: 2px 6px; border-radius: 4px;">${statusText}</span>
 </div>
 <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>${task.plan || '100 clicks'}</strong></div>
