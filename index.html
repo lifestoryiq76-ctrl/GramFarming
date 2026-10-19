@@ -8,6 +8,10 @@
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
 
+<!-- Fast Network Connection for Monetix -->
+<link rel="dns-prefetch" href="https://www.monetixads.online">
+<link rel="preconnect" href="https://www.monetixads.online" crossorigin>
+
 <!-- 1. Monetag Telegram Mini App SDK Script -->
 <script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490'></script>
 
@@ -1822,6 +1826,7 @@ let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
 if (adName === 'Monetix') {
+    if (btn) btn.innerText = "⏳ Loading...";
     showToast("Launching Monetix Stream Ad...", "success");
     
     let adTriggered = false;
@@ -1851,10 +1856,13 @@ if (adName === 'Monetix') {
         setTimeout(() => {
             finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
             startTaskCountdownTimer(btn, timerDurationSec);
-        }, 5000);
+        }, 3000);
     } else {
         showToast("Monetix Ad script loading or blocked! Please try again.", "error");
-        if(btn) btn.disabled = false;
+        if(btn) {
+            btn.disabled = false;
+            btn.innerText = "▶ Watch";
+        }
     }
     return;
 }
