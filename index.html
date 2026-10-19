@@ -1004,15 +1004,17 @@ function showToast(message, type = 'success') {
 const container = document.getElementById('toastContainer');
 container.innerHTML = '';
 const toast = document.createElement('div');
-toast.style.cssText = `background: ${type === 'success' ? '#22c55e' : '#ef4444'}; color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: opacity 0.3s ease; opacity: 0;`;
-toast.innerText = message;
+toast.style.cssText = `background: ${type === 'success' ? '#22c55e' : '#1e293b'}; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid ${type === 'success' ? '#22c55e' : '#ef4444'}; display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease; opacity: 0;`;
+
+let icon = type === 'success' ? '✅' : '⚠️';
+toast.innerHTML = `<span style="font-size:18px;">${icon}</span><span>${message}</span>`;
 container.appendChild(toast);
 
 setTimeout(() => { toast.style.opacity = '1'; }, 10);
 setTimeout(() => {
 toast.style.opacity = '0';
 setTimeout(() => { if (toast.parentNode) container.removeChild(toast); }, 300);
-}, 3000);
+}, 3500);
 }
 
 function check530AmRestartAndStaking() {
@@ -1827,22 +1829,17 @@ if (btn) btn.disabled = true;
 
 if (adName === 'Monetix') {
     if (btn) btn.innerText = "⏳ Loading Ad...";
-    showToast("Launching Monetix Stream Ad...", "success");
 
-    let adPlayedSuccessfully = false;
+    let noAdMessage = "No ads available in your region right now. Please try again later or select another network.";
 
     const handleMonetixSuccess = () => {
-        adPlayedSuccessfully = true;
         finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
         startTaskCountdownTimer(btn, timerDurationSec);
     };
 
-    const handleMonetixFailure = (msg) => {
-        showToast(msg || "No Monetix Ad available right now. Please try again later!", "error");
-        if(btn) {
-            btn.disabled = false;
-            btn.innerText = "▶ Watch";
-        }
+    const handleMonetixFailure = () => {
+        showToast(noAdMessage, "error");
+        startTaskCountdownTimer(btn, timerDurationSec);
     };
 
     try {
@@ -1861,14 +1858,11 @@ if (adName === 'Monetix') {
         } else if (window.MXAds && typeof window.MXAds.show === 'function') {
             window.MXAds.show().then(handleMonetixSuccess).catch(handleMonetixFailure);
         } else {
-            // Fallback agar SDK function name alag ho, par direct reward tabhi de jab ad load confirm ho
-            setTimeout(() => {
-                handleMonetixSuccess();
-            }, 1000);
+            handleMonetixFailure();
         }
     } catch(err) {
         console.error("Monetix launch exception:", err);
-        handleMonetixFailure("Ad playback error occurred!");
+        handleMonetixFailure();
     }
     return;
 }
