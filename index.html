@@ -1821,6 +1821,36 @@ return;
 let btn = btnElementId ? document.getElementById(btnElementId) : null;
 if (btn) btn.disabled = true;
 
+if (adName === 'Monetix') {
+    showToast("Loading Monetix Stream Ad...", "success");
+    
+    // Check if Monetix Ads object / function exists
+    let launched = false;
+    
+    try {
+        if (typeof window.showMxAd === 'function') {
+            window.showMxAd();
+            launched = true;
+        } else if (typeof window.showRewardAd === 'function') {
+            window.showRewardAd();
+            launched = true;
+        } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
+            window.MonetixAds.show();
+            launched = true;
+        }
+    } catch(err) {
+        console.error("Monetix Launch Error:", err);
+    }
+
+    // If SDK is loaded, give user time to watch ad before claiming
+    setTimeout(() => {
+        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+        startTaskCountdownTimer(btn, timerDurationSec);
+    }, launched ? 8000 : 1500);
+
+    return;
+}
+
 let adPromise = Promise.resolve();
 
 if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
@@ -1829,20 +1859,6 @@ if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
     adPromise = window.showGiga().catch(() => {});
 } else if (adName === 'USL') {
     adPromise = new Promise((resolve) => { setTimeout(resolve, 1000); });
-} else if (adName === 'Monetix') {
-    adPromise = new Promise((resolve, reject) => {
-        if (typeof window.showMxAd === 'function') {
-            window.showMxAd().then(resolve).catch(resolve);
-        } else if (typeof window.showRewardAd === 'function') {
-            window.showRewardAd(function(res) {
-                resolve();
-            });
-        } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
-            window.MonetixAds.show().then(resolve).catch(resolve);
-        } else {
-            setTimeout(resolve, 1200);
-        }
-    });
 }
 
 adPromise.then(() => {
