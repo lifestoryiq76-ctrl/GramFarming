@@ -18,7 +18,7 @@
 <script src="https://uslads.com/script.js" data-uslid="USL-DEFAULT"></script>
 
 <!-- 4. Monetix Official Script Integration -->
-<script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1"></script>
+<script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1" async></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
@@ -1826,17 +1826,16 @@ if (adName === 'Monetix') {
     
     let adTriggered = false;
 
-    // Check Official Monetix Methods
     try {
         if (typeof window.showMxAd === 'function') {
             window.showMxAd();
             adTriggered = true;
         } else if (typeof window.showRewardAd === 'function') {
-            window.showRewardAd(function() {
-                finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-                startTaskCountdownTimer(btn, timerDurationSec);
-            });
-            return;
+            window.showRewardAd();
+            adTriggered = true;
+        } else if (typeof window.monetixShow === 'function') {
+            window.monetixShow();
+            adTriggered = true;
         } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
             window.MonetixAds.show();
             adTriggered = true;
@@ -1849,14 +1848,12 @@ if (adName === 'Monetix') {
     }
 
     if (adTriggered) {
-        // Give time for ad video to play
         setTimeout(() => {
             finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
             startTaskCountdownTimer(btn, timerDurationSec);
-        }, 6000);
+        }, 5000);
     } else {
-        // Fallback: If SDK Script blocked or network error
-        showToast("Monetix Ad Network issue or Ad Blocked!", "error");
+        showToast("Monetix Ad script loading or blocked! Please try again.", "error");
         if(btn) btn.disabled = false;
     }
     return;
