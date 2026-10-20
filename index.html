@@ -2687,7 +2687,7 @@ db.ref('customTasks').on('value', function(snapshot) {
   if(listEl) listEl.innerHTML = html;
 });
 
-// UPDATED: Load Admin Partner Tasks with Icon Image & Colored Gold Coin Badge
+// UPDATED: Load Admin Partner Tasks with Full Icon Image & Colored Gold Coin Badge
 function loadAdminPartnerTasks() {
   var partnerContainer = document.getElementById('adminPartnerTasksList');
   if(!partnerContainer || !db) return;
@@ -2714,7 +2714,8 @@ function loadAdminPartnerTasks() {
       html += `
         <div class="card flex-between" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="${iconUrl}" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #10B981;" alt="logo" />
+            <!-- Updated Full Logo Style with contain and background -->
+            <img src="${iconUrl}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: contain; background: #0b1426; border: 2px solid #10B981; padding: 2px;" alt="logo" />
             <div>
               <div style="font-weight: bold; font-size: 14px; color: #ffffff;">${titleText}</div>
               <div style="font-size: 11px; color: #9CA3AF; margin-top: 2px;">${descText}</div>
