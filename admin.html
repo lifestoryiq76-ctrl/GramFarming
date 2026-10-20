@@ -21,6 +21,7 @@
         .btn-delete { background: #64748b; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; }
         .btn-delete:hover { background: #475569; }
         .btn-blue { background: #0284c7; }
+        .btn-warning { background: #f59e0b; color: #000; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -123,7 +124,7 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 3. Task Ads Networks Control (Updated to match Monetag, Gigapub, USL Ads, Monetix Streams) -->
+    <!-- 3. Task Ads Networks Control -->
     <div class="card">
         <h2>📺 Task Ads Watch Networks Setup</h2>
         
@@ -242,10 +243,10 @@
         <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
     </div>
 
-    <!-- 5. User Campaign Click Rates Control (Updated for all 8 packages) -->
+    <!-- 5. User Campaign Click Rates Control -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚙️ User Campaign Publish Rates (Clicks Pricing)</h2>
-        <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">Yahan se aap sabhi click packages (100 se 5000) ke Coin aur Coin cost/rates change kar sakte hain.</p>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">Yahan se aap sabhi click packages (100 se 5000) ke Coin cost/rates change kar sakte hain.</p>
         
         <div class="grid-4" style="margin-bottom: 12px;">
             <div class="net-box">
@@ -332,7 +333,28 @@
         </div>
     </div>
 
-    <!-- 7. User Balance Manual Manager -->
+    <!-- 🔄 7. ONLY PARTNER & TASK RESET CONTROLLER -->
+    <div class="card" style="border: 1px solid #f59e0b;">
+        <h2 style="color: #f59e0b;">🔄 Partner & Task Reset Manager (Only 'Partner' & 'Task' Tabs)</h2>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">
+            Is option se sirf aur sirf <b>Partner & Task</b> sections ke completed tasks reset honge jisse buttons wapas <b>"Join 👥"</b> ban jayenge. Baaki sabhi sections (Ads limit, Mining, Wallet) untouched rahenge.
+        </p>
+        
+        <div class="grid-2">
+            <div>
+                <label>Single User Telegram ID Reset:</label>
+                <input type="text" id="resetSingleUserId" placeholder="e.g. 123456789">
+                <button type="button" class="btn-warning" onclick="resetSingleUserTasks()">🔄 Reset Single User Partner & Task</button>
+            </div>
+            <div>
+                <label>Global Reset (All Users Partner & Task):</label>
+                <p style="font-size: 11px; color: #ef4444; margin-top: 4px; margin-bottom: 12px;">⚠️ Sabhi users ke Partner & Task completion clear honge aur wapas "Join 👥" aayega.</p>
+                <button type="button" class="btn-danger" style="width:100%;" onclick="resetAllUsersTasks()">⚠️ Reset All Users Partner & Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. User Balance Manual Manager -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚡ User Balance Modifier</h2>
         <div class="grid-3">
@@ -355,7 +377,7 @@
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 8A. FaucetPay Withdrawal Requests -->
+    <!-- 9A. FaucetPay Withdrawal Requests -->
     <div class="card">
         <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
@@ -377,7 +399,7 @@
         </div>
     </div>
 
-    <!-- 8B. TON Withdrawal Requests -->
+    <!-- 9B. TON Withdrawal Requests -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests (Manual)</h2>
         <button type="button" onclick="approveAllTonWithdrawals()" style="background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 12px; width: 100%;">
@@ -402,7 +424,7 @@
         </div>
     </div>
 
-    <!-- 9. Registered Users List -->
+    <!-- 10. Registered Users List -->
     <div class="card">
         <h2>👥 Registered Users, IP Address & Security Management</h2>
         <div class="table-container">
@@ -548,7 +570,7 @@
             }
         });
 
-        // 1. Load FaucetPay Withdrawals from user paths
+        // 1. Load FaucetPay Withdrawals
         get(ref(db, 'withdrawals')).then((snapshot) => {
             const fpTableBody = document.getElementById('faucetpayTableBody');
             fpTableBody.innerHTML = '';
@@ -599,7 +621,7 @@
             if (fpCount === 0) fpTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No FaucetPay withdrawals found.</td></tr>`;
         });
 
-        // 2. Load TON Withdrawals from tonWithdrawals path
+        // 2. Load TON Withdrawals
         get(ref(db, 'tonWithdrawals')).then((snapshot) => {
             const tonTableBody = document.getElementById('tonTableBody');
             tonTableBody.innerHTML = '';
@@ -639,7 +661,7 @@
             if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No TON withdrawals found.</td></tr>`;
         });
 
-        // Load Registered Users, IP Address & Device Info
+        // Load Registered Users
         get(ref(db, 'users')).then((snapshot) => {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
@@ -695,6 +717,30 @@
             }
         });
     });
+
+    // 🔄 FUNCTIONS TO RESET ONLY 'PARTNER' & 'TASK' TO 'JOIN'
+    window.resetSingleUserTasks = function() {
+        let uId = document.getElementById('resetSingleUserId').value.trim();
+        if (!uId) {
+            alert("Kripya User Telegram ID enter karein.");
+            return;
+        }
+
+        if (confirm(`Kya aap User ID: ${uId} ke sirf Partner & Task section reset karna chahte hain jisse wapas 'Join 👥' button aa jaye?`)) {
+            remove(ref(db, 'completedTasks/' + uId)).then(() => {
+                alert(`✅ User ID: ${uId} ke Partner & Task reset ho gaye! App me wapas 'Join 👥' dikhega.`);
+                document.getElementById('resetSingleUserId').value = '';
+            }).catch(err => alert("Error: " + err.message));
+        }
+    };
+
+    window.resetAllUsersTasks = function() {
+        if (confirm("⚠️ Kya aap SAARI USERS ke Partner & Task completions reset karna chahte hain? Sabhi users ke paas wapas 'Join 👥' button aa jayega!")) {
+            remove(ref(db, 'completedTasks')).then(() => {
+                alert("✅ Sabhi users ke Partner & Task successfully reset ho gaye hain!");
+            }).catch(err => alert("Error: " + err.message));
+        }
+    };
 
     window.toggleBlockUser = function(userId, currentStatus) {
         let newStatus = !currentStatus;
