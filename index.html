@@ -461,8 +461,8 @@ input:focus, select:focus { border-color: var(--accent); }
 </label>
 </div>
 
-<!-- Dynamic Verification / Info Box -->
-<div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
+<!-- Dynamic Verification / Proof of Activity Box (Shown for Channel and Mini App) -->
+<div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 12px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between" id="objBoxHeader">
 <b style="font-size: 12px; color: var(--yellow);" id="objBoxTitle">Channel Verification: Add Bot</b>
 <span id="botUsernameBadge" style="background: var(--yellow); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold;">@GramFarmingbot_bot</span>
@@ -472,6 +472,15 @@ input:focus, select:focus { border-color: var(--accent); }
 <button onclick="openTelegramBotLink()" style="background: var(--yellow); color: #000; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; flex: 1; text-align: center; cursor: pointer;" id="objBoxBtnText">Add Bot to Channel ↗</button>
 <button onclick="showToast('Verification status checked!', 'success')" style="background: #334155; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Verify Status</button>
 </div>
+</div>
+
+<!-- Extra Input Fields for Mini App & Bot (MAU) -->
+<div id="extraCampaignFieldsGroup" style="display: none;">
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Campaign Title / Channel Name</label>
+<input type="text" id="campaignTitleInputText" placeholder="e.g. Subscribe to Crypto Daily" style="margin-top: 0; margin-bottom: 12px;">
+
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Description (Optional)</label>
+<input type="text" id="campaignDescInputText" placeholder="e.g. Join the best alpha community" style="margin-top: 0; margin-bottom: 12px;">
 </div>
 
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Select Clicks / Completions Package</label>
@@ -1596,6 +1605,7 @@ function setCampaignObj(objType) {
   var objBoxActionArea = document.getElementById('objBoxActionArea');
   var inputLabelText = document.getElementById('inputLabelText');
   var customTaskTitleInput = document.getElementById('customTaskTitle');
+  var extraFieldsGroup = document.getElementById('extraCampaignFieldsGroup');
   var addonVerifiedDesc = document.getElementById('addonVerifiedDesc');
   var campTitleDisp = document.getElementById('campaignTitleDisplay');
 
@@ -1609,25 +1619,28 @@ function setCampaignObj(objType) {
     if(objBoxDesc) objBoxDesc.innerText = "Add our bot as an admin to your channel/group for automatic verification.";
     if(inputLabelText) inputLabelText.innerText = "Telegram Channel or Link";
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "@channel or https://t.me/channel";
+    if(extraFieldsGroup) extraFieldsGroup.style.display = 'none'; // Channel me Title aur Desc nahi dikhana hai
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Subscription verification via bot (8h retention)";
 
   } else if(objType === 'Mini App') {
     if(btnApp) { btnApp.style.background = '#0ea5e9'; btnApp.style.color = '#fff'; }
     if(campTitleDisp) campTitleDisp.innerText = "Grow Your Mini App Users";
     if(infoBox) infoBox.style.display = 'block';
-    if(objBoxHeader) objBoxHeader.style.display = 'none'; // Pehli image ke hisaab se header badge aur action area hide hoga[span_4](start_span)[span_4](end_span)
-    if(objBoxActionArea) objBoxActionArea.style.display = 'none'; //[span_5](start_span)[span_5](end_span)
-    if(objBoxDesc) objBoxDesc.innerHTML = "<b style='color: var(--yellow); font-size:13px;'>⚡ Proof of Activity (20s)</b><br><span style='color: #cbd5e1;'>Performers will launch your Mini App and spend at least 20 seconds inside (Proof of Activity) to verify and claim their reward.</span>"; //[span_6](start_span)[span_6](end_span)
-    if(inputLabelText) inputLabelText.innerText = "Telegram Mini App Link (with Ref/Start)"; //[span_7](start_span)[span_7](end_span)
-    if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://t.me/game_bot?start=ref123"; //[span_8](start_span)[span_8](end_span)
+    if(objBoxHeader) objBoxHeader.style.display = 'none'; // Header hide
+    if(objBoxActionArea) objBoxActionArea.style.display = 'none'; // Action Area hide
+    if(objBoxDesc) objBoxDesc.innerHTML = "<b style='color: var(--yellow); font-size:13px;'>⚡ Proof of Activity (20s)</b><br><span style='color: #94a3b8;'>Performers will launch your Mini App and spend at least 20 seconds inside (Proof of Activity) to verify and claim their reward.</span>";
+    if(inputLabelText) inputLabelText.innerText = "Telegram Mini App Link (with Ref/Start)";
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://t.me/game_bot?start=ref123";
+    if(extraFieldsGroup) extraFieldsGroup.style.display = 'block'; // Title aur Desc dikhana hai!
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "20-second Proof-of-Activity hold to prevent instant drop-offs";
 
   } else if(objType === 'Bot (MAU)') {
     if(btnBot) { btnBot.style.background = '#0ea5e9'; btnBot.style.color = '#fff'; }
     if(campTitleDisp) campTitleDisp.innerText = "Grow Your Bot MAU";
-    if(infoBox) infoBox.style.display = 'none'; // Dusri image ke according proof box hidden rahega[span_9](start_span)[span_9](end_span)
-    if(inputLabelText) inputLabelText.innerText = "Telegram Bot Username or Link (no params)"; //[span_10](start_span)[span_10](end_span)
-    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@my_bot, t.me/my_bot"; //[span_11](start_span)[span_11](end_span)
+    if(infoBox) infoBox.style.display = 'none'; // Proof box hide
+    if(inputLabelText) inputLabelText.innerText = "Telegram Bot Username or Link (no params)";
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@my_bot, t.me/my_bot";
+    if(extraFieldsGroup) extraFieldsGroup.style.display = 'block'; // Title aur Desc dikhana hai!
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Bot interaction verification & retention hold";
   }
 }
@@ -1749,12 +1762,16 @@ function processDeposit() {
 }
 
 function publishCampaign() {
-  var titleLinkInput = (document.getElementById('customTaskTitle').value || '').trim();
+  var targetLinkInput = (document.getElementById('customTaskTitle').value || '').trim();
+  var titleInputText = (document.getElementById('campaignTitleInputText').value || '').trim();
+  var descInputText = (document.getElementById('campaignDescInputText').value || '').trim();
 
-  if(!titleLinkInput) {
+  if(!targetLinkInput) {
     showToast("Kripya target link ya username enter karein.", "error");
     return;
   }
+
+  var finalTitle = (selectedCampaignObj !== 'Channel' && titleInputText) ? titleInputText : targetLinkInput;
 
   var baseCost = selectedCoinCost;
   var extraCost = 0;
@@ -1781,9 +1798,9 @@ function publishCampaign() {
   renderUIValues();
 
   var newCampaignObj = {
-    title: titleLinkInput,
-    link: titleLinkInput,
-    targetInput: titleLinkInput,
+    title: finalTitle,
+    link: targetLinkInput,
+    description: descInputText,
     objective: selectedCampaignObj,
     plan: selectedClickCount + " clicks =" + coinCost.toFixed(1) + " Coins",
     totalClicks: selectedClickCount,
@@ -1800,6 +1817,8 @@ function publishCampaign() {
   db.ref('customTasks').push(newCampaignObj);
 
   if(document.getElementById('customTaskTitle')) document.getElementById('customTaskTitle').value = '';
+  if(document.getElementById('campaignTitleInputText')) document.getElementById('campaignTitleInputText').value = '';
+  if(document.getElementById('campaignDescInputText')) document.getElementById('campaignDescInputText').value = '';
   uploadedCampaignImageBase64 = "";
 
   showToast("✅ Campaign published successfully! Cost deducted from wallet.", "success");
@@ -2499,7 +2518,7 @@ db.ref('customTasks').on('value', function(snapshot) {
     var key = entry[0];
     var task = entry[1];
     var imgHtml = task.image ? '<img src="' + task.image + '" style="width:36px; height:36px; border-radius:8px; object-fit:cover; margin-right:8px;" />' : '<span style="font-size: 24px; margin-right:8px;">📢</span>';
-    html += '<div class="card flex-between" style="background:#111827; margin-bottom:8px;"><div style="display:flex; align-items:center;">' + imgHtml + '<div><span style="font-weight:bold;">' + task.title + '</span><br><small style="color:var(--text-muted);">Plan: ' + (task.plan || 'Standard') + ' | Reward: +0.05 Coin</small></div></div><button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open(\'' + task.link + '\', \'_blank\'); completeTask(0.05, \'' + key + '\');">Start</button></div>';
+    html += '<div class="card flex-between" style="background:#111827; margin-bottom:8px;"><div style="display:flex; align-items:center;">' + imgHtml + '<div><span style="font-weight:bold;">' + task.title + '</span><br><small style="color:var(--text-muted);">' + (task.description ? task.description + ' | ' : '') + 'Plan: ' + (task.plan || 'Standard') + ' | Reward: +0.05 Coin</small></div></div><button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open(\'' + task.link + '\', \'_blank\'); completeTask(0.05, \'' + key + '\');">Start</button></div>';
   });
   if(listEl) listEl.innerHTML = html;
 });
