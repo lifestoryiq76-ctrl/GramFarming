@@ -1082,6 +1082,7 @@ db.ref('completedTasks/' + userId).on('value', function(snapshot) {
     completedTasksSet = Object.keys(snapshot.val());
   } else {
     completedTasksSet = [];
+    // Clear joined tasks cache when admin resets so it returns cleanly to 'Join'
     joinedTasksSet = [];
     localStorage.removeItem('joined_tasks_' + userId);
   }
@@ -2697,7 +2698,7 @@ function claimPartnerTaskReward(reward, taskKey) {
   }
 }
 
-// Partner & Task Click Handler (FIXED FLOW)
+// Partner & Task Click Handler
 function handlePartnerTaskClick(btn) {
   var url = btn.getAttribute('data-url');
   var rewardVal = parseFloat(btn.getAttribute('data-reward')) || 0.08;
@@ -2710,20 +2711,11 @@ function handlePartnerTaskClick(btn) {
     return;
   }
 
-  // Pehli baar click karne par link open hoga aur state 'Claim' ban jayegi
-  if (!joinedTasksSet.includes(key)) {
-    joinedTasksSet.push(key);
-    localStorage.setItem('joined_tasks_' + userId, JSON.stringify(joinedTasksSet));
-    
-    openPartnerTaskLink(url);
-    showToast("Channel open ho gaya hai! Join karne ke baad wapas aakar 'Claim' par click karein.", "success");
-    
-    if (typeof loadAdminPartnerTasks === 'function') loadAdminPartnerTasks();
-    return;
+  if (joinedTasksSet.includes(key)) {
+    claimPartnerTaskReward(rewardVal, key);
+  } else {
+    openTaskVerificationModal(title, url, objective, key, rewardVal);
   }
-
-  // Doosri baar click karne par reward claim hoga
-  claimPartnerTaskReward(rewardVal, key);
 }
 
 // Admin Partner Tasks List Loading
