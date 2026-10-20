@@ -76,7 +76,7 @@ display: inline-block;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex; 
-    justify-style: space-around; 
+    justify-content: space-around; 
     padding: 8px 4px 12px 4px; 
     border-top: 1px solid rgba(51, 65, 85, 0.6); 
     z-index: 1000; 
@@ -863,19 +863,19 @@ No recent transactions yet.
           <div id="modalTaskTitle" style="font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">Channel Title</div>
         </div>
       </div>
-      <div style="font-size: 13px; font-weight: bold; color: var(--accent); white-space: nowrap;">+0.0010 💎</div>
+      <div style="font-size: 13px; font-weight: bold; color: var(--accent); white-space: nowrap;" id="modalTaskRewardDisplay">+0.08 🪙</div>
     </div>
 
     <!-- Instruction Box -->
     <div style="background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 16px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">
       <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-weight: bold; color: var(--text-main);" id="modalInstructionHeader">
-        <span>⏰</span> <span id="modalInstructionTitleText">Subscribe & stay for 8 hours</span>
+        <span>⏰</span> <span id="modalInstructionTitleText">Subscribe & Stay in Channel</span>
       </div>
-      <span id="modalInstructionDescText">Subscribe to the channel and keep your subscription for at least 8 hours so the reward is credited.</span>
+      <span id="modalInstructionDescText">Join the official partner channel and stay subscribed. Click "Join Channel ↗" below to open and join.</span>
     </div>
 
     <!-- Action Button -->
-    <button id="modalActionBtn" class="btn" style="width: 100%; background: #0098ea; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 152, 234, 0.3);" onclick="executeTaskAction()">Join Channel ↗</button>
+    <button id="modalActionBtn" class="btn" style="width: 100%; background: #10b981; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="executeTaskAction()">Join Channel ↗</button>
   </div>
 </div>
 
@@ -966,6 +966,7 @@ var currentDepositSubMethod = 'faucetpay';
 
 var currentSelectedTaskLink = "";
 var currentSelectedTaskKey = "";
+var currentSelectedRewardVal = 0.08;
 
 var clickPackagesData = [
   { clicks: 100, coin: 35 },
@@ -1070,6 +1071,19 @@ if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
 }
 var tgUserNameEl = document.getElementById('telegramUserName');
 if(tgUserNameEl) tgUserNameEl.innerText = displayName;
+
+// Completed & Joined Task Tracking Sets
+var completedTasksSet = JSON.parse(localStorage.getItem('completed_tasks_' + userId) || '[]');
+var joinedTasksSet = JSON.parse(localStorage.getItem('joined_tasks_' + userId) || '[]');
+
+// Sync Completed Tasks from Firebase
+db.ref('completedTasks/' + userId).on('value', function(snapshot) {
+  if (snapshot.exists()) {
+    completedTasksSet = Object.keys(snapshot.val());
+    localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
+    if (typeof loadAdminPartnerTasks === 'function') loadAdminPartnerTasks();
+  }
+});
 
 function initTonConnectUI() {
   try {
@@ -2557,15 +2571,30 @@ function claimRefRewards() {
   showToast("Claim Successful! +" + claimable.toFixed(2) + " Coins claimed from referrals!", "success");
 }
 
-function completeTask(reward, taskKey) {
-  addEarningsWithReferral(reward);
-  showToast("Claim Successful! Completed task and earned +" + reward + " Coins!", "success");
+// Helper to open Telegram Links
+function openPartnerTaskLink(url) {
+  if (!url || url === '#' || url === 'undefined') {
+    showToast("Invalid link!", "error");
+    return;
+  }
+  if (window.Telegram && window.Telegram.WebApp) {
+    if (url.includes('t.me/') && window.Telegram.WebApp.openTelegramLink) {
+      window.Telegram.WebApp.openTelegramLink(url);
+    } else if (window.Telegram.WebApp.openLink) {
+      window.Telegram.WebApp.openLink(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  } else {
+    window.open(url, '_blank');
+  }
 }
 
-// Open Verification Modal Popup Sheet
-function openTaskVerificationModal(title, link, objective, taskKey) {
+// Open Verification Modal Popup Sheet for Partner & Custom Tasks
+function openTaskVerificationModal(title, link, objective, taskKey, rewardVal) {
   currentSelectedTaskLink = link;
   currentSelectedTaskKey = taskKey;
+  currentSelectedRewardVal = parseFloat(rewardVal) || 0.08;
 
   var modal = document.getElementById('taskVerifyModal');
   var modalTitleText = document.getElementById('modalTitleText');
@@ -2576,21 +2605,22 @@ function openTaskVerificationModal(title, link, objective, taskKey) {
   var modalInstructionTitleText = document.getElementById('modalInstructionTitleText');
   var modalInstructionDescText = document.getElementById('modalInstructionDescText');
   var modalActionBtn = document.getElementById('modalActionBtn');
+  var modalTaskRewardDisplay = document.getElementById('modalTaskRewardDisplay');
 
   if(modalTaskTitle) modalTaskTitle.innerText = title;
   if(modalTaskUsername) modalTaskUsername.innerText = link.includes('t.me/') ? '@' + link.split('/').pop() : '@channel';
+  if(modalTaskRewardDisplay) modalTaskRewardDisplay.innerText = '+' + currentSelectedRewardVal + ' 🪙';
 
-  if (objective === 'Channel') {
+  if (objective === 'Channel' || objective === 'Partner') {
     if(modalTitleText) modalTitleText.innerText = "Verify Channel Subscription";
     if(modalTaskIcon) modalTaskIcon.innerHTML = "📢";
-    if(modalInstructionHeader) modalInstructionHeader.innerHTML = '<span>⏰</span> <span id="modalInstructionTitleText">Subscribe & stay for 8 hours</span>';
-    if(modalInstructionDescText) modalInstructionDescText.innerText = "Subscribe to the channel and keep your subscription for at least 8 hours so the reward is credited.";
+    if(modalInstructionHeader) modalInstructionHeader.innerHTML = '<span>⏰</span> <span id="modalInstructionTitleText">Subscribe & Stay in Channel</span>';
+    if(modalInstructionDescText) modalInstructionDescText.innerText = "Join the channel and stay subscribed. Click 'Join Channel ↗' below to open Telegram and join.";
     if(modalActionBtn) {
       modalActionBtn.innerText = "Join Channel ↗";
       modalActionBtn.style.background = "#10b981";
     }
   } else {
-    // Mini App or Bot (MAU)
     if(modalTitleText) modalTitleText.innerText = "Verify Mini App Task";
     if(modalTaskIcon) modalTaskIcon.innerHTML = "⚡";
     if(modalInstructionHeader) modalInstructionHeader.innerHTML = '<span>⚡</span> <span id="modalInstructionTitleText">Proof of Activity (20s)</span>';
@@ -2609,15 +2639,139 @@ function closeTaskModal(event) {
   if(modal) modal.classList.remove('active');
 }
 
+// Executes when user clicks Join inside the verification sheet
 function executeTaskAction() {
   closeTaskModal();
-  if (currentSelectedTaskLink) {
-    window.open(currentSelectedTaskLink, '_blank');
-    completeTask(0.05, currentSelectedTaskKey);
+  if (currentSelectedTaskLink && currentSelectedTaskKey) {
+    // Open Telegram Channel
+    openPartnerTaskLink(currentSelectedTaskLink);
+
+    // Mark task as Joined/Visited
+    if (!joinedTasksSet.includes(currentSelectedTaskKey)) {
+      joinedTasksSet.push(currentSelectedTaskKey);
+      localStorage.setItem('joined_tasks_' + userId, JSON.stringify(joinedTasksSet));
+    }
+
+    showToast("Channel open ho gaya hai! Join karke wapas aane par Claim button par click karein.", "success");
+    
+    // Refresh list to display Claim button
+    loadAdminPartnerTasks();
   }
 }
 
-// Updated Dynamic Task Rendering with Verification Modals
+// Claim Reward Function
+function claimPartnerTaskReward(reward, taskKey) {
+  if (taskKey && !completedTasksSet.includes(taskKey)) {
+    completedTasksSet.push(taskKey);
+    localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
+
+    // Save Completed Status in Firebase
+    db.ref('completedTasks/' + userId + '/' + taskKey).set({
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      reward: reward
+    });
+
+    addEarningsWithReferral(reward);
+    showToast("🎉 Claim Successful! +" + reward + " Coins added to balance!", "success");
+
+    loadAdminPartnerTasks();
+  }
+}
+
+// Partner Task Click Handler
+function handlePartnerTaskClick(btn) {
+  var url = btn.getAttribute('data-url');
+  var rewardVal = parseFloat(btn.getAttribute('data-reward')) || 0.08;
+  var key = btn.getAttribute('data-key');
+  var title = btn.getAttribute('data-title') || 'Partner Channel';
+
+  if (completedTasksSet.includes(key)) {
+    showToast("Aapne yeh task pehle hi claim kar liya hai!", "error");
+    return;
+  }
+
+  if (joinedTasksSet.includes(key)) {
+    claimPartnerTaskReward(rewardVal, key);
+  } else {
+    openTaskVerificationModal(title, url, 'Partner', key, rewardVal);
+  }
+}
+
+// Admin Partner Tasks List Loading
+function loadAdminPartnerTasks() {
+  var partnerContainer = document.getElementById('adminPartnerTasksList');
+  if(!partnerContainer || !db) return;
+
+  db.ref('adminPartnerTasks').on('value', function(snapshot) {
+    if(!snapshot.exists()) {
+      partnerContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No partner tasks currently active.</div>';
+      return;
+    }
+
+    var data = snapshot.val();
+    var html = '';
+
+    Object.entries(data).forEach(function(entry) {
+      var key = entry[0];
+      var task = entry[1];
+
+      var iconUrl = task.icon || 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png';
+      var rewardVal = task.reward || '0.08';
+      var titleText = task.title || 'Partner Channel';
+      var descText = task.description || 'Official verified partner';
+      var linkUrl = task.link || '#';
+
+      var isCompleted = completedTasksSet.includes(key);
+      var isJoined = joinedTasksSet.includes(key);
+      var safeTitle = titleText.replace(/'/g, "\\'");
+
+      var buttonHtml = '';
+
+      if (isCompleted) {
+        // Task already completed & reward claimed
+        buttonHtml = `<button class="btn" style="width: auto; background: #334155; color: #9CA3AF; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: not-allowed;" disabled>Joined ✅</button>`;
+      } else if (isJoined) {
+        // User joined/visited channel -> Claim Button
+        buttonHtml = `<button class="btn" style="width: auto; background: #F59E0B; color: #000000; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);" 
+                  data-url="${linkUrl}" 
+                  data-reward="${rewardVal}" 
+                  data-key="${key}" 
+                  data-title="${safeTitle}"
+                  onclick="handlePartnerTaskClick(this)">Claim 🪙</button>`;
+      } else {
+        // Default initial Join Button
+        buttonHtml = `<button class="btn" style="width: auto; background: #10B981; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;" 
+                  data-url="${linkUrl}" 
+                  data-reward="${rewardVal}" 
+                  data-key="${key}" 
+                  data-title="${safeTitle}"
+                  onclick="handlePartnerTaskClick(this)">Join 👥</button>`;
+      }
+
+      html += `
+        <div class="card flex-between" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="${iconUrl}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" alt="logo" />
+            <div>
+              <div style="font-weight: bold; font-size: 14px; color: #ffffff;">${titleText}</div>
+              <div style="font-size: 11px; color: #9CA3AF; margin-top: 2px;">${descText}</div>
+              <div style="margin-top: 6px;">
+                <span style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #000000; font-weight: bold; font-size: 11px; padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                  🪙 +${rewardVal} Coin
+                </span>
+              </div>
+            </div>
+          </div>
+          ${buttonHtml}
+        </div>
+      `;
+    });
+
+    partnerContainer.innerHTML = html;
+  });
+}
+
+// Dynamic Task Rendering with Verification Modals
 db.ref('customTasks').on('value', function(snapshot) {
   var listEl = document.getElementById('dynamicTasksList');
   var noticeEl = document.getElementById('emptyTasksNotice');
@@ -2644,7 +2798,7 @@ db.ref('customTasks').on('value', function(snapshot) {
       : '<div style="width:44px; height:44px; border-radius:50%; background:#0ea5e9; display:flex; align-items:center; justify-content:center; font-size:20px; margin-right:12px;">🚀</div>';
 
     var btnText = "Join 👥";
-    var btnBg = "#334155";
+    var btnBg = "#10b981";
     var isVerified = task.verifiedAddon || false;
 
     if (task.objective === 'Channel') {
@@ -2659,7 +2813,6 @@ db.ref('customTasks').on('value', function(snapshot) {
       ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
       : '';
 
-    // Pass task details to open verification modal sheet
     var safeTitle = task.title.replace(/'/g, "\\'");
     var safeLink = task.link.replace(/'/g, "\\'");
     var safeObj = task.objective || 'Channel';
@@ -2680,80 +2833,12 @@ db.ref('customTasks').on('value', function(snapshot) {
           '</div>' +
         '</div>' +
       '</div>' +
-      '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeObj + '\', \'' + key + '\');">' + btnText + '</button>' +
+      '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeObj + '\', \'' + key + '\', 0.05);">' + btnText + '</button>' +
     '</div>';
   });
 
   if(listEl) listEl.innerHTML = html;
 });
-
-// Helper function to correctly open Telegram and external links inside Telegram Mini App
-function openPartnerTaskLink(url) {
-  if (!url || url === '#') {
-    showToast("Invalid link!", "error");
-    return;
-  }
-  
-  if (window.Telegram && window.Telegram.WebApp) {
-    if (url.includes('t.me/') && window.Telegram.WebApp.openTelegramLink) {
-      window.Telegram.WebApp.openTelegramLink(url);
-    } else if (window.Telegram.WebApp.openLink) {
-      window.Telegram.WebApp.openLink(url);
-    } else {
-      window.open(url, '_blank');
-    }
-  } else {
-    window.open(url, '_blank');
-  }
-}
-
-// Updated Admin Partner Tasks Loading with "Join 👥" Button Label
-function loadAdminPartnerTasks() {
-  var partnerContainer = document.getElementById('adminPartnerTasksList');
-  if(!partnerContainer || !db) return;
-
-  db.ref('adminPartnerTasks').on('value', function(snapshot) {
-    if(!snapshot.exists()) {
-      partnerContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No partner tasks currently active.</div>';
-      return;
-    }
-
-    var data = snapshot.val();
-    var html = '';
-
-    Object.entries(data).forEach(function(entry) {
-      var key = entry[0];
-      var task = entry[1];
-
-      var iconUrl = task.icon || 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png';
-      var rewardVal = task.reward || '0.08';
-      var titleText = task.title || 'Partner Channel';
-      var descText = task.description || 'Official verified partner';
-      var linkUrl = task.link || '#';
-
-      html += `
-        <div class="card flex-between" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <!-- Clean Round Logo Style -->
-            <img src="${iconUrl}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" alt="logo" />
-            <div>
-              <div style="font-weight: bold; font-size: 14px; color: #ffffff;">${titleText}</div>
-              <div style="font-size: 11px; color: #9CA3AF; margin-top: 2px;">${descText}</div>
-              <div style="margin-top: 6px;">
-                <span style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #000000; font-weight: bold; font-size: 11px; padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                  🪙 +${rewardVal} Coin
-                </span>
-              </div>
-            </div>
-          </div>
-          <button class="btn" style="width: auto; background: #10B981; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;" onclick="openPartnerTaskLink('${linkUrl}'); completeTask(${rewardVal}, '${key}');">Join 👥</button>
-        </div>
-      `;
-    });
-
-    partnerContainer.innerHTML = html;
-  });
-}
 
 function loadMyPublishedTasks() {
   var myContainer = document.getElementById('myPublishedTasksList');
