@@ -29,7 +29,7 @@
 <!-- TON Connect UI SDK -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
-<!-- Firebase Compat Scripts for reliable global scope access -->
+<!-- Firebase Compat Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -66,7 +66,7 @@ display: inline-block;
 .btn-red { background: #ef4444; color: #fff; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 
-/* Modern Bottom Navigation Bar Styles */
+/* Bottom Navigation */
 .nav-bar { 
     position: fixed; 
     bottom: 0; 
@@ -97,25 +97,15 @@ display: inline-block;
     padding: 6px 0;
     transition: all 0.3s ease;
     border-radius: 10px;
-    position: relative;
 }
-.nav-item span {
-    font-size: 10px;
-    margin-top: 3px;
-    letter-spacing: 0.3px;
-}
-.nav-emoji {
-    font-size: 20px;
-    transition: transform 0.3s ease;
-}
+.nav-item span { font-size: 10px; margin-top: 3px; letter-spacing: 0.3px; }
+.nav-emoji { font-size: 20px; transition: transform 0.3s ease; }
 .nav-item.active { 
     color: var(--accent); 
     background: rgba(34, 197, 94, 0.1);
     border: 1px solid rgba(34, 197, 94, 0.2);
 }
-.nav-item.active .nav-emoji {
-    transform: translateY(-2px) scale(1.15);
-}
+.nav-item.active .nav-emoji { transform: translateY(-2px) scale(1.15); }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
@@ -131,72 +121,35 @@ input:focus, select:focus { border-color: var(--accent); }
 #miningBoxesSection { display: none; }
 #miningBoxesSection.show { display: block; }
 
-/* Ad Task & Task UI Styles */
 .ad-task-card { background: var(--card-bg); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-.ad-icon-box { 
-    width: 46px; 
-    height: 46px; 
-    border-radius: 12px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    overflow: hidden; 
-    background: #000000; 
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    flex-shrink: 0;
-}
-.ad-icon-box svg {
-    width: 100%;
-    height: 100%;
-}
+.ad-icon-box { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000000; border: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
+.ad-icon-box svg { width: 100%; height: 100%; }
 .progress-line-bg { width: 100%; background: #334155; height: 5px; border-radius: 3px; margin-top: 10px; overflow: hidden; }
 .progress-line-fill { background: #38bdf8; height: 100%; width: 0%; transition: width 0.4s ease; }
 
-/* Task Category Bar */
 .task-category-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
 .task-category-bar::-webkit-scrollbar { display: none; }
 .task-cat-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
 .task-cat-btn.active { background: #eab308; color: #000; border-color: #eab308; box-shadow: 0 0 12px rgba(234, 179, 8, 0.4); }
 
-/* Subtab bar for Create Task */
 .task-subtab-bar { display: flex; gap: 10px; margin-bottom: 12px; }
 .task-subtab-btn { background: #111827; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
 .task-subtab-btn.active { background: #334155; color: var(--text-main); border-color: var(--accent); }
 
-/* Click Option Buttons */
 .click-btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; margin-bottom: 12px; }
 .click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 2px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 12px; transition: 0.2s; }
 .click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
-/* Payment Method Cards Selection Highlight */
 .pay-method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 12px; }
-.pay-method-card { 
-    background: #0f172a; 
-    border: 1.5px solid var(--border); 
-    border-radius: 10px; 
-    padding: 10px 4px; 
-    text-align: center; 
-    cursor: pointer; 
-    font-size: 12px; 
-    font-weight: 600; 
-    color: var(--text-muted); 
-    transition: all 0.2s ease-in-out; 
-}
-.pay-method-card.active { 
-    border: 2px solid #0098ea !important; 
-    background: rgba(0, 152, 234, 0.25) !important; 
-    color: #ffffff !important; 
-    box-shadow: 0 0 12px rgba(0, 152, 234, 0.6) !important;
-}
+.pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); transition: all 0.2s ease-in-out; }
+.pay-method-card.active { border: 2px solid #0098ea !important; background: rgba(0, 152, 234, 0.25) !important; color: #ffffff !important; box-shadow: 0 0 12px rgba(0, 152, 234, 0.6) !important; }
 
-/* Wallet Sub-card Container Styles */
 .wallet-subcard-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
 .wallet-subcard { background: #111827; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
 .wallet-subcard.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.08); }
 .wallet-subcard-content { display: none; margin-top: 10px; }
 .wallet-subcard-content.active { display: block; }
 
-/* Staking Currency Sub-card Grid */
 .stake-currency-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; position: relative; z-index: 50; }
 .stake-currency-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; user-select: none; }
 .stake-currency-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
@@ -239,7 +192,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Daily Bonus Card -->
 <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
 <span style="font-size: 15px;">🎁 Today's reward: <span id="dailyBonusDisplay">0.01</span> Coin</span>
 <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
@@ -255,7 +207,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
 <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🛸 Space Rocket Mining</h4>
 <div class="mining-grid">
-<!-- Rocket Box 1 -->
 <div class="mining-box" id="mBox-0">
 <span class="limit-badge" id="rocket1Limit">0 / <span id="novaLimitMax">50</span></span>
 <div>
@@ -270,7 +221,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Rocket Box 2 -->
 <div class="mining-box" id="mBox-1">
 <span class="limit-badge" id="rocket2Limit">0 / <span id="cosmicLimitMax">50</span></span>
 <div>
@@ -295,7 +245,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <small style="color:var(--text-muted);">Complete tasks, collect Coins & create campaigns</small>
 </div>
 
-<!-- Task Category Bar -->
 <div class="task-category-bar">
 <button class="task-cat-btn active" onclick="switchTaskCategory('all', this)">🔲 All</button>
 <button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
@@ -303,11 +252,9 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- 1. ALL TAB CONTENT -->
 <div id="taskCat-all" class="task-category-content">
 <div id="adsTasksAll">
 
-<!-- 1. Monetag Ads -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -335,7 +282,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 2. Gigapub Network -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -363,7 +309,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 3. USL Ads -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -404,7 +349,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progUslFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 4. Monetix Streams -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -440,7 +384,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 2. TASK TAB CONTENT -->
 <div id="taskCat-task" class="task-category-content" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;" id="emptyTasksNotice">
 <div style="font-size: 36px; margin-bottom: 8px;">☁️⚡</div>
@@ -450,7 +393,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="dynamicTasksList"></div>
 </div>
 
-<!-- 3. PARTNER TAB CONTENT -->
 <div id="taskCat-partner" class="task-category-content" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
 <div style="font-size: 36px; margin-bottom: 8px;">🤝</div>
@@ -462,21 +404,19 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 4. CREATE TASK TAB CONTENT -->
+<!-- 4. CREATE TASK TAB CONTENT (FIXED UI & OPEN BOT LINK) -->
 <div id="taskCat-create" class="task-category-content" style="display:none;">
 <div class="task-subtab-bar">
 <div class="task-subtab-btn active" id="createSubTab-promote" onclick="switchCreateSubTab('promote')">📢 Promote Link</div>
 <div class="task-subtab-btn" id="createSubTab-my" onclick="switchCreateSubTab('my')">📋 My Tasks</div>
 </div>
 
-<!-- Promote Link Subtab View -->
 <div id="createPromoteView">
 <div class="card" style="background:#0f172a; border: 1px solid var(--accent); padding: 16px;">
 <div class="flex-between" style="margin-bottom: 10px;">
 <h4 style="margin:0; color: var(--accent);" id="campaignTitleDisplay">Grow Your Channel Subscribers</h4>
 </div>
 
-<!-- Campaign Objective -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 6px;">CAMPAIGN OBJECTIVE</label>
 <div style="display: flex; gap: 6px; margin-bottom: 12px;">
 <button class="btn" style="flex:1; background: #0ea5e9; font-size: 12px; padding: 8px;" id="objChanBtn" onclick="setCampaignObj('Channel')">📢 Channel</button>
@@ -484,12 +424,10 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="btn" style="flex:1; background: #1e293b; color: var(--text-muted); font-size: 12px; padding: 8px;" id="objBotBtn" onclick="setCampaignObj('Bot (MAU)')">🤖 Bot (MAU)</button>
 </div>
 
-<!-- Recommended Add-ons -->
 <div style="background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
 <div style="font-size: 13px; font-weight: bold; margin-bottom: 2px;">Recommended Add-ons</div>
 <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Boost your campaign reach and conversion</div>
 
-<!-- Addon 1: Verified Actions -->
 <div id="addonVerifiedCard" onclick="toggleAddon('verified')" style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
 <div style="display: flex; align-items: flex-start; gap: 8px;">
 <span id="addonVerifiedCheck" style="font-size: 16px; color: var(--accent);">🟢</span>
@@ -501,7 +439,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;" id="addonVerifiedPrice">+$0.10 / 100</span>
 </div>
 
-<!-- Addon 2: Home Screen Banner -->
 <div id="addonBannerCard" onclick="toggleAddon('banner')" style="background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
 <div style="display: flex; align-items: flex-start; gap: 8px;">
 <span id="addonBannerCheck" style="font-size: 16px; color: var(--text-muted);">⚪</span>
@@ -514,7 +451,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Dynamic Verification / Info Box -->
+<!-- Dynamic Verification / Info Box (FIXED BUTTON FUNCTION) -->
 <div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between">
 <b style="font-size: 12px; color: var(--yellow);" id="objBoxTitle">Channel Verification: Add Bot</b>
@@ -522,30 +459,27 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 8px 0;" id="objBoxDesc">Add our bot as an admin to your channel/group for automatic verification.</p>
 <div id="objBoxActionArea" style="display: flex; gap: 8px;">
-<a href="https://t.me/GramFarmingbot_bot?start=start" target="_blank" style="background: var(--yellow); color: #000; padding: 6px 12px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; flex: 1; text-align: center;" id="objBoxBtnText">Add Bot to Channel ↗</a>
-<button onclick="showToast('Verification status checked!', 'success')" style="background: #334155; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Verify Status</button>
+<button onclick="openTelegramBotLink()" style="background: var(--yellow); color: #000; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; flex: 1; text-align: center; cursor: pointer;" id="objBoxBtnText">Add Bot to Channel ↗</button>
+<button onclick="showToast('Verification status checked!', 'success')" style="background: #334155; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Verify Status</button>
 </div>
 </div>
 
-<!-- Telegram Channel or Link Input + Image Upload -->
+<!-- Telegram Channel or Link Input + Image Upload (SINGLE INPUT FIXED) -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;" id="inputLabelText">Telegram Channel or Link</label>
-<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-<input type="text" id="customTaskTitle" placeholder="@channel or t.me/channel" style="margin-top: 0; flex: 1;">
+<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+<input type="text" id="customTaskTitle" placeholder="@channel or https://t.me/channel" style="margin-top: 0; flex: 1;">
 <label style="background: #1e293b; border: 1.5px solid var(--border); border-radius: 8px; width: 44px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;" title="Upload Image">
 <span style="font-size: 18px;">🖼️</span>
 <input type="file" id="campaignImageInput" accept="image/*" style="display: none;" onchange="handleCampaignImageUpload(this)">
 </label>
 </div>
-<input type="text" id="customTaskLink" placeholder="https://t.me/..." style="margin-bottom: 12px;">
 
-<!-- Additional Fields for Campaign Title & Description -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Campaign Title / Channel Name</label>
 <input type="text" id="customTaskCampaignName" placeholder="e.g. Subscribe to Crypto Daily" style="margin-bottom: 8px;">
 
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Description (Optional)</label>
 <input type="text" id="customTaskDescription" placeholder="e.g. Join the best alpha community" style="margin-bottom: 12px;">
 
-<!-- Number of Clicks / Completions Selection -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Select Clicks / Completions Package</label>
 <div class="click-btn-grid">
 <div class="click-option-btn active" onclick="setClickPackage(100, this)">100<br><small id="clickBox-100" style="color:var(--yellow); font-weight:normal;">35 🪙</small></div>
@@ -558,12 +492,10 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="click-option-btn" onclick="setClickPackage(5000, this)">5000<br><small id="clickBox-5000" style="color:var(--yellow); font-weight:normal;">1100 🪙</small></div>
 </div>
 
-<!-- Cost Calculation Display -->
 <div style="background: #111827; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;" id="costCalcBox">
 Cost: <strong>35 Coins</strong>
 </div>
 
-<!-- Payment Method Selection -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Payment Method</label>
 <div class="pay-method-grid">
 <div class="pay-method-card" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
@@ -575,7 +507,6 @@ Cost: <strong>35 Coins</strong>
 </div>
 </div>
 
-<!-- My Tasks Subtab View -->
 <div id="createMyTasksView" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
 <h4 style="margin: 0 0 6px 0; color: var(--accent);">Your Published Campaigns</h4>
@@ -720,7 +651,6 @@ No active staking plans found.
 <div id="wallet" class="tab-content">
 <h3 data-i18n="walletExchange" style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
 
-<!-- LIVE BALANCES & RATE DISPLAY CARD -->
 <div class="card" style="background:#0f172a; padding:14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
 <div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent); font-size: 15px;">0.0590</strong></div>
 <div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent); font-size: 15px;">5.0500 USDT</strong></div>
@@ -742,7 +672,6 @@ No active staking plans found.
 <b style="font-size: 13px; color: #0ea5e9;">Convert</b>
 </div>
 
-<!-- 1. WITHDRAW CARD CONTENT -->
 <div id="wContentWithdraw" class="wallet-subcard-content active card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
 <div class="flex-between" style="margin-bottom: 8px;">
 <h4 style="margin:0; color: var(--accent);">⚡ Withdraw Funds</h4>
@@ -779,7 +708,6 @@ Fee (5%): 0.00 | You will receive: 0.00
 <button class="btn" style="margin-top:12px; width:100%; background: var(--accent); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
 </div>
 
-<!-- 2. DEPOSIT CARD CONTENT -->
 <div id="wContentDeposit" class="wallet-subcard-content card" style="border: 1px solid var(--yellow); box-shadow: 0 4px 20px rgba(234, 179, 8, 0.15);">
 <div class="flex-between" style="margin-bottom: 8px;">
 <h4 style="margin:0; color: var(--yellow);">💵 Deposit Funds</h4>
@@ -829,7 +757,6 @@ Enter the amount in USD, then pay the equivalent in TON from your connected wall
 
 </div>
 
-<!-- 3. CONVERT CARD CONTENT -->
 <div id="wContentConvert" class="wallet-subcard-content card" style="border: 1px solid #0ea5e9; box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15);">
 <div class="flex-between" style="margin-bottom: 10px;">
 <h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Convert Balance</h4>
@@ -852,7 +779,6 @@ Enter the amount in USD, then pay the equivalent in TON from your connected wall
 <button class="btn" style="margin-top:10px; width:100%; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
 </div>
 
-<!-- TRANSACTION HISTORY SECTION -->
 <div class="card" style="background: #111827; border: 1px solid var(--border);">
 <div class="flex-between" style="margin-bottom: 8px;">
 <h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
@@ -892,7 +818,7 @@ No recent transactions yet.
 </div>
 </div>
 
-<!-- Modern Bottom Navigation Bar -->
+<!-- Navigation -->
 <div class="nav-bar">
 <div class="nav-item active" onclick="switchTab('home')">
 <span class="nav-emoji">🏠</span>
@@ -920,12 +846,10 @@ No recent transactions yet.
 </div>
 </div>
 
-<!-- TOAST NOTIFICATION CONTAINER -->
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
-<!-- FIREBASE & GLOBAL APP SCRIPT LOGIC -->
 <script>
-// Initialize Firebase Compat
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
   authDomain: "gramfarmingbot-1a570.firebaseapp.com",
@@ -1021,6 +945,16 @@ function showToast(message, type) {
     toast.style.opacity = '0';
     setTimeout(function() { if (toast.parentNode) container.removeChild(toast); }, 300);
   }, 3500);
+}
+
+// Function to open Bot link inside Telegram Mini App
+function openTelegramBotLink() {
+  var botUrl = "https://t.me/GramFarmingbot_bot?startchannel=true";
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+    window.Telegram.WebApp.openTelegramLink(botUrl);
+  } else {
+    window.open(botUrl, '_blank');
+  }
 }
 
 function check530AmRestartAndStaking() {
@@ -1678,7 +1612,7 @@ function setCampaignObj(objType) {
     if(objBoxDesc) objBoxDesc.innerText = "Add our bot as an admin to your channel/group for automatic verification.";
     if(objBoxBtnText) objBoxBtnText.innerText = "Add Bot to Channel ↗";
     if(inputLabelText) inputLabelText.innerText = "Telegram Channel or Link";
-    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@channel or t.me/channel";
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@channel or https://t.me/channel";
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Subscription verification via bot (8h retention)";
 
   } else if(objType === 'Mini App') {
@@ -1697,7 +1631,7 @@ function setCampaignObj(objType) {
     if(campTitleDisp) campTitleDisp.innerText = "Grow Your Bot MAU";
     if(infoBox) infoBox.style.display = 'none';
     if(inputLabelText) inputLabelText.innerText = "Telegram Bot Username or Link (no params)";
-    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@my_bot, t.me/my_bot";
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@my_bot or https://t.me/my_bot";
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Bot interaction verification & retention hold";
   }
 }
@@ -1820,7 +1754,6 @@ function processDeposit() {
 
 function publishCampaign() {
   var titleLinkInput = (document.getElementById('customTaskTitle').value || '').trim();
-  var taskUrl = (document.getElementById('customTaskLink').value || '').trim();
   var campaignName = (document.getElementById('customTaskCampaignName').value || '').trim();
   var campaignDesc = (document.getElementById('customTaskDescription').value || '').trim();
 
@@ -1855,7 +1788,7 @@ function publishCampaign() {
 
   var newCampaignObj = {
     title: campaignName || titleLinkInput,
-    link: taskUrl || titleLinkInput,
+    link: titleLinkInput,
     targetInput: titleLinkInput,
     description: campaignDesc,
     objective: selectedCampaignObj,
@@ -1874,7 +1807,6 @@ function publishCampaign() {
   db.ref('customTasks').push(newCampaignObj);
 
   if(document.getElementById('customTaskTitle')) document.getElementById('customTaskTitle').value = '';
-  if(document.getElementById('customTaskLink')) document.getElementById('customTaskLink').value = '';
   if(document.getElementById('customTaskCampaignName')) document.getElementById('customTaskCampaignName').value = '';
   if(document.getElementById('customTaskDescription')) document.getElementById('customTaskDescription').value = '';
   uploadedCampaignImageBase64 = "";
@@ -2330,7 +2262,7 @@ function exchangeCoins() {
   } else {
     var tonReceived = totalUsdtValue / liveTonPrice;
     tonBalance += tonReceived;
-    showToast("Claim Successful! Exchanged " + amt + " Coins for " + tonReceived.toFixed(4) + " Gram!", "success");
+    showToast("Claim Successful! Exchanged " + amt + " Coins for " + totalUsdtValue.toFixed(4) + " Gram!", "success");
   }
 
   var exInp = document.getElementById('exchangeAmount'); if(exInp) exInp.value = '';
