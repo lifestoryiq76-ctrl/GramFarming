@@ -156,6 +156,31 @@ input:focus, select:focus { border-color: var(--accent); }
 
 .gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
 .gram-pay-info { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
+
+/* Custom Verification Modal Styles */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+    display: none; justify-content: center; align-items: flex-end;
+    z-index: 99999;
+}
+.modal-overlay.active { display: flex; }
+.modal-sheet {
+    background: #1e293b;
+    border: 1px solid var(--border);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px 16px 30px 16px;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+    animation: slideUpModal 0.3s ease;
+}
+@keyframes slideUpModal {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
 </style>
 </head>
 <body>
@@ -821,6 +846,39 @@ No recent transactions yet.
 </div>
 </div>
 
+<!-- 🛡️ VERIFICATION MODAL POPUP SHEET -->
+<div id="taskVerifyModal" class="modal-overlay" onclick="closeTaskModal(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="flex-between" style="margin-bottom: 14px;">
+      <h3 id="modalTitleText" style="margin:0; font-size: 16px; color: var(--text-main);">Verify Channel Subscription</h3>
+      <span onclick="closeTaskModal()" style="font-size: 20px; cursor: pointer; color: var(--text-muted); background: #334155; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</span>
+    </div>
+
+    <!-- Task Mini Card Inside Modal -->
+    <div style="background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+        <div id="modalTaskIcon">📢</div>
+        <div style="overflow: hidden;">
+          <div id="modalTaskUsername" style="font-size: 11px; background: rgba(34, 197, 94, 0.15); color: var(--accent); padding: 2px 6px; border-radius: 6px; display: inline-block; font-weight: bold; margin-bottom: 2px;">@channel</div>
+          <div id="modalTaskTitle" style="font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">Channel Title</div>
+        </div>
+      </div>
+      <div style="font-size: 13px; font-weight: bold; color: var(--accent); white-space: nowrap;">+0.0010 💎</div>
+    </div>
+
+    <!-- Instruction Box -->
+    <div style="background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 16px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-weight: bold; color: var(--text-main);" id="modalInstructionHeader">
+        <span>⏰</span> <span id="modalInstructionTitleText">Subscribe & stay for 8 hours</span>
+      </div>
+      <span id="modalInstructionDescText">Subscribe to the channel and keep your subscription for at least 8 hours so the reward is credited.</span>
+    </div>
+
+    <!-- Action Button -->
+    <button id="modalActionBtn" class="btn" style="width: 100%; background: #0098ea; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 152, 234, 0.3);" onclick="executeTaskAction()">Join Channel ↗</button>
+  </div>
+</div>
+
 <!-- Navigation -->
 <div class="nav-bar">
 <div class="nav-item active" onclick="switchTab('home')">
@@ -906,6 +964,9 @@ var uploadedCampaignImageBase64 = "";
 var currentWithdrawSubMethod = 'faucetpay';
 var currentDepositSubMethod = 'faucetpay';
 
+var currentSelectedTaskLink = "";
+var currentSelectedTaskKey = "";
+
 var clickPackagesData = [
   { clicks: 100, coin: 35 },
   { clicks: 250, coin: 87.5 },
@@ -950,7 +1011,6 @@ function showToast(message, type) {
   }, 3500);
 }
 
-// Function to open Bot link inside Telegram Mini App
 function openTelegramBotLink() {
   var botUrl = "https://t.me/GramFarmingbot_bot?startchannel=true";
   if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
@@ -2502,7 +2562,62 @@ function completeTask(reward, taskKey) {
   showToast("Claim Successful! Completed task and earned +" + reward + " Coins!", "success");
 }
 
-// Updated Dynamic Task Rendering matching screenshot buttons & click counts
+// Open Verification Modal Popup Sheet
+function openTaskVerificationModal(title, link, objective, taskKey) {
+  currentSelectedTaskLink = link;
+  currentSelectedTaskKey = taskKey;
+
+  var modal = document.getElementById('taskVerifyModal');
+  var modalTitleText = document.getElementById('modalTitleText');
+  var modalTaskUsername = document.getElementById('modalTaskUsername');
+  var modalTaskTitle = document.getElementById('modalTaskTitle');
+  var modalTaskIcon = document.getElementById('modalTaskIcon');
+  var modalInstructionHeader = document.getElementById('modalInstructionHeader');
+  var modalInstructionTitleText = document.getElementById('modalInstructionTitleText');
+  var modalInstructionDescText = document.getElementById('modalInstructionDescText');
+  var modalActionBtn = document.getElementById('modalActionBtn');
+
+  if(modalTaskTitle) modalTaskTitle.innerText = title;
+  if(modalTaskUsername) modalTaskUsername.innerText = link.includes('t.me/') ? '@' + link.split('/').pop() : '@channel';
+
+  if (objective === 'Channel') {
+    if(modalTitleText) modalTitleText.innerText = "Verify Channel Subscription";
+    if(modalTaskIcon) modalTaskIcon.innerHTML = "📢";
+    if(modalInstructionHeader) modalInstructionHeader.innerHTML = '<span>⏰</span> <span id="modalInstructionTitleText">Subscribe & stay for 8 hours</span>';
+    if(modalInstructionDescText) modalInstructionDescText.innerText = "Subscribe to the channel and keep your subscription for at least 8 hours so the reward is credited.";
+    if(modalActionBtn) {
+      modalActionBtn.innerText = "Join Channel ↗";
+      modalActionBtn.style.background = "#10b981";
+    }
+  } else {
+    // Mini App or Bot (MAU)
+    if(modalTitleText) modalTitleText.innerText = "Verify Mini App Task";
+    if(modalTaskIcon) modalTaskIcon.innerHTML = "⚡";
+    if(modalInstructionHeader) modalInstructionHeader.innerHTML = '<span>⚡</span> <span id="modalInstructionTitleText">Proof of Activity (20s)</span>';
+    if(modalInstructionDescText) modalInstructionDescText.innerText = "Launch the bot or mini app and spend at least 20 seconds inside to verify and claim your reward.";
+    if(modalActionBtn) {
+      modalActionBtn.innerText = "Launch Mini App (20s) ↗";
+      modalActionBtn.style.background = "#0098ea";
+    }
+  }
+
+  if(modal) modal.classList.add('active');
+}
+
+function closeTaskModal(event) {
+  var modal = document.getElementById('taskVerifyModal');
+  if(modal) modal.classList.remove('active');
+}
+
+function executeTaskAction() {
+  closeTaskModal();
+  if (currentSelectedTaskLink) {
+    window.open(currentSelectedTaskLink, '_blank');
+    completeTask(0.05, currentSelectedTaskKey);
+  }
+}
+
+// Updated Dynamic Task Rendering with Verification Modals
 db.ref('customTasks').on('value', function(snapshot) {
   var listEl = document.getElementById('dynamicTasksList');
   var noticeEl = document.getElementById('emptyTasksNotice');
@@ -2544,6 +2659,11 @@ db.ref('customTasks').on('value', function(snapshot) {
       ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
       : '';
 
+    // Pass task details to open verification modal sheet
+    var safeTitle = task.title.replace(/'/g, "\\'");
+    var safeLink = task.link.replace(/'/g, "\\'");
+    var safeObj = task.objective || 'Channel';
+
     html += '<div class="card flex-between" style="background:#111827; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
       '<div style="display:flex; align-items:center; flex:1; overflow:hidden;">' + 
         imgHtml + 
@@ -2560,7 +2680,7 @@ db.ref('customTasks').on('value', function(snapshot) {
           '</div>' +
         '</div>' +
       '</div>' +
-      '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" onclick="window.open(\'' + task.link + \', \'_blank\'); completeTask(0.05, \'' + key + \');">' + btnText + '</button>' +
+      '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeObj + '\', \'' + key + '\');">' + btnText + '</button>' +
     '</div>';
   });
 
@@ -2580,7 +2700,7 @@ function loadAdminPartnerTasks() {
     Object.entries(data).forEach(function(entry) {
       var key = entry[0];
       var task = entry[1];
-      html += '<div class="card flex-between" style="background:#111827; margin-bottom:8px;"><div><b style="color: var(--accent);">🤝 ' + task.title + '</b><br><small style="color:var(--text-muted);">' + (task.description || 'Partner promotion') + ' | Reward: +0.08 Coin</small></div><button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open(\'' + task.link + \', \'_blank\'); completeTask(0.08, \'' + key + \');">Visit</button></div>';
+      html += '<div class="card flex-between" style="background:#111827; margin-bottom:8px;"><div><b style="color: var(--accent);">🤝 ' + task.title + '</b><br><small style="color:var(--text-muted);">' + (task.description || 'Partner promotion') + ' | Reward: +0.08 Coin</small></div><button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open(\'' + task.link + '\', \'_blank\'); completeTask(0.08, \'' + key + '\');">Visit</button></div>';
     });
     partnerContainer.innerHTML = html;
   });
