@@ -2687,21 +2687,49 @@ db.ref('customTasks').on('value', function(snapshot) {
   if(listEl) listEl.innerHTML = html;
 });
 
+// UPDATED: Load Admin Partner Tasks with Icon Image & Colored Gold Coin Badge
 function loadAdminPartnerTasks() {
   var partnerContainer = document.getElementById('adminPartnerTasksList');
-  if(!partnerContainer) return;
+  if(!partnerContainer || !db) return;
+
   db.ref('adminPartnerTasks').on('value', function(snapshot) {
     if(!snapshot.exists()) {
       partnerContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No partner tasks currently active.</div>';
       return;
     }
+
     var data = snapshot.val();
     var html = '';
+
     Object.entries(data).forEach(function(entry) {
       var key = entry[0];
       var task = entry[1];
-      html += '<div class="card flex-between" style="background:#111827; margin-bottom:8px;"><div><b style="color: var(--accent);">🤝 ' + task.title + '</b><br><small style="color:var(--text-muted);">' + (task.description || 'Partner promotion') + ' | Reward: +0.08 Coin</small></div><button class="btn" style="width: auto; background: var(--accent); padding: 6px 12px; font-size: 12px;" onclick="window.open(\'' + task.link + '\', \'_blank\'); completeTask(0.08, \'' + key + '\');">Visit</button></div>';
+
+      var iconUrl = task.icon || 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png';
+      var rewardVal = task.reward || '0.08';
+      var titleText = task.title || 'Partner Channel';
+      var descText = task.description || 'Official verified partner';
+      var linkUrl = task.link || '#';
+
+      html += `
+        <div class="card flex-between" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="${iconUrl}" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #10B981;" alt="logo" />
+            <div>
+              <div style="font-weight: bold; font-size: 14px; color: #ffffff;">${titleText}</div>
+              <div style="font-size: 11px; color: #9CA3AF; margin-top: 2px;">${descText}</div>
+              <div style="margin-top: 6px;">
+                <span style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #000000; font-weight: bold; font-size: 11px; padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                  🪙 +${rewardVal} Coin
+                </span>
+              </div>
+            </div>
+          </div>
+          <button class="btn" style="width: auto; background: #10B981; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;" onclick="window.open('${linkUrl}', '_blank'); completeTask(${rewardVal}, '${key}');">Visit ↗</button>
+        </div>
+      `;
     });
+
     partnerContainer.innerHTML = html;
   });
 }
