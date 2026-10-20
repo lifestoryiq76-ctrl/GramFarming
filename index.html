@@ -404,7 +404,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 4. CREATE TASK TAB CONTENT (MODIFIED FORM FIELDS) -->
+<!-- 4. CREATE TASK TAB CONTENT -->
 <div id="taskCat-create" class="task-category-content" style="display:none;">
 <div class="task-subtab-bar">
 <div class="task-subtab-btn active" id="createSubTab-promote" onclick="switchCreateSubTab('promote')">📢 Promote Link</div>
@@ -451,19 +451,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Dynamic Verification / Info Box -->
-<div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
-<div class="flex-between">
-<b style="font-size: 12px; color: var(--yellow);" id="objBoxTitle">Channel Verification: Add Bot</b>
-<span id="botUsernameBadge" style="background: var(--yellow); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold;">@GramFarmingbot_bot</span>
-</div>
-<p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 8px 0;" id="objBoxDesc">Add our bot as an admin to your channel/group for automatic verification.</p>
-<div id="objBoxActionArea" style="display: flex; gap: 8px;">
-<button onclick="openTelegramBotLink()" style="background: var(--yellow); color: #000; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; flex: 1; text-align: center; cursor: pointer;" id="objBoxBtnText">Add Bot to Channel ↗</button>
-<button onclick="showToast('Verification status checked!', 'success')" style="background: #334155; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Verify Status</button>
-</div>
-</div>
-
 <!-- Telegram Channel or Link Input + Image Upload -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;" id="inputLabelText">Telegram Channel or Link</label>
 <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
@@ -472,6 +459,19 @@ input:focus, select:focus { border-color: var(--accent); }
 <span style="font-size: 18px;">🖼️</span>
 <input type="file" id="campaignImageInput" accept="image/*" style="display: none;" onchange="handleCampaignImageUpload(this)">
 </label>
+</div>
+
+<!-- Dynamic Verification / Info Box -->
+<div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
+<div class="flex-between" id="objBoxHeader">
+<b style="font-size: 12px; color: var(--yellow);" id="objBoxTitle">Channel Verification: Add Bot</b>
+<span id="botUsernameBadge" style="background: var(--yellow); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold;">@GramFarmingbot_bot</span>
+</div>
+<p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 8px 0;" id="objBoxDesc">Add our bot as an admin to your channel/group for automatic verification.</p>
+<div id="objBoxActionArea" style="display: flex; gap: 8px;">
+<button onclick="openTelegramBotLink()" style="background: var(--yellow); color: #000; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; flex: 1; text-align: center; cursor: pointer;" id="objBoxBtnText">Add Bot to Channel ↗</button>
+<button onclick="showToast('Verification status checked!', 'success')" style="background: #334155; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Verify Status</button>
+</div>
 </div>
 
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Select Clicks / Completions Package</label>
@@ -1590,6 +1590,10 @@ function setCampaignObj(objType) {
   if(btnBot) { btnBot.style.background = '#1e293b'; btnBot.style.color = 'var(--text-muted)'; }
 
   var infoBox = document.getElementById('campaignObjectiveInfoBox');
+  var objBoxHeader = document.getElementById('objBoxHeader');
+  var objBoxTitle = document.getElementById('objBoxTitle');
+  var objBoxDesc = document.getElementById('objBoxDesc');
+  var objBoxActionArea = document.getElementById('objBoxActionArea');
   var inputLabelText = document.getElementById('inputLabelText');
   var customTaskTitleInput = document.getElementById('customTaskTitle');
   var addonVerifiedDesc = document.getElementById('addonVerifiedDesc');
@@ -1599,6 +1603,10 @@ function setCampaignObj(objType) {
     if(btnChan) { btnChan.style.background = '#0ea5e9'; btnChan.style.color = '#fff'; }
     if(campTitleDisp) campTitleDisp.innerText = "Grow Your Channel Subscribers";
     if(infoBox) infoBox.style.display = 'block';
+    if(objBoxHeader) objBoxHeader.style.display = 'flex';
+    if(objBoxActionArea) objBoxActionArea.style.display = 'flex';
+    if(objBoxTitle) objBoxTitle.innerText = "Channel Verification: Add Bot";
+    if(objBoxDesc) objBoxDesc.innerText = "Add our bot as an admin to your channel/group for automatic verification.";
     if(inputLabelText) inputLabelText.innerText = "Telegram Channel or Link";
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "@channel or https://t.me/channel";
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Subscription verification via bot (8h retention)";
@@ -1606,17 +1614,20 @@ function setCampaignObj(objType) {
   } else if(objType === 'Mini App') {
     if(btnApp) { btnApp.style.background = '#0ea5e9'; btnApp.style.color = '#fff'; }
     if(campTitleDisp) campTitleDisp.innerText = "Grow Your Mini App Users";
-    if(infoBox) infoBox.style.display = 'none'; // HIDE IMAGE/BOT BOX IN MINI APP AS REQUESTED
-    if(inputLabelText) inputLabelText.innerText = "Telegram Mini App Link (with Ref/Start)";
-    if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://t.me/game_bot?start=ref123";
+    if(infoBox) infoBox.style.display = 'block';
+    if(objBoxHeader) objBoxHeader.style.display = 'none'; // Pehli image ke hisaab se header badge aur action area hide hoga[span_4](start_span)[span_4](end_span)
+    if(objBoxActionArea) objBoxActionArea.style.display = 'none'; //[span_5](start_span)[span_5](end_span)
+    if(objBoxDesc) objBoxDesc.innerHTML = "<b style='color: var(--yellow); font-size:13px;'>⚡ Proof of Activity (20s)</b><br><span style='color: #cbd5e1;'>Performers will launch your Mini App and spend at least 20 seconds inside (Proof of Activity) to verify and claim their reward.</span>"; //[span_6](start_span)[span_6](end_span)
+    if(inputLabelText) inputLabelText.innerText = "Telegram Mini App Link (with Ref/Start)"; //[span_7](start_span)[span_7](end_span)
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://t.me/game_bot?start=ref123"; //[span_8](start_span)[span_8](end_span)
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "20-second Proof-of-Activity hold to prevent instant drop-offs";
 
   } else if(objType === 'Bot (MAU)') {
     if(btnBot) { btnBot.style.background = '#0ea5e9'; btnBot.style.color = '#fff'; }
     if(campTitleDisp) campTitleDisp.innerText = "Grow Your Bot MAU";
-    if(infoBox) infoBox.style.display = 'none';
-    if(inputLabelText) inputLabelText.innerText = "Telegram Bot Username or Link (no params)";
-    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@my_bot or https://t.me/my_bot";
+    if(infoBox) infoBox.style.display = 'none'; // Dusri image ke according proof box hidden rahega[span_9](start_span)[span_9](end_span)
+    if(inputLabelText) inputLabelText.innerText = "Telegram Bot Username or Link (no params)"; //[span_10](start_span)[span_10](end_span)
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@my_bot, t.me/my_bot"; //[span_11](start_span)[span_11](end_span)
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Bot interaction verification & retention hold";
   }
 }
