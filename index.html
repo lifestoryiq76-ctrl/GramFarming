@@ -2662,10 +2662,8 @@ function closeTaskModal(event) {
 function executeTaskAction() {
   closeTaskModal();
   if (currentSelectedTaskLink && currentSelectedTaskKey) {
-    // Open Telegram Channel directly in Telegram App
     openPartnerTaskLink(currentSelectedTaskLink);
 
-    // Mark task as Joined/Visited
     if (!joinedTasksSet.includes(currentSelectedTaskKey)) {
       joinedTasksSet.push(currentSelectedTaskKey);
       localStorage.setItem('joined_tasks_' + userId, JSON.stringify(joinedTasksSet));
@@ -2673,7 +2671,6 @@ function executeTaskAction() {
 
     showToast("Channel open ho gaya hai! Join karke wapas aane par Claim button par click karein.", "success");
     
-    // Refresh both Partner and Dynamic Tasks UI
     if (typeof loadAdminPartnerTasks === 'function') loadAdminPartnerTasks();
   }
 }
@@ -2684,7 +2681,6 @@ function claimPartnerTaskReward(reward, taskKey) {
     completedTasksSet.push(taskKey);
     localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
 
-    // Save Completed Status in Firebase
     db.ref('completedTasks/' + userId + '/' + taskKey).set({
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       reward: reward
@@ -2833,7 +2829,10 @@ db.ref('customTasks').on('value', function(snapshot) {
     } else if (isJoined) {
       btnText = "Claim 🪙";
       btnBg = "#F59E0B";
-    } else if (task.objective === 'Bot (MAU)' || task.objective === 'Mini App') {
+    } else if (safeObj === 'Channel') {
+      btnText = "Join 👥";
+      btnBg = "#10b981";
+    } else if (safeObj === 'Bot (MAU)' || safeObj === 'Mini App') {
       btnText = "Verify Bot 🤖";
       btnBg = "#0098ea";
     }
