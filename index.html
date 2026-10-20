@@ -404,7 +404,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 4. CREATE TASK TAB CONTENT (FIXED UI & OPEN BOT LINK) -->
+<!-- 4. CREATE TASK TAB CONTENT (MODIFIED FORM FIELDS) -->
 <div id="taskCat-create" class="task-category-content" style="display:none;">
 <div class="task-subtab-bar">
 <div class="task-subtab-btn active" id="createSubTab-promote" onclick="switchCreateSubTab('promote')">📢 Promote Link</div>
@@ -451,7 +451,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Dynamic Verification / Info Box (FIXED BUTTON FUNCTION) -->
+<!-- Dynamic Verification / Info Box -->
 <div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between">
 <b style="font-size: 12px; color: var(--yellow);" id="objBoxTitle">Channel Verification: Add Bot</b>
@@ -464,7 +464,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Telegram Channel or Link Input + Image Upload (SINGLE INPUT FIXED) -->
+<!-- Telegram Channel or Link Input + Image Upload -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;" id="inputLabelText">Telegram Channel or Link</label>
 <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
 <input type="text" id="customTaskTitle" placeholder="@channel or https://t.me/channel" style="margin-top: 0; flex: 1;">
@@ -473,12 +473,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <input type="file" id="campaignImageInput" accept="image/*" style="display: none;" onchange="handleCampaignImageUpload(this)">
 </label>
 </div>
-
-<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Campaign Title / Channel Name</label>
-<input type="text" id="customTaskCampaignName" placeholder="e.g. Subscribe to Crypto Daily" style="margin-bottom: 8px;">
-
-<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Description (Optional)</label>
-<input type="text" id="customTaskDescription" placeholder="e.g. Join the best alpha community" style="margin-bottom: 12px;">
 
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Select Clicks / Completions Package</label>
 <div class="click-btn-grid">
@@ -1596,9 +1590,6 @@ function setCampaignObj(objType) {
   if(btnBot) { btnBot.style.background = '#1e293b'; btnBot.style.color = 'var(--text-muted)'; }
 
   var infoBox = document.getElementById('campaignObjectiveInfoBox');
-  var objBoxTitle = document.getElementById('objBoxTitle');
-  var objBoxDesc = document.getElementById('objBoxDesc');
-  var objBoxBtnText = document.getElementById('objBoxBtnText');
   var inputLabelText = document.getElementById('inputLabelText');
   var customTaskTitleInput = document.getElementById('customTaskTitle');
   var addonVerifiedDesc = document.getElementById('addonVerifiedDesc');
@@ -1608,9 +1599,6 @@ function setCampaignObj(objType) {
     if(btnChan) { btnChan.style.background = '#0ea5e9'; btnChan.style.color = '#fff'; }
     if(campTitleDisp) campTitleDisp.innerText = "Grow Your Channel Subscribers";
     if(infoBox) infoBox.style.display = 'block';
-    if(objBoxTitle) objBoxTitle.innerText = "Channel Verification: Add Bot";
-    if(objBoxDesc) objBoxDesc.innerText = "Add our bot as an admin to your channel/group for automatic verification.";
-    if(objBoxBtnText) objBoxBtnText.innerText = "Add Bot to Channel ↗";
     if(inputLabelText) inputLabelText.innerText = "Telegram Channel or Link";
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "@channel or https://t.me/channel";
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Subscription verification via bot (8h retention)";
@@ -1618,10 +1606,7 @@ function setCampaignObj(objType) {
   } else if(objType === 'Mini App') {
     if(btnApp) { btnApp.style.background = '#0ea5e9'; btnApp.style.color = '#fff'; }
     if(campTitleDisp) campTitleDisp.innerText = "Grow Your Mini App Users";
-    if(infoBox) infoBox.style.display = 'block';
-    if(objBoxTitle) objBoxTitle.innerText = "Proof of Activity (20s)";
-    if(objBoxDesc) objBoxDesc.innerText = "Performers will launch your Mini App and spend at least 20 seconds inside (Proof of Activity) to verify and claim their reward.";
-    if(objBoxBtnText) objBoxBtnText.innerText = "Mini App Active ⚡";
+    if(infoBox) infoBox.style.display = 'none'; // HIDE IMAGE/BOT BOX IN MINI APP AS REQUESTED
     if(inputLabelText) inputLabelText.innerText = "Telegram Mini App Link (with Ref/Start)";
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://t.me/game_bot?start=ref123";
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "20-second Proof-of-Activity hold to prevent instant drop-offs";
@@ -1754,8 +1739,6 @@ function processDeposit() {
 
 function publishCampaign() {
   var titleLinkInput = (document.getElementById('customTaskTitle').value || '').trim();
-  var campaignName = (document.getElementById('customTaskCampaignName').value || '').trim();
-  var campaignDesc = (document.getElementById('customTaskDescription').value || '').trim();
 
   if(!titleLinkInput) {
     showToast("Kripya target link ya username enter karein.", "error");
@@ -1787,10 +1770,9 @@ function publishCampaign() {
   renderUIValues();
 
   var newCampaignObj = {
-    title: campaignName || titleLinkInput,
+    title: titleLinkInput,
     link: titleLinkInput,
     targetInput: titleLinkInput,
-    description: campaignDesc,
     objective: selectedCampaignObj,
     plan: selectedClickCount + " clicks =" + coinCost.toFixed(1) + " Coins",
     totalClicks: selectedClickCount,
@@ -1807,8 +1789,6 @@ function publishCampaign() {
   db.ref('customTasks').push(newCampaignObj);
 
   if(document.getElementById('customTaskTitle')) document.getElementById('customTaskTitle').value = '';
-  if(document.getElementById('customTaskCampaignName')) document.getElementById('customTaskCampaignName').value = '';
-  if(document.getElementById('customTaskDescription')) document.getElementById('customTaskDescription').value = '';
   uploadedCampaignImageBase64 = "";
 
   showToast("✅ Campaign published successfully! Cost deducted from wallet.", "success");
