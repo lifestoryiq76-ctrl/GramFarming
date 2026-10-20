@@ -2687,7 +2687,27 @@ db.ref('customTasks').on('value', function(snapshot) {
   if(listEl) listEl.innerHTML = html;
 });
 
-// UPDATED: Clean Round Icon Rendering for Admin Partner Tasks
+// Helper function to correctly open Telegram and external links inside Telegram Mini App
+function openPartnerTaskLink(url) {
+  if (!url || url === '#') {
+    showToast("Invalid link!", "error");
+    return;
+  }
+  
+  if (window.Telegram && window.Telegram.WebApp) {
+    if (url.includes('t.me/') && window.Telegram.WebApp.openTelegramLink) {
+      window.Telegram.WebApp.openTelegramLink(url);
+    } else if (window.Telegram.WebApp.openLink) {
+      window.Telegram.WebApp.openLink(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  } else {
+    window.open(url, '_blank');
+  }
+}
+
+// Updated Admin Partner Tasks Loading with openPartnerTaskLink
 function loadAdminPartnerTasks() {
   var partnerContainer = document.getElementById('adminPartnerTasksList');
   if(!partnerContainer || !db) return;
@@ -2726,7 +2746,7 @@ function loadAdminPartnerTasks() {
               </div>
             </div>
           </div>
-          <button class="btn" style="width: auto; background: #10B981; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;" onclick="window.open('${linkUrl}', '_blank'); completeTask(${rewardVal}, '${key}');">Visit ↗</button>
+          <button class="btn" style="width: auto; background: #10B981; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;" onclick="openPartnerTaskLink('${linkUrl}'); completeTask(${rewardVal}, '${key}');">Visit ↗</button>
         </div>
       `;
     });
