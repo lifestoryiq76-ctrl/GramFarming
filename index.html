@@ -1082,6 +1082,10 @@ db.ref('completedTasks/' + userId).on('value', function(snapshot) {
     completedTasksSet = Object.keys(snapshot.val());
     localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
     if (typeof loadAdminPartnerTasks === 'function') loadAdminPartnerTasks();
+  } else {
+    completedTasksSet = [];
+    localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
+    if (typeof loadAdminPartnerTasks === 'function') loadAdminPartnerTasks();
   }
 });
 
