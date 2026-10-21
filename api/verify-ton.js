@@ -14,12 +14,13 @@ export default async function handler(req, res) {
 
   const { userId, displayName, amount } = req.body;
 
-  if (!amount || amount <= 0) {
-    return res.status(400).json({ success: false, message: 'Invalid deposit amount' });
+  if (!userId || !amount || amount <= 0) {
+    return res.status(400).json({ success: false, message: 'Invalid user or deposit amount' });
   }
 
   const ADMIN_WALLET = "UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd";
-  const expectedNano = Math.round(parseFloat(amount) * 1e9); // TON to nanoTON
+  const expectedNano = Math.round(parseFloat(amount) * 1e9); // TON/Gram to nanoTON
+  const FIREBASE_DATABASE_URL = "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com";
 
   try {
     // 1st Attempt: TonAPI Fetch
@@ -67,9 +68,41 @@ export default async function handler(req, res) {
     }
 
     if (isFound) {
+      // 1. Fetch current user data from Firebase to update balance
+      let userRes = await fetch(`${FIREBASE_DATABASE_URL}/users/${userId}.json`);
+      let userData = await userRes.json();
+      
+      let currentTonBalance = userData && userData.tonBalance !== undefined ? parseFloat(userData.tonBalance) : 0.0590;
+      let newTonBalance = currentTonBalance + parseFloat(amount);
+
+      // 2. Update user's Ton Balance in Firebase
+      await fetch(`${FIREBASE_DATABASE_URL}/users/${userId}.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tonBalance: newTonBalance })
+      });
+
+      // 3. Save Deposit Record in Firebase for Transaction History
+      const depositKey = `dep_${Date.now()}`;
+      const depositRecord = {
+        id: depositKey,
+        userName: displayName || 'User',
+        userId: userId,
+        method: 'Gram Deposit',
+        amount: parseFloat(amount),
+        status: 'SUCCESS',
+        date: new Date().toLocaleString()
+      };
+
+      await fetch(`${FIREBASE_DATABASE_URL}/deposits/${userId}/${depositKey}.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(depositRecord)
+      });
+
       return res.status(200).json({
         success: true,
-        message: 'Deposit verified successfully on TON Blockchain!'
+        message: 'Deposit verified & credited successfully on blockchain!'
       });
     } else {
       return res.status(400).json({
