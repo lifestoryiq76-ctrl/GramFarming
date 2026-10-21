@@ -9,7 +9,7 @@ app.use(express.json());
 // Serve static files from root directory
 app.use(express.static(path.join(__dirname, '..')));
 
-// 1. Explicit Route for TON Connect Manifest (Fixes "Cannot GET /tonconnect-manifest.json")
+// 1. Explicit Route for TON Connect Manifest
 app.get('/tonconnect-manifest.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -45,7 +45,6 @@ async function updateFirebaseData(path, data) {
 // Credentials Configuration
 const BOT_TOKEN = process.env.BOT_TOKEN || '8823465549:AAFfNZ1hDHR_eAWIeH5eWLCEm6dLkuSfhN0';
 const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY || '54554fbd31a9a72c7e84e4418b59abcde50bd6921c4a89d8dd86ae9b7c8df90a';
-const ADMIN_ID = process.env.ADMIN_ID || 0; // Set ADMIN_ID in Vercel Env Var
 const bot = new Telegraf(BOT_TOKEN);
 const MINI_APP_URL = "https://gram-farming.vercel.app";
 const PAYOUT_CHANNEL = '@GramFarming_Payout';
@@ -69,7 +68,7 @@ async function sendPayoutNotification(withdrawalData) {
     const message = `💸 <b>Payout Success</b> 💸\n\n` +
                     `🗣️ <b>User:</b> ${finalName}\n` +
                     `💳 <b>Method:</b> ${finalMethod}\n` +
-                    `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'TON'}</b>\n` +
+                    `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'Gram'}</b>\n` +
                     `📍 <b>Destination:</b> <code>${destination || 'N/A'}</code>\n` +
                     `📅 <b>Date:</b> ${formattedDate}\n` +
                     `✅ <b>Status:</b> SUCCESS (Approved)`;
@@ -131,7 +130,7 @@ async function handleFaucetPayPayout(req, res) {
       };
 
       const reqKey = `fp_${Date.now()}`;
-      await updateFirebaseData(`faucetpayWithdrawals/${reqKey}`, { ...payoutData, postedToChannel: true });
+      await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, { ...payoutData, postedToChannel: true });
       await sendPayoutNotification(payoutData);
 
       return res.status(200).json({
@@ -169,19 +168,19 @@ app.post('/api/withdraw/ton', async (req, res) => {
       userId: userId || 'Unknown',
       userName: displayName || 'User',
       amount: amount,
-      currency: currency || 'TON',
-      method: 'TON Wallet',
+      currency: currency || 'Gram',
+      method: 'Gram',
       destination: walletAddress,
       status: 'PENDING',
       postedToChannel: false,
       date: new Date().toLocaleString()
     };
 
-    await updateFirebaseData(`tonWithdrawals/${reqKey}`, withdrawalData);
+    await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, withdrawalData);
 
     return res.status(200).json({
       success: true,
-      message: "TON Withdrawal Request submitted successfully! It will be processed manually.",
+      message: "Gram Withdrawal Request submitted successfully! It will be processed manually.",
       id: reqKey
     });
   } catch (error) {
@@ -192,24 +191,27 @@ app.post('/api/withdraw/ton', async (req, res) => {
 // Admin Commands for TON Manual & Multi-send
 bot.command('single_ton', async (ctx) => {
   try {
-    const data = await getFirebaseData('tonWithdrawals');
-    if (!data) return ctx.reply("Koi pending TON withdrawal nahi mila.");
+    const data = await getFirebaseData('withdrawals');
+    if (!data) return ctx.reply("Koi pending Gram withdrawal nahi mila.");
 
-    let responseMsg = "📋 <b>Single TON Withdrawals (Pending):</b>\n\n";
+    let responseMsg = "📋 <b>Single Gram Withdrawals (Pending):</b>\n\n";
     let count = 0;
 
-    for (let key in data) {
-      const item = data[key];
-      if (item && item.status === 'PENDING') {
-        count++;
-        responseMsg += `<b>${count}. Request ID:</b> <code>${key}</code>\n` +
-                       `<b>User:</b> ${item.userName} (${item.userId})\n` +
-                       `<b>Address:</b> <code>${item.destination}</code>\n` +
-                       `<b>Amount:</b> ${item.amount} ${item.currency || 'TON'}\n\n`;
+    for (let uId in data) {
+      const userWithdrawals = data[uId];
+      for (let key in userWithdrawals) {
+        const item = userWithdrawals[key];
+        if (item && item.status === 'PENDING') {
+          count++;
+          responseMsg += `<b>${count}. Request ID:</b> <code>${key}</code>\n` +
+                         `<b>User:</b> ${item.userName} (${item.userId})\n` +
+                         `<b>Address:</b> <code>${item.destination}</code>\n` +
+                         `<b>Amount:</b> ${item.amount} ${item.currency || 'Gram'}\n\n`;
+        }
       }
     }
 
-    if (count === 0) return ctx.reply("Koi Pending TON Request nahi hai.");
+    if (count === 0) return ctx.reply("Koi Pending Gram Request nahi hai.");
     ctx.replyWithHTML(responseMsg);
   } catch (err) {
     ctx.reply(`Error: ${err.message}`);
@@ -218,17 +220,20 @@ bot.command('single_ton', async (ctx) => {
 
 bot.command('multisend_ton', async (ctx) => {
   try {
-    const data = await getFirebaseData('tonWithdrawals');
+    const data = await getFirebaseData('withdrawals');
     if (!data) return ctx.reply("Multi-send ke liye koi data nahi hai.");
 
     let batchText = "";
     let count = 0;
 
-    for (let key in data) {
-      const item = data[key];
-      if (item && item.status === 'PENDING') {
-        count++;
-        batchText += `${item.destination}, ${item.amount}\n`;
+    for (let uId in data) {
+      const userWithdrawals = data[uId];
+      for (let key in userWithdrawals) {
+        const item = userWithdrawals[key];
+        if (item && item.status === 'PENDING') {
+          count++;
+          batchText += `${item.destination}, ${item.amount}\n`;
+        }
       }
     }
 
@@ -253,18 +258,26 @@ bot.command('approve_ton', async (ctx) => {
   if (!reqId) return ctx.reply("Kripya Request ID dein. Example: /approve_ton ton_1710000000");
 
   try {
-    const item = await getFirebaseData(`tonWithdrawals/${reqId}`);
-    if (!item) return ctx.reply("Yeh Request ID nahi mili.");
+    const allData = await getFirebaseData('withdrawals');
+    let found = false;
 
-    item.status = 'SUCCESS (Approved)';
-    await updateFirebaseData(`tonWithdrawals/${reqId}`, item);
+    for (let uId in allData) {
+      if (allData[uId][reqId]) {
+        const item = allData[uId][reqId];
+        item.status = 'SUCCESS (Approved)';
+        await updateFirebaseData(`withdrawals/${uId}/${reqId}`, item);
 
-    const posted = await sendPayoutNotification(item);
-    if (posted) {
-      await updateFirebaseData(`tonWithdrawals/${reqId}`, { postedToChannel: true });
+        const posted = await sendPayoutNotification(item);
+        if (posted) {
+          await updateFirebaseData(`withdrawals/${uId}/${reqId}`, { postedToChannel: true });
+        }
+        found = true;
+        ctx.reply(`✅ Request ${reqId} Approved aur Payout Channel par Post kar diya gaya!`);
+        break;
+      }
     }
 
-    ctx.reply(`✅ Request ${reqId} Approved aur Payout Channel par Post kar diya gaya!`);
+    if (!found) ctx.reply("Yeh Request ID nahi mili.");
   } catch (err) {
     ctx.reply(`Error: ${err.message}`);
   }
@@ -272,21 +285,24 @@ bot.command('approve_ton', async (ctx) => {
 
 bot.command('approve_all_ton', async (ctx) => {
   try {
-    const data = await getFirebaseData('tonWithdrawals');
-    if (!data) return ctx.reply("Approve karne ke liye koi data nahi milha.");
+    const data = await getFirebaseData('withdrawals');
+    if (!data) return ctx.reply("Approve karne ke liye koi data nahi mila.");
 
     let approvedCount = 0;
-    for (let key in data) {
-      const item = data[key];
-      if (item && item.status === 'PENDING') {
-        item.status = 'SUCCESS (Approved)';
-        await updateFirebaseData(`tonWithdrawals/${key}`, item);
+    for (let uId in data) {
+      const userWithdrawals = data[uId];
+      for (let key in userWithdrawals) {
+        const item = userWithdrawals[key];
+        if (item && item.status === 'PENDING') {
+          item.status = 'SUCCESS (Approved)';
+          await updateFirebaseData(`withdrawals/${uId}/${key}`, item);
 
-        const posted = await sendPayoutNotification(item);
-        if (posted) {
-          await updateFirebaseData(`tonWithdrawals/${key}`, { postedToChannel: true });
+          const posted = await sendPayoutNotification(item);
+          if (posted) {
+            await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
+          }
+          approvedCount++;
         }
-        approvedCount++;
       }
     }
 
@@ -298,7 +314,7 @@ bot.command('approve_all_ton', async (ctx) => {
 
 // Payout Polling Logic (For Admin Panel Manual Approvals)
 async function checkAndSendPayouts() {
-  const pathsToCheck = ['withdrawals', 'tonWithdrawals', 'faucetpayWithdrawals'];
+  const pathsToCheck = ['withdrawals'];
   
   for (let dbPath of pathsToCheck) {
     try {
