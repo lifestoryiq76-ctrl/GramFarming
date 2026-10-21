@@ -2560,9 +2560,10 @@ function requestWithdrawal() {
 function loadTransactionHistory() {
   var historyContainer = document.getElementById('transactionHistoryList');
   if (!historyContainer) return;
-  var allTransactions = [];
 
-  db.ref('withdrawals/' + userId).once('value', function(withdrawSnap) {
+  db.ref('withdrawals/' + userId).on('value', function(withdrawSnap) {
+    var allTransactions = [];
+
     if (withdrawSnap.exists()) {
       var wData = withdrawSnap.val();
       Object.values(wData).forEach(function(item) {
@@ -2570,7 +2571,7 @@ function loadTransactionHistory() {
           type: 'Withdrawal',
           method: item.method || 'Payout',
           amount: item.received || item.amount || 0,
-          status: item.status || 'Pending',
+          status: item.status || 'PENDING',
           date: item.date || ''
         });
       });
@@ -2596,7 +2597,7 @@ function loadTransactionHistory() {
       }
 
       var html = '';
-      allTransactions.forEach(function(item) {
+      allTransactions.reverse().forEach(function(item) {
         var isDeposit = item.type === 'Deposit';
         var badgeColor = isDeposit ? 'var(--accent)' : 'var(--yellow)';
         var sign = isDeposit ? '+' : '-';
