@@ -448,7 +448,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, update, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg", 
@@ -621,26 +621,28 @@
             if (fpCount === 0) fpTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No FaucetPay withdrawals found.</td></tr>`;
         });
 
-        // 2. Load TON Withdrawals
-        get(ref(db, 'tonWithdrawals')).then((snapshot) => {
+        // 2. Real-time Load TON Withdrawals from ton_withdrawals
+        onValue(ref(db, "ton_withdrawals"), (snapshot) => {
             const tonTableBody = document.getElementById('tonTableBody');
+            if (!tonTableBody) return;
+            
             tonTableBody.innerHTML = '';
             let tonCount = 0;
 
             if (snapshot.exists()) {
-                snapshot.forEach((child) => {
-                    let wId = child.key;
-                    let w = child.val();
+                const data = snapshot.val();
+                Object.keys(data).forEach((wId) => {
+                    let w = data[wId];
                     let isSuccess = w.status && (w.status.includes('SUCCESS') || w.status.includes('APPROVED'));
                     
                     let actionButtons = '';
                     if (isSuccess) {
                         actionButtons = `<span style="color:#22c55e; font-weight:bold; margin-right:6px;">Approved ✅</span>
-                                         <button class="btn-delete" onclick="deleteWithdrawalRecord('tonWithdrawals/${wId}', 'ton')" title="Delete">🗑️ Delete</button>`;
+                                         <button class="btn-delete" onclick="deleteWithdrawalRecord('ton_withdrawals/${wId}', 'ton')" title="Delete">🗑️ Delete</button>`;
                     } else {
                         actionButtons = `<button class="btn-success" onclick="processTonWithdrawal('${wId}', 'approve')">Approve ✅</button>
                                          <button class="btn-danger" onclick="processTonWithdrawal('${wId}', 'reject')">Reject ❌</button>
-                                         <button class="btn-delete" onclick="deleteWithdrawalRecord('tonWithdrawals/${wId}', 'ton')" title="Delete">🗑️ Delete</button>`;
+                                         <button class="btn-delete" onclick="deleteWithdrawalRecord('ton_withdrawals/${wId}', 'ton')" title="Delete">🗑️ Delete</button>`;
                     }
 
                     let timeAgo = formatTimeAgo(w.id || Date.now());
@@ -649,7 +651,7 @@
 
                     tonTableBody.innerHTML += `<tr>
                         <td>${userDetailHtml}</td>
-                        <td><b>${w.amount ? Number(w.amount).toFixed(4) : '0'}</b> ${w.currency || 'TON'}</td>
+                        <td><b>${w.amount ? Number(w.amount).toFixed(4) : '0'}</b> TON</td>
                         <td>${w.destination || 'N/A'}</td>
                         <td>TON Wallet (Manual)</td>
                         <td>${statusTimeHtml}</td>
@@ -658,7 +660,10 @@
                     tonCount++;
                 });
             }
-            if (tonCount === 0) tonTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No TON withdrawals found.</td></tr>`;
+
+            if (tonCount === 0) {
+                tonTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No TON withdrawals found.</td></tr>`;
+            }
         });
 
         // Load Registered Users
@@ -886,12 +891,12 @@
     };
 
     window.processTonWithdrawal = function(wId, action) {
-        get(ref(db, `tonWithdrawals/${wId}`)).then((snapshot) => {
+        get(ref(db, `ton_withdrawals/${wId}`)).then((snapshot) => {
             if (!snapshot.exists()) { alert("Request nahi mili!"); return; }
             let w = snapshot.val();
             let statusText = action === 'approve' ? 'SUCCESS (Approved)' : 'REJECTED (Refunded)';
 
-            update(ref(db, `tonWithdrawals/${wId}`), { status: statusText, postedToChannel: action === 'approve' ? false : true }).then(() => {
+            update(ref(db, `ton_withdrawals/${wId}`), { status: statusText, postedToChannel: action === 'approve' ? false : true }).then(() => {
                 
                 if (w.userId) {
                     get(ref(db, `withdrawals/${w.userId}`)).then((userW_snap) => {
@@ -927,7 +932,6 @@
                     }).catch(e => console.log(e));
 
                     alert('TON Withdrawal Approved! Channel notification & user history updated.');
-                    location.reload();
                 } else {
                     if (w.userId) {
                         get(ref(db, `users/${w.userId}`)).then((userSnap) => {
@@ -935,11 +939,10 @@
                                 let uData = userSnap.val();
                                 update(ref(db, `users/${w.userId}`), { tonBalance: (uData.tonBalance || 0) + parseFloat(w.amount || 0) }).then(() => {
                                     alert('TON Request Rejected & Refunded to user balance!');
-                                    location.reload();
                                 });
-                            } else { location.reload(); }
+                            }
                         });
-                    } else { location.reload(); }
+                    }
                 }
             });
         });
@@ -949,7 +952,7 @@
         if (!confirm("Kya aap saari pending TON requests ko ek sath approve karke channel par post karna chahte hain?")) return;
 
         try {
-            const snapshot = await get(ref(db, 'tonWithdrawals'));
+            const snapshot = await get(ref(db, 'ton_withdrawals'));
             if (!snapshot.exists()) {
                 alert("Koyi pending TON request nahi mili.");
                 return;
@@ -961,7 +964,7 @@
             for (let key in data) {
                 let item = data[key];
                 if (item && (!item.status || item.status === 'PENDING')) {
-                    await update(ref(db, `tonWithdrawals/${key}`), { status: 'SUCCESS (Approved)', postedToChannel: true });
+                    await update(ref(db, `ton_withdrawals/${key}`), { status: 'SUCCESS (Approved)', postedToChannel: true });
                     
                     if (item.userId) {
                         const userW_snap = await get(ref(db, `withdrawals/${item.userId}`));
@@ -999,7 +1002,6 @@
             }
 
             alert(`✅ Total ${approvedCount} TON requests successfully approve ho gayi aur channel par post ho gayi!`);
-            location.reload();
         } catch (err) {
             alert("Error: " + err.message);
         }
@@ -1009,7 +1011,6 @@
         if (confirm("Kya aap is withdrawal record ko hatana chahte hain?")) {
             remove(ref(db, pathStr)).then(() => {
                 alert("🗑️ Record successfully removed!");
-                location.reload();
             }).catch((err) => {
                 alert("Error: " + err.message);
             });
