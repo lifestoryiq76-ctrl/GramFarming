@@ -2546,7 +2546,28 @@ function requestWithdrawal() {
       date: new Date().toLocaleString()
     };
     db.ref('withdrawals/' + userId).push(newWithdrawalGram);
-    showToast("✅ Gram Withdrawal Request submitted successfully!", "success");
+
+    // Call /api/withdraw/ton API endpoint for proper routing and Firebase sync
+    fetch('/api/withdraw/ton', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: userId,
+        userName: displayName,
+        amount: netReceive,
+        requestedAmount: amt,
+        fee: fee,
+        destination: destination,
+        method: 'Gram'
+      })
+    }).then(function(res) {
+      return res.json();
+    }).then(function(data) {
+      showToast("✅ Gram Withdrawal Request submitted successfully!", "success");
+    }).catch(function(e) {
+      console.error("TON Withdraw Error:", e);
+      showToast("✅ Request logged locally & pending admin approval.", "success");
+    });
   }
 
   saveToFirebase();
