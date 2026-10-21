@@ -274,7 +274,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="task-category-bar">
 <button class="task-cat-btn active" onclick="switchTaskCategory('all', this)">🔲 All</button>
 <button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
-<button class="task-cat-btn" onclick="switchTaskCategory('partner', this)">🤝 Partner</button>
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
@@ -417,17 +416,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Check back soon or create your own task in Create Task tab.</p>
 </div>
 <div id="dynamicTasksList"></div>
-</div>
-
-<div id="taskCat-partner" class="task-category-content" style="display:none;">
-<div class="card" style="text-align: center; padding: 25px 15px; background: #111827;">
-<div style="font-size: 36px; margin-bottom: 8px;">🤝</div>
-<h4 style="margin: 0 0 6px 0; color: var(--text-main);">Partner & Admin Campaigns</h4>
-<p style="font-size: 12px; color: var(--text-muted); margin: 0 0 10px 0;">Official verified partner announcements and tasks.</p>
-</div>
-<div id="adminPartnerTasksList">
-<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No partner tasks currently active.</div>
-</div>
 </div>
 
 <!-- 4. CREATE TASK TAB CONTENT -->
@@ -1132,7 +1120,6 @@ db.ref('completedTasks/' + userId).on('value', function(snapshot) {
     localStorage.removeItem('joined_tasks_' + userId);
   }
   localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
-  if (typeof loadAdminPartnerTasks === 'function') loadAdminPartnerTasks();
 });
 
 function initTonConnectUI() {
@@ -1657,9 +1644,6 @@ function switchTaskCategory(catName, btnEl) {
     var tCA = document.getElementById('taskCat-all'); if(tCA) tCA.style.display = 'block';
   } else if(catName === 'task') {
     var tCT = document.getElementById('taskCat-task'); if(tCT) tCT.style.display = 'block';
-  } else if(catName === 'partner') {
-    var tCP = document.getElementById('taskCat-partner'); if(tCP) tCP.style.display = 'block';
-    loadAdminPartnerTasks();
   } else if(catName === 'create') {
     var tCC = document.getElementById('taskCat-create'); if(tCC) tCC.style.display = 'block';
     switchCreateSubTab('promote');
@@ -2621,36 +2605,6 @@ function claimRefRewards() {
   showToast("Claim Successful! +" + claimable.toFixed(2) + " Coins claimed from referrals!", "success");
 }
 
-function openPartnerTaskLink(url) {
-  if (!url || url === '#' || url === 'undefined') {
-    showToast("Invalid link!", "error");
-    return;
-  }
-
-  var formattedUrl = url.trim();
-  if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
-    if (formattedUrl.startsWith('@')) {
-      formattedUrl = 'https://t.me/' + formattedUrl.substring(1);
-    } else if (formattedUrl.startsWith('t.me/')) {
-      formattedUrl = 'https://' + formattedUrl;
-    } else {
-      formattedUrl = 'https://t.me/' + formattedUrl;
-    }
-  }
-
-  if (window.Telegram && window.Telegram.WebApp) {
-    if (formattedUrl.includes('t.me/') && window.Telegram.WebApp.openTelegramLink) {
-      window.Telegram.WebApp.openTelegramLink(formattedUrl);
-    } else if (window.Telegram.WebApp.openLink) {
-      window.Telegram.WebApp.openLink(formattedUrl);
-    } else {
-      window.open(formattedUrl, '_blank');
-    }
-  } else {
-    window.open(formattedUrl, '_blank');
-  }
-}
-
 function openTaskVerificationModal(title, link, objective, taskKey, rewardVal) {
   currentSelectedTaskLink = link;
   currentSelectedTaskKey = taskKey;
@@ -2673,11 +2627,11 @@ function executeTaskAction() {
       localStorage.setItem('joined_tasks_' + userId, JSON.stringify(joinedTasksSet));
     }
 
-    claimPartnerTaskReward(currentSelectedRewardVal, currentSelectedTaskKey);
+    claimTaskReward(currentSelectedRewardVal, currentSelectedTaskKey);
   }
 }
 
-function claimPartnerTaskReward(reward, taskKey) {
+function claimTaskReward(reward, taskKey) {
   if (taskKey && !completedTasksSet.includes(taskKey)) {
     completedTasksSet.push(taskKey);
     localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
@@ -2689,87 +2643,7 @@ function claimPartnerTaskReward(reward, taskKey) {
 
     addEarningsWithReferral(reward);
     showToast("🎉 Verification Successful! +" + reward + " Coins added to balance!", "success");
-
-    loadAdminPartnerTasks();
   }
-}
-
-function handlePartnerTaskClick(btn) {
-  var url = btn.getAttribute('data-url');
-  var rewardVal = parseFloat(btn.getAttribute('data-reward')) || 0.08;
-  var key = btn.getAttribute('data-key');
-  var title = btn.getAttribute('data-title') || 'Partner Channel';
-  var objective = btn.getAttribute('data-objective') || 'Partner';
-
-  if (completedTasksSet.includes(key)) {
-    showToast("Aapne yeh task pehle hi claim kar liya hai!", "error");
-    return;
-  }
-
-  openTaskVerificationModal(title, url, objective, key, rewardVal);
-}
-
-function loadAdminPartnerTasks() {
-  var partnerContainer = document.getElementById('adminPartnerTasksList');
-  if(!partnerContainer || !db) return;
-
-  db.ref('adminPartnerTasks').on('value', function(snapshot) {
-    if(!snapshot.exists()) {
-      partnerContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No partner tasks currently active.</div>';
-      return;
-    }
-
-    var data = snapshot.val();
-    var html = '';
-
-    Object.entries(data).forEach(function(entry) {
-      var key = entry[0];
-      var task = entry[1];
-
-      var iconUrl = task.icon || 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png';
-      var rewardVal = task.reward || '0.08';
-      var titleText = task.title || 'Partner Channel';
-      var descText = task.description || 'Official verified partner';
-      var linkUrl = task.link || '#';
-
-      var isCompleted = completedTasksSet.includes(key);
-      var safeTitle = titleText.replace(/'/g, "\\'");
-
-      var buttonHtml = '';
-
-      if (isCompleted) {
-        buttonHtml = `<button class="btn" style="width: auto; background: #334155; color: #9CA3AF; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: not-allowed;" disabled>Joined ✅</button>`;
-      } else {
-        buttonHtml = `<button class="btn" style="width: auto; background: #10B981; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;" 
-                  data-url="${linkUrl}" 
-                  data-reward="${rewardVal}" 
-                  data-key="${key}" 
-                  data-title="${safeTitle}"
-                  data-objective="Partner"
-                  onclick="handlePartnerTaskClick(this)">Join 👥</button>`;
-      }
-
-      html += `
-        <div class="card flex-between" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="${iconUrl}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" alt="logo" />
-            <div>
-              <div style="font-weight: bold; font-size: 14px; color: #ffffff;">${titleText}</div>
-              <div style="font-size: 11px; color: #9CA3AF; margin-top: 2px;">${descText}</div>
-              <div style="margin-top: 6px;">
-                <span style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #000000; font-weight: bold; font-size: 11px; padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                  🪙 +${rewardVal} Coin
-                </span>
-              </div>
-            </div>
-          </div>
-          ${buttonHtml}
-        </div>
-      `;
-    });
-
-    partnerContainer.innerHTML = html;
-  });
 }
 
 db.ref('customTasks').on('value', function(snapshot) {
@@ -2828,7 +2702,7 @@ db.ref('customTasks').on('value', function(snapshot) {
       '</div>' +
       '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
       'data-url="' + safeLink + '" data-reward="0.05" data-key="' + key + '" data-title="' + safeTitle + '" data-objective="' + safeObj + '" ' +
-      'onclick="handlePartnerTaskClick(this)">' + btnText + '</button>' +
+      'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeObj + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
     '</div>';
   });
 
