@@ -64,6 +64,7 @@ display: inline-block;
 .btn:disabled { background: #475569; cursor: not-allowed; }
 .btn-yellow { background: var(--yellow); color: #000; font-weight: 700; }
 .btn-red { background: #ef4444; color: #fff; }
+.btn-join { background: #10b981; color: #fff; border-radius: 10px; font-weight: bold; padding: 8px 18px; border: none; cursor: pointer; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 
 /* Bottom Navigation */
@@ -157,18 +158,18 @@ input:focus, select:focus { border-color: var(--accent); }
 .gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
 .gram-pay-info { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
 
-/* Custom Verification Modal Styles (Gemini Theme) */
+/* Custom Verification Modal Styles */
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
     display: none; justify-content: center; align-items: flex-end;
     z-index: 99999;
 }
 .modal-overlay.active { display: flex; }
 .modal-sheet {
-    background: linear-gradient(180deg, #0d1b3e 0%, #060f24 100%);
-    border: 1px solid rgba(0, 152, 234, 0.4);
+    background: linear-gradient(180deg, #0f172a 0%, #060f24 100%);
+    border: 1px solid rgba(56, 189, 248, 0.3);
     border-top-left-radius: 28px;
     border-top-right-radius: 28px;
     width: 100%;
@@ -181,6 +182,25 @@ input:focus, select:focus { border-color: var(--accent); }
 @keyframes slideUpModal {
     from { transform: translateY(100%); }
     to { transform: translateY(0); }
+}
+.badge-gold {
+    background: #eab308;
+    color: #000;
+    font-weight: 800;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.info-box-card {
+    background: #1e293b;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    text-align: left;
+    margin-bottom: 12px;
 }
 </style>
 </head>
@@ -272,12 +292,14 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 
 <div class="task-category-bar">
-<button class="task-cat-btn active" onclick="switchTaskCategory('all', this)">🔲 All</button>
+<button class="task-cat-btn active" onclick="switchTaskCategory('ads', this)">📺 Ads</button>
 <button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('official', this)">⭐ Official</button>
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<div id="taskCat-all" class="task-category-content">
+<!-- 1. ADS CATEGORY CONTENT -->
+<div id="taskCat-ads" class="task-category-content">
 <div id="adsTasksAll">
 
 <div class="ad-task-card">
@@ -409,6 +431,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
+<!-- 2. TASK CATEGORY CONTENT -->
 <div id="taskCat-task" class="task-category-content" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;" id="emptyTasksNotice">
 <div style="font-size: 36px; margin-bottom: 8px;">☁️⚡</div>
@@ -416,6 +439,49 @@ input:focus, select:focus { border-color: var(--accent); }
 <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Check back soon or create your own task in Create Task tab.</p>
 </div>
 <div id="dynamicTasksList"></div>
+</div>
+
+<!-- 3. OFFICIAL CATEGORY CONTENT -->
+<div id="taskCat-official" class="task-category-content" style="display:none;">
+  <!-- Official Channel 1 -->
+  <div class="card flex-between" style="background:#1e293b; border: 1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <!-- Logo Image -->
+      <svg width="46" height="46" viewBox="0 0 100 100" style="border-radius:50%; flex-shrink:0;">
+        <circle cx="50" cy="50" r="48" fill="#1e293b" stroke="#22c55e" stroke-width="4"/>
+        <circle cx="50" cy="50" r="40" fill="#0f172a"/>
+        <text x="50" y="58" font-size="34" text-anchor="middle" fill="#22c55e">🌱</text>
+      </svg>
+      <div>
+        <b style="font-size:15px; color:#fff;">Gram Farming Official</b><br>
+        <small style="color:var(--text-muted); font-size:12px;">Join official news and updates channel</small><br>
+        <span class="badge-gold" style="margin-top:6px;">🪙 +0.08 Coin</span>
+      </div>
+    </div>
+    <button class="btn-join" onclick="openTaskVerificationModal('Gram Farming Official', 'https://t.me/GramFarming_Official', '@GramFarmingOfficial', 'official_news_chan', 0.08)">
+      Join 👥
+    </button>
+  </div>
+
+  <!-- Official Channel 2 -->
+  <div class="card flex-between" style="background:#1e293b; border: 1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <!-- Logo Image -->
+      <svg width="46" height="46" viewBox="0 0 100 100" style="border-radius:50%; flex-shrink:0;">
+        <circle cx="50" cy="50" r="48" fill="#1e293b" stroke="#38bdf8" stroke-width="4"/>
+        <circle cx="50" cy="50" r="40" fill="#0f172a"/>
+        <text x="50" y="58" font-size="34" text-anchor="middle" fill="#38bdf8">💳</text>
+      </svg>
+      <div>
+        <b style="font-size:15px; color:#fff;">Gram Farming Payout</b><br>
+        <small style="color:var(--text-muted); font-size:12px;">Check recent user payment proofs & withdrawals</small><br>
+        <span class="badge-gold" style="margin-top:6px;">🪙 +0.08 Coin</span>
+      </div>
+    </div>
+    <button class="btn-join" onclick="openTaskVerificationModal('Gram Farming Payout', 'https://t.me/GramFarming_Payout', '@GramFarmingPayout', 'official_payout_chan', 0.08)">
+      Join 👥
+    </button>
+  </div>
 </div>
 
 <!-- 4. CREATE TASK TAB CONTENT -->
@@ -475,7 +541,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </label>
 </div>
 
-<!-- Dynamic Verification / Proof of Activity Box (Shown for Channel and Mini App) -->
+<!-- Dynamic Verification / Proof of Activity Box -->
 <div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 12px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between" id="objBoxHeader">
 <b style="font-size: 12px; color: var(--yellow);" id="objBoxTitle">Channel Verification: Add Bot</b>
@@ -835,63 +901,51 @@ No recent transactions yet.
 </div>
 </div>
 
-<!-- 🛡️ UPDATED GEMINI VERIFICATION MODAL POPUP SHEET -->
+<!-- 🛡️ VERIFICATION MODAL SHEET -->
 <div id="taskVerifyModal" class="modal-overlay" onclick="closeTaskModal(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     
     <!-- Close Button -->
-    <div style="display: flex; justify-content: flex-end; margin-bottom: -10px;">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 0px;">
       <span onclick="closeTaskModal()" style="font-size: 18px; cursor: pointer; color: #94a3b8; background: rgba(255,255,255,0.08); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</span>
     </div>
 
-    <!-- Robot / Gemini Graphic Illustration -->
-    <div style="margin: 0 auto 12px auto; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;">
-      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 110px; height: 110px; filter: drop-shadow(0 0 15px rgba(0, 152, 234, 0.5));">
-        <circle cx="100" cy="95" r="55" fill="#1e293b" stroke="#38bdf8" stroke-width="4"/>
-        <path d="M70 50 Q100 25 130 50" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" fill="none"/>
-        <circle cx="60" cy="90" r="12" fill="#334155" stroke="#38bdf8" stroke-width="3"/>
-        <circle cx="140" cy="90" r="12" fill="#334155" stroke="#38bdf8" stroke-width="3"/>
-        <rect x="65" y="70" width="70" height="45" rx="16" fill="#020617" stroke="#0ea5e9" stroke-width="2"/>
-        <circle cx="85" cy="90" r="8" fill="#38bdf8"/>
-        <circle cx="115" cy="90" r="8" fill="#38bdf8"/>
-        <circle cx="83" cy="88" r="3" fill="#fff"/>
-        <circle cx="113" cy="88" r="3" fill="#fff"/>
-        <path d="M92 102 Q100 110 108 102" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" fill="none"/>
-        <path d="M92 135 L100 125 L108 135 L100 145 Z" fill="url(#gemGrad)"/>
-        <defs>
-          <linearGradient id="gemGrad" x1="92" y1="125" x2="108" y2="145" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#3b82f6"/>
-            <stop offset="0.5" stop-color="#ec4899"/>
-            <stop offset="1" stop-color="#eab308"/>
-          </linearGradient>
-        </defs>
-      </svg>
+    <!-- Modal Dynamic Header -->
+    <h3 id="modalTaskHeading" style="color: #ffffff; font-size: 18px; font-weight: 800; margin: 0 0 10px 0; text-align: left;">
+      Verify Channel Subscription
+    </h3>
+
+    <!-- Channel Details Box -->
+    <div class="info-box-card">
+      <div style="font-size: 12px; color: #0ea5e9; font-weight: bold;" id="modalHandleDisplay">@GramFarmingOfficial</div>
+      <div style="font-size: 15px; font-weight: bold; color: #fff; margin-top: 2px;" id="modalTitleDisplay">Gram Farming Official</div>
+      <div style="margin-top: 6px;">
+        <span class="badge-gold" id="modalRewardBadge">+0.08 Coin</span>
+      </div>
     </div>
 
-    <!-- Heading Text -->
-    <h2 style="color: #ffffff; font-size: 20px; font-weight: 800; margin: 0 0 10px 0; letter-spacing: 0.3px; text-shadow: 0 2px 10px rgba(0,152,234,0.3);">
-      Join our channel and group to open the app
-    </h2>
-
-    <!-- Subtitle Description -->
-    <p style="color: #94a3b8; font-size: 13px; line-height: 1.5; margin: 0 auto 22px auto; max-width: 320px;">
-      Join the channel and the group, then tap Verify to get a reward worth $1 of Google shares
-    </p>
-
-    <!-- Action Buttons matching image layout -->
-    <div style="display: flex; flex-direction: column; gap: 12px;">
-      <button onclick="openChannelLink()" class="btn" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; padding: 14px; border-radius: 16px; font-size: 15px; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); cursor: pointer; transition: 0.2s;">
-        Join the channel
-      </button>
-
-      <button onclick="openGroupLink()" class="btn" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; padding: 14px; border-radius: 16px; font-size: 15px; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); cursor: pointer; transition: 0.2s;">
-        Join the group
-      </button>
-
-      <button onclick="executeTaskAction()" id="modalActionBtn" class="btn" style="width: 100%; background: linear-gradient(135deg, #0f172a, #1e293b); color: #ffffff; padding: 14px; border-radius: 16px; font-size: 15px; font-weight: 700; border: 1.5px solid rgba(56, 189, 248, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; transition: 0.2s;">
-        Verify
-      </button>
+    <!-- Instruction Subcard 1 -->
+    <div class="info-box-card">
+      <div style="font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">Subscribe & Stay in Channel</div>
+      <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
+        Join the channel and stay subscribed. Click '<span style="color:#0ea5e9;">Join Channel &gt;</span>' below to open Telegram and join.
+      </div>
     </div>
+
+    <!-- Instruction Subcard 2: Proof of Activity -->
+    <div class="info-box-card">
+      <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">
+        <span>⏱️</span> Proof of Activity · <span id="modalTimerDisplay">20s</span>
+      </div>
+      <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
+        Open the join Channel, stay for at least 15 seconds, then return and tap CHECK when the full 20 seconds is verified.
+      </div>
+    </div>
+
+    <!-- Dynamic Action Button -->
+    <button onclick="handleModalButtonClick()" id="modalActionBtn" class="btn" style="width: 100%; background: #0098ea; color: #ffffff; padding: 14px; border-radius: 25px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 152, 234, 0.4);">
+      Join Channel &gt;
+    </button>
 
   </div>
 </div>
@@ -980,9 +1034,12 @@ var uploadedCampaignImageBase64 = "";
 var currentWithdrawSubMethod = 'faucetpay';
 var currentDepositSubMethod = 'faucetpay';
 
+var currentSelectedTaskTitle = "";
 var currentSelectedTaskLink = "";
 var currentSelectedTaskKey = "";
 var currentSelectedRewardVal = 0.08;
+var modalState = "initial"; // "initial", "timer", "verify"
+var modalTimerInterval = null;
 
 var clickPackagesData = [
   { clicks: 100, coin: 35 },
@@ -1026,26 +1083,6 @@ function showToast(message, type) {
     toast.style.opacity = '0';
     setTimeout(function() { if (toast.parentNode) container.removeChild(toast); }, 300);
   }, 3500);
-}
-
-function openChannelLink() {
-  var channelUrl = currentSelectedTaskLink || "https://t.me/GramFarmingbot_bot";
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
-    window.Telegram.WebApp.openTelegramLink(channelUrl);
-  } else {
-    window.open(channelUrl, '_blank');
-  }
-  showToast("Channel open ho gaya hai, join karein!", "success");
-}
-
-function openGroupLink() {
-  var groupUrl = "https://t.me/GramFarmingbot_bot";
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
-    window.Telegram.WebApp.openTelegramLink(groupUrl);
-  } else {
-    window.open(groupUrl, '_blank');
-  }
-  showToast("Group open ho gaya hai, join karein!", "success");
 }
 
 function openTelegramBotLink() {
@@ -1640,10 +1677,12 @@ function switchTaskCategory(catName, btnEl) {
   document.querySelectorAll('.task-category-content').forEach(function(el) { el.style.display = 'none'; });
   document.querySelectorAll('.task-cat-btn').forEach(function(el) { el.classList.remove('active'); });
 
-  if(catName === 'all') {
-    var tCA = document.getElementById('taskCat-all'); if(tCA) tCA.style.display = 'block';
+  if(catName === 'ads') {
+    var tCA = document.getElementById('taskCat-ads'); if(tCA) tCA.style.display = 'block';
   } else if(catName === 'task') {
     var tCT = document.getElementById('taskCat-task'); if(tCT) tCT.style.display = 'block';
+  } else if(catName === 'official') {
+    var tCO = document.getElementById('taskCat-official'); if(tCO) tCO.style.display = 'block';
   } else if(catName === 'create') {
     var tCC = document.getElementById('taskCat-create'); if(tCC) tCC.style.display = 'block';
     switchCreateSubTab('promote');
@@ -2605,28 +2644,87 @@ function claimRefRewards() {
   showToast("Claim Successful! +" + claimable.toFixed(2) + " Coins claimed from referrals!", "success");
 }
 
-function openTaskVerificationModal(title, link, objective, taskKey, rewardVal) {
+/* Modal Popup Management */
+function openTaskVerificationModal(title, link, handleName, taskKey, rewardVal) {
+  if (completedTasksSet.includes(taskKey)) {
+    showToast("Aapne ye task pehle hi complete kar liya hai! ✅", "success");
+    return;
+  }
+
+  currentSelectedTaskTitle = title;
   currentSelectedTaskLink = link;
   currentSelectedTaskKey = taskKey;
   currentSelectedRewardVal = parseFloat(rewardVal) || 0.08;
+  modalState = "initial";
+
+  if (modalTimerInterval) clearInterval(modalTimerInterval);
+
+  var handleDisp = document.getElementById('modalHandleDisplay');
+  var titleDisp = document.getElementById('modalTitleDisplay');
+  var badgeDisp = document.getElementById('modalRewardBadge');
+  var btn = document.getElementById('modalActionBtn');
+  var timerDisp = document.getElementById('modalTimerDisplay');
+
+  if (handleDisp) handleDisp.innerText = handleName || "@GramFarmingOfficial";
+  if (titleDisp) titleDisp.innerText = title;
+  if (badgeDisp) badgeDisp.innerText = "+ " + currentSelectedRewardVal.toFixed(2) + " Coin";
+  if (timerDisp) timerDisp.innerText = "20s";
+
+  if (btn) {
+    btn.innerText = "Join Channel >";
+    btn.style.background = "#0098ea";
+    btn.disabled = false;
+  }
 
   var modal = document.getElementById('taskVerifyModal');
-  if(modal) modal.classList.add('active');
+  if (modal) modal.classList.add('active');
 }
 
 function closeTaskModal(event) {
   var modal = document.getElementById('taskVerifyModal');
-  if(modal) modal.classList.remove('active');
+  if (modal) modal.classList.remove('active');
+  if (modalTimerInterval) clearInterval(modalTimerInterval);
+  modalState = "initial";
 }
 
-function executeTaskAction() {
-  closeTaskModal();
-  if (currentSelectedTaskLink && currentSelectedTaskKey) {
-    if (!joinedTasksSet.includes(currentSelectedTaskKey)) {
-      joinedTasksSet.push(currentSelectedTaskKey);
-      localStorage.setItem('joined_tasks_' + userId, JSON.stringify(joinedTasksSet));
+function handleModalButtonClick() {
+  var btn = document.getElementById('modalActionBtn');
+  var timerDisp = document.getElementById('modalTimerDisplay');
+
+  if (modalState === "initial") {
+    // Open Telegram Channel/Group Link
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+      window.Telegram.WebApp.openTelegramLink(currentSelectedTaskLink);
+    } else {
+      window.open(currentSelectedTaskLink, '_blank');
     }
 
+    modalState = "timer";
+    var countdown = 20;
+    if (btn) {
+      btn.innerText = "Join Channel. (" + countdown + "s)";
+      btn.disabled = true;
+      btn.style.background = "#334155";
+    }
+
+    modalTimerInterval = setInterval(function() {
+      countdown--;
+      if (timerDisp) timerDisp.innerText = countdown + "s";
+      if (btn) btn.innerText = "Join Channel. (" + countdown + "s)";
+
+      if (countdown <= 0) {
+        clearInterval(modalTimerInterval);
+        modalState = "verify";
+        if (btn) {
+          btn.innerText = "CHECK / VERIFY";
+          btn.style.background = "#22c55e";
+          btn.disabled = false;
+        }
+      }
+    }, 1000);
+
+  } else if (modalState === "verify") {
+    closeTaskModal();
     claimTaskReward(currentSelectedRewardVal, currentSelectedTaskKey);
   }
 }
@@ -2701,8 +2799,7 @@ db.ref('customTasks').on('value', function(snapshot) {
         '</div>' +
       '</div>' +
       '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
-      'data-url="' + safeLink + '" data-reward="0.05" data-key="' + key + '" data-title="' + safeTitle + '" data-objective="' + safeObj + '" ' +
-      'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeObj + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
+      'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
     '</div>';
   });
 
