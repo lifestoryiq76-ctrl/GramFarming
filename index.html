@@ -1174,6 +1174,7 @@ db.ref('completedTasks/' + userId).on('value', function(snapshot) {
   }
   localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
   updateOfficialButtonsState();
+  renderCustomTasksFromFirebase(); // Instant hide joined task on update
 });
 
 function initTonConnectUI() {
@@ -1973,7 +1974,7 @@ function publishCampaign() {
     verifiedAddon: addonVerifiedActive,
     bannerAddon: addonBannerActive,
     image: uploadedCampaignImageBase64 || "",
-    status: 'Pending',
+    status: 'Active', // Default Status set to Active instead of Pending
     userId: userId,
     date: new Date().toLocaleString()
   };
@@ -2776,7 +2777,7 @@ function claimTaskReward(reward, taskKey) {
     // Instantly update Official UI if applicable
     updateOfficialButtonsState();
 
-    // Trigger Instant UI refresh for custom tasks
+    // Trigger Instant UI refresh for custom tasks (it will now hide completed tasks automatically)
     renderCustomTasksFromFirebase();
   }
 }
@@ -2791,19 +2792,25 @@ function renderCustomTasksFromFirebase() {
       return;
     }
 
-    if (noticeEl) noticeEl.style.display = 'none';
     var data = snapshot.val();
     var html = '';
+    var visibleTaskCount = 0;
 
     Object.entries(data).forEach(function(entry) {
       var key = entry[0];
       var task = entry[1];
+
+      // HIDE LOGIC: Agar user is task ko pehle hi join/complete kar chuka hai, toh skip kijiye
+      var isCompleted = completedTasksSet.includes(key);
+      if (isCompleted) return;
 
       var totalClicks = task.totalClicks || 100;
       var clicksDone = task.clicksDone || 0;
       var clicksLeft = task.clicksRemaining !== undefined ? task.clicksRemaining : (totalClicks - clicksDone);
 
       if (clicksLeft <= 0) return; // Skip completed campaign limits
+
+      visibleTaskCount++;
 
       var imgHtml = task.image 
         ? '<img src="' + task.image + '" style="width:44px; height:44px; border-radius:50%; object-fit:cover; margin-right:12px;" />' 
@@ -2813,9 +2820,8 @@ function renderCustomTasksFromFirebase() {
       var safeLink = task.link.replace(/'/g, "\\'");
       var isVerified = task.verifiedAddon || false;
 
-      var isCompleted = completedTasksSet.includes(key);
-      var btnText = isCompleted ? "Joined ✅" : "Join 👥";
-      var btnBg = isCompleted ? "#334155" : "#10b981";
+      var btnText = "Join 👥";
+      var btnBg = "#10b981";
 
       var verifiedBadgeHtml = isVerified 
         ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
@@ -2842,7 +2848,13 @@ function renderCustomTasksFromFirebase() {
       '</div>';
     });
 
-    if(listEl) listEl.innerHTML = html;
+    if (visibleTaskCount === 0) {
+      if(listEl) listEl.innerHTML = "";
+      if (noticeEl) noticeEl.style.display = 'block';
+    } else {
+      if (noticeEl) noticeEl.style.display = 'none';
+      if(listEl) listEl.innerHTML = html;
+    }
   });
 }
 
@@ -2869,12 +2881,14 @@ function loadMyPublishedTasks() {
         var done = task.clicksDone || 0;
         var total = task.totalClicks || 100;
         var remaining = task.clicksRemaining !== undefined ? task.clicksRemaining : (total - done);
-        var statusText = task.status || 'Pending';
-        if(remaining <= 0) statusText = 'Done';
-        var statusColor = statusText === 'Done' ? 'var(--accent)' : 'var(--yellow)';
+        
+        // Status Text Logic: Pending ki jagah Active / Done
+        var statusText = (remaining <= 0) ? 'Done' : 'Active';
+        var statusColor = (remaining <= 0) ? 'var(--accent)' : '#38bdf8';
+        
         var imgHtml = task.image ? '<img src="' + task.image + '" style="width:30px; height:30px; border-radius:6px; object-fit:cover; margin-right:6px;" />' : '';
 
-        html += '<div class="card" style="background:#111827; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(234, 179, 8, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0f172a; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
+        html += '<div class="card" style="background:#111827; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(56, 189, 248, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0f172a; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
       }
     });
     myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi kiya hai.</div>';
