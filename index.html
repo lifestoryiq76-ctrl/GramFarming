@@ -41,7 +41,7 @@
 --text-muted: #94a3b8;
 --border: #334155;
 --ton-blue: #0098ea;
---sky-blue: #0a84c1; /* Exact color matched from uploaded image */
+--sky-blue: #0a84c1;
 }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 90px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
@@ -369,7 +369,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 <div>
 <b style="font-size: 15px;">Monetix Streams</b><br>
-<small style="color:var(--text-muted);">Direct publisher video streams (2x Ads)</small><br>
+<small style="color:var(--text-muted);">Direct publisher video streams</small><br>
 <span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetixVal">0.03</span> 🪙 / view</span>
 </div>
 </div>
@@ -1966,10 +1966,10 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
 
   // 1. DUAL AD SEQUENCE FOR MONETIX STREAMS
   if (adName === 'Monetix') {
-    if (btn) btn.innerText = "⏳ Loading 1st Ad (Monetix)...";
+    if (btn) btn.innerText = "⏳ Loading...";
 
     var triggerSecondAdMonetag = function() {
-      if (btn) btn.innerText = "⏳ Loading 2nd Ad (Monetag)...";
+      if (btn) btn.innerText = "⏳ Loading...";
       
       // Trigger 2nd Ad: Monetag SDK
       if (typeof window.show_11989490 === 'function') {
