@@ -75,7 +75,7 @@ display: inline-block;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex; 
-    justify-content: space-around; 
+    justify-around: space-around; 
     padding: 8px 4px 12px 4px; 
     border-top: 1px solid rgba(51, 65, 85, 0.6); 
     z-index: 1000; 
@@ -140,14 +140,10 @@ input:focus, select:focus { border-color: var(--accent); }
 .click-option-btn { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 2px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 12px; transition: 0.2s; }
 .click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
-/* Updated Payment Method Card Style - Sky Blue / Asmani Active Highlight */
-.pay-method-header { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 6px; }
-.btn-modify { background: rgba(14, 165, 233, 0.15); color: var(--sky-blue); border: 1px solid var(--sky-blue); font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-.btn-modify:hover { background: var(--sky-blue); color: #fff; }
-
+/* Payment Section Styling */
 .pay-method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-.pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: all 0.25s ease-in-out; }
-.pay-method-card.active { border: 2px solid var(--sky-blue) !important; background: rgba(14, 165, 233, 0.2) !important; color: #ffffff !important; box-shadow: 0 0 14px rgba(14, 165, 233, 0.5) !important; transform: translateY(-2px); }
+.pay-method-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); transition: all 0.25s ease-in-out; }
+.pay-method-card.active { border: 2px solid var(--sky-blue) !important; background: var(--sky-blue) !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.6) !important; transform: translateY(-2px); }
 
 .wallet-subcard-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
 .wallet-subcard { background: #111827; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
@@ -529,13 +525,12 @@ input:focus, select:focus { border-color: var(--accent); }
 Cost: <strong>35 Coins</strong>
 </div>
 
-<!-- Payment Method Header & Modify Button -->
-<div class="pay-method-header">
+<!-- Payment Method Header -->
+<div style="margin-top: 10px; margin-bottom: 6px;">
 <label style="font-size: 12px; color: var(--text-muted);">Payment Method</label>
-<button class="btn-modify" onclick="showToast('Select your preferred payment currency below', 'success')">✏️ Modify</button>
 </div>
 
-<!-- Asmani Highlighted Payment Method Grid -->
+<!-- Asmani Full Color Highlighted Payment Grid -->
 <div class="pay-method-grid">
 <div class="pay-method-card" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
 <div class="pay-method-card active" id="payCoin" onclick="setPaymentMethod('Coin')">🪙 Coin</div>
@@ -2022,7 +2017,6 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   if (adName === 'Monetag' && typeof window.show_11989490 === 'function') {
     adPromise = window.show_11989490().catch(function() {});
   } else if (adName === 'Gigapub' && typeof window.showGiga === 'function') {
-    // SIRF GIGAPUB AD CHALEGA
     adPromise = window.showGiga().catch(function() {});
   }
 
