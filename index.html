@@ -454,7 +454,7 @@ input:focus, select:focus { border-color: var(--accent); }
         <span class="badge-gold" style="margin-top:6px;">🪙 +0.08 Coin</span>
       </div>
     </div>
-    <button class="btn-join" onclick="openTaskVerificationModal('Gram Farming Official', 'https://t.me/GramFarming_Official', '@GramFarmingOfficial', 'official_news_chan', 0.08)">
+    <button class="btn-join" id="officialBtn_news" onclick="openTaskVerificationModal('Gram Farming Official', 'https://t.me/GramFarming_Official', '@GramFarmingOfficial', 'official_news_chan', 0.08)">
       Join 👥
     </button>
   </div>
@@ -470,7 +470,7 @@ input:focus, select:focus { border-color: var(--accent); }
         <span class="badge-gold" style="margin-top:6px;">🪙 +0.08 Coin</span>
       </div>
     </div>
-    <button class="btn-join" onclick="openTaskVerificationModal('Gram Farming Payout', 'https://t.me/GramFarming_Payout', '@GramFarmingPayout', 'official_payout_chan', 0.08)">
+    <button class="btn-join" id="officialBtn_payout" onclick="openTaskVerificationModal('Gram Farming Payout', 'https://t.me/GramFarming_Payout', '@GramFarmingPayout', 'official_payout_chan', 0.08)">
       Join 👥
     </button>
   </div>
@@ -1140,6 +1140,30 @@ if(tgUserNameEl) tgUserNameEl.innerText = displayName;
 var completedTasksSet = [];
 var joinedTasksSet = JSON.parse(localStorage.getItem('joined_tasks_' + userId) || '[]');
 
+function updateOfficialButtonsState() {
+  var newsBtn = document.getElementById('officialBtn_news');
+  if (newsBtn) {
+    if (completedTasksSet.includes('official_news_chan')) {
+      newsBtn.innerText = "Joined ✅";
+      newsBtn.style.background = "#334155";
+    } else {
+      newsBtn.innerText = "Join 👥";
+      newsBtn.style.background = "#10b981";
+    }
+  }
+
+  var payoutBtn = document.getElementById('officialBtn_payout');
+  if (payoutBtn) {
+    if (completedTasksSet.includes('official_payout_chan')) {
+      payoutBtn.innerText = "Joined ✅";
+      payoutBtn.style.background = "#334155";
+    } else {
+      payoutBtn.innerText = "Join 👥";
+      payoutBtn.style.background = "#10b981";
+    }
+  }
+}
+
 db.ref('completedTasks/' + userId).on('value', function(snapshot) {
   if (snapshot.exists()) {
     completedTasksSet = Object.keys(snapshot.val());
@@ -1149,6 +1173,7 @@ db.ref('completedTasks/' + userId).on('value', function(snapshot) {
     localStorage.removeItem('joined_tasks_' + userId);
   }
   localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
+  updateOfficialButtonsState();
 });
 
 function initTonConnectUI() {
@@ -2726,76 +2751,103 @@ function claimTaskReward(reward, taskKey) {
     completedTasksSet.push(taskKey);
     localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
 
+    // Save completed task in Firebase
     db.ref('completedTasks/' + userId + '/' + taskKey).set({
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       reward: reward
     });
 
+    // Update clicksDone & clicksRemaining if custom task
+    if (!taskKey.startsWith('official_')) {
+      db.ref('customTasks/' + taskKey).transaction(function(task) {
+        if (task) {
+          task.clicksDone = (task.clicksDone || 0) + 1;
+          if (task.clicksRemaining !== undefined) {
+            task.clicksRemaining = Math.max(0, task.clicksRemaining - 1);
+          }
+        }
+        return task;
+      });
+    }
+
     addEarningsWithReferral(reward);
     showToast("🎉 Verification Successful! +" + reward + " Coins added to balance!", "success");
+
+    // Instantly update Official UI if applicable
+    updateOfficialButtonsState();
+
+    // Trigger Instant UI refresh for custom tasks
+    renderCustomTasksFromFirebase();
   }
 }
 
-db.ref('customTasks').on('value', function(snapshot) {
-  var listEl = document.getElementById('dynamicTasksList');
-  var noticeEl = document.getElementById('emptyTasksNotice');
-  if (!snapshot.exists()) {
-    if(listEl) listEl.innerHTML = "";
-    if (noticeEl) noticeEl.style.display = 'block';
-    return;
-  }
+function renderCustomTasksFromFirebase() {
+  db.ref('customTasks').once('value', function(snapshot) {
+    var listEl = document.getElementById('dynamicTasksList');
+    var noticeEl = document.getElementById('emptyTasksNotice');
+    if (!snapshot.exists()) {
+      if(listEl) listEl.innerHTML = "";
+      if (noticeEl) noticeEl.style.display = 'block';
+      return;
+    }
 
-  if (noticeEl) noticeEl.style.display = 'none';
-  var data = snapshot.val();
-  var html = '';
+    if (noticeEl) noticeEl.style.display = 'none';
+    var data = snapshot.val();
+    var html = '';
 
-  Object.entries(data).forEach(function(entry) {
-    var key = entry[0];
-    var task = entry[1];
+    Object.entries(data).forEach(function(entry) {
+      var key = entry[0];
+      var task = entry[1];
 
-    var totalClicks = task.totalClicks || 100;
-    var clicksDone = task.clicksDone || 0;
-    var clicksLeft = task.clicksRemaining !== undefined ? task.clicksRemaining : (totalClicks - clicksDone);
+      var totalClicks = task.totalClicks || 100;
+      var clicksDone = task.clicksDone || 0;
+      var clicksLeft = task.clicksRemaining !== undefined ? task.clicksRemaining : (totalClicks - clicksDone);
 
-    var imgHtml = task.image 
-      ? '<img src="' + task.image + '" style="width:44px; height:44px; border-radius:50%; object-fit:cover; margin-right:12px;" />' 
-      : '<div style="width:44px; height:44px; border-radius:50%; background:#0ea5e9; display:flex; align-items:center; justify-content:center; font-size:20px; margin-right:12px;">🚀</div>';
+      if (clicksLeft <= 0) return; // Skip completed campaign limits
 
-    var safeTitle = task.title.replace(/'/g, "\\'");
-    var safeLink = task.link.replace(/'/g, "\\'");
-    var safeObj = task.objective || 'Channel';
-    var isVerified = task.verifiedAddon || false;
+      var imgHtml = task.image 
+        ? '<img src="' + task.image + '" style="width:44px; height:44px; border-radius:50%; object-fit:cover; margin-right:12px;" />' 
+        : '<div style="width:44px; height:44px; border-radius:50%; background:#0ea5e9; display:flex; align-items:center; justify-content:center; font-size:20px; margin-right:12px;">🚀</div>';
 
-    var isCompleted = completedTasksSet.includes(key);
-    var btnText = isCompleted ? "Joined ✅" : "Join 👥";
-    var btnBg = isCompleted ? "#334155" : "#10b981";
+      var safeTitle = task.title.replace(/'/g, "\\'");
+      var safeLink = task.link.replace(/'/g, "\\'");
+      var isVerified = task.verifiedAddon || false;
 
-    var verifiedBadgeHtml = isVerified 
-      ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
-      : '';
+      var isCompleted = completedTasksSet.includes(key);
+      var btnText = isCompleted ? "Joined ✅" : "Join 👥";
+      var btnBg = isCompleted ? "#334155" : "#10b981";
 
-    html += '<div class="card flex-between" style="background:#111827; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
-      '<div style="display:flex; align-items:center; flex:1; overflow:hidden;">' + 
-        imgHtml + 
-        '<div style="overflow:hidden;">' +
-          '<div style="display:flex; align-items:center;">' +
-            '<b style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; color:#fff;">' + task.title + '</b>' +
-            verifiedBadgeHtml +
-          '</div>' +
-          '<div style="margin-top:2px; font-size:12px; font-weight:bold; color:var(--accent);">' +
-            '+0.05 🪙' +
-          '</div>' +
-          '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">' +
-            '🕒 ' + Math.max(0, clicksLeft) + ' clicks left' +
+      var verifiedBadgeHtml = isVerified 
+        ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
+        : '';
+
+      html += '<div class="card flex-between" style="background:#111827; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
+        '<div style="display:flex; align-items:center; flex:1; overflow:hidden;">' + 
+          imgHtml + 
+          '<div style="overflow:hidden;">' +
+            '<div style="display:flex; align-items:center;">' +
+              '<b style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; color:#fff;">' + task.title + '</b>' +
+              verifiedBadgeHtml +
+            '</div>' +
+            '<div style="margin-top:2px; font-size:12px; font-weight:bold; color:var(--accent);">' +
+              '+0.05 🪙' +
+            '</div>' +
+            '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">' +
+              '🕒 ' + Math.max(0, clicksLeft) + ' clicks left' +
+            '</div>' +
           '</div>' +
         '</div>' +
-      '</div>' +
-      '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
-      'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
-    '</div>';
-  });
+        '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
+        'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
+      '</div>';
+    });
 
-  if(listEl) listEl.innerHTML = html;
+    if(listEl) listEl.innerHTML = html;
+  });
+}
+
+db.ref('customTasks').on('value', function() {
+  renderCustomTasksFromFirebase();
 });
 
 function loadMyPublishedTasks() {
