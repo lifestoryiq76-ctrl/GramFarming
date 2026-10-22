@@ -287,8 +287,8 @@ input:focus, select:focus { border-color: var(--accent); }
 </head>
 <body>
 
-<!-- 🟢 Hidden Frame For Isolated Gigapub -->
-<iframe id="gigapubFrame" src="gigapub.html" style="display:none; width:0; height:0; border:none;"></iframe>
+<!-- 🟢 Fullscreen Overlay Frame For Gigapub Ads -->
+<iframe id="gigapubFrame" src="gigapub.html" style="position:fixed; top:0; left:0; width:100%; height:100%; border:none; z-index:99999; display:none;"></iframe>
 
 <!-- 🟢 Ad Loading Full Screen Overlay -->
 <div id="adLoadingScreen" class="ad-loading-screen">
@@ -2083,14 +2083,22 @@ window.addEventListener('message', function(event) {
   var btn = document.getElementById('taskGigapubBtn');
   var reward = rewards.gigapub;
   var timerSec = adTimers.gigapub;
+  var frame = document.getElementById('gigapubFrame');
 
   if (event.data.type === 'GIGAPUB_SUCCESS') {
     hideAdLoadingScreen();
     finishAdWatchSuccess(limitElementId, btn, reward);
     startTaskCountdownTimer(btn, timerSec);
+    
+    // Ad display hone ke 5 seconds baad frame hide hoga
+    setTimeout(function() {
+      if (frame) frame.style.display = 'none';
+    }, 5000);
+
   } else if (event.data.type === 'GIGAPUB_FAIL' || event.data.type === 'GIGAPUB_NOT_READY') {
     hideAdLoadingScreen();
-    showToast("Gigapub ad failed to load.", "error");
+    if (frame) frame.style.display = 'none';
+    showToast("Gigapub ad load nahi ho saka.", "error");
     if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
   }
 });
@@ -2111,6 +2119,7 @@ function watchGigapubAd() {
 
   var frame = document.getElementById('gigapubFrame');
   if (frame && frame.contentWindow) {
+    frame.style.display = 'block'; // Frame ko screen par visible karein
     frame.contentWindow.postMessage({ type: 'START_GIGAPUB' }, '*');
   } else {
     hideAdLoadingScreen();
@@ -2395,6 +2404,7 @@ function handleRocketAction(index, rocketName, adType) {
       showAdLoadingScreen();
       var frame = document.getElementById('gigapubFrame');
       if (frame && frame.contentWindow) {
+        frame.style.display = 'block';
         frame.contentWindow.postMessage({ type: 'START_GIGAPUB' }, '*');
       } else {
         hideAdLoadingScreen();
