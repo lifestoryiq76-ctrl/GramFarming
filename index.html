@@ -252,7 +252,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🛸 Space Rocket Mining</h4>
 <div class="mining-grid">
 
-<!-- MINING BOX 1: MONETAG ADS -->
+<!-- MINING BOX 1: MONETAG ADS ONLY -->
 <div class="mining-box" id="mBox-0">
 <span class="limit-badge" id="rocket1Limit">0 / <span id="novaLimitMax">50</span></span>
 <div>
@@ -267,7 +267,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- MINING BOX 2: GIGAPUB ADS ONLY (LOCATION 2) -->
+<!-- MINING BOX 2: GIGAPUB ADS ONLY -->
 <div class="mining-box" id="mBox-1">
 <span class="limit-badge" id="rocket2Limit">0 / <span id="cosmicLimitMax">50</span></span>
 <div>
@@ -304,7 +304,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="taskCat-ads" class="task-category-content">
 <div id="adsTasksAll">
 
-<!-- MONETAG AD TASK -->
+<!-- MONETAG AD TASK ONLY -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -332,7 +332,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- GIGAPUB AD TASK (LOCATION 1) -->
+<!-- GIGAPUB AD TASK ONLY -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -354,7 +354,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- MONETIX AD TASK -->
+<!-- MONETIX AD TASK (Monetix + Monetag Sequence) -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -1940,12 +1940,16 @@ function toggleMiningBoxes() {
 }
 
 /* =========================================================
-   GIGAPUB DIRECT TRIGGER HANDLER (ADDED FIX)
+   GIGAPUB DIRECT TRIGGER HANDLER
    ========================================================= */
-function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec) {
+function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec, onSuccessCb) {
   var handleSuccess = function() {
-    finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-    startTaskCountdownTimer(btn, timerDurationSec);
+    if (typeof onSuccessCb === 'function') {
+      onSuccessCb();
+    } else {
+      finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+      startTaskCountdownTimer(btn, timerDurationSec);
+    }
   };
 
   var handleError = function(err) {
@@ -1957,7 +1961,6 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
     }
   };
 
-  // Robust multi-check for SDK methods
   if (typeof window.showGiga === 'function') {
     window.showGiga().then(handleSuccess).catch(handleError);
   } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
@@ -1982,19 +1985,19 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. GIGAPUB (EXCLUSIVELY DIRECT CALL)
+  // 1. GIGAPUB (EXCLUSIVELY GIGAPUB ADS ONLY)
   if (adName === 'Gigapub') {
     if (btn) btn.innerText = "⏳ Loading Gigapub...";
     triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
     return;
   }
 
-  // 2. MONETIX
+  // 2. MONETIX (DOUBLE AD: MONETIX FIRST, THEN MONETAG)
   if (adName === 'Monetix') {
     if (btn) btn.innerText = "⏳ Loading...";
 
     var triggerSecondAdMonetag = function() {
-      if (btn) btn.innerText = "⏳ Loading...";
+      if (btn) btn.innerText = "⏳ Loading Next Ad...";
       if (typeof window.show_11989490 === 'function') {
         window.show_11989490().then(function() {
           finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
@@ -2034,7 +2037,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     return;
   }
 
-  // 3. MONETAG
+  // 3. MONETAG (EXCLUSIVELY MONETAG ADS ONLY)
   if (adName === 'Monetag') {
     if (btn) btn.innerText = "⏳ Loading...";
 
@@ -2248,42 +2251,48 @@ function handleRocketAction(index, rocketName, adType) {
   if (state.status === 'ads') {
     if(btn) btn.disabled = true;
 
-    // DIRECT TRIGGER FOR MINING BOX 2 (COSMIC ROCKET - GIGAPUB ONLY)
+    // MINING BOX 2 (COSMIC ROCKET - GIGAPUB ONLY)
     if (index === 1 || adType === 'Gigapub') {
       btn.innerText = "⏳ Loading Gigapub...";
-      triggerGigapubDirectAd('taskGigapubLimit', btn, 0.04, cooldownSec);
-      progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+      triggerGigapubDirectAd('taskGigapubLimit', btn, 0.04, cooldownSec, function() {
+        progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+        startMiningBoxCooldown(btn, state, cooldownSec, maxLimitNeeded);
+      });
       return;
     }
 
-    // MINING BOX 1 (NOVA ROCKET - MONETAG)
+    // MINING BOX 1 (NOVA ROCKET - MONETAG ONLY)
     var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
 
     adPromise.then(function() {
       progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+      startMiningBoxCooldown(btn, state, cooldownSec, maxLimitNeeded);
     }).catch(function() {
       progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+      startMiningBoxCooldown(btn, state, cooldownSec, maxLimitNeeded);
     });
-
-    var countdown = cooldownSec;
-    if(btn) btn.innerText = "Wait (" + countdown + "s)";
-    var tInterval = setInterval(function() {
-      countdown--;
-      if(btn) btn.innerText = "Wait (" + countdown + "s)";
-      if (countdown <= 0) {
-        clearInterval(tInterval);
-        if (state.status === 'ads' && btn) {
-          btn.innerText = "Watch Ad (" + state.adsWatched + "/" + maxLimitNeeded + ")";
-          btn.disabled = false;
-        }
-      }
-    }, 1000);
 
   } else if (state.status === 'mining') {
     claimLiveMiningEarnings(index, rocketName);
   } else if (state.status === 'claim') {
     claimRocketReward(index, rocketName, maxLimitNeeded);
   }
+}
+
+function startMiningBoxCooldown(btn, state, cooldownSec, maxLimitNeeded) {
+  var countdown = cooldownSec;
+  if(btn) btn.innerText = "Wait (" + countdown + "s)";
+  var tInterval = setInterval(function() {
+    countdown--;
+    if(btn) btn.innerText = "Wait (" + countdown + "s)";
+    if (countdown <= 0) {
+      clearInterval(tInterval);
+      if (state.status === 'ads' && btn) {
+        btn.innerText = "Watch Ad (" + state.adsWatched + "/" + maxLimitNeeded + ")";
+        btn.disabled = false;
+      }
+    }
+  }, 1000);
 }
 
 function progressRocketAdWatch(index, rocketName, maxLimitNeeded) {
