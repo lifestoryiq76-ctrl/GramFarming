@@ -11,7 +11,10 @@
 <!-- 1. Monetag Telegram Mini App SDK Script -->
 <script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490'></script>
 
-<!-- 2. Monetix Official Script Integration -->
+<!-- 2. Gigapub Official Script Integration -->
+<script src='https://ad.gigapub.tech/script?id=8575' data-zone='8575' data-sdk='show_8575'></script>
+
+<!-- 3. Monetix Official Script Integration -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1" async></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
@@ -1012,7 +1015,7 @@ No recent transactions yet.
 
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
-<!-- Hidden container for Gigapub direct script injection (No separate file needed) -->
+<!-- Hidden container for fallback iframe/script injection -->
 <div id="gigapubContainer" style="display:none;"></div>
 
 <script>
@@ -2068,7 +2071,7 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
 }
 
 /* =========================================================
-   1. GIGAPUB DIRECT SCRIPT INTEGRATION (NO SEPARATE FILE NEEDED)
+   1. GIGAPUB ADS (Official SDK Function Trigger)
    ========================================================= */
 function watchGigapubAd() {
   var limitElementId = 'taskGigapubLimit';
@@ -2086,41 +2089,53 @@ function watchGigapubAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen();
 
-  var container = document.getElementById('gigapubContainer');
-  container.innerHTML = ''; // Purana script clear karein
-
-  var script = document.createElement('script');
-  script.src = 'https://ad.gigapub.tech/script?id=8575';
-  script.async = true;
-
-  var isFinished = false;
-
-  script.onload = function() {
-    if (isFinished) return;
-    isFinished = true;
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-    startTaskCountdownTimer(btn, timerSec);
-  };
-
-  script.onerror = function() {
-    if (isFinished) return;
-    isFinished = true;
-    hideAdLoadingScreen();
-    showToast("Gigapub ad load nahi ho saka.", "error");
-    if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-  };
-
-  container.appendChild(script);
-
-  // Safety fallback agar script load hone me time le
   setTimeout(function() {
-    if (isFinished) return;
-    isFinished = true;
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-    startTaskCountdownTimer(btn, timerSec);
-  }, 3500);
+    if (typeof window.show_8575 === 'function') {
+      window.show_8575().then(function() {
+        hideAdLoadingScreen();
+        finishAdWatchSuccess(limitElementId, btn, reward);
+        startTaskCountdownTimer(btn, timerSec);
+      }).catch(function(err) {
+        hideAdLoadingScreen();
+        showToast("Gigapub ad load nahi ho saka.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      });
+    } else if (typeof window.showGigapub === 'function') {
+      window.showGigapub().then(function() {
+        hideAdLoadingScreen();
+        finishAdWatchSuccess(limitElementId, btn, reward);
+        startTaskCountdownTimer(btn, timerSec);
+      }).catch(function(err) {
+        hideAdLoadingScreen();
+        showToast("Gigapub ad fail ho gaya.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      });
+    } else {
+      // Fallback via iframe / script container injection if SDK not ready
+      var container = document.getElementById('gigapubContainer');
+      if (container) {
+        container.innerHTML = '';
+        var script = document.createElement('script');
+        script.src = 'https://ad.gigapub.tech/script?id=8575';
+        script.async = true;
+        script.onload = function() {
+          hideAdLoadingScreen();
+          finishAdWatchSuccess(limitElementId, btn, reward);
+          startTaskCountdownTimer(btn, timerSec);
+        };
+        script.onerror = function() {
+          hideAdLoadingScreen();
+          showToast("Gigapub ad network error!", "error");
+          if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+        };
+        container.appendChild(script);
+      } else {
+        hideAdLoadingScreen();
+        showToast("Gigapub SDK ready nahi hai.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      }
+    }
+  }, 1000);
 }
 
 /* =========================================================
