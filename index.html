@@ -1940,7 +1940,7 @@ function toggleMiningBoxes() {
 }
 
 /* =========================================================
-   GIGAPUB DIRECT TRIGGER HANDLER (ADDED FIX)
+   GIGAPUB DIRECT TRIGGER HANDLER (GIGAPUB ONLY FUNCTION)
    ========================================================= */
 function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec) {
   var handleSuccess = function() {
@@ -1957,7 +1957,7 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
     }
   };
 
-  // Robust multi-check for SDK methods
+  // Robust multi-check for Gigapub SDK methods
   if (typeof window.showGiga === 'function') {
     window.showGiga().then(handleSuccess).catch(handleError);
   } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
@@ -1982,19 +1982,20 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. GIGAPUB (EXCLUSIVELY DIRECT CALL)
+  // 1. GIGAPUB (SIRF GIGAPUB KA AD CHALEGA)
   if (adName === 'Gigapub') {
     if (btn) btn.innerText = "⏳ Loading Gigapub...";
     triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
     return;
   }
 
-  // 2. MONETIX
+  // 2. MONETIX STREAMS (PEHLE MONETIX STREAMS KA AD, PHIR MONETAG KA AD)
   if (adName === 'Monetix') {
-    if (btn) btn.innerText = "⏳ Loading...";
+    if (btn) btn.innerText = "⏳ Loading Monetix...";
 
+    // Step B: Monetix ke baad Monetag Ad Trigger karne ka function
     var triggerSecondAdMonetag = function() {
-      if (btn) btn.innerText = "⏳ Loading...";
+      if (btn) btn.innerText = "⏳ Loading Monetag...";
       if (typeof window.show_11989490 === 'function') {
         window.show_11989490().then(function() {
           finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
@@ -2010,10 +2011,11 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     };
 
     var handleMonetixFailure = function() {
-      showToast("First ad loading failed. Trying fallback ad...", "error");
+      showToast("First ad loading failed. Trying Monetag ad...", "error");
       triggerSecondAdMonetag();
     };
 
+    // Step A: Pehle Monetix Streams Ad dikhayein
     try {
       if (typeof window.showMxAd === 'function') {
         window.showMxAd({ onSuccess: triggerSecondAdMonetag, onError: handleMonetixFailure, onDismiss: handleMonetixFailure });
@@ -2034,9 +2036,9 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     return;
   }
 
-  // 3. MONETAG
+  // 3. MONETAG (SIRF MONETAG KA AD CHALEGA)
   if (adName === 'Monetag') {
-    if (btn) btn.innerText = "⏳ Loading...";
+    if (btn) btn.innerText = "⏳ Loading Monetag...";
 
     var handleMonetagDone = function() {
       finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
@@ -2256,7 +2258,7 @@ function handleRocketAction(index, rocketName, adType) {
       return;
     }
 
-    // MINING BOX 1 (NOVA ROCKET - MONETAG)
+    // MINING BOX 1 (NOVA ROCKET - MONETAG ONLY)
     var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
 
     adPromise.then(function() {
