@@ -15,7 +15,7 @@
 <!-- 1. Monetag Telegram Mini App SDK Script -->
 <script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490'></script>
 
-<!-- 2. Gigapub SDK / Script Integration -->
+<!-- 2. Gigapub SDK Integration -->
 <script src="https://ad.gigapub.tech/script?id=8575"></script>
 
 <!-- 3. Monetix Official Script Integration -->
@@ -157,7 +157,6 @@ input:focus, select:focus { border-color: var(--accent); }
 .gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
 .gram-pay-info { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
 
-/* Custom Verification Modal Styles */
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.85);
@@ -252,6 +251,8 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="miningBoxesSection" class="card" style="background:var(--card-bg); border:1px solid var(--border);">
 <h4 style="margin:0.2rem 0 10px 0; color: var(--accent);">🛸 Space Rocket Mining</h4>
 <div class="mining-grid">
+
+<!-- MINING BOX 1: MONETAG ADS -->
 <div class="mining-box" id="mBox-0">
 <span class="limit-badge" id="rocket1Limit">0 / <span id="novaLimitMax">50</span></span>
 <div>
@@ -266,6 +267,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
+<!-- MINING BOX 2: GIGAPUB ADS ONLY -->
 <div class="mining-box" id="mBox-1">
 <span class="limit-badge" id="rocket2Limit">0 / <span id="cosmicLimitMax">50</span></span>
 <div>
@@ -279,6 +281,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="btn" style="padding:6px; font-size:11px; background: var(--accent);" onclick="handleRocketAction(1, 'Cosmic Rocket', 'Gigapub')" id="rocketBtn-1">Watch Ad (0/50)</button>
 </div>
 </div>
+
 </div>
 </div>
 </div>
@@ -297,10 +300,11 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- 1. ADS CATEGORY CONTENT -->
+<!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
 <div id="adsTasksAll">
 
+<!-- MONETAG AD TASK -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -328,6 +332,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
+<!-- GIGAPUB AD TASK (JAGAH 1) -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -349,6 +354,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
+<!-- MONETIX AD TASK -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -384,7 +390,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 2. TASK CATEGORY CONTENT -->
 <div id="taskCat-task" class="task-category-content" style="display:none;">
 <div class="card" style="text-align: center; padding: 25px 15px; background: #111827;" id="emptyTasksNotice">
 <div style="font-size: 36px; margin-bottom: 8px;">☁️⚡</div>
@@ -394,12 +399,9 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="dynamicTasksList"></div>
 </div>
 
-<!-- 3. OFFICIAL CATEGORY CONTENT -->
 <div id="taskCat-official" class="task-category-content" style="display:none;">
-  <!-- Official Channel 1 -->
   <div class="card flex-between" style="background:#1e293b; border: 1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px;">
     <div style="display:flex; align-items:center; gap:12px;">
-      <!-- Logo Image -->
       <img src="https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png" alt="Logo" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" />
       <div>
         <b style="font-size:15px; color:#fff;">Gram Farming Official</b><br>
@@ -412,10 +414,8 @@ input:focus, select:focus { border-color: var(--accent); }
     </button>
   </div>
 
-  <!-- Official Channel 2 -->
   <div class="card flex-between" style="background:#1e293b; border: 1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px;">
     <div style="display:flex; align-items:center; gap:12px;">
-      <!-- Logo Image -->
       <img src="https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png" alt="Logo" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" />
       <div>
         <b style="font-size:15px; color:#fff;">Gram Farming Payout</b><br>
@@ -429,7 +429,6 @@ input:focus, select:focus { border-color: var(--accent); }
   </div>
 </div>
 
-<!-- 4. CREATE TASK TAB CONTENT -->
 <div id="taskCat-create" class="task-category-content" style="display:none;">
 <div class="task-subtab-bar">
 <div class="task-subtab-btn active" id="createSubTab-promote" onclick="switchCreateSubTab('promote')">📢 Promote Link</div>
@@ -476,7 +475,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Telegram Channel or Link Input + Image Upload -->
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;" id="inputLabelText">Telegram Channel or Link</label>
 <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
 <input type="text" id="customTaskTitle" placeholder="@channel or https://t.me/channel" style="margin-top: 0; flex: 1;">
@@ -486,7 +484,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </label>
 </div>
 
-<!-- Dynamic Verification / Proof of Activity Box -->
 <div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 12px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between" id="objBoxHeader">
 <b style="font-size: 12px; color: var(--yellow);" id="objBoxTitle">Channel Verification: Add Bot</b>
@@ -499,7 +496,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- Extra Input Fields for Mini App & Bot (MAU) -->
 <div id="extraCampaignFieldsGroup" style="display: none;">
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Campaign Title / Channel Name</label>
 <input type="text" id="campaignTitleInputText" placeholder="e.g. Subscribe to Crypto Daily" style="margin-top: 0; margin-bottom: 12px;">
@@ -524,12 +520,10 @@ input:focus, select:focus { border-color: var(--accent); }
 Cost: <strong>35 Coins</strong>
 </div>
 
-<!-- Payment Method Header -->
 <div style="margin-top: 10px; margin-bottom: 6px;">
 <label style="font-size: 12px; color: var(--text-muted);">Payment Method</label>
 </div>
 
-<!-- Payment Method Options -->
 <div class="pay-method-grid">
 <div class="pay-method-card" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
 <div class="pay-method-card active" id="payCoin" onclick="setPaymentMethod('Coin')">🪙 Coin</div>
@@ -854,18 +848,14 @@ No recent transactions yet.
 <!-- 🛡️ VERIFICATION MODAL SHEET -->
 <div id="taskVerifyModal" class="modal-overlay" onclick="closeTaskModal(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
-    
-    <!-- Close Button -->
     <div style="display: flex; justify-content: flex-end; margin-bottom: 0px;">
       <span onclick="closeTaskModal()" style="font-size: 18px; cursor: pointer; color: #94a3b8; background: rgba(255,255,255,0.08); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</span>
     </div>
 
-    <!-- Modal Dynamic Header -->
     <h3 id="modalTaskHeading" style="color: #ffffff; font-size: 18px; font-weight: 800; margin: 0 0 10px 0; text-align: left;">
       Verify Channel Subscription
     </h3>
 
-    <!-- Channel Details Box -->
     <div class="info-box-card">
       <div style="font-size: 12px; color: #0a84c1; font-weight: bold;" id="modalHandleDisplay">@GramFarmingOfficial</div>
       <div style="font-size: 15px; font-weight: bold; color: #fff; margin-top: 2px;" id="modalTitleDisplay">Gram Farming Official</div>
@@ -874,7 +864,6 @@ No recent transactions yet.
       </div>
     </div>
 
-    <!-- Instruction Subcard 1 -->
     <div class="info-box-card">
       <div style="font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">Subscribe & Stay in Channel</div>
       <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
@@ -882,7 +871,6 @@ No recent transactions yet.
       </div>
     </div>
 
-    <!-- Instruction Subcard 2: Proof of Activity -->
     <div class="info-box-card">
       <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">
         <span>⏱️</span> Proof of Activity · <span id="modalTimerDisplay">20s</span>
@@ -892,11 +880,9 @@ No recent transactions yet.
       </div>
     </div>
 
-    <!-- Dynamic Action Button -->
     <button onclick="handleModalButtonClick()" id="modalActionBtn" class="btn" style="width: 100%; background: #0098ea; color: #ffffff; padding: 14px; border-radius: 25px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 152, 234, 0.4);">
       Join Channel &gt;
     </button>
-
   </div>
 </div>
 
@@ -929,8 +915,9 @@ No recent transactions yet.
 </div>
 
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
+
 <script>
-// Initialize Firebase
+// Firebase Setup
 const firebaseConfig = {
   apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
   authDomain: "gramfarmingbot-1a570.firebaseapp.com",
@@ -1952,7 +1939,37 @@ function toggleMiningBoxes() {
   }
 }
 
-/* 📺 AD HANDLER FUNCTION (STRICT ISOLATED AD TRIGGER) */
+/* --- AD TRIGGER HELPER FOR GIGAPUB DIRECT CALL --- */
+function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec) {
+  var handleSuccess = function() {
+    finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+    startTaskCountdownTimer(btn, timerDurationSec);
+  };
+
+  var handleError = function(err) {
+    console.error("Gigapub error:", err);
+    showToast("Gigapub Ad loading failed. Please try again.", "error");
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = "▶ Watch";
+    }
+  };
+
+  // Multiple SDK invocation checks for Gigapub
+  if (typeof window.showGiga === 'function') {
+    window.showGiga().then(handleSuccess).catch(handleError);
+  } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
+    window.Gigapub.show().then(handleSuccess).catch(handleError);
+  } else if (typeof window.show_gigapub === 'function') {
+    window.show_gigapub().then(handleSuccess).catch(handleError);
+  } else if (window.gigapub && typeof window.gigapub.show === 'function') {
+    window.gigapub.show().then(handleSuccess).catch(handleError);
+  } else {
+    handleError("Gigapub SDK script not ready.");
+  }
+}
+
+/* 📺 MAIN AD HANDLER */
 function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rewardPerAd, timerDurationSec) {
   var watched = adWatchedCounts[limitElementId] || 0;
   if (watched >= maxAdsLimit) {
@@ -1963,13 +1980,19 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. DUAL AD SEQUENCE FOR MONETIX STREAMS ONLY
+  // 1. GIGAPUB (EXCLUSIVELY DIRECT CALL)
+  if (adName === 'Gigapub') {
+    if (btn) btn.innerText = "⏳ Loading Gigapub...";
+    triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
+    return;
+  }
+
+  // 2. MONETIX
   if (adName === 'Monetix') {
     if (btn) btn.innerText = "⏳ Loading...";
 
     var triggerSecondAdMonetag = function() {
       if (btn) btn.innerText = "⏳ Loading...";
-      
       if (typeof window.show_11989490 === 'function') {
         window.show_11989490().then(function() {
           finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
@@ -2004,47 +2027,12 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
         handleMonetixFailure();
       }
     } catch(err) {
-      console.error("Monetix launch exception:", err);
       handleMonetixFailure();
     }
     return;
   }
 
-  // 2. STRICT DIRECT GIGAPUB AD ONLY (NO MONETAG FALLBACK)
-  if (adName === 'Gigapub') {
-    if (btn) btn.innerText = "⏳ Loading...";
-
-    var handleGigapubDone = function() {
-      finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-      startTaskCountdownTimer(btn, timerDurationSec);
-    };
-
-    var handleGigapubError = function(e) {
-      console.error("Gigapub error:", e);
-      showToast("Gigapub ad failed to load. Please try again later.", "error");
-      if (btn) {
-        btn.disabled = false;
-        btn.innerText = "▶ Watch";
-      }
-    };
-
-    try {
-      if (typeof window.showGiga === 'function') {
-        window.showGiga().then(handleGigapubDone).catch(handleGigapubError);
-      } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
-        window.Gigapub.show().then(handleGigapubDone).catch(handleGigapubError);
-      } else if (typeof window.show_gigapub === 'function') {
-        window.show_gigapub().then(handleGigapubDone).catch(handleGigapubError);
-      } else {
-        handleGigapubError("SDK not found");
-      }
-    } catch(err) {
-      handleGigapubError(err);
-    }
-    return;
-  }
-
-  // 3. STRICT DIRECT MONETAG AD ONLY
+  // 3. MONETAG
   if (adName === 'Monetag') {
     if (btn) btn.innerText = "⏳ Loading...";
 
@@ -2258,9 +2246,18 @@ function handleRocketAction(index, rocketName, adType) {
   if (state.status === 'ads') {
     if(btn) btn.disabled = true;
 
-    var adPromise = (adType === 'Gigapub' && typeof window.showGiga === 'function') 
-        ? window.showGiga() 
-        : (typeof window.show_11989490 === 'function' ? window.show_11989490() : Promise.resolve());
+    // DIRECT TRIGGER FOR ROCKET MINING 2 (COSMIC ROCKET) USING GIGAPUB ONLY
+    if (index === 1 || adType === 'Gigapub') {
+      btn.innerText = "⏳ Loading Gigapub...";
+      triggerGigapubDirectAd('taskGigapubLimit', btn, 0.04, cooldownSec);
+      
+      // Local counter increment for Rocket 2
+      progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+      return;
+    }
+
+    // ROCKET MINING 1 USING MONETAG
+    var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
 
     adPromise.then(function() {
       progressRocketAdWatch(index, rocketName, maxLimitNeeded);
@@ -2687,7 +2684,6 @@ function claimRefRewards() {
   showToast("Claim Successful! +" + claimable.toFixed(2) + " Coins claimed from referrals!", "success");
 }
 
-/* Modal Popup Management */
 function openTaskVerificationModal(title, link, handleName, taskKey, rewardVal) {
   if (completedTasksSet.includes(taskKey)) {
     showToast("Aapne ye task pehle hi complete kar liya hai! ✅", "success");
