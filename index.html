@@ -1940,7 +1940,7 @@ function toggleMiningBoxes() {
 }
 
 /* =========================================================
-   STRICT GIGAPUB DIRECT TRIGGER (NO MONETAG INTERFERENCE)
+   STRICT GIGAPUB DIRECT TRIGGER (NO FALLBACK TO MONETAG)
    ========================================================= */
 function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec, onSuccessCb) {
   var handleSuccess = function() {
@@ -1954,24 +1954,28 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
 
   var handleError = function(err) {
     console.error("Gigapub Direct Call Failed:", err);
-    showToast("Gigapub Ad load nahi hua. Subukan usab.", "error");
+    showToast("Gigapub Ad load nahi hua. Phir se koshish karein.", "error");
     if (btn) {
       btn.disabled = false;
       btn.innerText = "▶ Watch";
     }
   };
 
-  // Directly call Gigapub with placement "main"
-  if (typeof window.showGiga === 'function') {
-    window.showGiga("main").then(handleSuccess).catch(handleError);
-  } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
-    window.Gigapub.show("main").then(handleSuccess).catch(handleError);
-  } else if (typeof window.show_gigapub === 'function') {
-    window.show_gigapub("main").then(handleSuccess).catch(handleError);
-  } else if (window.gigapub && typeof window.gigapub.show === 'function') {
-    window.gigapub.show("main").then(handleSuccess).catch(handleError);
-  } else {
-    handleError("Gigapub SDK script not loaded.");
+  // Strictly call Gigapub with placement "main" without Monetag fallback
+  try {
+    if (typeof window.showGiga === 'function') {
+      window.showGiga("main").then(handleSuccess).catch(handleError);
+    } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
+      window.Gigapub.show("main").then(handleSuccess).catch(handleError);
+    } else if (typeof window.show_gigapub === 'function') {
+      window.show_gigapub("main").then(handleSuccess).catch(handleError);
+    } else if (window.gigapub && typeof window.gigapub.show === 'function') {
+      window.gigapub.show("main").then(handleSuccess).catch(handleError);
+    } else {
+      handleError("Gigapub SDK script not found.");
+    }
+  } catch(e) {
+    handleError(e);
   }
 }
 
@@ -1986,7 +1990,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. GIGAPUB (STRICTLY GIGAPUB DIRECT)
+  // 1. GIGAPUB (STRICTLY GIGAPUB DIRECT ONLY)
   if (adName === 'Gigapub') {
     if (btn) btn.innerText = "⏳ Loading Gigapub...";
     triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
@@ -1997,20 +2001,9 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   if (adName === 'Monetix') {
     if (btn) btn.innerText = "⏳ Loading...";
 
-    var triggerSecondAdMonetag = function() {
-      if (btn) btn.innerText = "⏳ Loading Next Ad...";
-      if (typeof window.show_11989490 === 'function') {
-        window.show_11989490().then(function() {
-          finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-          startTaskCountdownTimer(btn, timerDurationSec);
-        }).catch(function() {
-          finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-          startTaskCountdownTimer(btn, timerDurationSec);
-        });
-      } else {
-        finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
-        startTaskCountdownTimer(btn, timerDurationSec);
-      }
+    var handleMonetixDone = function() {
+      finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
+      startTaskCountdownTimer(btn, timerDurationSec);
     };
 
     var handleMonetixFailure = function() {
@@ -2023,15 +2016,15 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
 
     try {
       if (typeof window.showMxAd === 'function') {
-        window.showMxAd({ onSuccess: triggerSecondAdMonetag, onError: handleMonetixFailure, onDismiss: handleMonetixFailure });
+        window.showMxAd({ onSuccess: handleMonetixDone, onError: handleMonetixFailure, onDismiss: handleMonetixFailure });
       } else if (typeof window.showRewardAd === 'function') {
-        window.showRewardAd().then(triggerSecondAdMonetag).catch(handleMonetixFailure);
+        window.showRewardAd().then(handleMonetixDone).catch(handleMonetixFailure);
       } else if (typeof window.monetixShow === 'function') {
-        window.monetixShow(triggerSecondAdMonetag, handleMonetixFailure);
+        window.monetixShow(handleMonetixDone, handleMonetixFailure);
       } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
-        window.MonetixAds.show({ onComplete: triggerSecondAdMonetag, onError: handleMonetixFailure });
+        window.MonetixAds.show({ onComplete: handleMonetixDone, onError: handleMonetixFailure });
       } else if (window.MXAds && typeof window.MXAds.show === 'function') {
-        window.MXAds.show().then(triggerSecondAdMonetag).catch(handleMonetixFailure);
+        window.MXAds.show().then(handleMonetixDone).catch(handleMonetixFailure);
       } else {
         handleMonetixFailure();
       }
@@ -2041,7 +2034,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     return;
   }
 
-  // 3. MONETAG (STRICTLY MONETAG DIRECT)
+  // 3. MONETAG (STRICTLY MONETAG DIRECT ONLY)
   if (adName === 'Monetag') {
     if (btn) btn.innerText = "⏳ Loading...";
 
