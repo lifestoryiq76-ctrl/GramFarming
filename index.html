@@ -1952,7 +1952,7 @@ function toggleMiningBoxes() {
   }
 }
 
-/* 📺 SINGLE & DUAL AD HANDLER FUNCTION */
+/* 📺 AD HANDLER FUNCTION (STRICT ISOLATED AD TRIGGER) */
 function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rewardPerAd, timerDurationSec) {
   var watched = adWatchedCounts[limitElementId] || 0;
   if (watched >= maxAdsLimit) {
@@ -1970,7 +1970,6 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     var triggerSecondAdMonetag = function() {
       if (btn) btn.innerText = "⏳ Loading...";
       
-      // Trigger 2nd Ad: Monetag SDK
       if (typeof window.show_11989490 === 'function') {
         window.show_11989490().then(function() {
           finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
@@ -2011,32 +2010,61 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     return;
   }
 
-  // 2. SINGLE ISOLATED AD FOR GIGAPUB (NO FALLBACK / NO SECOND AD)
+  // 2. STRICT DIRECT GIGAPUB AD ONLY (NO MONETAG FALLBACK)
   if (adName === 'Gigapub') {
-    var handleGigapubComplete = function() {
+    if (btn) btn.innerText = "⏳ Loading...";
+
+    var handleGigapubDone = function() {
       finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
       startTaskCountdownTimer(btn, timerDurationSec);
     };
 
-    if (typeof window.showGiga === 'function') {
-      window.showGiga().then(handleGigapubComplete).catch(handleGigapubComplete);
-    } else {
-      handleGigapubComplete();
+    var handleGigapubError = function(e) {
+      console.error("Gigapub error:", e);
+      showToast("Gigapub ad failed to load. Please try again later.", "error");
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "▶ Watch";
+      }
+    };
+
+    try {
+      if (typeof window.showGiga === 'function') {
+        window.showGiga().then(handleGigapubDone).catch(handleGigapubError);
+      } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
+        window.Gigapub.show().then(handleGigapubDone).catch(handleGigapubError);
+      } else if (typeof window.show_gigapub === 'function') {
+        window.show_gigapub().then(handleGigapubDone).catch(handleGigapubError);
+      } else {
+        handleGigapubError("SDK not found");
+      }
+    } catch(err) {
+      handleGigapubError(err);
     }
     return;
   }
 
-  // 3. SINGLE ISOLATED AD FOR MONETAG
+  // 3. STRICT DIRECT MONETAG AD ONLY
   if (adName === 'Monetag') {
-    var handleMonetagComplete = function() {
+    if (btn) btn.innerText = "⏳ Loading...";
+
+    var handleMonetagDone = function() {
       finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
       startTaskCountdownTimer(btn, timerDurationSec);
     };
 
+    var handleMonetagError = function() {
+      showToast("Monetag ad failed to load.", "error");
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "▶ Watch";
+      }
+    };
+
     if (typeof window.show_11989490 === 'function') {
-      window.show_11989490().then(handleMonetagComplete).catch(handleMonetagComplete);
+      window.show_11989490().then(handleMonetagDone).catch(handleMonetagError);
     } else {
-      handleMonetagComplete();
+      handleMonetagError();
     }
     return;
   }
