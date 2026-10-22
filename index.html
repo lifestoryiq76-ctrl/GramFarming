@@ -404,11 +404,11 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- ADS CATEGORY CONTENT (UPDATED ORDER: GIGAPUB -> MONETAG -> MONETIX) -->
+<!-- ADS CATEGORY CONTENT (ORDER: 1. Gigapub Network, 2. Monetag Ads, 3. Monetix Streams) -->
 <div id="taskCat-ads" class="task-category-content">
 <div id="adsTasksAll">
 
-<!-- 1. PAHLA: GIGAPUB NETWORK -->
+<!-- 1. PAHLA CARD: GIGAPUB NETWORK -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -430,7 +430,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 2. DUSRA: MONETAG ADS -->
+<!-- 2. DUSRA CARD: MONETAG ADS -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -458,7 +458,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 3. TISRA: MONETIX STREAMS -->
+<!-- 3. TISRA CARD: MONETIX STREAMS -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -2075,7 +2075,7 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
 }
 
 /* =========================================================
-   1. GIGAPUB AD FUNCTION (PURE ISOLATED - NO MONETAG FALLBACK)
+   1. GIGAPUB NETWORK (PROTECTED AGAINST MONETAG INTERCEPTION)
    ========================================================= */
 function watchGigapubAd() {
   var limitElementId = 'taskGigapubLimit';
@@ -2093,25 +2093,34 @@ function watchGigapubAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen();
 
+  // 🛡️ MONETAG SAFETY SHIELD: Pause Monetag/Monetix temporarily to prevent auto-fallback
+  var tempMonetag = window.show_11989490;
+  window.show_11989490 = undefined;
+
   setTimeout(function() {
     try {
       var triggerGiga = window.showGiga || (window.Gigapub && window.Gigapub.show) || window.show_gigapub || (window.gigapub && window.gigapub.show);
+      
       if (typeof triggerGiga === 'function') {
         triggerGiga().then(function() {
+          window.show_11989490 = tempMonetag; // Restore Monetag
           hideAdLoadingScreen();
           finishAdWatchSuccess(limitElementId, btn, reward);
           startTaskCountdownTimer(btn, timerSec);
         }).catch(function() {
+          window.show_11989490 = tempMonetag; // Restore Monetag
           hideAdLoadingScreen();
           showToast("Gigapub ad failed to load.", "error");
           if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
         });
       } else {
+        window.show_11989490 = tempMonetag;
         hideAdLoadingScreen();
         showToast("Gigapub SDK not ready.", "error");
         if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
       }
     } catch(err) {
+      window.show_11989490 = tempMonetag;
       hideAdLoadingScreen();
       showToast("Gigapub error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
@@ -2120,7 +2129,7 @@ function watchGigapubAd() {
 }
 
 /* =========================================================
-   2. MONETAG AD FUNCTION (PURE ISOLATED - SIRF MONETAG)
+   2. MONETAG ADS (PURE ISOLATED)
    ========================================================= */
 function watchMonetagAd() {
   var limitElementId = 'taskMonetagLimit';
@@ -2158,7 +2167,7 @@ function watchMonetagAd() {
 }
 
 /* =========================================================
-   3. MONETIX STREAMS AD FUNCTION (PURE ISOLATED - SIRF MONETIX)
+   3. MONETIX STREAMS (PURE ISOLATED)
    ========================================================= */
 function watchMonetixAd() {
   var limitElementId = 'taskMonetixLimit';
@@ -2393,24 +2402,31 @@ function handleRocketAction(index, rocketName, adType) {
     // DIRECT TRIGGER FOR MINING BOX 2 (COSMIC ROCKET - GIGAPUB ONLY)
     if (index === 1 || adType === 'Gigapub') {
       showAdLoadingScreen();
+      var tempMonetag = window.show_11989490;
+      window.show_11989490 = undefined;
+
       setTimeout(function() {
         try {
           var triggerGiga = window.showGiga || (window.Gigapub && window.Gigapub.show) || window.show_gigapub;
           if (typeof triggerGiga === 'function') {
             triggerGiga().then(function() {
+              window.show_11989490 = tempMonetag;
               hideAdLoadingScreen();
               progressRocketAdWatch(index, rocketName, maxLimitNeeded);
             }).catch(function() {
+              window.show_11989490 = tempMonetag;
               hideAdLoadingScreen();
               showToast("Gigapub ad failed to load.", "error");
               if (btn) btn.disabled = false;
             });
           } else {
+            window.show_11989490 = tempMonetag;
             hideAdLoadingScreen();
             showToast("Gigapub SDK not ready.", "error");
             if (btn) btn.disabled = false;
           }
         } catch(err) {
+          window.show_11989490 = tempMonetag;
           hideAdLoadingScreen();
           showToast("Gigapub error occurred.", "error");
           if (btn) btn.disabled = false;
