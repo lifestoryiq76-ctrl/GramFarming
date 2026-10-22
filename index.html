@@ -1940,7 +1940,7 @@ function toggleMiningBoxes() {
 }
 
 /* =========================================================
-   GIGAPUB DIRECT TRIGGER HANDLER
+   GIGAPUB DIRECT TRIGGER HANDLER (STRICTLY GIGAPUB ONLY)
    ========================================================= */
 function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec, onSuccessCb) {
   var handleSuccess = function() {
@@ -1961,6 +1961,7 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
     }
   };
 
+  // Strictly execute Gigapub SDK
   if (typeof window.showGiga === 'function') {
     window.showGiga().then(handleSuccess).catch(handleError);
   } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
@@ -1970,7 +1971,7 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
   } else if (window.gigapub && typeof window.gigapub.show === 'function') {
     window.gigapub.show().then(handleSuccess).catch(handleError);
   } else {
-    handleError("Gigapub SDK script loading issue.");
+    handleError("Gigapub SDK is not available.");
   }
 }
 
@@ -1985,14 +1986,14 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. GIGAPUB (EXCLUSIVELY GIGAPUB ADS ONLY)
+  // 1. GIGAPUB (STRICTLY GIGAPUB ONLY)
   if (adName === 'Gigapub') {
     if (btn) btn.innerText = "⏳ Loading Gigapub...";
     triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
     return;
   }
 
-  // 2. MONETIX (DOUBLE AD: MONETIX FIRST, THEN MONETAG)
+  // 2. MONETIX (MONETIX FIRST, THEN MONETAG)
   if (adName === 'Monetix') {
     if (btn) btn.innerText = "⏳ Loading...";
 
@@ -2037,7 +2038,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     return;
   }
 
-  // 3. MONETAG (EXCLUSIVELY MONETAG ADS ONLY)
+  // 3. MONETAG (STRICTLY MONETAG ONLY)
   if (adName === 'Monetag') {
     if (btn) btn.innerText = "⏳ Loading...";
 
@@ -2251,7 +2252,7 @@ function handleRocketAction(index, rocketName, adType) {
   if (state.status === 'ads') {
     if(btn) btn.disabled = true;
 
-    // MINING BOX 2 (COSMIC ROCKET - GIGAPUB ONLY)
+    // MINING BOX 2 (COSMIC ROCKET - STRICTLY GIGAPUB ONLY)
     if (index === 1 || adType === 'Gigapub') {
       btn.innerText = "⏳ Loading Gigapub...";
       triggerGigapubDirectAd('taskGigapubLimit', btn, 0.04, cooldownSec, function() {
@@ -2261,7 +2262,7 @@ function handleRocketAction(index, rocketName, adType) {
       return;
     }
 
-    // MINING BOX 1 (NOVA ROCKET - MONETAG ONLY)
+    // MINING BOX 1 (NOVA ROCKET - STRICTLY MONETAG ONLY)
     var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
 
     adPromise.then(function() {
