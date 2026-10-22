@@ -1940,19 +1940,10 @@ function toggleMiningBoxes() {
 }
 
 /* =========================================================
-   STRICT GIGAPUB DIRECT TRIGGER HANDLER WITH MONETAG LOCK
+   STRICT GIGAPUB DIRECT TRIGGER (NO MONETAG INTERFERENCE)
    ========================================================= */
 function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec, onSuccessCb) {
-  // 1. Lock Monetag triggers completely during Gigapub call
-  var originalMonetagShow = window.show_11989490;
-  window.show_11989490 = null; 
-
-  var restoreMonetag = function() {
-    window.show_11989490 = originalMonetagShow; // Restore Monetag after Gigapub finishes
-  };
-
   var handleSuccess = function() {
-    restoreMonetag();
     if (typeof onSuccessCb === 'function') {
       onSuccessCb();
     } else {
@@ -1962,16 +1953,15 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
   };
 
   var handleError = function(err) {
-    restoreMonetag();
     console.error("Gigapub Direct Call Failed:", err);
-    showToast("Gigapub Ad empty/failed. Monetag ad blocked.", "error");
+    showToast("Gigapub Ad load nahi hua. Subukan usab.", "error");
     if (btn) {
       btn.disabled = false;
       btn.innerText = "▶ Watch";
     }
   };
 
-  // 2. Official Gigapub Integration with "main" placement
+  // Directly call Gigapub with placement "main"
   if (typeof window.showGiga === 'function') {
     window.showGiga("main").then(handleSuccess).catch(handleError);
   } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
@@ -1996,7 +1986,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. GIGAPUB (STRICTLY GIGAPUB DIRECT WITH MONETAG LOCK)
+  // 1. GIGAPUB (STRICTLY GIGAPUB DIRECT)
   if (adName === 'Gigapub') {
     if (btn) btn.innerText = "⏳ Loading Gigapub...";
     triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
