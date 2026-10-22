@@ -1940,10 +1940,19 @@ function toggleMiningBoxes() {
 }
 
 /* =========================================================
-   STRICT GIGAPUB DIRECT TRIGGER HANDLER (NO MONETAG FALLBACK)
+   STRICT GIGAPUB DIRECT TRIGGER HANDLER WITH MONETAG LOCK
    ========================================================= */
 function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec, onSuccessCb) {
+  // 1. Lock Monetag triggers completely during Gigapub call
+  var originalMonetagShow = window.show_11989490;
+  window.show_11989490 = null; 
+
+  var restoreMonetag = function() {
+    window.show_11989490 = originalMonetagShow; // Restore Monetag after Gigapub finishes
+  };
+
   var handleSuccess = function() {
+    restoreMonetag();
     if (typeof onSuccessCb === 'function') {
       onSuccessCb();
     } else {
@@ -1953,23 +1962,24 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
   };
 
   var handleError = function(err) {
+    restoreMonetag();
     console.error("Gigapub Direct Call Failed:", err);
-    showToast("Gigapub Ad loading failed or no fill available.", "error");
+    showToast("Gigapub Ad empty/failed. Monetag ad blocked.", "error");
     if (btn) {
       btn.disabled = false;
       btn.innerText = "▶ Watch";
     }
   };
 
-  // Strictly execute Gigapub SDK methods only
+  // 2. Official Gigapub Integration with "main" placement
   if (typeof window.showGiga === 'function') {
-    window.showGiga().then(handleSuccess).catch(handleError);
+    window.showGiga("main").then(handleSuccess).catch(handleError);
   } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
-    window.Gigapub.show().then(handleSuccess).catch(handleError);
+    window.Gigapub.show("main").then(handleSuccess).catch(handleError);
   } else if (typeof window.show_gigapub === 'function') {
-    window.show_gigapub().then(handleSuccess).catch(handleError);
+    window.show_gigapub("main").then(handleSuccess).catch(handleError);
   } else if (window.gigapub && typeof window.gigapub.show === 'function') {
-    window.gigapub.show().then(handleSuccess).catch(handleError);
+    window.gigapub.show("main").then(handleSuccess).catch(handleError);
   } else {
     handleError("Gigapub SDK script not loaded.");
   }
@@ -1986,7 +1996,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. GIGAPUB (STRICTLY GIGAPUB DIRECT)
+  // 1. GIGAPUB (STRICTLY GIGAPUB DIRECT WITH MONETAG LOCK)
   if (adName === 'Gigapub') {
     if (btn) btn.innerText = "⏳ Loading Gigapub...";
     triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
