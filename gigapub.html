@@ -4,22 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gigapub Ad</title>
-  <script src="https://ad.gigapub.tech/script?id=8575"></script>
 </head>
 <body style="background:transparent; margin:0; padding:0;">
   <script>
     function triggerAd() {
       try {
-        var showGigaFn = window.showGiga || (window.Gigapub && window.Gigapub.show) || window.show_gigapub;
-        if (typeof showGigaFn === 'function') {
-          showGigaFn().then(function() {
-            window.parent.postMessage({ type: 'GIGAPUB_SUCCESS' }, '*');
-          }).catch(function(err) {
-            window.parent.postMessage({ type: 'GIGAPUB_FAIL', error: err }, '*');
-          });
-        } else {
-          window.parent.postMessage({ type: 'GIGAPUB_NOT_READY' }, '*');
+        // Purana koi script ho toh hata dein
+        var oldScript = document.getElementById('giga-script');
+        if (oldScript) {
+          oldScript.remove();
         }
+
+        // Naya Gigapub Script dynamically inject karna taaki ad load ho sake
+        var script = document.createElement('script');
+        script.id = 'giga-script';
+        script.src = 'https://ad.gigapub.tech/script?id=8575';
+        
+        script.onload = function() {
+          // Success signal parent window ko bhejna
+          window.parent.postMessage({ type: 'GIGAPUB_SUCCESS' }, '*');
+        };
+
+        script.onerror = function(err) {
+          window.parent.postMessage({ type: 'GIGAPUB_FAIL', error: err }, '*');
+        };
+
+        document.body.appendChild(script);
+
       } catch(e) {
         window.parent.postMessage({ type: 'GIGAPUB_FAIL', error: e }, '*');
       }
