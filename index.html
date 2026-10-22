@@ -200,9 +200,113 @@ input:focus, select:focus { border-color: var(--accent); }
     text-align: left;
     margin-bottom: 12px;
 }
+
+/* 🟢 Ad Loading Full Screen Overlay Screen Style */
+.ad-loading-screen {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #090e18;
+    z-index: 999999;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.ad-loading-screen.active {
+    display: flex;
+}
+.radar-circle {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+.radar-circle::before {
+    content: '';
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.radar-sweep {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(234, 179, 8, 0.3), transparent 60%);
+    animation: rotateRadar 2s linear infinite;
+}
+@keyframes rotateRadar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.p-icon {
+    width: 50px;
+    height: 50px;
+    background: #eab308;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    color: #000;
+    z-index: 2;
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.6);
+}
+.loading-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+.loading-sub {
+    font-size: 11px;
+    color: #64748b;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+}
+.loading-dots {
+    display: flex;
+    gap: 6px;
+}
+.loading-dots div {
+    width: 20px;
+    height: 3px;
+    background: #1e293b;
+    border-radius: 2px;
+}
+.loading-dots div.active {
+    background: #0a84c1;
+}
 </style>
 </head>
 <body>
+
+<!-- 🟢 Ad Loading Full Screen Overlay -->
+<div id="adLoadingScreen" class="ad-loading-screen">
+  <div class="radar-circle">
+    <div class="radar-sweep"></div>
+    <div class="p-icon">P</div>
+  </div>
+  <div class="loading-title">Preparing ad</div>
+  <div class="loading-sub">CONNECTING TO THE AD NETWORK</div>
+  <div class="loading-dots">
+    <div class="active"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+
 <div class="header">
 <div style="display: flex; align-items: center; gap: 8px;">
 <h3 style="margin:0; color: var(--accent);">🌱 Gram Farming</h3>
@@ -1939,36 +2043,80 @@ function toggleMiningBoxes() {
   }
 }
 
+/* 🟢 HELPER: Show/Hide Loading Overlay */
+function showAdLoadingScreen() {
+  var loader = document.getElementById('adLoadingScreen');
+  if(loader) loader.classList.add('active');
+}
+function hideAdLoadingScreen() {
+  var loader = document.getElementById('adLoadingScreen');
+  if(loader) loader.classList.remove('active');
+}
+
+/* 🟢 HELPER: Call Monetix Streams Direct Function */
+function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
+  try {
+    if (typeof window.showMxAd === 'function') {
+      window.showMxAd({ onSuccess: onSuccessCallback, onError: onErrorCallback, onDismiss: onErrorCallback });
+    } else if (typeof window.showRewardAd === 'function') {
+      window.showRewardAd().then(onSuccessCallback).catch(onErrorCallback);
+    } else if (typeof window.monetixShow === 'function') {
+      window.monetixShow(onSuccessCallback, onErrorCallback);
+    } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
+      window.MonetixAds.show({ onComplete: onSuccessCallback, onError: onErrorCallback });
+    } else if (window.MXAds && typeof window.MXAds.show === 'function') {
+      window.MXAds.show().then(onSuccessCallback).catch(onErrorCallback);
+    } else {
+      onErrorCallback();
+    }
+  } catch(err) {
+    onErrorCallback();
+  }
+}
+
 /* =========================================================
-   GIGAPUB DIRECT TRIGGER HANDLER (GIGAPUB ONLY FUNCTION)
+   GIGAPUB DIRECT TRIGGER HANDLER (GIGAPUB + MONETIX FALLBACK, NO MONETAG)
    ========================================================= */
 function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec) {
-  var handleSuccess = function() {
+  showAdLoadingScreen();
+
+  var handleFinalSuccess = function() {
+    hideAdLoadingScreen();
     finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
     startTaskCountdownTimer(btn, timerDurationSec);
   };
 
-  var handleError = function(err) {
-    console.error("Gigapub error:", err);
-    showToast("Gigapub Ad loading failed or closed. Please try again.", "error");
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = "▶ Watch";
+  var handleGigapubFailAndTryMonetix = function() {
+    // Gigapub fail hone par Monetix Streams ad trigger hoga (Monetag bilkul nahi)
+    triggerMonetixDirectAd(
+      handleFinalSuccess,
+      function() {
+        hideAdLoadingScreen();
+        showToast("Ad loading failed. Please try again.", "error");
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "▶ Watch";
+        }
+      }
+    );
+  };
+
+  // Gigapub ad invoke karein
+  var tryGigapub = function() {
+    if (typeof window.showGiga === 'function') {
+      window.showGiga().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
+    } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
+      window.Gigapub.show().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
+    } else if (typeof window.show_gigapub === 'function') {
+      window.show_gigapub().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
+    } else if (window.gigapub && typeof window.gigapub.show === 'function') {
+      window.gigapub.show().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
+    } else {
+      handleGigapubFailAndTryMonetix();
     }
   };
 
-  // Robust multi-check for Gigapub SDK methods
-  if (typeof window.showGiga === 'function') {
-    window.showGiga().then(handleSuccess).catch(handleError);
-  } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
-    window.Gigapub.show().then(handleSuccess).catch(handleError);
-  } else if (typeof window.show_gigapub === 'function') {
-    window.show_gigapub().then(handleSuccess).catch(handleError);
-  } else if (window.gigapub && typeof window.gigapub.show === 'function') {
-    window.gigapub.show().then(handleSuccess).catch(handleError);
-  } else {
-    handleError("Gigapub SDK script loading issue.");
-  }
+  setTimeout(tryGigapub, 1200);
 }
 
 /* 📺 MAIN AD HANDLER */
@@ -1982,70 +2130,57 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. GIGAPUB (SIRF GIGAPUB KA AD CHALEGA)
+  // 1. GIGAPUB (GIGAPUB / MONETIX ONLY - NO MONETAG)
   if (adName === 'Gigapub') {
-    if (btn) btn.innerText = "⏳ Loading Gigapub...";
     triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
     return;
   }
 
-  // 2. MONETIX STREAMS (PEHLE MONETIX STREAMS KA AD, PHIR MONETAG KA AD)
+  // 2. MONETIX STREAMS (PEHLE MONETIX STREAMS, PHIR MONETAG)
   if (adName === 'Monetix') {
-    if (btn) btn.innerText = "⏳ Loading Monetix...";
+    showAdLoadingScreen();
 
-    // Step B: Monetix ke baad Monetag Ad Trigger karne ka function
     var triggerSecondAdMonetag = function() {
-      if (btn) btn.innerText = "⏳ Loading Monetag...";
       if (typeof window.show_11989490 === 'function') {
         window.show_11989490().then(function() {
+          hideAdLoadingScreen();
           finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
           startTaskCountdownTimer(btn, timerDurationSec);
         }).catch(function() {
+          hideAdLoadingScreen();
           finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
           startTaskCountdownTimer(btn, timerDurationSec);
         });
       } else {
+        hideAdLoadingScreen();
         finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
         startTaskCountdownTimer(btn, timerDurationSec);
       }
     };
 
     var handleMonetixFailure = function() {
-      showToast("First ad loading failed. Trying Monetag ad...", "error");
+      // Pehla Fail ho toh direct Monetag chalega
       triggerSecondAdMonetag();
     };
 
-    // Step A: Pehle Monetix Streams Ad dikhayein
-    try {
-      if (typeof window.showMxAd === 'function') {
-        window.showMxAd({ onSuccess: triggerSecondAdMonetag, onError: handleMonetixFailure, onDismiss: handleMonetixFailure });
-      } else if (typeof window.showRewardAd === 'function') {
-        window.showRewardAd().then(triggerSecondAdMonetag).catch(handleMonetixFailure);
-      } else if (typeof window.monetixShow === 'function') {
-        window.monetixShow(triggerSecondAdMonetag, handleMonetixFailure);
-      } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
-        window.MonetixAds.show({ onComplete: triggerSecondAdMonetag, onError: handleMonetixFailure });
-      } else if (window.MXAds && typeof window.MXAds.show === 'function') {
-        window.MXAds.show().then(triggerSecondAdMonetag).catch(handleMonetixFailure);
-      } else {
-        handleMonetixFailure();
-      }
-    } catch(err) {
-      handleMonetixFailure();
-    }
+    setTimeout(function() {
+      triggerMonetixDirectAd(triggerSecondAdMonetag, handleMonetixFailure);
+    }, 1200);
     return;
   }
 
-  // 3. MONETAG (SIRF MONETAG KA AD CHALEGA)
+  // 3. MONETAG (SIRF MONETAG)
   if (adName === 'Monetag') {
-    if (btn) btn.innerText = "⏳ Loading Monetag...";
+    showAdLoadingScreen();
 
     var handleMonetagDone = function() {
+      hideAdLoadingScreen();
       finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
       startTaskCountdownTimer(btn, timerDurationSec);
     };
 
     var handleMonetagError = function() {
+      hideAdLoadingScreen();
       showToast("Monetag ad failed to load.", "error");
       if (btn) {
         btn.disabled = false;
@@ -2053,11 +2188,13 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
       }
     };
 
-    if (typeof window.show_11989490 === 'function') {
-      window.show_11989490().then(handleMonetagDone).catch(handleMonetagError);
-    } else {
-      handleMonetagError();
-    }
+    setTimeout(function() {
+      if (typeof window.show_11989490 === 'function') {
+        window.show_11989490().then(handleMonetagDone).catch(handleMonetagError);
+      } else {
+        handleMonetagError();
+      }
+    }, 1200);
     return;
   }
 }
@@ -2102,11 +2239,21 @@ function claimDailyBonus() {
     showToast("Claim Successful! +" + currentDailyBonus.toFixed(2) + " Coins added!", "success");
   };
 
-  if (typeof window.show_11989490 === 'function') {
-    window.show_11989490().then(runClaimAction).catch(runClaimAction);
-  } else {
-    runClaimAction();
-  }
+  showAdLoadingScreen();
+  setTimeout(function() {
+    if (typeof window.show_11989490 === 'function') {
+      window.show_11989490().then(function() {
+        hideAdLoadingScreen();
+        runClaimAction();
+      }).catch(function() {
+        hideAdLoadingScreen();
+        runClaimAction();
+      });
+    } else {
+      hideAdLoadingScreen();
+      runClaimAction();
+    }
+  }, 1200);
 }
 
 function calculateStakeRewards() {
@@ -2252,20 +2399,24 @@ function handleRocketAction(index, rocketName, adType) {
 
     // DIRECT TRIGGER FOR MINING BOX 2 (COSMIC ROCKET - GIGAPUB ONLY)
     if (index === 1 || adType === 'Gigapub') {
-      btn.innerText = "⏳ Loading Gigapub...";
       triggerGigapubDirectAd('taskGigapubLimit', btn, 0.04, cooldownSec);
       progressRocketAdWatch(index, rocketName, maxLimitNeeded);
       return;
     }
 
     // MINING BOX 1 (NOVA ROCKET - MONETAG ONLY)
-    var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
+    showAdLoadingScreen();
+    setTimeout(function() {
+      var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
 
-    adPromise.then(function() {
-      progressRocketAdWatch(index, rocketName, maxLimitNeeded);
-    }).catch(function() {
-      progressRocketAdWatch(index, rocketName, maxLimitNeeded);
-    });
+      adPromise.then(function() {
+        hideAdLoadingScreen();
+        progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+      }).catch(function() {
+        hideAdLoadingScreen();
+        progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+      });
+    }, 1200);
 
     var countdown = cooldownSec;
     if(btn) btn.innerText = "Wait (" + countdown + "s)";
