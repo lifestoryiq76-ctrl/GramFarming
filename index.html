@@ -354,7 +354,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- MONETIX AD TASK -->
+<!-- MONETIX AD TASK (STRICTLY MONETIX ONLY) -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -1961,7 +1961,6 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
     }
   };
 
-  // Strictly call Gigapub with placement "main" without Monetag fallback
   try {
     if (typeof window.showGiga === 'function') {
       window.showGiga("main").then(handleSuccess).catch(handleError);
@@ -1997,9 +1996,9 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     return;
   }
 
-  // 2. MONETIX
+  // 2. MONETIX (STRICTLY MONETIX DIRECT ONLY)
   if (adName === 'Monetix') {
-    if (btn) btn.innerText = "⏳ Loading...";
+    if (btn) btn.innerText = "⏳ Loading Monetix...";
 
     var handleMonetixDone = function() {
       finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
@@ -2007,7 +2006,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     };
 
     var handleMonetixFailure = function() {
-      showToast("Monetix ad failed to load.", "error");
+      showToast("Monetix ad load nahi hua. Phir se koshish karein.", "error");
       if (btn) {
         btn.disabled = false;
         btn.innerText = "▶ Watch";
@@ -2036,7 +2035,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
 
   // 3. MONETAG (STRICTLY MONETAG DIRECT ONLY)
   if (adName === 'Monetag') {
-    if (btn) btn.innerText = "⏳ Loading...";
+    if (btn) btn.innerText = "⏳ Loading Monetag...";
 
     var handleMonetagDone = function() {
       finishAdWatchSuccess(limitElementId, btn, rewardPerAd);
@@ -2044,7 +2043,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     };
 
     var handleMonetagError = function() {
-      showToast("Monetag ad failed to load.", "error");
+      showToast("Monetag ad load nahi hua. Phir se koshish karein.", "error");
       if (btn) {
         btn.disabled = false;
         btn.innerText = "▶ Watch";
@@ -2259,14 +2258,17 @@ function handleRocketAction(index, rocketName, adType) {
     }
 
     // NOVA ROCKET (STRICTLY MONETAG ONLY)
-    var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
+    var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.reject();
 
     adPromise.then(function() {
       progressRocketAdWatch(index, rocketName, maxLimitNeeded);
       startMiningBoxCooldown(btn, state, cooldownSec, maxLimitNeeded);
     }).catch(function() {
-      progressRocketAdWatch(index, rocketName, maxLimitNeeded);
-      startMiningBoxCooldown(btn, state, cooldownSec, maxLimitNeeded);
+      showToast("Monetag Ad load nahi hua. Phir se koshish karein.", "error");
+      if(btn) {
+        btn.disabled = false;
+        btn.innerText = "Watch Ad (" + state.adsWatched + "/" + maxLimitNeeded + ")";
+      }
     });
 
   } else if (state.status === 'mining') {
