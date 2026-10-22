@@ -9,19 +9,15 @@
   <script>
     function triggerAd() {
       try {
-        // Purana koi script ho toh hata dein
         var oldScript = document.getElementById('giga-script');
-        if (oldScript) {
-          oldScript.remove();
-        }
+        if (oldScript) oldScript.remove();
 
-        // Naya Gigapub Script dynamically inject karna taaki ad load ho sake
         var script = document.createElement('script');
         script.id = 'giga-script';
         script.src = 'https://ad.gigapub.tech/script?id=8575';
-        
+
         script.onload = function() {
-          // Success signal parent window ko bhejna
+          // Script load hote hi parent ko signal bhejein
           window.parent.postMessage({ type: 'GIGAPUB_SUCCESS' }, '*');
         };
 
@@ -30,6 +26,11 @@
         };
 
         document.body.appendChild(script);
+
+        // Fallback: 2.5s me parent overlay ko hide karke ad visibility allow karein
+        setTimeout(function() {
+          window.parent.postMessage({ type: 'GIGAPUB_SUCCESS' }, '*');
+        }, 2500);
 
       } catch(e) {
         window.parent.postMessage({ type: 'GIGAPUB_FAIL', error: e }, '*');
