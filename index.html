@@ -371,7 +371,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- MINING BOX 2: GIGAPUB ADS ONLY (LOCATION 2) -->
+<!-- MINING BOX 2: GIGAPUB ADS ONLY -->
 <div class="mining-box" id="mBox-1">
 <span class="limit-badge" id="rocket2Limit">0 / <span id="cosmicLimitMax">50</span></span>
 <div>
@@ -436,7 +436,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- GIGAPUB AD TASK (LOCATION 1) -->
+<!-- GIGAPUB AD TASK -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -2075,7 +2075,7 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
 }
 
 /* =========================================================
-   GIGAPUB DIRECT TRIGGER HANDLER (GIGAPUB + MONETIX FALLBACK, NO MONETAG)
+   GIGAPUB DIRECT TRIGGER HANDLER (GIGAPUB + MONETIX FALLBACK ONLY, NO MONETAG)
    ========================================================= */
 function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec) {
   showAdLoadingScreen();
@@ -2087,12 +2087,12 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
   };
 
   var handleGigapubFailAndTryMonetix = function() {
-    // Gigapub fail hone par Monetix Streams ad trigger hoga (Monetag bilkul nahi)
+    // Gigapub fail hone par Monetix Streams ad trigger hoga (Monetag bilkul nahi chalega)
     triggerMonetixDirectAd(
       handleFinalSuccess,
       function() {
         hideAdLoadingScreen();
-        showToast("Ad loading failed. Please try again.", "error");
+        showToast("Gigapub Ad loading failed or closed. Please try again.", "error");
         if (btn) {
           btn.disabled = false;
           btn.innerText = "▶ Watch";
@@ -2101,17 +2101,20 @@ function triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationS
     );
   };
 
-  // Gigapub ad invoke karein
   var tryGigapub = function() {
-    if (typeof window.showGiga === 'function') {
-      window.showGiga().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
-    } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
-      window.Gigapub.show().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
-    } else if (typeof window.show_gigapub === 'function') {
-      window.show_gigapub().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
-    } else if (window.gigapub && typeof window.gigapub.show === 'function') {
-      window.gigapub.show().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
-    } else {
+    try {
+      if (typeof window.showGiga === 'function') {
+        window.showGiga().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
+      } else if (window.Gigapub && typeof window.Gigapub.show === 'function') {
+        window.Gigapub.show().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
+      } else if (typeof window.show_gigapub === 'function') {
+        window.show_gigapub().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
+      } else if (window.gigapub && typeof window.gigapub.show === 'function') {
+        window.gigapub.show().then(handleFinalSuccess).catch(handleGigapubFailAndTryMonetix);
+      } else {
+        handleGigapubFailAndTryMonetix();
+      }
+    } catch(err) {
       handleGigapubFailAndTryMonetix();
     }
   };
@@ -2130,7 +2133,7 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
   var btn = btnElementId ? document.getElementById(btnElementId) : null;
   if (btn) btn.disabled = true;
 
-  // 1. GIGAPUB (GIGAPUB / MONETIX ONLY - NO MONETAG)
+  // 1. GIGAPUB (ISOLATED - GIGAPUB / MONETIX ONLY - NO MONETAG)
   if (adName === 'Gigapub') {
     triggerGigapubDirectAd(limitElementId, btn, rewardPerAd, timerDurationSec);
     return;
@@ -2159,7 +2162,6 @@ function watchAdWithTimer(limitElementId, btnElementId, adName, maxAdsLimit, rew
     };
 
     var handleMonetixFailure = function() {
-      // Pehla Fail ho toh direct Monetag chalega
       triggerSecondAdMonetag();
     };
 
