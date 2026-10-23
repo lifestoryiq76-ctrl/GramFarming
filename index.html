@@ -26,6 +26,9 @@
 <!-- 3. Monetix Official Script Integration (Async) -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1" async></script>
 
+<!-- 4. Adexium SDK Integration (Async) -->
+<script src="https://publisher.adexium.io/js/sdk.js" async></script>
+
 <!-- TON Connect UI SDK (Deferred) -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
 
@@ -99,7 +102,6 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
   filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.8));
 }
 
-/* HIGH TECH GLOW TYPOGRAPHY */
 .splash-title {
   font-size: 32px;
   font-weight: 900;
@@ -160,7 +162,6 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
   margin-top: 8px;
   letter-spacing: 1px;
 }
-/* ------------------------------------------------------------------------ */
 
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
@@ -625,6 +626,50 @@ input:focus, select:focus { border-color: var(--accent); }
 <span id="textMonetixLimit">0 / 30 (0%)</span>
 </div>
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetixFill" style="width: 0%;"></div></div>
+</div>
+
+<!-- 4. CHAUTHA: ADSTERRA VIDEO (NEWLY INTEGRATED) -->
+<div class="ad-task-card">
+<div class="flex-between">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="ad-icon-box" style="background: #111827; border-color: #eab308;">
+<span style="font-size: 24px;">🎬</span>
+</div>
+<div>
+<b style="font-size: 15px; color: #fff;">Adsterra Video</b><br>
+<small style="color:var(--text-muted);">High eCPM smartlink video ad</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardAdsterraVal">0.05</span> 🪙 / view</span>
+</div>
+</div>
+<button class="btn" id="taskAdsterraBtn" onclick="watchAdsterraAd()" style="background: #0088cc;">▶ Watch</button>
+</div>
+<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
+<span>Daily Limit</span>
+<span id="textAdsterraLimit">0 / 50 (0%)</span>
+</div>
+<div class="progress-line-bg"><div class="progress-line-fill" id="progAdsterraFill" style="width: 0%;"></div></div>
+</div>
+
+<!-- 5. PANCHWA: ADEXIUM VIDEO (NEWLY INTEGRATED) -->
+<div class="ad-task-card">
+<div class="flex-between">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="ad-icon-box" style="background: #111827; border-color: #28a745;">
+<span style="font-size: 24px;">💎</span>
+</div>
+<div>
+<b style="font-size: 15px; color: #fff;">Adexium Video</b><br>
+<small style="color:var(--text-muted);">Telegram native rewarded video</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardAdexiumVal">0.05</span> 🪙 / view</span>
+</div>
+</div>
+<button class="btn" id="taskAdexiumBtn" onclick="watchAdexiumAd()" style="background: #28a745;">▶ Watch</button>
+</div>
+<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
+<span>Daily Limit</span>
+<span id="textAdexiumLimit">0 / 50 (0%)</span>
+</div>
+<div class="progress-line-bg"><div class="progress-line-fill" id="progAdexiumFill" style="width: 0%;"></div></div>
 </div>
 
 </div>
@@ -1258,6 +1303,10 @@ var currentSelectedRewardVal = 0.08;
 var modalState = "initial";
 var modalTimerInterval = null;
 
+// AD CREDENTIALS & LIMIT CONFIGS
+const ADSTERRA_LINK = "https://araplhn.org/4/74b4cb017b96a6c502c11da164a77205";
+const ADEXIUM_PLACEMENT_ID = "5ae2c44f-59c0-4008-9ce5-195e3a1aaef9";
+
 var clickPackagesData = [
   { clicks: 100, coin: 35 },
   { clicks: 250, coin: 87.5 },
@@ -1270,16 +1319,16 @@ var clickPackagesData = [
 ];
 
 var stakingApyRates = { 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20 };
-var maxLimits = { monetag: 60, gigapub: 60, monetix: 30 };
-var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03 };
-var adTimers = { monetag: 60, gigapub: 60, monetix: 60 };
+var maxLimits = { monetag: 60, gigapub: 60, monetix: 30, adsterra: 50, adexium: 50 };
+var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03, adsterra: 0.05, adexium: 0.05 };
+var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adexium: 60 };
 
-var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 };
+var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0 };
 
 var lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 var todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-  adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 };
+  adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0 };
   localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -1338,7 +1387,7 @@ function check530AmRestartAndStaking() {
 
   if (realNow >= today530 && lastResetStored !== todayStr) {
     processStakingDailyTransfer();
-    adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 };
+    adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0 };
     localStorage.setItem('last_530_reset_date', todayStr);
     saveToFirebase();
 
@@ -1424,7 +1473,7 @@ function initAppListeners() {
       userRef.set({
         name: displayName,
         balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 }
+        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0 }
       });
     }
     renderUIValues();
@@ -1510,14 +1559,20 @@ function initAppListeners() {
       if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
       if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
       if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
+      if (data.adsterraLimit) maxLimits.adsterra = parseInt(data.adsterraLimit);
+      if (data.adexiumLimit) maxLimits.adexium = parseInt(data.adexiumLimit);
 
       if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
       if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
       if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
+      if (data.adsterraReward) rewards.adsterra = parseFloat(data.adsterraReward);
+      if (data.adexiumReward) rewards.adexium = parseFloat(data.adexiumReward);
 
       if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
       if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
       if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
+      if (data.adsterraTimer) adTimers.adsterra = parseInt(data.adsterraTimer);
+      if (data.adexiumTimer) adTimers.adexium = parseInt(data.adexiumTimer);
 
       renderUIValues();
     }
@@ -1534,7 +1589,7 @@ function initAppListeners() {
 function initTonConnectUI() {
   try {
     if (window.TON_CONNECT_UI) {
-      var manifestUrl = 'https://gram-farming.vercel.app/tonconnect-manifest.json?v=' + Date.now();
+      var manifestUrl = 'https://gramfarming.com/tonconnect-manifest.json?v=' + Date.now();
       tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: manifestUrl,
         buttonRootId: null
@@ -1811,10 +1866,14 @@ function renderUIValues() {
   var mCount = adWatchedCounts.taskMonetagLimit || 0;
   var gCount = adWatchedCounts.taskGigapubLimit || 0;
   var moCount = adWatchedCounts.taskMonetixLimit || 0;
+  var adstCount = adWatchedCounts.taskAdsterraLimit || 0;
+  var adexCount = adWatchedCounts.taskAdexiumLimit || 0;
 
   var mMax = maxLimits.monetag;
   var gMax = maxLimits.gigapub;
   var moMax = maxLimits.monetix;
+  var adstMax = maxLimits.adsterra;
+  var adexMax = maxLimits.adexium;
 
   if(document.getElementById('textMonetagLimit')) document.getElementById('textMonetagLimit').innerText = mCount + " / " + mMax + " (" + Math.round((mCount/mMax)*100) + "%)";
   if(document.getElementById('progMonetagFill')) document.getElementById('progMonetagFill').style.width = Math.min(100, (mCount/mMax)*100) + "%";
@@ -1825,9 +1884,17 @@ function renderUIValues() {
   if(document.getElementById('textMonetixLimit')) document.getElementById('textMonetixLimit').innerText = moCount + " / " + moMax + " (" + Math.round((moCount/moMax)*100) + "%)";
   if(document.getElementById('progMonetixFill')) document.getElementById('progMonetixFill').style.width = Math.min(100, (moCount/moMax)*100) + "%";
 
+  if(document.getElementById('textAdsterraLimit')) document.getElementById('textAdsterraLimit').innerText = adstCount + " / " + adstMax + " (" + Math.round((adstCount/adstMax)*100) + "%)";
+  if(document.getElementById('progAdsterraFill')) document.getElementById('progAdsterraFill').style.width = Math.min(100, (adstCount/adstMax)*100) + "%";
+
+  if(document.getElementById('textAdexiumLimit')) document.getElementById('textAdexiumLimit').innerText = adexCount + " / " + adexMax + " (" + Math.round((adexCount/adexMax)*100) + "%)";
+  if(document.getElementById('progAdexiumFill')) document.getElementById('progAdexiumFill').style.width = Math.min(100, (adexCount/adexMax)*100) + "%";
+
   if(document.getElementById('rewardMonetagVal')) document.getElementById('rewardMonetagVal').innerText = rewards.monetag;
   if(document.getElementById('rewardGigapubVal')) document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
   if(document.getElementById('rewardMonetixVal')) document.getElementById('rewardMonetixVal').innerText = rewards.monetix;
+  if(document.getElementById('rewardAdsterraVal')) document.getElementById('rewardAdsterraVal').innerText = rewards.adsterra;
+  if(document.getElementById('rewardAdexiumVal')) document.getElementById('rewardAdexiumVal').innerText = rewards.adexium;
 
   var availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
   if(document.getElementById('availableWithdrawBalance')) document.getElementById('availableWithdrawBalance').innerText = "Available: " + availVal.toFixed(4);
@@ -2395,6 +2462,84 @@ function watchMonetixAd() {
       }
     );
   }, 5500);
+}
+
+/* =========================================================
+   4. ADSTERRA VIDEO AD FUNCTION (NEW INTEGRATION)
+   ========================================================= */
+function watchAdsterraAd() {
+  var limitElementId = 'taskAdsterraLimit';
+  var btn = document.getElementById('taskAdsterraBtn');
+  var maxLimit = maxLimits.adsterra;
+  var reward = rewards.adsterra;
+  var timerSec = adTimers.adsterra;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for Adsterra!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen();
+
+  setTimeout(function() {
+    hideAdLoadingScreen();
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+      window.Telegram.WebApp.openLink(ADSTERRA_LINK);
+    } else {
+      window.open(ADSTERRA_LINK, '_blank');
+    }
+    finishAdWatchSuccess(limitElementId, btn, reward);
+    startTaskCountdownTimer(btn, timerSec);
+  }, 1500);
+}
+
+/* =========================================================
+   5. ADEXIUM VIDEO AD FUNCTION (NEW INTEGRATION)
+   ========================================================= */
+function watchAdexiumAd() {
+  var limitElementId = 'taskAdexiumLimit';
+  var btn = document.getElementById('taskAdexiumBtn');
+  var maxLimit = maxLimits.adexium;
+  var reward = rewards.adexium;
+  var timerSec = adTimers.adexium;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for Adexium!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen();
+
+  setTimeout(function() {
+    hideAdLoadingScreen();
+    if (window.Adexium && typeof window.Adexium.showAd === 'function') {
+      window.Adexium.showAd(ADEXIUM_PLACEMENT_ID).then(function() {
+        finishAdWatchSuccess(limitElementId, btn, reward);
+        startTaskCountdownTimer(btn, timerSec);
+      }).catch(function(err) {
+        console.error("Adexium error, opening fallback link:", err);
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+          window.Telegram.WebApp.openLink("https://publisher.adexium.io/show/" + ADEXIUM_PLACEMENT_ID);
+        } else {
+          window.open("https://publisher.adexium.io/show/" + ADEXIUM_PLACEMENT_ID, '_blank');
+        }
+        finishAdWatchSuccess(limitElementId, btn, reward);
+        startTaskCountdownTimer(btn, timerSec);
+      });
+    } else {
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+        window.Telegram.WebApp.openLink("https://publisher.adexium.io/show/" + ADEXIUM_PLACEMENT_ID);
+      } else {
+        window.open("https://publisher.adexium.io/show/" + ADEXIUM_PLACEMENT_ID, '_blank');
+      }
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    }
+  }, 1500);
 }
 
 function startTaskCountdownTimer(btn, durationSec) {
