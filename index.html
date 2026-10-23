@@ -2,33 +2,36 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Gram Farming Mini App</title>
 
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="662ae2e4b72c2f6b84365f35330ed6c5">
 
-<!-- Fast Network Connection for Monetix -->
+<!-- Fast Network Preconnects -->
 <link rel="dns-prefetch" href="https://www.monetixads.online">
 <link rel="preconnect" href="https://www.monetixads.online" crossorigin>
+<link rel="preconnect" href="https://telegram.org">
+<link rel="preconnect" href="https://www.gstatic.com">
 
-<!-- 1. Monetag Telegram Mini App SDK Script -->
-<script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490'></script>
-
-<!-- 2. Gigapub SDK Integration -->
-<script src="https://ad.gigapub.tech/script?id=8575"></script>
-
-<!-- 3. Monetix Official Script Integration -->
-<script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1" async></script>
-
+<!-- Core Telegram SDK (Fastest inline setup) -->
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-<!-- TON Connect UI SDK -->
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+<!-- 1. Monetag Telegram Mini App SDK Script (Deferred) -->
+<script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490' defer></script>
 
-<!-- Firebase Compat Scripts -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<!-- 2. Gigapub SDK Integration (Deferred) -->
+<script src="https://ad.gigapub.tech/script?id=8575" defer></script>
+
+<!-- 3. Monetix Official Script Integration (Async) -->
+<script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1" async></script>
+
+<!-- TON Connect UI SDK (Deferred) -->
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
+
+<!-- Firebase Compat Scripts (Deferred for non-blocking load) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js" defer></script>
 
 <style>
 :root {
@@ -61,7 +64,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
   align-items: center;
   padding: 60px 20px 80px 20px;
   box-sizing: border-box;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
 .splash-center {
@@ -96,7 +99,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
   filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.8));
 }
 
-/* DESIGNING TYPOGRAPHY TEXT */
+/* HIGH TECH GLOW TYPOGRAPHY */
 .splash-title {
   font-size: 32px;
   font-weight: 900;
@@ -147,7 +150,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
   background: linear-gradient(90deg, #10b981 0%, #22c55e 50%, #4ade80 100%);
   border-radius: 10px;
   box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
-  transition: width 0.1s linear;
+  transition: width 0.08s linear;
 }
 
 .splash-percent-text {
@@ -406,7 +409,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </head>
 <body>
 
-<!-- APP OPENING SPLASH SCREEN -->
+<!-- INSTANT DISPLAY SPLASH SCREEN -->
 <div id="appSplashScreen" class="app-splash-screen">
   <div></div>
   <div class="splash-center">
@@ -1154,15 +1157,15 @@ No recent transactions yet.
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
 <script>
-/* APP SPLASH LOADING BAR ANIMATION */
-window.addEventListener('DOMContentLoaded', function() {
+/* INSTANT APP SPLASH LOADING CONTROLLER */
+(function() {
   var fillEl = document.getElementById('splashProgressFill');
   var textEl = document.getElementById('splashPercentText');
   var splashScreen = document.getElementById('appSplashScreen');
   var currentPercent = 0;
 
   var splashInterval = setInterval(function() {
-    currentPercent += Math.floor(Math.random() * 5) + 3;
+    currentPercent += Math.floor(Math.random() * 8) + 5;
     if (currentPercent >= 100) {
       currentPercent = 100;
       clearInterval(splashInterval);
@@ -1174,27 +1177,39 @@ window.addEventListener('DOMContentLoaded', function() {
           splashScreen.style.opacity = '0';
           splashScreen.style.visibility = 'hidden';
         }
-      }, 300);
+      }, 200);
     } else {
       if (fillEl) fillEl.style.width = currentPercent + '%';
       if (textEl) textEl.innerText = currentPercent + '%';
     }
-  }, 50);
+  }, 25);
+})();
+
+// Telegram WebApp Expand Early
+if (window.Telegram && window.Telegram.WebApp) {
+  window.Telegram.WebApp.ready();
+  window.Telegram.WebApp.expand();
+}
+
+// Deferred Firebase & SDK Setup
+window.addEventListener('load', function() {
+  if (typeof firebase !== 'undefined') {
+    const firebaseConfig = {
+      apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
+      authDomain: "gramfarmingbot-1a570.firebaseapp.com",
+      databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com",
+      projectId: "gramfarmingbot-1a570",
+      storageBucket: "gramfarmingbot-1a570.firebasestorage.app",
+      messagingSenderId: "113291680927",
+      appId: "1:113291680927:web:cb20c9f6b7914a546156aa"
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    window.db = firebase.database();
+    initAppListeners();
+  }
 });
-
-// Firebase Setup
-const firebaseConfig = {
-  apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
-  authDomain: "gramfarmingbot-1a570.firebaseapp.com",
-  databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com",
-  projectId: "gramfarmingbot-1a570",
-  storageBucket: "gramfarmingbot-1a570.firebasestorage.app",
-  messagingSenderId: "113291680927",
-  appId: "1:113291680927:web:cb20c9f6b7914a546156aa"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
 var balance = 0.00;
 var tonBalance = 0.0590;
@@ -1334,7 +1349,6 @@ function check530AmRestartAndStaking() {
 setInterval(check530AmRestartAndStaking, 1000);
 
 var tg = window.Telegram ? window.Telegram.WebApp : null;
-if (tg) tg.expand();
 
 var displayName = "👑 My Account";
 var userId = "12345";
@@ -1374,18 +1388,148 @@ function updateOfficialButtonsState() {
   }
 }
 
-db.ref('completedTasks/' + userId).on('value', function(snapshot) {
-  if (snapshot.exists()) {
-    completedTasksSet = Object.keys(snapshot.val());
-  } else {
-    completedTasksSet = [];
-    joinedTasksSet = [];
-    localStorage.removeItem('joined_tasks_' + userId);
-  }
-  localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
-  updateOfficialButtonsState();
-  renderCustomTasksFromFirebase();
-});
+function initAppListeners() {
+  if (!window.db) return;
+
+  db.ref('completedTasks/' + userId).on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      completedTasksSet = Object.keys(snapshot.val());
+    } else {
+      completedTasksSet = [];
+      joinedTasksSet = [];
+      localStorage.removeItem('joined_tasks_' + userId);
+    }
+    localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
+    updateOfficialButtonsState();
+    renderCustomTasksFromFirebase();
+  });
+
+  var userRef = db.ref('users/' + userId);
+
+  userRef.on('value', function(snapshot) {
+    var data = snapshot.val();
+    if (data) {
+      balance = data.balance || 0.00;
+      tonBalance = data.tonBalance !== undefined ? data.tonBalance : 0.0590;
+      usdtBalance = data.usdtBalance !== undefined ? data.usdtBalance : 5.0500;
+      refReward = data.refReward || 0.00;
+      totalInvited = data.totalInvited || 0;
+      savedTonAddress = data.savedTonAddress || "";
+      activeStakes = data.activeStakes || [];
+      lastCheckin = data.lastCheckin || 0;
+      if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
+
+      saveToLocalStorage();
+    } else {
+      userRef.set({
+        name: displayName,
+        balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
+        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 }
+      });
+    }
+    renderUIValues();
+    renderStakingList();
+    toggleWithdrawFields();
+  });
+
+  db.ref('adminSettings/general').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
+      if (data.dailyBonus !== undefined) currentDailyBonus = parseFloat(data.dailyBonus);
+      if (data.minWithdrawal !== undefined) minWithdrawalAmt = parseFloat(data.minWithdrawal);
+      if (data.minTonWithdrawal !== undefined) minTonWithdrawalAmt = parseFloat(data.minTonWithdrawal);
+      if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
+        referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
+        var refEl = document.getElementById('refPercentText');
+        if(refEl) refEl.innerText = "Get " + referralPercentage + "%";
+      }
+      renderUIValues();
+      calculateExchange();
+      toggleWithdrawFields();
+      updateCostCalculation();
+    }
+  });
+
+  db.ref('adminSettings/clickRates').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var rates = snapshot.val();
+      if (rates.coin100 !== undefined) clickPackagesData[0].coin = parseFloat(rates.coin100);
+      if (rates.coin250 !== undefined) clickPackagesData[1].coin = parseFloat(rates.coin250);
+      if (rates.coin500 !== undefined) clickPackagesData[2].coin = parseFloat(rates.coin500);
+      if (rates.coin1000 !== undefined) clickPackagesData[3].coin = parseFloat(rates.coin1000);
+      if (rates.coin2000 !== undefined) clickPackagesData[4].coin = parseFloat(rates.coin2000);
+      if (rates.coin3000 !== undefined) clickPackagesData[5].coin = parseFloat(rates.coin3000);
+      if (rates.coin4000 !== undefined) clickPackagesData[6].coin = parseFloat(rates.coin4000);
+      if (rates.coin5000 !== undefined) clickPackagesData[7].coin = parseFloat(rates.coin5000);
+
+      var activePkg = clickPackagesData.find(function(p) { return p.clicks === selectedClickCount; });
+      if (activePkg) {
+        selectedCoinCost = activePkg.coin;
+      }
+      updateCostCalculation();
+    }
+  });
+
+  db.ref('adminSettings/mining').on('value', function(snapshot) {
+    if (snapshot.exists()) applyMiningData(snapshot.val());
+  });
+
+  db.ref('adminSettings/stakingApy').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      for (var key in data) { stakingApyRates[key] = data[key]; }
+
+      if (data[0] !== undefined && document.getElementById('displayFlexApy')) document.getElementById('displayFlexApy').innerText = data[0];
+      if (data[7] !== undefined && document.getElementById('displayApy7')) document.getElementById('displayApy7').innerText = data[7];
+      if (data[15] !== undefined && document.getElementById('displayApy15')) document.getElementById('displayApy15').innerText = data[15];
+      if (data[30] !== undefined && document.getElementById('displayApy30')) document.getElementById('displayApy30').innerText = data[30];
+      if (data[60] !== undefined && document.getElementById('displayApy60')) document.getElementById('displayApy60').innerText = data[60];
+      if (data[90] !== undefined && document.getElementById('displayApy90')) document.getElementById('displayApy90').innerText = data[90];
+      if (data[120] !== undefined && document.getElementById('displayApy120')) document.getElementById('displayApy120').innerText = data[120];
+      if (data[365] !== undefined && document.getElementById('displayApy365')) document.getElementById('displayApy365').innerText = data[365];
+
+      var calcSelect = document.getElementById('stakeCalcPlan');
+      if (calcSelect) {
+        calcSelect.innerHTML = '<option value="0|' + stakingApyRates[0] + '">Flexible (0 Days - ' + stakingApyRates[0] + '% APY)</option>' +
+        '<option value="7|' + stakingApyRates[7] + '">Fixed (7 Days - ' + stakingApyRates[7] + '% APY)</option>' +
+        '<option value="15|' + stakingApyRates[15] + '">Fixed (15 Days - ' + stakingApyRates[15] + '% APY)</option>' +
+        '<option value="30|' + stakingApyRates[30] + '">Fixed (30 Days - ' + stakingApyRates[30] + '% APY)</option>' +
+        '<option value="60|' + stakingApyRates[60] + '">Fixed (60 Days - ' + stakingApyRates[60] + '% APY)</option>' +
+        '<option value="90|' + stakingApyRates[90] + '">Fixed (90 Days - ' + stakingApyRates[90] + '% APY)</option>' +
+        '<option value="120|' + stakingApyRates[120] + '">Fixed (120 Days - ' + stakingApyRates[120] + '% APY)</option>' +
+        '<option value="365|' + stakingApyRates[365] + '">Fixed (365 Days - ' + stakingApyRates[365] + '% APY)</option>';
+      }
+      calculateStakeRewards();
+    }
+  });
+
+  db.ref('adminSettings/ads').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
+      if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
+      if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
+
+      if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
+      if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
+      if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
+
+      if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
+      if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
+      if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
+
+      renderUIValues();
+    }
+  });
+
+  db.ref('customTasks').on('value', function() {
+    renderCustomTasksFromFirebase();
+  });
+
+  trackUserLoginAndIp();
+  loadTransactionHistory();
+}
 
 function initTonConnectUI() {
   try {
@@ -1416,7 +1560,6 @@ function initTonConnectUI() {
     console.error("TON Connect init error:", e);
   }
 }
-setTimeout(initTonConnectUI, 1000);
 
 function handleGramWalletConnect() {
   if (!tonConnectUI) {
@@ -1486,7 +1629,7 @@ function sendGramDepositTransaction() {
         status: 'SUCCESS',
         date: new Date().toLocaleString()
       };
-      db.ref('deposits/' + userId).push(depositRecord);
+      if (window.db) db.ref('deposits/' + userId).push(depositRecord);
       loadTransactionHistory();
       resetGramDepositForm();
     }
@@ -1534,6 +1677,7 @@ function saveToLocalStorage() {
 loadFromLocalStorage();
 
 function trackUserLoginAndIp() {
+  if (!window.db) return;
   fetch('https://api.ipify.org?format=json').then(function(res) {
     return res.json();
   }).then(function(ipData) {
@@ -1559,46 +1703,6 @@ function trackUserLoginAndIp() {
     console.error("IP tracking error:", err);
   });
 }
-trackUserLoginAndIp();
-
-db.ref('adminSettings/general').on('value', function(snapshot) {
-  if (snapshot.exists()) {
-    var data = snapshot.val();
-    if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
-    if (data.dailyBonus !== undefined) currentDailyBonus = parseFloat(data.dailyBonus);
-    if (data.minWithdrawal !== undefined) minWithdrawalAmt = parseFloat(data.minWithdrawal);
-    if (data.minTonWithdrawal !== undefined) minTonWithdrawalAmt = parseFloat(data.minTonWithdrawal);
-    if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
-      referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
-      var refEl = document.getElementById('refPercentText');
-      if(refEl) refEl.innerText = "Get " + referralPercentage + "%";
-    }
-    renderUIValues();
-    calculateExchange();
-    toggleWithdrawFields();
-    updateCostCalculation();
-  }
-});
-
-db.ref('adminSettings/clickRates').on('value', function(snapshot) {
-  if (snapshot.exists()) {
-    var rates = snapshot.val();
-    if (rates.coin100 !== undefined) clickPackagesData[0].coin = parseFloat(rates.coin100);
-    if (rates.coin250 !== undefined) clickPackagesData[1].coin = parseFloat(rates.coin250);
-    if (rates.coin500 !== undefined) clickPackagesData[2].coin = parseFloat(rates.coin500);
-    if (rates.coin1000 !== undefined) clickPackagesData[3].coin = parseFloat(rates.coin1000);
-    if (rates.coin2000 !== undefined) clickPackagesData[4].coin = parseFloat(rates.coin2000);
-    if (rates.coin3000 !== undefined) clickPackagesData[5].coin = parseFloat(rates.coin3000);
-    if (rates.coin4000 !== undefined) clickPackagesData[6].coin = parseFloat(rates.coin4000);
-    if (rates.coin5000 !== undefined) clickPackagesData[7].coin = parseFloat(rates.coin5000);
-
-    var activePkg = clickPackagesData.find(function(p) { return p.clicks === selectedClickCount; });
-    if (activePkg) {
-      selectedCoinCost = activePkg.coin;
-    }
-    updateCostCalculation();
-  }
-});
 
 function applyMiningData(data) {
   if (!data) return;
@@ -1628,58 +1732,6 @@ function applyMiningData(data) {
   }
 }
 
-db.ref('adminSettings/mining').on('value', function(snapshot) {
-  if (snapshot.exists()) applyMiningData(snapshot.val());
-});
-
-db.ref('adminSettings/stakingApy').on('value', function(snapshot) {
-  if (snapshot.exists()) {
-    var data = snapshot.val();
-    for (var key in data) { stakingApyRates[key] = data[key]; }
-
-    if (data[0] !== undefined && document.getElementById('displayFlexApy')) document.getElementById('displayFlexApy').innerText = data[0];
-    if (data[7] !== undefined && document.getElementById('displayApy7')) document.getElementById('displayApy7').innerText = data[7];
-    if (data[15] !== undefined && document.getElementById('displayApy15')) document.getElementById('displayApy15').innerText = data[15];
-    if (data[30] !== undefined && document.getElementById('displayApy30')) document.getElementById('displayApy30').innerText = data[30];
-    if (data[60] !== undefined && document.getElementById('displayApy60')) document.getElementById('displayApy60').innerText = data[60];
-    if (data[90] !== undefined && document.getElementById('displayApy90')) document.getElementById('displayApy90').innerText = data[90];
-    if (data[120] !== undefined && document.getElementById('displayApy120')) document.getElementById('displayApy120').innerText = data[120];
-    if (data[365] !== undefined && document.getElementById('displayApy365')) document.getElementById('displayApy365').innerText = data[365];
-
-    var calcSelect = document.getElementById('stakeCalcPlan');
-    if (calcSelect) {
-      calcSelect.innerHTML = '<option value="0|' + stakingApyRates[0] + '">Flexible (0 Days - ' + stakingApyRates[0] + '% APY)</option>' +
-      '<option value="7|' + stakingApyRates[7] + '">Fixed (7 Days - ' + stakingApyRates[7] + '% APY)</option>' +
-      '<option value="15|' + stakingApyRates[15] + '">Fixed (15 Days - ' + stakingApyRates[15] + '% APY)</option>' +
-      '<option value="30|' + stakingApyRates[30] + '">Fixed (30 Days - ' + stakingApyRates[30] + '% APY)</option>' +
-      '<option value="60|' + stakingApyRates[60] + '">Fixed (60 Days - ' + stakingApyRates[60] + '% APY)</option>' +
-      '<option value="90|' + stakingApyRates[90] + '">Fixed (90 Days - ' + stakingApyRates[90] + '% APY)</option>' +
-      '<option value="120|' + stakingApyRates[120] + '">Fixed (120 Days - ' + stakingApyRates[120] + '% APY)</option>' +
-      '<option value="365|' + stakingApyRates[365] + '">Fixed (365 Days - ' + stakingApyRates[365] + '% APY)</option>';
-    }
-    calculateStakeRewards();
-  }
-});
-
-db.ref('adminSettings/ads').on('value', function(snapshot) {
-  if (snapshot.exists()) {
-    var data = snapshot.val();
-    if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
-    if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
-    if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
-
-    if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
-    if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
-    if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
-
-    if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
-    if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
-    if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
-
-    renderUIValues();
-  }
-});
-
 var translations = {
   en: { homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", clickToClaim: "Click to Claim!", watchBtn: "Watch", tasksOffers: "📋 Tasks", stakingOptions: "💎 Staking Options", referralProgram: "👥 REFERRAL PROGRAM", walletExchange: "💼 Wallet & Exchange", topEarnersRank: "Top Earners Rank", navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" },
   hi: { homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", tasksOffers: "📋 टास्क", stakingOptions: "💎 स्टेकिंग विकल्प", referralProgram: "👥 रेफरल प्रोग्राम", walletExchange: "💼 वॉलेट और एक्सचेंज", topEarnersRank: "शीर्ष कमाई करने वाले", navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" },
@@ -1695,42 +1747,16 @@ function changeLanguage(lang) {
   toggleWithdrawFields();
 }
 
-var userRef = db.ref('users/' + userId);
-
-userRef.on('value', function(snapshot) {
-  var data = snapshot.val();
-  if (data) {
-    balance = data.balance || 0.00;
-    tonBalance = data.tonBalance !== undefined ? data.tonBalance : 0.0590;
-    usdtBalance = data.usdtBalance !== undefined ? data.usdtBalance : 5.0500;
-    refReward = data.refReward || 0.00;
-    totalInvited = data.totalInvited || 0;
-    savedTonAddress = data.savedTonAddress || "";
-    activeStakes = data.activeStakes || [];
-    lastCheckin = data.lastCheckin || 0;
-    if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
-
-    saveToLocalStorage();
-  } else {
-    userRef.set({
-      name: displayName,
-      balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-      adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0 }
-    });
-  }
-  renderUIValues();
-  renderStakingList();
-  toggleWithdrawFields();
-});
-
 function saveToFirebase() {
   saveToLocalStorage();
-  userRef.update({
-    balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin,
-    adWatchedCounts: adWatchedCounts
-  });
-  if (savedTonAddress) {
-    db.ref('tonAddresses/' + userId).update({ address: savedTonAddress, userName: displayName, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+  if (window.db) {
+    db.ref('users/' + userId).update({
+      balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin,
+      adWatchedCounts: adWatchedCounts
+    });
+    if (savedTonAddress) {
+      db.ref('tonAddresses/' + userId).update({ address: savedTonAddress, userName: displayName, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+    }
   }
 }
 
@@ -2123,7 +2149,7 @@ function processDeposit() {
     status: 'SUCCESS',
     date: new Date().toLocaleString()
   };
-  db.ref('deposits/' + userId).push(depositRecord);
+  if (window.db) db.ref('deposits/' + userId).push(depositRecord);
   loadTransactionHistory();
 }
 
@@ -2180,7 +2206,7 @@ function publishCampaign() {
     date: new Date().toLocaleString()
   };
 
-  db.ref('customTasks').push(newCampaignObj);
+  if (window.db) db.ref('customTasks').push(newCampaignObj);
 
   if(document.getElementById('customTaskTitle')) document.getElementById('customTaskTitle').value = '';
   if(document.getElementById('campaignTitleInputText')) document.getElementById('campaignTitleInputText').value = '';
@@ -2874,7 +2900,7 @@ function requestWithdrawal() {
       date: new Date().toLocaleString()
     };
 
-    db.ref('withdrawals/' + userId).push(newWithdrawal);
+    if (window.db) db.ref('withdrawals/' + userId).push(newWithdrawal);
 
     fetch('/api/bot', {
       method: "POST",
@@ -2914,7 +2940,7 @@ function requestWithdrawal() {
       status: 'PENDING',
       date: new Date().toLocaleString()
     };
-    db.ref('withdrawals/' + userId).push(newWithdrawalGram);
+    if (window.db) db.ref('withdrawals/' + userId).push(newWithdrawalGram);
 
     fetch('/api/withdraw/ton', {
       method: "POST",
@@ -2948,7 +2974,7 @@ function requestWithdrawal() {
 
 function loadTransactionHistory() {
   var historyContainer = document.getElementById('transactionHistoryList');
-  if (!historyContainer) return;
+  if (!historyContainer || !window.db) return;
 
   db.ref('withdrawals/' + userId).on('value', function(withdrawSnap) {
     var allTransactions = [];
@@ -2997,7 +3023,6 @@ function loadTransactionHistory() {
     });
   });
 }
-loadTransactionHistory();
 
 function copyRef() {
   var refLink = "https://t.me/GramFarmingBot?start=ref_" + userId;
@@ -3116,21 +3141,23 @@ function claimTaskReward(reward, taskKey) {
     completedTasksSet.push(taskKey);
     localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
 
-    db.ref('completedTasks/' + userId + '/' + taskKey).set({
-      timestamp: firebase.database.ServerValue.TIMESTAMP,
-      reward: reward
-    });
-
-    if (!taskKey.startsWith('official_')) {
-      db.ref('customTasks/' + taskKey).transaction(function(task) {
-        if (task) {
-          task.clicksDone = (task.clicksDone || 0) + 1;
-          if (task.clicksRemaining !== undefined) {
-            task.clicksRemaining = Math.max(0, task.clicksRemaining - 1);
-          }
-        }
-        return task;
+    if (window.db) {
+      db.ref('completedTasks/' + userId + '/' + taskKey).set({
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        reward: reward
       });
+
+      if (!taskKey.startsWith('official_')) {
+        db.ref('customTasks/' + taskKey).transaction(function(task) {
+          if (task) {
+            task.clicksDone = (task.clicksDone || 0) + 1;
+            if (task.clicksRemaining !== undefined) {
+              task.clicksRemaining = Math.max(0, task.clicksRemaining - 1);
+            }
+          }
+          return task;
+        });
+      }
     }
 
     addEarningsWithReferral(reward);
@@ -3142,6 +3169,7 @@ function claimTaskReward(reward, taskKey) {
 }
 
 function renderCustomTasksFromFirebase() {
+  if (!window.db) return;
   db.ref('customTasks').once('value', function(snapshot) {
     var listEl = document.getElementById('dynamicTasksList');
     var noticeEl = document.getElementById('emptyTasksNotice');
@@ -3216,13 +3244,9 @@ function renderCustomTasksFromFirebase() {
   });
 }
 
-db.ref('customTasks').on('value', function() {
-  renderCustomTasksFromFirebase();
-});
-
 function loadMyPublishedTasks() {
   var myContainer = document.getElementById('myPublishedTasksList');
-  if(!myContainer) return;
+  if(!myContainer || !window.db) return;
   db.ref('customTasks').on('value', function(snapshot) {
     if (!snapshot.exists()) {
       myContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published campaigns found.</div>';
