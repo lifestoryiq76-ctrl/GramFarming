@@ -49,6 +49,113 @@ const bot = new Telegraf(BOT_TOKEN);
 const MINI_APP_URL = "https://gram-farming.vercel.app";
 const PAYOUT_CHANNEL = '@GramFarming_Payout';
 
+/* =========================================================
+   1. /start WELCOME MESSAGE COMMAND
+   ========================================================= */
+bot.start(async (ctx) => {
+    const userId = String(ctx.from.id);
+    const firstName = ctx.from.first_name || 'User';
+
+    // Save/Update user info in Firebase DB
+    await updateFirebaseData(`users/${userId}`, {
+        name: "👑 " + firstName + (ctx.from.username ? ' (@' + ctx.from.username + ')' : ''),
+        telegramChatId: ctx.chat.id
+    });
+
+    // Welcome Message (Exact Spanish Layout)
+    const welcomeMessage = 
+`👋 Hola ${firstName}@ 🌏🌕
+Bienvenido/a a Gram Farming
+
+🚀 Un bot de recompensas donde tu tiempo y acciones
+se convierten en criptomoneda real
+
+🎉 Completa tareas y gana Coin al instante
+👥 Invita amigos y cobra por cada referido
+⛏️ Minería automática — acumula Coin mientras duermes
+🎮 Juegos — Gram Farming
+💸 Retiro instantáneo en USDT · TON
+
+⬇️ Empieza a ganar ahora`;
+
+    return ctx.reply(welcomeMessage, {
+        ...Markup.inlineKeyboard([
+            [Markup.button.webApp('🚀 Abrir Gram Farming', MINI_APP_URL)]
+        ])
+    });
+});
+
+/* =========================================================
+   2. DYNAMIC DAILY CHECK-IN REMINDER FUNCTION
+   ========================================================= */
+async function sendDailyCheckinReminder(chatId, userId) {
+    try {
+        // Live Daily Bonus Value from Firebase
+        const generalData = await getFirebaseData('adminSettings/general');
+        const dynamicDailyReward = (generalData && generalData.dailyBonus) ? parseFloat(generalData.dailyBonus) : 0.01;
+
+        // User's Dynamic Streak Counter from Firebase
+        let currentStreak = 0;
+        if (userId) {
+            const userData = await getFirebaseData(`users/${userId}`);
+            if (userData && userData.streak !== undefined) {
+                currentStreak = userData.streak;
+            }
+        }
+
+        // Dynamic Message Layout
+        const reminderMessage = 
+`📅 Daily Check-in Reminder
+
+You haven't claimed your daily check-in yet.
+Keep your streak going and secure today's reward.
+
+🔥 Current streak: ${currentStreak} day(s)
+🎁 Today's reward: ${dynamicDailyReward.toFixed(2)} Coin
+
+Open the app and check in before the day ends to keep your streak.`;
+
+        await bot.telegram.sendMessage(chatId, reminderMessage, {
+            ...Markup.inlineKeyboard([
+                [Markup.button.webApp('🚀 Open Gram Farming', MINI_APP_URL)]
+            ])
+        });
+        return true;
+    } catch (err) {
+        console.error(`Error sending reminder to ${chatId}:`, err.message);
+        return false;
+    }
+}
+
+// Manual Test Command for Daily Reminder (/reminder)
+bot.command('reminder', async (ctx) => {
+    await sendDailyCheckinReminder(ctx.chat.id, String(ctx.from.id));
+});
+
+/* =========================================================
+   3. AUTOMATIC DAILY BROADCAST TIMER (9:30 AM)
+   ========================================================= */
+async function triggerDailyCheckinBroadcast() {
+    console.log("📢 Triggering Daily Check-in Broadcast to users...");
+    const usersData = await getFirebaseData('users');
+    if (usersData) {
+        for (let uId in usersData) {
+            const user = usersData[uId];
+            if (user && user.telegramChatId) {
+                await sendDailyCheckinReminder(user.telegramChatId, uId);
+            }
+        }
+    }
+}
+
+// Timer checking every minute for 09:30 AM
+setInterval(() => {
+    const now = new Date();
+    if (now.getHours() === 9 && now.getMinutes() === 30) {
+        triggerDailyCheckinBroadcast();
+    }
+}, 60000);
+
 // Helper Function: Send Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
   try {
