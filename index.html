@@ -432,10 +432,10 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="adLoadingScreen" class="ad-loading-screen">
   <div class="radar-circle">
     <div class="radar-sweep"></div>
-    <div class="p-icon">P</div>
+    <div class="p-icon">🎬</div>
   </div>
   <div class="loading-title">Preparing ad</div>
-  <div class="loading-sub">CONNECTING TO THE AD NETWORK</div>
+  <div class="loading-sub" id="adLoadingSubText">CONNECTING TO THE AD NETWORK</div>
   <div class="loading-dots">
     <div class="active"></div>
     <div></div>
@@ -595,7 +595,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 3. TISRA: MONETIX STREAMS -->
+<!-- 3. TISRA: MONETIX STREAMS (WITH ADEXIUM SEQUENTIAL + BACKUP LOGIC) -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -648,28 +648,6 @@ input:focus, select:focus { border-color: var(--accent); }
 <span id="textAdsterraLimit">0 / 50 (0%)</span>
 </div>
 <div class="progress-line-bg"><div class="progress-line-fill" id="progAdsterraFill" style="width: 0%;"></div></div>
-</div>
-
-<!-- 5. PANCHWA: ADEXIUM VIDEO -->
-<div class="ad-task-card">
-<div class="flex-between">
-<div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: #111827; border-color: #28a745;">
-<span style="font-size: 24px;">💎</span>
-</div>
-<div>
-<b style="font-size: 15px; color: #fff;">Adexium Video</b><br>
-<small style="color:var(--text-muted);">Telegram native rewarded video</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardAdexiumVal">0.05</span> 🪙 / view</span>
-</div>
-</div>
-<button class="btn" id="taskAdexiumBtn" onclick="watchAdexiumAd()" style="background: #28a745;">▶ Watch</button>
-</div>
-<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
-<span>Daily Limit</span>
-<span id="textAdexiumLimit">0 / 50 (0%)</span>
-</div>
-<div class="progress-line-bg"><div class="progress-line-fill" id="progAdexiumFill" style="width: 0%;"></div></div>
 </div>
 
 </div>
@@ -737,7 +715,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div style="font-size: 13px; font-weight: bold; margin-bottom: 2px;">Recommended Add-ons</div>
 <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Boost your campaign reach and conversion</div>
 
-<div id="addonVerifiedCard" onclick="toggleAddon('verified')" style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+<div id="addonVerifiedCard" onclick="toggleAddon('verified')" style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-space-between; align-items: center;">
 <div style="display: flex; align-items: flex-start; gap: 8px;">
 <span id="addonVerifiedCheck" style="font-size: 16px; color: var(--accent);">🟢</span>
 <div>
@@ -748,7 +726,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;" id="addonVerifiedPrice">+$0.10 / 100</span>
 </div>
 
-<div id="addonBannerCard" onclick="toggleAddon('banner')" style="background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+<div id="addonBannerCard" onclick="toggleAddon('banner')" style="background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; display: flex; justify-space-between; align-items: center;">
 <div style="display: flex; align-items: flex-start; gap: 8px;">
 <span id="addonBannerCheck" style="font-size: 16px; color: var(--text-muted);">⚪</span>
 <div>
@@ -1867,13 +1845,11 @@ function renderUIValues() {
   var gCount = adWatchedCounts.taskGigapubLimit || 0;
   var moCount = adWatchedCounts.taskMonetixLimit || 0;
   var adstCount = adWatchedCounts.taskAdsterraLimit || 0;
-  var adexCount = adWatchedCounts.taskAdexiumLimit || 0;
 
   var mMax = maxLimits.monetag;
   var gMax = maxLimits.gigapub;
   var moMax = maxLimits.monetix;
   var adstMax = maxLimits.adsterra;
-  var adexMax = maxLimits.adexium;
 
   if(document.getElementById('textMonetagLimit')) document.getElementById('textMonetagLimit').innerText = mCount + " / " + mMax + " (" + Math.round((mCount/mMax)*100) + "%)";
   if(document.getElementById('progMonetagFill')) document.getElementById('progMonetagFill').style.width = Math.min(100, (mCount/mMax)*100) + "%";
@@ -1887,14 +1863,10 @@ function renderUIValues() {
   if(document.getElementById('textAdsterraLimit')) document.getElementById('textAdsterraLimit').innerText = adstCount + " / " + adstMax + " (" + Math.round((adstCount/adstMax)*100) + "%)";
   if(document.getElementById('progAdsterraFill')) document.getElementById('progAdsterraFill').style.width = Math.min(100, (adstCount/adstMax)*100) + "%";
 
-  if(document.getElementById('textAdexiumLimit')) document.getElementById('textAdexiumLimit').innerText = adexCount + " / " + adexMax + " (" + Math.round((adexCount/adexMax)*100) + "%)";
-  if(document.getElementById('progAdexiumFill')) document.getElementById('progAdexiumFill').style.width = Math.min(100, (adexCount/adexMax)*100) + "%";
-
   if(document.getElementById('rewardMonetagVal')) document.getElementById('rewardMonetagVal').innerText = rewards.monetag;
   if(document.getElementById('rewardGigapubVal')) document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
   if(document.getElementById('rewardMonetixVal')) document.getElementById('rewardMonetixVal').innerText = rewards.monetix;
   if(document.getElementById('rewardAdsterraVal')) document.getElementById('rewardAdsterraVal').innerText = rewards.adsterra;
-  if(document.getElementById('rewardAdexiumVal')) document.getElementById('rewardAdexiumVal').innerText = rewards.adexium;
 
   var availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
   if(document.getElementById('availableWithdrawBalance')) document.getElementById('availableWithdrawBalance').innerText = "Available: " + availVal.toFixed(4);
@@ -2298,13 +2270,15 @@ function toggleMiningBoxes() {
 }
 
 /* HELPER: Show/Hide Loading Overlay */
-function showAdLoadingScreen() {
+function showAdLoadingScreen(subText) {
   var loader = document.getElementById('adLoadingScreen');
-  if(loader) loader.classList.add('active');
+  var subEl = document.getElementById('adLoadingSubText');
+  if (subEl && subText) subEl.innerText = subText;
+  if (loader) loader.classList.add('active');
 }
 function hideAdLoadingScreen() {
   var loader = document.getElementById('adLoadingScreen');
-  if(loader) loader.classList.remove('active');
+  if (loader) loader.classList.remove('active');
 }
 
 /* HELPER: Direct Call for Monetix Stream Ads */
@@ -2349,7 +2323,7 @@ function watchGigapubAd() {
   }
 
   if (btn) btn.disabled = true;
-  showAdLoadingScreen();
+  showAdLoadingScreen("LOADING GIGAPUB VIDEO...");
 
   setTimeout(function() {
     try {
@@ -2374,7 +2348,7 @@ function watchGigapubAd() {
       showToast("Gigapub error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
-  }, 5500);
+  }, 1500);
 }
 
 /* =========================================================
@@ -2394,7 +2368,7 @@ function watchMonetagAd() {
   }
 
   if (btn) btn.disabled = true;
-  showAdLoadingScreen();
+  showAdLoadingScreen("LOADING MONETAG VIDEO...");
 
   setTimeout(function() {
     if (typeof window.show_11989490 === 'function') {
@@ -2412,11 +2386,11 @@ function watchMonetagAd() {
       showToast("Monetag SDK not ready.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
-  }, 5500);
+  }, 1500);
 }
 
 /* =========================================================
-   3. MONETIX STREAMS AD FUNCTION
+   3. MONETIX STREAMS SMART SEQUENTIAL & FALLBACK AD FUNCTION
    ========================================================= */
 function watchMonetixAd() {
   var limitElementId = 'taskMonetixLimit';
@@ -2432,32 +2406,79 @@ function watchMonetixAd() {
   }
 
   if (btn) btn.disabled = true;
-  showAdLoadingScreen();
+  showAdLoadingScreen("CHECKING ADEXIUM & MONETIX...");
 
-  var triggerSecondAd = function() {
-    if (typeof window.show_11989490 === 'function') {
-      window.show_11989490().then(function() {
-        hideAdLoadingScreen();
-        finishAdWatchSuccess(limitElementId, btn, reward);
-        startTaskCountdownTimer(btn, timerSec);
-      }).catch(function() {
-        hideAdLoadingScreen();
-        finishAdWatchSuccess(limitElementId, btn, reward);
-        startTaskCountdownTimer(btn, timerSec);
-      });
+  var adexiumWorked = false;
+
+  // Step 1: Try Adexium Video First
+  setTimeout(function() {
+    if (window.Adexium && typeof window.Adexium.showAd === 'function') {
+      window.Adexium.showAd(ADEXIUM_PLACEMENT_ID)
+        .then(function() {
+          // Adexium Worked! Now close Adexium & play Monetix
+          adexiumWorked = true;
+          showAdLoadingScreen("LOADING MONETIX VIDEO STREAM...");
+          setTimeout(function() {
+            runMonetixSequentialPart(limitElementId, btn, reward, timerSec, adexiumWorked);
+          }, 1000);
+        })
+        .catch(function(err) {
+          console.log("Adexium failed, playing Monetix next...", err);
+          runMonetixSequentialPart(limitElementId, btn, reward, timerSec, false);
+        });
     } else {
+      console.log("Adexium unavailable, playing Monetix next...");
+      runMonetixSequentialPart(limitElementId, btn, reward, timerSec, false);
+    }
+  }, 1200);
+}
+
+function runMonetixSequentialPart(limitElementId, btn, reward, timerSec, wasAdexiumWorked) {
+  showAdLoadingScreen("PLAYING MONETIX STREAM...");
+
+  triggerMonetixDirectAd(
+    function() {
+      // Monetix Worked! Finish and reward (Monetag WON'T SHOW)
       hideAdLoadingScreen();
       finishAdWatchSuccess(limitElementId, btn, reward);
       startTaskCountdownTimer(btn, timerSec);
+    },
+    function() {
+      // Monetix Failed or Dismissed
+      handlePostMonetixCheck(limitElementId, btn, reward, timerSec, wasAdexiumWorked);
     }
-  };
+  );
+}
 
-  setTimeout(function() {
-    triggerMonetixDirectAd(
-      function() { triggerSecondAd(); },
-      function() { triggerSecondAd(); }
-    );
-  }, 5500);
+function handlePostMonetixCheck(limitElementId, btn, reward, timerSec, wasAdexiumWorked) {
+  // Agar Adexium YA Monetix me se EK BHI chal gaya -> STOP (No Monetag)
+  if (wasAdexiumWorked) {
+    hideAdLoadingScreen();
+    finishAdWatchSuccess(limitElementId, btn, reward);
+    startTaskCountdownTimer(btn, timerSec);
+  } else {
+    // DONO FAIL HUYE -> Run Monetag Backup as final resort
+    showAdLoadingScreen("LOADING BACKUP VIDEO...");
+    runMonetagUltimateBackup(limitElementId, btn, reward, timerSec);
+  }
+}
+
+function runMonetagUltimateBackup(limitElementId, btn, reward, timerSec) {
+  if (typeof window.show_11989490 === 'function') {
+    window.show_11989490().then(function() {
+      hideAdLoadingScreen();
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    }).catch(function() {
+      hideAdLoadingScreen();
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    });
+  } else {
+    hideAdLoadingScreen();
+    finishAdWatchSuccess(limitElementId, btn, reward);
+    startTaskCountdownTimer(btn, timerSec);
+  }
 }
 
 /* =========================================================
@@ -2477,7 +2498,7 @@ function watchAdsterraAd() {
   }
 
   if (btn) btn.disabled = true;
-  showAdLoadingScreen();
+  showAdLoadingScreen("LOADING ADSTERRA SMARTLINK...");
 
   setTimeout(function() {
     hideAdLoadingScreen();
@@ -2489,66 +2510,6 @@ function watchAdsterraAd() {
     finishAdWatchSuccess(limitElementId, btn, reward);
     startTaskCountdownTimer(btn, timerSec);
   }, 1500);
-}
-
-/* =========================================================
-   5. ADEXIUM VIDEO AD FUNCTION (WITH SAFE FALLBACK)
-   ========================================================= */
-function watchAdexiumAd() {
-  var limitElementId = 'taskAdexiumLimit';
-  var btn = document.getElementById('taskAdexiumBtn');
-  var maxLimit = maxLimits.adexium || 50;
-  var reward = rewards.adexium || 0.05;
-  var timerSec = adTimers.adexium || 60;
-
-  var watched = adWatchedCounts[limitElementId] || 0;
-  if (watched >= maxLimit) {
-    showToast("Daily ad limit reached for Adexium!", "error");
-    return;
-  }
-
-  if (btn) btn.disabled = true;
-  showAdLoadingScreen();
-
-  setTimeout(function() {
-    hideAdLoadingScreen();
-    
-    // Check if Adexium SDK object exists
-    if (window.Adexium && typeof window.Adexium.showAd === 'function') {
-      window.Adexium.showAd(ADEXIUM_PLACEMENT_ID)
-        .then(function() {
-          finishAdWatchSuccess(limitElementId, btn, reward);
-          startTaskCountdownTimer(btn, timerSec);
-        })
-        .catch(function(err) {
-          console.error("Adexium SDK Error:", err);
-          fallbackToSecondaryAd(limitElementId, btn, reward, timerSec);
-        });
-    } else {
-      fallbackToSecondaryAd(limitElementId, btn, reward, timerSec);
-    }
-  }, 1500);
-}
-
-// Fallback function agar Adexium backend response na de
-function fallbackToSecondaryAd(limitElementId, btn, reward, timerSec) {
-  if (typeof window.show_11989490 === 'function') {
-    window.show_11989490().then(function() {
-      finishAdWatchSuccess(limitElementId, btn, reward);
-      startTaskCountdownTimer(btn, timerSec);
-    }).catch(function() {
-      finishAdWatchSuccess(limitElementId, btn, reward);
-      startTaskCountdownTimer(btn, timerSec);
-    });
-  } else {
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-      window.Telegram.WebApp.openLink(ADSTERRA_LINK);
-    } else {
-      window.open(ADSTERRA_LINK, '_blank');
-    }
-    finishAdWatchSuccess(limitElementId, btn, reward);
-    startTaskCountdownTimer(btn, timerSec);
-  }
 }
 
 function startTaskCountdownTimer(btn, durationSec) {
@@ -2591,7 +2552,7 @@ function claimDailyBonus() {
     showToast("Claim Successful! +" + currentDailyBonus.toFixed(2) + " Coins added!", "success");
   };
 
-  showAdLoadingScreen();
+  showAdLoadingScreen("LOADING DAILY BONUS AD...");
   setTimeout(function() {
     if (typeof window.show_11989490 === 'function') {
       window.show_11989490().then(function() {
@@ -2605,7 +2566,7 @@ function claimDailyBonus() {
       hideAdLoadingScreen();
       runClaimAction();
     }
-  }, 5500);
+  }, 1500);
 }
 
 function calculateStakeRewards() {
@@ -2750,7 +2711,7 @@ function handleRocketAction(index, rocketName, adType) {
     if(btn) btn.disabled = true;
 
     if (index === 1 || adType === 'Gigapub') {
-      showAdLoadingScreen();
+      showAdLoadingScreen("LOADING GIGAPUB VIDEO...");
       setTimeout(function() {
         try {
           var triggerGiga = window.showGiga || (window.Gigapub && window.Gigapub.show) || window.show_gigapub;
@@ -2773,11 +2734,11 @@ function handleRocketAction(index, rocketName, adType) {
           showToast("Gigapub error occurred.", "error");
           if (btn) btn.disabled = false;
         }
-      }, 5500);
+      }, 1500);
       return;
     }
 
-    showAdLoadingScreen();
+    showAdLoadingScreen("LOADING MONETAG VIDEO...");
     setTimeout(function() {
       var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
 
@@ -2787,7 +2748,7 @@ function handleRocketAction(index, rocketName, adType) {
       }).catch(function() {
         progressRocketAdWatch(index, rocketName, maxLimitNeeded);
       });
-    }, 5500);
+    }, 1500);
 
     var countdown = cooldownSec;
     if(btn) btn.innerText = "Wait (" + countdown + "s)";
