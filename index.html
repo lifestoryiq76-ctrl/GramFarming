@@ -2075,7 +2075,7 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
 }
 
 /* =========================================================
-   1. GIGAPUB AD FUNCTION (PURE ISOLATED - NO MONETAG FALLBACK)
+   1. GIGAPUB AD FUNCTION
    ========================================================= */
 function watchGigapubAd() {
   var limitElementId = 'taskGigapubLimit';
@@ -2116,11 +2116,11 @@ function watchGigapubAd() {
       showToast("Gigapub error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
-  }, 1200);
+  }, 5500); // 5-6 seconds preparing ad delay
 }
 
 /* =========================================================
-   2. MONETAG AD FUNCTION (PURE ISOLATED - SIRF MONETAG)
+   2. MONETAG AD FUNCTION
    ========================================================= */
 function watchMonetagAd() {
   var limitElementId = 'taskMonetagLimit';
@@ -2154,11 +2154,11 @@ function watchMonetagAd() {
       showToast("Monetag SDK not ready.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
-  }, 1200);
+  }, 5500); // 5-6 seconds preparing ad delay
 }
 
 /* =========================================================
-   3. MONETIX STREAMS AD FUNCTION (PURE ISOLATED - SIRF MONETIX)
+   3. MONETIX STREAMS AD FUNCTION (MONETIX + MONETAG DUAL AD)
    ========================================================= */
 function watchMonetixAd() {
   var limitElementId = 'taskMonetixLimit';
@@ -2176,20 +2176,39 @@ function watchMonetixAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen();
 
-  setTimeout(function() {
-    triggerMonetixDirectAd(
-      function() {
+  // Helper to trigger 2nd Ad (Monetag)
+  var triggerSecondAd = function() {
+    if (typeof window.show_11989490 === 'function') {
+      window.show_11989490().then(function() {
         hideAdLoadingScreen();
         finishAdWatchSuccess(limitElementId, btn, reward);
         startTaskCountdownTimer(btn, timerSec);
+      }).catch(function() {
+        hideAdLoadingScreen();
+        // Monetag error par bhi 1st ad complete ho chuka hai toh reward de sakte hain ya error show kar sakte hain
+        finishAdWatchSuccess(limitElementId, btn, reward);
+        startTaskCountdownTimer(btn, timerSec);
+      });
+    } else {
+      hideAdLoadingScreen();
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    }
+  };
+
+  setTimeout(function() {
+    // 1st Ad: Monetix Stream
+    triggerMonetixDirectAd(
+      function() {
+        // Monetix success -> Trigger Monetag
+        triggerSecondAd();
       },
       function() {
-        hideAdLoadingScreen();
-        showToast("Monetix ad failed to load.", "error");
-        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+        // Monetix failed/fallback -> Trigger Monetag directly
+        triggerSecondAd();
       }
     );
-  }, 1200);
+  }, 5500); // 5-6 seconds preparing ad delay
 }
 
 function startTaskCountdownTimer(btn, durationSec) {
@@ -2246,7 +2265,7 @@ function claimDailyBonus() {
       hideAdLoadingScreen();
       runClaimAction();
     }
-  }, 1200);
+  }, 5500); // 5-6 seconds preparing ad delay
 }
 
 function calculateStakeRewards() {
@@ -2415,7 +2434,7 @@ function handleRocketAction(index, rocketName, adType) {
           showToast("Gigapub error occurred.", "error");
           if (btn) btn.disabled = false;
         }
-      }, 1200);
+      }, 5500); // 5-6 seconds delay
       return;
     }
 
@@ -2431,7 +2450,7 @@ function handleRocketAction(index, rocketName, adType) {
         hideAdLoadingScreen();
         progressRocketAdWatch(index, rocketName, maxLimitNeeded);
       });
-    }, 1200);
+    }, 5500); // 5-6 seconds delay
 
     var countdown = cooldownSec;
     if(btn) btn.innerText = "Wait (" + countdown + "s)";
