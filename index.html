@@ -201,7 +201,7 @@ input:focus, select:focus { border-color: var(--accent); }
     margin-bottom: 12px;
 }
 
-/* 🟢 Ad Loading Full Screen Overlay Screen Style */
+/* Ad Loading Overlay Screen Style */
 .ad-loading-screen {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -291,7 +291,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </head>
 <body>
 
-<!-- 🟢 Ad Loading Full Screen Overlay -->
+<!-- Ad Loading Full Screen Overlay -->
 <div id="adLoadingScreen" class="ad-loading-screen">
   <div class="radar-circle">
     <div class="radar-sweep"></div>
@@ -319,7 +319,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </select>
 </div>
 
-<!-- 🏠 HOME PAGE -->
+<!-- HOME PAGE -->
 <div id="home" class="tab-content active">
 <div class="card">
 <div class="flex-between" style="align-items: flex-start;">
@@ -390,7 +390,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- 📋 TASKS PAGE -->
+<!-- TASKS PAGE -->
 <div id="tasks" class="tab-content">
 <div style="margin-bottom: 12px;">
 <h3 style="margin:0 0 4px 0;" data-i18n="tasksOffers">📋 Tasks</h3>
@@ -404,7 +404,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- ADS CATEGORY CONTENT (UPDATED ORDER: GIGAPUB -> MONETAG -> MONETIX) -->
+<!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
 <div id="adsTasksAll">
 
@@ -652,7 +652,7 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
-<!-- 💎 STAKING PAGE -->
+<!-- STAKING PAGE -->
 <div id="staking" class="tab-content">
 <h3 data-i18n="stakingOptions">💎 Staking Options</h3>
 
@@ -743,7 +743,7 @@ No active staking plans found.
 </div>
 </div>
 
-<!-- 👥 REFERRALS PAGE -->
+<!-- REFERRALS PAGE -->
 <div id="referrals" class="tab-content">
 <h3 data-i18n="referralProgram">👥 REFERRAL PROGRAM</h3>
 <div class="grid-cards" style="margin-bottom: 12px;">
@@ -778,7 +778,7 @@ No active staking plans found.
 </div>
 </div>
 
-<!-- 💼 WALLET PAGE -->
+<!-- WALLET PAGE -->
 <div id="wallet" class="tab-content">
 <h3 data-i18n="walletExchange" style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
 
@@ -921,7 +921,7 @@ No recent transactions yet.
 </div>
 </div>
 
-<!-- 🏆 RANK PAGE -->
+<!-- RANK PAGE -->
 <div id="leaderboard" class="tab-content">
 <div class="card" style="background:var(--card-bg); border:1px solid var(--border); padding: 14px; margin-bottom: 12px;">
 <div class="flex-between" style="margin-bottom: 10px;">
@@ -949,7 +949,7 @@ No recent transactions yet.
 </div>
 </div>
 
-<!-- 🛡️ VERIFICATION MODAL SHEET -->
+<!-- VERIFICATION MODAL SHEET -->
 <div id="taskVerifyModal" class="modal-overlay" onclick="closeTaskModal(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div style="display: flex; justify-content: flex-end; margin-bottom: 0px;">
@@ -2043,7 +2043,7 @@ function toggleMiningBoxes() {
   }
 }
 
-/* 🟢 HELPER: Show/Hide Loading Overlay */
+/* HELPER: Show/Hide Loading Overlay */
 function showAdLoadingScreen() {
   var loader = document.getElementById('adLoadingScreen');
   if(loader) loader.classList.add('active');
@@ -2053,23 +2053,27 @@ function hideAdLoadingScreen() {
   if(loader) loader.classList.remove('active');
 }
 
-/* 🟢 HELPER: Call Monetix Streams Direct Function */
+/* HELPER: Direct Call for Monetix Stream Ads */
 function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
   try {
     if (typeof window.showMxAd === 'function') {
-      window.showMxAd({ onSuccess: onSuccessCallback, onError: onErrorCallback, onDismiss: onErrorCallback });
+      window.showMxAd({
+        mxid: "MX-EBECD8D1",
+        onSuccess: onSuccessCallback,
+        onError: onErrorCallback,
+        onDismiss: onErrorCallback
+      });
+    } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
+      window.MonetixAds.show().then(onSuccessCallback).catch(onErrorCallback);
     } else if (typeof window.showRewardAd === 'function') {
       window.showRewardAd().then(onSuccessCallback).catch(onErrorCallback);
     } else if (typeof window.monetixShow === 'function') {
       window.monetixShow(onSuccessCallback, onErrorCallback);
-    } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
-      window.MonetixAds.show({ onComplete: onSuccessCallback, onError: onErrorCallback });
-    } else if (window.MXAds && typeof window.MXAds.show === 'function') {
-      window.MXAds.show().then(onSuccessCallback).catch(onErrorCallback);
     } else {
       onErrorCallback();
     }
   } catch(err) {
+    console.error("Monetix Execution Error:", err);
     onErrorCallback();
   }
 }
@@ -2116,7 +2120,7 @@ function watchGigapubAd() {
       showToast("Gigapub error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
-  }, 5500); // 5-6 seconds preparing ad delay
+  }, 5500);
 }
 
 /* =========================================================
@@ -2154,11 +2158,11 @@ function watchMonetagAd() {
       showToast("Monetag SDK not ready.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
-  }, 5500); // 5-6 seconds preparing ad delay
+  }, 5500);
 }
 
 /* =========================================================
-   3. MONETIX STREAMS AD FUNCTION (MONETIX + MONETAG DUAL AD)
+   3. MONETIX STREAMS AD FUNCTION (MONETIX FIRST -> MONETAG SECOND)
    ========================================================= */
 function watchMonetixAd() {
   var limitElementId = 'taskMonetixLimit';
@@ -2176,7 +2180,7 @@ function watchMonetixAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen();
 
-  // Helper to trigger 2nd Ad (Monetag)
+  // Helper function to play 2nd Ad (Monetag) after Monetix finish/fail
   var triggerSecondAd = function() {
     if (typeof window.show_11989490 === 'function') {
       window.show_11989490().then(function() {
@@ -2185,7 +2189,6 @@ function watchMonetixAd() {
         startTaskCountdownTimer(btn, timerSec);
       }).catch(function() {
         hideAdLoadingScreen();
-        // Monetag error par bhi 1st ad complete ho chuka hai toh reward de sakte hain ya error show kar sakte hain
         finishAdWatchSuccess(limitElementId, btn, reward);
         startTaskCountdownTimer(btn, timerSec);
       });
@@ -2197,18 +2200,18 @@ function watchMonetixAd() {
   };
 
   setTimeout(function() {
-    // 1st Ad: Monetix Stream
+    // 1st Ad Attempt: Monetix Stream
     triggerMonetixDirectAd(
       function() {
-        // Monetix success -> Trigger Monetag
+        // Monetix success -> Next Monetag Ad
         triggerSecondAd();
       },
       function() {
-        // Monetix failed/fallback -> Trigger Monetag directly
+        // Monetix failed or no inventory -> Fallback to Monetag Ad
         triggerSecondAd();
       }
     );
-  }, 5500); // 5-6 seconds preparing ad delay
+  }, 5500);
 }
 
 function startTaskCountdownTimer(btn, durationSec) {
@@ -2265,7 +2268,7 @@ function claimDailyBonus() {
       hideAdLoadingScreen();
       runClaimAction();
     }
-  }, 5500); // 5-6 seconds preparing ad delay
+  }, 5500);
 }
 
 function calculateStakeRewards() {
@@ -2409,7 +2412,6 @@ function handleRocketAction(index, rocketName, adType) {
   if (state.status === 'ads') {
     if(btn) btn.disabled = true;
 
-    // DIRECT TRIGGER FOR MINING BOX 2 (COSMIC ROCKET - GIGAPUB ONLY)
     if (index === 1 || adType === 'Gigapub') {
       showAdLoadingScreen();
       setTimeout(function() {
@@ -2434,11 +2436,10 @@ function handleRocketAction(index, rocketName, adType) {
           showToast("Gigapub error occurred.", "error");
           if (btn) btn.disabled = false;
         }
-      }, 5500); // 5-6 seconds delay
+      }, 5500);
       return;
     }
 
-    // MINING BOX 1 (NOVA ROCKET - MONETAG ONLY)
     showAdLoadingScreen();
     setTimeout(function() {
       var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
@@ -2450,7 +2451,7 @@ function handleRocketAction(index, rocketName, adType) {
         hideAdLoadingScreen();
         progressRocketAdWatch(index, rocketName, maxLimitNeeded);
       });
-    }, 5500); // 5-6 seconds delay
+    }, 5500);
 
     var countdown = cooldownSec;
     if(btn) btn.innerText = "Wait (" + countdown + "s)";
