@@ -43,7 +43,122 @@
 --ton-blue: #0098ea;
 --sky-blue: #0a84c1;
 }
+
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 90px; }
+
+/* ------------------ APP OPENING SPLASH LOADING SCREEN ------------------ */
+.app-splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, #062012 0%, #030a06 100%);
+  z-index: 9999999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 60px 20px 80px 20px;
+  box-sizing: border-box;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.splash-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.splash-logo-container {
+  width: 130px;
+  height: 130px;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.2) 0%, rgba(0,0,0,0) 70%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 50px rgba(34, 197, 94, 0.35);
+  animation: logoPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes logoPulse {
+  0% { transform: scale(0.96); box-shadow: 0 0 35px rgba(34, 197, 94, 0.25); }
+  100% { transform: scale(1.05); box-shadow: 0 0 65px rgba(34, 197, 94, 0.55); }
+}
+
+.splash-logo-icon {
+  font-size: 85px;
+  filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.8));
+}
+
+/* DESIGNING TYPOGRAPHY TEXT */
+.splash-title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 25px;
+  text-align: center;
+  font-family: 'Impact', 'Trebuchet MS', sans-serif;
+  background: linear-gradient(180deg, #ffffff 0%, #a7f3d0 45%, #22c55e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(34, 197, 94, 0.65)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9));
+}
+
+.splash-subtitle {
+  font-size: 13px;
+  color: #4ade80;
+  letter-spacing: 5px;
+  font-weight: 800;
+  margin-top: 4px;
+  text-transform: uppercase;
+  opacity: 0.9;
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.splash-bottom {
+  width: 85%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.splash-progress-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+.splash-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #22c55e 50%, #4ade80 100%);
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
+  transition: width 0.1s linear;
+}
+
+.splash-percent-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-top: 8px;
+  letter-spacing: 1px;
+}
+/* ------------------------------------------------------------------------ */
+
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 .live-badge { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -290,6 +405,24 @@ input:focus, select:focus { border-color: var(--accent); }
 </style>
 </head>
 <body>
+
+<!-- APP OPENING SPLASH SCREEN -->
+<div id="appSplashScreen" class="app-splash-screen">
+  <div></div>
+  <div class="splash-center">
+    <div class="splash-logo-container">
+      <span class="splash-logo-icon">🌱</span>
+    </div>
+    <div class="splash-title">GRAM FARMING</div>
+    <div class="splash-subtitle">MINI APP</div>
+  </div>
+  <div class="splash-bottom">
+    <div class="splash-progress-track">
+      <div id="splashProgressFill" class="splash-progress-fill"></div>
+    </div>
+    <div id="splashPercentText" class="splash-percent-text">0%</div>
+  </div>
+</div>
 
 <!-- Ad Loading Full Screen Overlay -->
 <div id="adLoadingScreen" class="ad-loading-screen">
@@ -1021,6 +1154,34 @@ No recent transactions yet.
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
 <script>
+/* APP SPLASH LOADING BAR ANIMATION */
+window.addEventListener('DOMContentLoaded', function() {
+  var fillEl = document.getElementById('splashProgressFill');
+  var textEl = document.getElementById('splashPercentText');
+  var splashScreen = document.getElementById('appSplashScreen');
+  var currentPercent = 0;
+
+  var splashInterval = setInterval(function() {
+    currentPercent += Math.floor(Math.random() * 5) + 3;
+    if (currentPercent >= 100) {
+      currentPercent = 100;
+      clearInterval(splashInterval);
+      if (fillEl) fillEl.style.width = '100%';
+      if (textEl) textEl.innerText = '100%';
+      
+      setTimeout(function() {
+        if (splashScreen) {
+          splashScreen.style.opacity = '0';
+          splashScreen.style.visibility = 'hidden';
+        }
+      }, 300);
+    } else {
+      if (fillEl) fillEl.style.width = currentPercent + '%';
+      if (textEl) textEl.innerText = currentPercent + '%';
+    }
+  }, 50);
+});
+
 // Firebase Setup
 const firebaseConfig = {
   apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
@@ -2180,7 +2341,6 @@ function watchMonetixAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen();
 
-  // Helper function to play 2nd Ad (Monetag) after Monetix finish/fail
   var triggerSecondAd = function() {
     if (typeof window.show_11989490 === 'function') {
       window.show_11989490().then(function() {
@@ -2200,14 +2360,11 @@ function watchMonetixAd() {
   };
 
   setTimeout(function() {
-    // 1st Ad Attempt: Monetix Stream
     triggerMonetixDirectAd(
       function() {
-        // Monetix success -> Next Monetag Ad
         triggerSecondAd();
       },
       function() {
-        // Monetix failed or no inventory -> Fallback to Monetag Ad
         triggerSecondAd();
       }
     );
@@ -2448,7 +2605,6 @@ function handleRocketAction(index, rocketName, adType) {
         hideAdLoadingScreen();
         progressRocketAdWatch(index, rocketName, maxLimitNeeded);
       }).catch(function() {
-        hideAdLoadingScreen();
         progressRocketAdWatch(index, rocketName, maxLimitNeeded);
       });
     }, 5500);
