@@ -628,7 +628,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetixFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 4. CHAUTHA: ADSTERRA VIDEO (NEWLY INTEGRATED) -->
+<!-- 4. CHAUTHA: ADSTERRA VIDEO -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -650,7 +650,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progAdsterraFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 5. PANCHWA: ADEXIUM VIDEO (NEWLY INTEGRATED) -->
+<!-- 5. PANCHWA: ADEXIUM VIDEO -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -2416,7 +2416,7 @@ function watchMonetagAd() {
 }
 
 /* =========================================================
-   3. MONETIX STREAMS AD FUNCTION (MONETIX FIRST -> MONETAG SECOND)
+   3. MONETIX STREAMS AD FUNCTION
    ========================================================= */
 function watchMonetixAd() {
   var limitElementId = 'taskMonetixLimit';
@@ -2454,25 +2454,21 @@ function watchMonetixAd() {
 
   setTimeout(function() {
     triggerMonetixDirectAd(
-      function() {
-        triggerSecondAd();
-      },
-      function() {
-        triggerSecondAd();
-      }
+      function() { triggerSecondAd(); },
+      function() { triggerSecondAd(); }
     );
   }, 5500);
 }
 
 /* =========================================================
-   4. ADSTERRA VIDEO AD FUNCTION (NEW INTEGRATION)
+   4. ADSTERRA VIDEO AD FUNCTION
    ========================================================= */
 function watchAdsterraAd() {
   var limitElementId = 'taskAdsterraLimit';
   var btn = document.getElementById('taskAdsterraBtn');
-  var maxLimit = maxLimits.adsterra;
-  var reward = rewards.adsterra;
-  var timerSec = adTimers.adsterra;
+  var maxLimit = maxLimits.adsterra || 50;
+  var reward = rewards.adsterra || 0.05;
+  var timerSec = adTimers.adsterra || 60;
 
   var watched = adWatchedCounts[limitElementId] || 0;
   if (watched >= maxLimit) {
@@ -2496,14 +2492,14 @@ function watchAdsterraAd() {
 }
 
 /* =========================================================
-   5. ADEXIUM VIDEO AD FUNCTION (NEW INTEGRATION)
+   5. ADEXIUM VIDEO AD FUNCTION (WITH SAFE FALLBACK)
    ========================================================= */
 function watchAdexiumAd() {
   var limitElementId = 'taskAdexiumLimit';
   var btn = document.getElementById('taskAdexiumBtn');
-  var maxLimit = maxLimits.adexium;
-  var reward = rewards.adexium;
-  var timerSec = adTimers.adexium;
+  var maxLimit = maxLimits.adexium || 50;
+  var reward = rewards.adexium || 0.05;
+  var timerSec = adTimers.adexium || 60;
 
   var watched = adWatchedCounts[limitElementId] || 0;
   if (watched >= maxLimit) {
@@ -2516,30 +2512,43 @@ function watchAdexiumAd() {
 
   setTimeout(function() {
     hideAdLoadingScreen();
+    
+    // Check if Adexium SDK object exists
     if (window.Adexium && typeof window.Adexium.showAd === 'function') {
-      window.Adexium.showAd(ADEXIUM_PLACEMENT_ID).then(function() {
-        finishAdWatchSuccess(limitElementId, btn, reward);
-        startTaskCountdownTimer(btn, timerSec);
-      }).catch(function(err) {
-        console.error("Adexium error, opening fallback link:", err);
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-          window.Telegram.WebApp.openLink("https://publisher.adexium.io/show/" + ADEXIUM_PLACEMENT_ID);
-        } else {
-          window.open("https://publisher.adexium.io/show/" + ADEXIUM_PLACEMENT_ID, '_blank');
-        }
-        finishAdWatchSuccess(limitElementId, btn, reward);
-        startTaskCountdownTimer(btn, timerSec);
-      });
+      window.Adexium.showAd(ADEXIUM_PLACEMENT_ID)
+        .then(function() {
+          finishAdWatchSuccess(limitElementId, btn, reward);
+          startTaskCountdownTimer(btn, timerSec);
+        })
+        .catch(function(err) {
+          console.error("Adexium SDK Error:", err);
+          fallbackToSecondaryAd(limitElementId, btn, reward, timerSec);
+        });
     } else {
-      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-        window.Telegram.WebApp.openLink("https://publisher.adexium.io/show/" + ADEXIUM_PLACEMENT_ID);
-      } else {
-        window.open("https://publisher.adexium.io/show/" + ADEXIUM_PLACEMENT_ID, '_blank');
-      }
-      finishAdWatchSuccess(limitElementId, btn, reward);
-      startTaskCountdownTimer(btn, timerSec);
+      fallbackToSecondaryAd(limitElementId, btn, reward, timerSec);
     }
   }, 1500);
+}
+
+// Fallback function agar Adexium backend response na de
+function fallbackToSecondaryAd(limitElementId, btn, reward, timerSec) {
+  if (typeof window.show_11989490 === 'function') {
+    window.show_11989490().then(function() {
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    }).catch(function() {
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    });
+  } else {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+      window.Telegram.WebApp.openLink(ADSTERRA_LINK);
+    } else {
+      window.open(ADSTERRA_LINK, '_blank');
+    }
+    finishAdWatchSuccess(limitElementId, btn, reward);
+    startTaskCountdownTimer(btn, timerSec);
+  }
 }
 
 function startTaskCountdownTimer(btn, durationSec) {
