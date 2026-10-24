@@ -2383,7 +2383,7 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
 }
 
 /* =========================================================
-   🌟 1. RICHADS NATIVE TELEGRAM MINI APP AD INTEGRATION (SAFE AUTO-FALLBACK)
+   🌟 RICHADS NATIVE TELEGRAM MINI APP AD INTEGRATION (ONLY RICHADS)
    ========================================================= */
 function watchRichAdsAd() {
   var limitElementId = 'taskRichadsLimit';
@@ -2424,37 +2424,21 @@ function watchRichAdsAd() {
         }).catch(function(err) {
           hideAdLoadingScreen();
           console.error("RichAds Show Error:", err);
-          // Safe Auto-fallback
-          runRichadsFallback(limitElementId, btn, reward, timerSec);
+          showToast("RichAds ad failed or not available right now.", "error");
+          if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
         });
       } else {
-        // Safe Auto-fallback when controller is not initialized
-        runRichadsFallback(limitElementId, btn, reward, timerSec);
+        hideAdLoadingScreen();
+        showToast("RichAds Controller initializing, try again in a moment.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
       }
     } catch(err) {
+      hideAdLoadingScreen();
       console.error("RichAds Execution Exception:", err);
-      runRichadsFallback(limitElementId, btn, reward, timerSec);
+      showToast("RichAds ad error occurred.", "error");
+      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
   }, 1000);
-}
-
-function runRichadsFallback(limitElementId, btn, reward, timerSec) {
-  showAdLoadingScreen("LOADING ALTERNATE AD...");
-  if (typeof window.show_11989490 === 'function') {
-    window.show_11989490().then(function() {
-      hideAdLoadingScreen();
-      finishAdWatchSuccess(limitElementId, btn, reward);
-      startTaskCountdownTimer(btn, timerSec);
-    }).catch(function() {
-      hideAdLoadingScreen();
-      finishAdWatchSuccess(limitElementId, btn, reward);
-      startTaskCountdownTimer(btn, timerSec);
-    });
-  } else {
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-    startTaskCountdownTimer(btn, timerSec);
-  }
 }
 
 /* =========================================================
