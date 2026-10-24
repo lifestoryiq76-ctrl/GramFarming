@@ -39,8 +39,8 @@
 <!-- 4. Adexium SDK Integration (Async) -->
 <script src="https://publisher.adexium.io/js/sdk.js" async></script>
 
-<!-- 5. Tads.ai Fullscreen SDK Integration (Async) -->
-<script src="https://tads.me/sdk.js" async></script>
+<!-- 5. Tads.ai Fullscreen SDK Integration -->
+<script src="https://tads.me/sdk.js" id="tads-sdk-script"></script>
 
 <!-- TON Connect UI SDK (Deferred) -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
@@ -2442,7 +2442,7 @@ function watchRichAdsAd() {
 }
 
 /* =========================================================
-   2. TADS.AI FULLSCREEN AD FUNCTION (#12663)
+   🌟 2. TADS.AI FULLSCREEN REWARDED AD INTEGRATION (AUTO-LOAD FIX)
    ========================================================= */
 function watchTadsAd() {
   var limitElementId = 'taskTadsLimit';
@@ -2458,9 +2458,9 @@ function watchTadsAd() {
   }
 
   if (btn) btn.disabled = true;
-  showAdLoadingScreen("LOADING TADS.AI FULLSCREEN VIDEO...");
+  showAdLoadingScreen("LOADING TADS.AI VIDEO...");
 
-  setTimeout(function() {
+  function showTadsNow() {
     try {
       if (window.TADS && typeof window.TADS.show === 'function') {
         window.TADS.show({ widgetId: TADS_WIDGET_ID }).then(function() {
@@ -2469,20 +2469,45 @@ function watchTadsAd() {
           startTaskCountdownTimer(btn, timerSec);
         }).catch(function(err) {
           hideAdLoadingScreen();
+          console.error("Tads Show Error:", err);
           showToast("Tads.ai ad failed or closed.", "error");
           if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
         });
       } else {
         hideAdLoadingScreen();
-        showToast("Tads.ai SDK initializing, try again in a second.", "error");
+        showToast("Tads.ai ad not available right now. Try again later.", "error");
         if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
       }
     } catch(err) {
       hideAdLoadingScreen();
+      console.error("Tads Execution Exception:", err);
       showToast("Tads.ai ad error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
-  }, 1200);
+  }
+
+  if (window.TADS && typeof window.TADS.show === 'function') {
+    setTimeout(showTadsNow, 500);
+  } else {
+    var existingScript = document.getElementById('tads-sdk-script');
+    if (!existingScript) {
+      var script = document.createElement('script');
+      script.id = 'tads-sdk-script';
+      script.src = "https://tads.me/sdk.js";
+      script.async = true;
+      script.onload = function() {
+        setTimeout(showTadsNow, 1000);
+      };
+      script.onerror = function() {
+        hideAdLoadingScreen();
+        showToast("Failed to load Tads.ai SDK script.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      };
+      document.head.appendChild(script);
+    } else {
+      setTimeout(showTadsNow, 1200);
+    }
+  }
 }
 
 /* =========================================================
