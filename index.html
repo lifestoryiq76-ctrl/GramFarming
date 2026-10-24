@@ -207,7 +207,7 @@ display: inline-block;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex; 
-    justify-content: space-around; 
+    justify-style: space-around; 
     padding: 8px 4px 12px 4px; 
     border-top: 1px solid rgba(51, 65, 85, 0.6); 
     z-index: 1000; 
@@ -2466,7 +2466,7 @@ function watchRichAdsAd() {
 }
 
 /* =========================================================
-   🌟 2. TADS.AI FULLSCREEN REWARDED AD INTEGRATION
+   🌟 2. TADS.AI FULLSCREEN REWARDED AD INTEGRATION (VANILLA JS FIX)
    ========================================================= */
 function watchTadsAd() {
   var limitElementId = 'taskTadsLimit';
@@ -2484,20 +2484,38 @@ function watchTadsAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen("LOADING TADS.AI VIDEO...");
 
-  function showTadsNow() {
+  function triggerTadsAd() {
     try {
+      // 1. Check for Tads Global SDK (window.TADS or window.tads)
       if (window.TADS && typeof window.TADS.show === 'function') {
-        window.TADS.show({ widgetId: TADS_WIDGET_ID }).then(function() {
-          hideAdLoadingScreen();
-          finishAdWatchSuccess(limitElementId, btn, reward);
-          startTaskCountdownTimer(btn, timerSec);
-        }).catch(function(err) {
-          hideAdLoadingScreen();
-          console.error("Tads Show Error:", err);
-          showToast("Tads.ai ad failed or closed.", "error");
-          if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-        });
-      } else {
+        window.TADS.show({ widgetId: TADS_WIDGET_ID })
+          .then(function() {
+            hideAdLoadingScreen();
+            finishAdWatchSuccess(limitElementId, btn, reward);
+            startTaskCountdownTimer(btn, timerSec);
+          })
+          .catch(function(err) {
+            hideAdLoadingScreen();
+            console.error("Tads Show Error:", err);
+            showToast("Tads.ai ad not available right now. Try again later.", "error");
+            if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+          });
+      } 
+      // 2. Check for renderTadsWidget / tadsWidget global helper
+      else if (typeof window.renderTadsWidget === 'function') {
+        window.renderTadsWidget({ id: TADS_WIDGET_ID, type: 'fullscreen' });
+        hideAdLoadingScreen();
+        finishAdWatchSuccess(limitElementId, btn, reward);
+        startTaskCountdownTimer(btn, timerSec);
+      } 
+      // 3. Fallback for tads object
+      else if (window.tads && typeof window.tads.show === 'function') {
+        window.tads.show({ widgetId: TADS_WIDGET_ID });
+        hideAdLoadingScreen();
+        finishAdWatchSuccess(limitElementId, btn, reward);
+        startTaskCountdownTimer(btn, timerSec);
+      } 
+      else {
         hideAdLoadingScreen();
         showToast("Tads.ai ad not available right now. Try again later.", "error");
         if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
@@ -2510,8 +2528,9 @@ function watchTadsAd() {
     }
   }
 
-  if (window.TADS && typeof window.TADS.show === 'function') {
-    setTimeout(showTadsNow, 500);
+  // Ensure SDK is ready
+  if (window.TADS || typeof window.renderTadsWidget === 'function' || window.tads) {
+    setTimeout(triggerTadsAd, 500);
   } else {
     var existingScript = document.getElementById('tads-sdk-script');
     if (!existingScript) {
@@ -2520,7 +2539,7 @@ function watchTadsAd() {
       script.src = "https://tads.me/sdk.js";
       script.async = true;
       script.onload = function() {
-        setTimeout(showTadsNow, 1000);
+        setTimeout(triggerTadsAd, 1000);
       };
       script.onerror = function() {
         hideAdLoadingScreen();
@@ -2529,7 +2548,7 @@ function watchTadsAd() {
       };
       document.head.appendChild(script);
     } else {
-      setTimeout(showTadsNow, 1200);
+      setTimeout(triggerTadsAd, 1200);
     }
   }
 }
