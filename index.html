@@ -17,6 +17,16 @@
 <!-- Core Telegram SDK (Fastest inline setup) -->
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
+<!-- RichAds Official Telegram Mini App Controller Script -->
+<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+<script>
+  window.TelegramAdsController = new TelegramAdsController();
+  window.TelegramAdsController.initialize({
+    pubId: "1025816",
+    appId: "9403",
+  });
+</script>
+
 <!-- 1. Monetag Telegram Mini App SDK Script (Deferred) -->
 <script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490' defer></script>
 
@@ -31,9 +41,6 @@
 
 <!-- 5. Tads.ai Fullscreen SDK Integration (Async) -->
 <script src="https://tads.me/sdk.js" async></script>
-
-<!-- 6. RichAds Fullscreen Pops Ad Tag (Updated) -->
-<script src="https://richinfo.co/richpartners/pops/js/richads-pu-ob.js" data-pubid="1025816" data-siteid="410789" async data-cfasync="false"></script>
 
 <!-- TON Connect UI SDK (Deferred) -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
@@ -551,7 +558,29 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="taskCat-ads" class="task-category-content">
 <div id="adsTasksAll">
 
-<!-- 🌟 NAYA ALAG CARD 1: TADS.AI FULLSCREEN REWARDED AD (#12663) -->
+<!-- 🌟 RICHADS TELEGRAM MINI APP NATIVE VIDEO CARD -->
+<div class="ad-task-card" style="border: 1px solid #ff3b30;">
+<div class="flex-between">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="ad-icon-box" style="background: #3a0d0d; border-color: #ff3b30;">
+<span style="font-size: 24px;">📺</span>
+</div>
+<div>
+<b style="font-size: 15px; color: #fff;">RichAds Video</b><br>
+<small style="color:var(--text-muted);">High eCPM Interstitial ad</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardRichadsVal">0.05</span> 🪙 / view</span>
+</div>
+</div>
+<button class="btn" id="taskRichadsBtn" onclick="watchRichAdsAd()" style="background: #ff3b30;">▶ Watch</button>
+</div>
+<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
+<span>Daily Limit</span>
+<span id="textRichadsLimit">0 / 50 (0%)</span>
+</div>
+<div class="progress-line-bg"><div class="progress-line-fill" id="progRichadsFill" style="width: 0%; background: #ff3b30;"></div></div>
+</div>
+
+<!-- TADS.AI FULLSCREEN REWARDED AD (#12663) -->
 <div class="ad-task-card" style="border: 1px solid var(--accent);">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -573,29 +602,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progTadsFill" style="width: 0%; background: #22c55e;"></div></div>
 </div>
 
-<!-- 🌟 NAYA ALAG CARD 2: RICHADS FULLSCREEN POPS/VIDEO -->
-<div class="ad-task-card" style="border: 1px solid #007bff;">
-<div class="flex-between">
-<div style="display: flex; align-items: center; gap: 12px;">
-<div class="ad-icon-box" style="background: #0a2040; border-color: #007bff;">
-<span style="font-size: 24px;">📺</span>
-</div>
-<div>
-<b style="font-size: 15px; color: #fff;">RichAds Video</b><br>
-<small style="color:var(--text-muted);">High eCPM interstitial video ad</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardRichadsVal">0.05</span> 🪙 / view</span>
-</div>
-</div>
-<button class="btn" id="taskRichadsBtn" onclick="watchRichAdsAd()" style="background: #007bff;">▶ Watch</button>
-</div>
-<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
-<span>Daily Limit</span>
-<span id="textRichadsLimit">0 / 50 (0%)</span>
-</div>
-<div class="progress-line-bg"><div class="progress-line-fill" id="progRichadsFill" style="width: 0%; background: #007bff;"></div></div>
-</div>
-
-<!-- 1. PAHLA: GIGAPUB NETWORK -->
+<!-- 1. GIGAPUB NETWORK -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -617,7 +624,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progGigapubFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 2. DUSRA: MONETAG ADS -->
+<!-- 2. MONETAG ADS -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -645,7 +652,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetagFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 3. TISRA: MONETIX STREAMS (WITH ADEXIUM SEQUENTIAL + BACKUP LOGIC) -->
+<!-- 3. MONETIX STREAMS -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -678,7 +685,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progMonetixFill" style="width: 0%;"></div></div>
 </div>
 
-<!-- 4. CHAUTHA: ADSTERRA VIDEO -->
+<!-- 4. ADSTERRA VIDEO -->
 <div class="ad-task-card">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -2376,7 +2383,53 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
 }
 
 /* =========================================================
-   🌟 1. TADS.AI FULLSCREEN AD FUNCTION (#12663)
+   🌟 1. RICHADS NATIVE TELEGRAM MINI APP AD INTEGRATION
+   ========================================================= */
+function watchRichAdsAd() {
+  var limitElementId = 'taskRichadsLimit';
+  var btn = document.getElementById('taskRichadsBtn');
+  var maxLimit = maxLimits.richads || 50;
+  var reward = rewards.richads || 0.05;
+  var timerSec = adTimers.richads || 60;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for RichAds!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen("LOADING RICHADS MINI APP AD...");
+
+  setTimeout(function() {
+    try {
+      if (window.TelegramAdsController && typeof window.TelegramAdsController.show === 'function') {
+        window.TelegramAdsController.show().then(function() {
+          hideAdLoadingScreen();
+          finishAdWatchSuccess(limitElementId, btn, reward);
+          startTaskCountdownTimer(btn, timerSec);
+        }).catch(function(err) {
+          hideAdLoadingScreen();
+          console.error("RichAds Show Error:", err);
+          showToast("RichAds ad closed or failed to display.", "error");
+          if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+        });
+      } else {
+        hideAdLoadingScreen();
+        showToast("RichAds Controller initializing, try again in a moment.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      }
+    } catch(err) {
+      hideAdLoadingScreen();
+      console.error("RichAds Execution Exception:", err);
+      showToast("RichAds error occurred.", "error");
+      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+    }
+  }, 1200);
+}
+
+/* =========================================================
+   2. TADS.AI FULLSCREEN AD FUNCTION (#12663)
    ========================================================= */
 function watchTadsAd() {
   var limitElementId = 'taskTadsLimit';
@@ -2416,41 +2469,6 @@ function watchTadsAd() {
       showToast("Tads.ai ad error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
-  }, 1200);
-}
-
-/* =========================================================
-   🌟 2. RICHADS FULLSCREEN POPS/VIDEO AD FUNCTION
-   ========================================================= */
-function watchRichAdsAd() {
-  var limitElementId = 'taskRichadsLimit';
-  var btn = document.getElementById('taskRichadsBtn');
-  var maxLimit = maxLimits.richads || 50;
-  var reward = rewards.richads || 0.05;
-  var timerSec = adTimers.richads || 60;
-
-  var watched = adWatchedCounts[limitElementId] || 0;
-  if (watched >= maxLimit) {
-    showToast("Daily ad limit reached for RichAds!", "error");
-    return;
-  }
-
-  if (btn) btn.disabled = true;
-  showAdLoadingScreen("LOADING RICHADS FULLSCREEN AD...");
-
-  // Trigger RichAds Fullscreen Pop/Video
-  try {
-    if (window.richadsPops && typeof window.richadsPops.show === 'function') {
-      window.richadsPops.show();
-    }
-  } catch (e) {
-    console.log("RichAds trigger error:", e);
-  }
-
-  setTimeout(function() {
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-    startTaskCountdownTimer(btn, timerSec);
   }, 1200);
 }
 
@@ -2558,12 +2576,10 @@ function watchMonetixAd() {
 
   var adexiumWorked = false;
 
-  // Step 1: Try Adexium Video First
   setTimeout(function() {
     if (window.Adexium && typeof window.Adexium.showAd === 'function') {
       window.Adexium.showAd(ADEXIUM_PLACEMENT_ID)
         .then(function() {
-          // Adexium Worked! Now close Adexium & play Monetix
           adexiumWorked = true;
           showAdLoadingScreen("LOADING MONETIX VIDEO STREAM...");
           setTimeout(function() {
@@ -2586,26 +2602,22 @@ function runMonetixSequentialPart(limitElementId, btn, reward, timerSec, wasAdex
 
   triggerMonetixDirectAd(
     function() {
-      // Monetix Worked! Finish and reward (Monetag WON'T SHOW)
       hideAdLoadingScreen();
       finishAdWatchSuccess(limitElementId, btn, reward);
       startTaskCountdownTimer(btn, timerSec);
     },
     function() {
-      // Monetix Failed or Dismissed
       handlePostMonetixCheck(limitElementId, btn, reward, timerSec, wasAdexiumWorked);
     }
   );
 }
 
 function handlePostMonetixCheck(limitElementId, btn, reward, timerSec, wasAdexiumWorked) {
-  // Agar Adexium YA Monetix me se EK BHI chal gaya -> STOP (No Monetag)
   if (wasAdexiumWorked) {
     hideAdLoadingScreen();
     finishAdWatchSuccess(limitElementId, btn, reward);
     startTaskCountdownTimer(btn, timerSec);
   } else {
-    // DONO FAIL HUYE -> Run Monetag Backup as final resort
     showAdLoadingScreen("LOADING BACKUP VIDEO...");
     runMonetagUltimateBackup(limitElementId, btn, reward, timerSec);
   }
