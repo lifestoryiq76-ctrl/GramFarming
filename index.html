@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://www.monetixads.online" crossorigin>
 <link rel="preconnect" href="https://telegram.org">
 <link rel="preconnect" href="https://www.gstatic.com">
+<link rel="preconnect" href="https://tads.me">
 
 <!-- Core Telegram SDK (Fastest inline setup) -->
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
@@ -40,7 +41,7 @@
 <script src="https://publisher.adexium.io/js/sdk.js" async></script>
 
 <!-- 5. Tads.ai Fullscreen SDK Integration -->
-<script src="https://tads.me/sdk.js" id="tads-sdk-script"></script>
+<script src="https://tads.me/sdk.js" id="tads-sdk-script" async></script>
 
 <!-- TON Connect UI SDK (Deferred) -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
@@ -2236,9 +2237,6 @@ function updateCostCalculation() {
   }
 }
 
-/* =========================================================
-   UPDATED FAUCETPAY MERCHANT DEPOSIT FUNCTION
-   ========================================================= */
 function processDeposit() {
   var amountInput = parseFloat(document.getElementById('depositAmountInput').value) || 0;
   if(amountInput <= 0) {
@@ -2249,13 +2247,11 @@ function processDeposit() {
   if(currentDepositSubMethod === 'faucetpay') {
     showToast("⏳ Opening FaucetPay Checkout...", "success");
 
-    // FaucetPay Username Updated Here
     var merchantUsername = "lifestoryiq76"; 
     var currencyType = "USDT";
     var description = "Gram Farming Deposit";
     var customOrderId = "dep_" + userId + "_" + Date.now();
 
-    // Official FaucetPay Hosted Checkout URL
     var faucetPayCheckoutUrl = "https://faucetpay.io/merchant/webpay?" +
                                "merchant_username=" + encodeURIComponent(merchantUsername) +
                                "&item_description=" + encodeURIComponent(description) +
@@ -2263,7 +2259,6 @@ function processDeposit() {
                                "&currency1=" + currencyType +
                                "&custom=" + encodeURIComponent(customOrderId);
 
-    // Direct redirect without backend endpoint errors
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
       window.Telegram.WebApp.openLink(faucetPayCheckoutUrl);
     } else {
@@ -2408,7 +2403,7 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
 }
 
 /* =========================================================
-   🌟 RICHADS NATIVE TELEGRAM MINI APP AD INTEGRATION (ONLY RICHADS)
+   🌟 RICHADS NATIVE TELEGRAM MINI APP AD INTEGRATION
    ========================================================= */
 function watchRichAdsAd() {
   var limitElementId = 'taskRichadsLimit';
@@ -2466,8 +2461,41 @@ function watchRichAdsAd() {
 }
 
 /* =========================================================
-   🌟 2. TADS.AI FULLSCREEN REWARDED AD INTEGRATION (#12855)
+   🌟 2. FIXED & ROBUST TADS.AI REWARDED AD INTEGRATION (#12855)
    ========================================================= */
+function ensureTadsSdkLoaded(callback) {
+  // Check if Tads SDK is available in any global object variant
+  if (window.TADS || window.tads || typeof window.renderTadsWidget === 'function') {
+    callback(true);
+    return;
+  }
+
+  // Reload/Inject dynamic script tag if missing or slow
+  var existingScript = document.getElementById('tads-sdk-script');
+  if (!existingScript) {
+    var script = document.createElement('script');
+    script.id = 'tads-sdk-script';
+    script.src = 'https://tads.me/sdk.js';
+    script.async = true;
+    script.onload = function() { callback(true); };
+    script.onerror = function() { callback(false); };
+    document.head.appendChild(script);
+  } else {
+    // Retry check for up to 3 seconds
+    var retries = 0;
+    var interval = setInterval(function() {
+      retries++;
+      if (window.TADS || window.tads || typeof window.renderTadsWidget === 'function') {
+        clearInterval(interval);
+        callback(true);
+      } else if (retries >= 15) {
+        clearInterval(interval);
+        callback(false);
+      }
+    }, 200);
+  }
+}
+
 function watchTadsAd() {
   var limitElementId = 'taskTadsLimit';
   var btn = document.getElementById('taskTadsBtn');
@@ -2499,31 +2527,40 @@ function watchTadsAd() {
     }
   }
 
-  try {
-    var WIDGET_ID = TADS_WIDGET_ID || '12855'; 
-
-    if (window.TADS && typeof window.TADS.show === 'function') {
-      window.TADS.show({ widgetId: WIDGET_ID, type: 'fullscreen' })
-        .then(function() { handleAdSuccess(); })
-        .catch(function(err) { handleAdError("Ad not filled right now. Try again."); });
-    } else if (typeof window.renderTadsWidget === 'function') {
-      window.renderTadsWidget({
-        id: WIDGET_ID,
-        type: 'fullscreen',
-        onAdsNotFound: function() { handleAdError("No ads available right now."); },
-        onShowReward: function() { handleAdSuccess(); },
-        onError: function(err) { handleAdError(); }
-      });
-    } else if (window.tads && typeof window.tads.show === 'function') {
-      window.tads.show({ widgetId: WIDGET_ID, type: 'fullscreen' })
-        .then(function() { handleAdSuccess(); })
-        .catch(function(err) { handleAdError("Ad not filled right now. Try again."); });
-    } else {
-      handleAdError("Tads SDK loading... Please tap watch again.");
+  // Verify SDK is loaded before triggering
+  ensureTadsSdkLoaded(function(isLoaded) {
+    if (!isLoaded) {
+      handleAdError("Tads SDK network timeout. Please tap watch again.");
+      return;
     }
-  } catch (err) {
-    handleAdError("Execution error occurred.");
-  }
+
+    try {
+      var WIDGET_ID = TADS_WIDGET_ID || '12855';
+
+      if (window.TADS && typeof window.TADS.show === 'function') {
+        window.TADS.show({ widgetId: WIDGET_ID, type: 'fullscreen' })
+          .then(function() { handleAdSuccess(); })
+          .catch(function() { handleAdError("Ad not filled right now. Try again."); });
+      } else if (window.tads && typeof window.tads.show === 'function') {
+        window.tads.show({ widgetId: WIDGET_ID, type: 'fullscreen' })
+          .then(function() { handleAdSuccess(); })
+          .catch(function() { handleAdError("Ad not filled right now. Try again."); });
+      } else if (typeof window.renderTadsWidget === 'function') {
+        window.renderTadsWidget({
+          id: WIDGET_ID,
+          type: 'fullscreen',
+          onAdsNotFound: function() { handleAdError("No ads available right now."); },
+          onShowReward: function() { handleAdSuccess(); },
+          onError: function() { handleAdError(); }
+        });
+      } else {
+        handleAdError("Initializing Tads SDK... Tap watch again.");
+      }
+    } catch (err) {
+      console.error("Tads Execution Exception:", err);
+      handleAdError("Tads ad execution error.");
+    }
+  });
 }
 
 /* =========================================================
