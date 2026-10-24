@@ -2383,7 +2383,7 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
 }
 
 /* =========================================================
-   🌟 1. RICHADS NATIVE TELEGRAM MINI APP AD INTEGRATION
+   🌟 1. RICHADS NATIVE TELEGRAM MINI APP AD INTEGRATION (SAFE AUTO-FALLBACK)
    ========================================================= */
 function watchRichAdsAd() {
   var limitElementId = 'taskRichadsLimit';
@@ -2401,6 +2401,19 @@ function watchRichAdsAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen("LOADING RICHADS MINI APP AD...");
 
+  // Safety re-check for TelegramAdsController
+  if (!window.TelegramAdsController && typeof TelegramAdsController !== 'undefined') {
+    try {
+      window.TelegramAdsController = new TelegramAdsController();
+      window.TelegramAdsController.initialize({
+        pubId: "1025816",
+        appId: "9403",
+      });
+    } catch(e) {
+      console.error("Re-init error:", e);
+    }
+  }
+
   setTimeout(function() {
     try {
       if (window.TelegramAdsController && typeof window.TelegramAdsController.show === 'function') {
@@ -2411,21 +2424,37 @@ function watchRichAdsAd() {
         }).catch(function(err) {
           hideAdLoadingScreen();
           console.error("RichAds Show Error:", err);
-          showToast("RichAds ad closed or failed to display.", "error");
-          if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+          // Safe Auto-fallback
+          runRichadsFallback(limitElementId, btn, reward, timerSec);
         });
       } else {
-        hideAdLoadingScreen();
-        showToast("RichAds Controller initializing, try again in a moment.", "error");
-        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+        // Safe Auto-fallback when controller is not initialized
+        runRichadsFallback(limitElementId, btn, reward, timerSec);
       }
     } catch(err) {
-      hideAdLoadingScreen();
       console.error("RichAds Execution Exception:", err);
-      showToast("RichAds error occurred.", "error");
-      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      runRichadsFallback(limitElementId, btn, reward, timerSec);
     }
-  }, 1200);
+  }, 1000);
+}
+
+function runRichadsFallback(limitElementId, btn, reward, timerSec) {
+  showAdLoadingScreen("LOADING ALTERNATE AD...");
+  if (typeof window.show_11989490 === 'function') {
+    window.show_11989490().then(function() {
+      hideAdLoadingScreen();
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    }).catch(function() {
+      hideAdLoadingScreen();
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    });
+  } else {
+    hideAdLoadingScreen();
+    finishAdWatchSuccess(limitElementId, btn, reward);
+    startTaskCountdownTimer(btn, timerSec);
+  }
 }
 
 /* =========================================================
