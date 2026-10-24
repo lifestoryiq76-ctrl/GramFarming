@@ -45,6 +45,8 @@ async function updateFirebaseData(path, data) {
 // Credentials Configuration
 const BOT_TOKEN = process.env.BOT_TOKEN || '8823465549:AAFfNZ1hDHR_eAWIeH5eWLCEm6dLkuSfhN0';
 const FAUCETPAY_API_KEY = process.env.FAUCETPAY_API_KEY || '54554fbd31a9a72c7e84e4418b59abcde50bd6921c4a89d8dd86ae9b7c8df90a';
+const FAUCETPAY_MERCHANT_USERNAME = process.env.FAUCETPAY_MERCHANT_USERNAME || "lifestoryiq76";
+
 const bot = new Telegraf(BOT_TOKEN);
 const MINI_APP_URL = "https://gram-farming.vercel.app";
 const PAYOUT_CHANNEL = '@GramFarming_Payout';
@@ -197,7 +199,7 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// Automatic FaucetPay Merchant API Integration
+// Automatic FaucetPay Merchant API Integration (Payouts / Withdrawals)
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName } = req.body;
 
@@ -471,11 +473,24 @@ async function checkAndSendPayouts() {
 // Webhook & Endpoint Handling
 app.post('/api/bot', async (req, res) => {
     try {
+        const { action, amount, currency, userId } = req.body || {};
+
+        // 1. DEPOSIT LINK GENERATION (FaucetPay Merchant API)
+        if (action === 'create_deposit') {
+            const depositUrl = `https://faucetpay.io/merchant/webpay?merchant_username=${FAUCETPAY_MERCHANT_USERNAME}&item_name=Gram+Farming+Deposit&currency1=${currency || 'USDT'}&amount1=${amount}&custom=${userId}`;
+            return res.status(200).json({ success: true, url: depositUrl });
+        }
+
+        // 2. FAUCETPAY PAYOUT (WITHDRAWAL)
         if (req.body && req.body.email && req.body.amount) {
             return await handleFaucetPayPayout(req, res);
         }
 
-        await bot.handleUpdate(req.body);
+        // 3. TELEGRAM BOT WEBHOOK UPDATES
+        if (req.body && (req.body.update_id || req.body.message || req.body.callback_query)) {
+            await bot.handleUpdate(req.body);
+        }
+
         await checkAndSendPayouts();
         res.status(200).send('OK');
     } catch (err) {
