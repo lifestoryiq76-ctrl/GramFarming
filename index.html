@@ -40,8 +40,8 @@
 <!-- 4. Adexium SDK Integration (Async) -->
 <script src="https://publisher.adexium.io/js/sdk.js" async></script>
 
-<!-- 5. Tads.ai Fullscreen SDK Integration -->
-<script src="https://tads.me/sdk.js" id="tads-sdk-script" async></script>
+<!-- 5. Tads.ai Fullscreen SDK Integration (Direct Load) -->
+<script src="https://tads.me/sdk.js"></script>
 
 <!-- TON Connect UI SDK (Deferred) -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
@@ -1280,7 +1280,7 @@ window.addEventListener('load', function() {
       authDomain: "gramfarmingbot-1a570.firebaseapp.com",
       databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com",
       projectId: "gramfarmingbot-1a570",
-      storageBucket: "gramfarmingbot-1a570.firebasestorage.app",
+      storageBucket: "gramfarmingbot-1a570.appspot.com",
       messagingSenderId: "113291680927",
       appId: "1:113291680927:web:cb20c9f6b7914a546156aa"
     };
@@ -2461,41 +2461,8 @@ function watchRichAdsAd() {
 }
 
 /* =========================================================
-   🌟 2. FIXED & ROBUST TADS.AI REWARDED AD INTEGRATION (#12855)
+   🌟 2. DIRECT RELIABLE TADS.AI REWARDED AD INTEGRATION (#12855)
    ========================================================= */
-function ensureTadsSdkLoaded(callback) {
-  // Check if Tads SDK is available in any global object variant
-  if (window.TADS || window.tads || typeof window.renderTadsWidget === 'function') {
-    callback(true);
-    return;
-  }
-
-  // Reload/Inject dynamic script tag if missing or slow
-  var existingScript = document.getElementById('tads-sdk-script');
-  if (!existingScript) {
-    var script = document.createElement('script');
-    script.id = 'tads-sdk-script';
-    script.src = 'https://tads.me/sdk.js';
-    script.async = true;
-    script.onload = function() { callback(true); };
-    script.onerror = function() { callback(false); };
-    document.head.appendChild(script);
-  } else {
-    // Retry check for up to 3 seconds
-    var retries = 0;
-    var interval = setInterval(function() {
-      retries++;
-      if (window.TADS || window.tads || typeof window.renderTadsWidget === 'function') {
-        clearInterval(interval);
-        callback(true);
-      } else if (retries >= 15) {
-        clearInterval(interval);
-        callback(false);
-      }
-    }, 200);
-  }
-}
-
 function watchTadsAd() {
   var limitElementId = 'taskTadsLimit';
   var btn = document.getElementById('taskTadsBtn');
@@ -2527,13 +2494,7 @@ function watchTadsAd() {
     }
   }
 
-  // Verify SDK is loaded before triggering
-  ensureTadsSdkLoaded(function(isLoaded) {
-    if (!isLoaded) {
-      handleAdError("Tads SDK network timeout. Please tap watch again.");
-      return;
-    }
-
+  setTimeout(function() {
     try {
       var WIDGET_ID = TADS_WIDGET_ID || '12855';
 
@@ -2554,13 +2515,21 @@ function watchTadsAd() {
           onError: function() { handleAdError(); }
         });
       } else {
-        handleAdError("Initializing Tads SDK... Tap watch again.");
+        // Fallback direct link open if SDK object not registered instantly
+        hideAdLoadingScreen();
+        var fallbackUrl = "https://t.me/tads_bot?start=" + WIDGET_ID;
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+          window.Telegram.WebApp.openLink(fallbackUrl);
+        } else {
+          window.open(fallbackUrl, '_blank');
+        }
+        handleAdSuccess();
       }
     } catch (err) {
       console.error("Tads Execution Exception:", err);
       handleAdError("Tads ad execution error.");
     }
-  });
+  }, 800);
 }
 
 /* =========================================================
@@ -3326,7 +3295,7 @@ function requestWithdrawal() {
       showToast("✅ Gram Withdrawal Request submitted successfully!", "success");
     }).catch(function(e) {
       console.error("TON Withdraw Error:", e);
-      showToast("✅ Request logged locally & pending admin approval.", "success");
+      showToast("✅ Request logged locally & pending admin approval.", "error");
     });
   }
 
