@@ -40,8 +40,8 @@
 <!-- 4. Adexium SDK Integration (Async) -->
 <script src="https://publisher.adexium.io/js/sdk.js" async></script>
 
-<!-- 5. Tads.ai Fullscreen SDK Integration (Direct Load) -->
-<script src="https://tads.me/sdk.js"></script>
+<!-- 5. Tads.ai Universal Mini App Script -->
+<script src="https://tads.me/sdk.js" async></script>
 
 <!-- TON Connect UI SDK (Deferred) -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
@@ -420,6 +420,31 @@ input:focus, select:focus { border-color: var(--accent); }
 .loading-dots div.active {
     background: #0a84c1;
 }
+
+/* Custom In-App Modal For Tads.ai Ads */
+.tads-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999999;
+    display: none;
+    flex-direction: column;
+}
+.tads-modal-overlay.active { display: flex; }
+.tads-modal-header {
+    height: 48px;
+    background: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    border-bottom: 1px solid #334155;
+}
+.tads-modal-iframe {
+    width: 100%;
+    height: calc(100% - 48px);
+    border: none;
+}
 </style>
 </head>
 <body>
@@ -456,6 +481,15 @@ input:focus, select:focus { border-color: var(--accent); }
     <div></div>
     <div></div>
   </div>
+</div>
+
+<!-- Native In-App Tads Ad Modal Frame -->
+<div id="tadsInAppModal" class="tads-modal-overlay">
+  <div class="tads-modal-header">
+    <span style="font-weight: bold; color: #fff; font-size: 14px;">🎬 Sponsored Video</span>
+    <button onclick="closeTadsAdModal()" style="background: #ef4444; color: #fff; border: none; padding: 4px 12px; border-radius: 6px; font-weight: bold; cursor: pointer;">Close ✕</button>
+  </div>
+  <iframe id="tadsIframeFrame" class="tads-modal-iframe" src="about:blank"></iframe>
 </div>
 
 <div class="header">
@@ -2461,8 +2495,13 @@ function watchRichAdsAd() {
 }
 
 /* =========================================================
-   🌟 2. DIRECT RELIABLE TADS.AI REWARDED AD INTEGRATION (#12855)
+   🌟 2. IN-APP NATIVE TADS.AI REWARDED AD (#12855)
    ========================================================= */
+var activeTadsRewardValue = 0.05;
+var activeTadsLimitKey = 'taskTadsLimit';
+var activeTadsButton = null;
+var activeTadsTimerSec = 60;
+
 function watchTadsAd() {
   var limitElementId = 'taskTadsLimit';
   var btn = document.getElementById('taskTadsBtn');
@@ -2479,18 +2518,28 @@ function watchTadsAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen("LOADING TADS.AI VIDEO...");
 
+  activeTadsRewardValue = reward;
+  activeTadsLimitKey = limitElementId;
+  activeTadsButton = btn;
+  activeTadsTimerSec = timerSec;
+
   function handleAdSuccess() {
     hideAdLoadingScreen();
     finishAdWatchSuccess(limitElementId, btn, reward);
     startTaskCountdownTimer(btn, timerSec);
   }
 
-  function handleAdError(msg) {
+  function handleAdError() {
     hideAdLoadingScreen();
-    showToast(msg || "Tads.ai ad not available right now. Try again later.", "error");
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = "▶ Watch";
+    // Native In-App Webview Fallback (Without redirecting to bot page)
+    var modal = document.getElementById('tadsInAppModal');
+    var iframe = document.getElementById('tadsIframeFrame');
+    if (modal && iframe) {
+      iframe.src = "https://tads.me/widget/12855";
+      modal.classList.add('active');
+    } else {
+      showToast("Tads.ai ad unavailable right now.", "error");
+      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
   }
 
@@ -2501,35 +2550,40 @@ function watchTadsAd() {
       if (window.TADS && typeof window.TADS.show === 'function') {
         window.TADS.show({ widgetId: WIDGET_ID, type: 'fullscreen' })
           .then(function() { handleAdSuccess(); })
-          .catch(function() { handleAdError("Ad not filled right now. Try again."); });
+          .catch(function() { handleAdError(); });
       } else if (window.tads && typeof window.tads.show === 'function') {
         window.tads.show({ widgetId: WIDGET_ID, type: 'fullscreen' })
           .then(function() { handleAdSuccess(); })
-          .catch(function() { handleAdError("Ad not filled right now. Try again."); });
+          .catch(function() { handleAdError(); });
       } else if (typeof window.renderTadsWidget === 'function') {
         window.renderTadsWidget({
           id: WIDGET_ID,
           type: 'fullscreen',
-          onAdsNotFound: function() { handleAdError("No ads available right now."); },
+          onAdsNotFound: function() { handleAdError(); },
           onShowReward: function() { handleAdSuccess(); },
           onError: function() { handleAdError(); }
         });
       } else {
-        // Fallback direct link open if SDK object not registered instantly
-        hideAdLoadingScreen();
-        var fallbackUrl = "https://t.me/tads_bot?start=" + WIDGET_ID;
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-          window.Telegram.WebApp.openLink(fallbackUrl);
-        } else {
-          window.open(fallbackUrl, '_blank');
-        }
-        handleAdSuccess();
+        handleAdError();
       }
     } catch (err) {
       console.error("Tads Execution Exception:", err);
-      handleAdError("Tads ad execution error.");
+      handleAdError();
     }
-  }, 800);
+  }, 1000);
+}
+
+function closeTadsAdModal() {
+  var modal = document.getElementById('tadsInAppModal');
+  var iframe = document.getElementById('tadsIframeFrame');
+  if (iframe) iframe.src = "about:blank";
+  if (modal) modal.classList.remove('active');
+
+  // Grant reward after completing video view inside in-app modal
+  if (activeTadsButton) {
+    finishAdWatchSuccess(activeTadsLimitKey, activeTadsButton, activeTadsRewardValue);
+    startTaskCountdownTimer(activeTadsButton, activeTadsTimerSec);
+  }
 }
 
 /* =========================================================
