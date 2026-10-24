@@ -2236,6 +2236,9 @@ function updateCostCalculation() {
   }
 }
 
+/* =========================================================
+   UPDATED FAUCETPAY MERCHANT DEPOSIT FUNCTION
+   ========================================================= */
 function processDeposit() {
   var amountInput = parseFloat(document.getElementById('depositAmountInput').value) || 0;
   if(amountInput <= 0) {
@@ -2244,44 +2247,38 @@ function processDeposit() {
   }
 
   if(currentDepositSubMethod === 'faucetpay') {
-    showToast("⏳ Generating FaucetPay Payment Checkout...", "success");
+    showToast("⏳ Opening FaucetPay Checkout...", "success");
 
-    fetch('/api/bot', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: 'create_deposit',
-        amount: amountInput.toFixed(2),
-        currency: 'USDT',
-        userId: userId
-      })
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      if(data && data.success && data.url) {
-        showToast(" Redirecting to FaucetPay Merchant Checkout...", "success");
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-          window.Telegram.WebApp.openLink(data.url);
-        } else {
-          window.open(data.url, '_blank');
-        }
-      } else {
-        showToast(" Error generating deposit link.", "error");
-      }
-    })
-    .catch(function(err) {
-      console.error("Deposit Error:", err);
-      showToast(" Network error during deposit generation.", "error");
-    });
+    // FaucetPay Username Updated Here
+    var merchantUsername = "lifestoryiq76"; 
+    var currencyType = "USDT";
+    var description = "Gram Farming Deposit";
+    var customOrderId = "dep_" + userId + "_" + Date.now();
+
+    // Official FaucetPay Hosted Checkout URL
+    var faucetPayCheckoutUrl = "https://faucetpay.io/merchant/webpay?" +
+                               "merchant_username=" + encodeURIComponent(merchantUsername) +
+                               "&item_description=" + encodeURIComponent(description) +
+                               "&amount=" + amountInput.toFixed(2) +
+                               "&currency1=" + currencyType +
+                               "&custom=" + encodeURIComponent(customOrderId);
+
+    // Direct redirect without backend endpoint errors
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+      window.Telegram.WebApp.openLink(faucetPayCheckoutUrl);
+    } else {
+      window.open(faucetPayCheckoutUrl, '_blank');
+    }
 
   } else {
     tonBalance += amountInput;
-    showToast(" Successfully deposited " + amountInput + " Gram!", "success");
+    showToast("Successfully deposited " + amountInput + " Gram!", "success");
     saveToFirebase();
     renderUIValues();
   }
 
-  var depInp = document.getElementById('depositAmountInput'); if(depInp) depInp.value = '';
+  var depInp = document.getElementById('depositAmountInput'); 
+  if(depInp) depInp.value = '';
 
   var depositRecord = {
     id: Date.now(),
@@ -2429,7 +2426,6 @@ function watchRichAdsAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen("LOADING RICHADS MINI APP AD...");
 
-  // Safety re-check for TelegramAdsController
   if (!window.TelegramAdsController && typeof TelegramAdsController !== 'undefined') {
     try {
       window.TelegramAdsController = new TelegramAdsController();
@@ -2470,7 +2466,7 @@ function watchRichAdsAd() {
 }
 
 /* =========================================================
-   🌟 2. TADS.AI FULLSCREEN REWARDED AD INTEGRATION (AUTO-LOAD FIX)
+   🌟 2. TADS.AI FULLSCREEN REWARDED AD INTEGRATION
    ========================================================= */
 function watchTadsAd() {
   var limitElementId = 'taskTadsLimit';
@@ -2622,7 +2618,7 @@ function watchMonetagAd() {
 }
 
 /* =========================================================
-   5. MONETIX STREAMS SMART SEQUENTIAL & FALLBACK AD FUNCTION
+   5. MONETIX STREAMS AD FUNCTION
    ========================================================= */
 function watchMonetixAd() {
   var limitElementId = 'taskMonetixLimit';
