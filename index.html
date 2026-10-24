@@ -2244,15 +2244,43 @@ function processDeposit() {
   }
 
   if(currentDepositSubMethod === 'faucetpay') {
-    usdtBalance += amountInput;
-    showToast("✅ Successfully deposited " + amountInput + " USDT via Faucetpay!", "success");
+    showToast("⏳ Generating FaucetPay Payment Checkout...", "success");
+
+    fetch('/api/bot', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: 'create_deposit',
+        amount: amountInput.toFixed(2),
+        currency: 'USDT',
+        userId: userId
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if(data && data.success && data.url) {
+        showToast(" Redirecting to FaucetPay Merchant Checkout...", "success");
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+          window.Telegram.WebApp.openLink(data.url);
+        } else {
+          window.open(data.url, '_blank');
+        }
+      } else {
+        showToast(" Error generating deposit link.", "error");
+      }
+    })
+    .catch(function(err) {
+      console.error("Deposit Error:", err);
+      showToast(" Network error during deposit generation.", "error");
+    });
+
   } else {
     tonBalance += amountInput;
-    showToast("✅ Successfully deposited " + amountInput + " Gram!", "success");
+    showToast(" Successfully deposited " + amountInput + " Gram!", "success");
+    saveToFirebase();
+    renderUIValues();
   }
 
-  saveToFirebase();
-  renderUIValues();
   var depInp = document.getElementById('depositAmountInput'); if(depInp) depInp.value = '';
 
   var depositRecord = {
@@ -2261,7 +2289,7 @@ function processDeposit() {
     userId: userId,
     method: currentDepositSubMethod === 'faucetpay' ? 'Faucetpay Deposit' : 'Gram Deposit',
     amount: amountInput,
-    status: 'SUCCESS',
+    status: 'PENDING',
     date: new Date().toLocaleString()
   };
   if (window.db) db.ref('deposits/' + userId).push(depositRecord);
