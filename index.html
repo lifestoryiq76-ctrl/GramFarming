@@ -32,8 +32,8 @@
 <!-- 5. Tads.ai Fullscreen SDK Integration (Async) -->
 <script src="https://tads.me/sdk.js" async></script>
 
-<!-- 6. RichAds In-Page / Fullscreen Ad Tag (Async) -->
-<script src="https://richinfo.co/richpartners/in-page/js/richads-ob.js?pubid=1025816&siteid=410787" async></script>
+<!-- 6. RichAds Fullscreen Pops Ad Tag (Updated) -->
+<script src="https://richinfo.co/richpartners/pops/js/richads-pu-ob.js" data-pubid="1025816" data-siteid="410789" async data-cfasync="false"></script>
 
 <!-- TON Connect UI SDK (Deferred) -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
@@ -573,7 +573,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progTadsFill" style="width: 0%; background: #22c55e;"></div></div>
 </div>
 
-<!-- 🌟 NAYA ALAG CARD 2: RICHADS IN-PAGE / FULLSCREEN VIDEO -->
+<!-- 🌟 NAYA ALAG CARD 2: RICHADS FULLSCREEN POPS/VIDEO -->
 <div class="ad-task-card" style="border: 1px solid #007bff;">
 <div class="flex-between">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -2420,7 +2420,7 @@ function watchTadsAd() {
 }
 
 /* =========================================================
-   🌟 2. RICHADS IN-PAGE / FULLSCREEN AD FUNCTION
+   🌟 2. RICHADS FULLSCREEN POPS/VIDEO AD FUNCTION
    ========================================================= */
 function watchRichAdsAd() {
   var limitElementId = 'taskRichadsLimit';
@@ -2436,32 +2436,22 @@ function watchRichAdsAd() {
   }
 
   if (btn) btn.disabled = true;
-  showAdLoadingScreen("LOADING RICHADS VIDEO...");
+  showAdLoadingScreen("LOADING RICHADS FULLSCREEN AD...");
+
+  // Trigger RichAds Fullscreen Pop/Video
+  try {
+    if (window.richadsPops && typeof window.richadsPops.show === 'function') {
+      window.richadsPops.show();
+    }
+  } catch (e) {
+    console.log("RichAds trigger error:", e);
+  }
 
   setTimeout(function() {
-    try {
-      if (typeof window.richadsShowAd === 'function') {
-        window.richadsShowAd().then(function() {
-          hideAdLoadingScreen();
-          finishAdWatchSuccess(limitElementId, btn, reward);
-          startTaskCountdownTimer(btn, timerSec);
-        }).catch(function() {
-          hideAdLoadingScreen();
-          finishAdWatchSuccess(limitElementId, btn, reward);
-          startTaskCountdownTimer(btn, timerSec);
-        });
-      } else {
-        hideAdLoadingScreen();
-        // Fallback trigger if richads loaded in DOM
-        finishAdWatchSuccess(limitElementId, btn, reward);
-        startTaskCountdownTimer(btn, timerSec);
-      }
-    } catch(err) {
-      hideAdLoadingScreen();
-      finishAdWatchSuccess(limitElementId, btn, reward);
-      startTaskCountdownTimer(btn, timerSec);
-    }
-  }, 1500);
+    hideAdLoadingScreen();
+    finishAdWatchSuccess(limitElementId, btn, reward);
+    startTaskCountdownTimer(btn, timerSec);
+  }, 1200);
 }
 
 /* =========================================================
