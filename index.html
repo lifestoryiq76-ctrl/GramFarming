@@ -15,28 +15,28 @@
 <link rel="preconnect" href="https://www.gstatic.com">
 <link rel="preconnect" href="https://sdk.adsbitvex.com">
 
-<!-- Core Telegram SDK (Fastest inline setup) -->
+<!-- Core Telegram SDK -->
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-<!-- 🌟 AdsBitvex Rewarded Video SDK (App ID: 000533) -->
+<!-- AdsBitvex Rewarded Video SDK (App ID: 000533) -->
 <script src="https://sdk.adsbitvex.com/functions/v1/ad-script?appid=000533"></script>
 
-<!-- 1. Monetag Telegram Mini App SDK Script (Deferred) -->
+<!-- Monetag SDK -->
 <script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490' defer></script>
 
-<!-- 2. Gigapub SDK Integration (Deferred) -->
+<!-- Gigapub SDK -->
 <script src="https://ad.gigapub.tech/script?id=8575" defer></script>
 
-<!-- 3. Monetix Official Script Integration (Async) -->
+<!-- Monetix Official Script -->
 <script src="https://www.monetixads.online/ads.js" data-mxid="MX-EBECD8D1" async></script>
 
-<!-- 4. Adexium SDK Integration (Async) -->
+<!-- Adexium SDK -->
 <script src="https://publisher.adexium.io/js/sdk.js" async></script>
 
-<!-- TON Connect UI SDK (Deferred) -->
+<!-- TON Connect UI SDK -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
 
-<!-- Firebase Compat Scripts (Deferred for non-blocking load) -->
+<!-- Firebase Compat Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js" defer></script>
 
@@ -56,7 +56,6 @@
 
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 12px; padding-bottom: 90px; }
 
-/* ------------------ APP OPENING SPLASH LOADING SCREEN ------------------ */
 .app-splash-screen {
   position: fixed;
   top: 0;
@@ -188,7 +187,6 @@ display: inline-block;
 .btn-join { background: #10b981; color: #fff; border-radius: 10px; font-weight: bold; padding: 8px 18px; border: none; cursor: pointer; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 
-/* Bottom Navigation */
 .nav-bar { 
     position: fixed; 
     bottom: 0; 
@@ -198,7 +196,7 @@ display: inline-block;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex; 
-    justify-space: around; 
+    justify-content: space-around; 
     padding: 8px 4px 12px 4px; 
     border-top: 1px solid rgba(51, 65, 85, 0.6); 
     z-index: 1000; 
@@ -324,7 +322,6 @@ input:focus, select:focus { border-color: var(--accent); }
     margin-bottom: 12px;
 }
 
-/* Ad Loading Overlay Screen Style */
 .ad-loading-screen {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -414,7 +411,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </head>
 <body>
 
-<!-- INSTANT DISPLAY SPLASH SCREEN -->
 <div id="appSplashScreen" class="app-splash-screen">
   <div></div>
   <div class="splash-center">
@@ -432,7 +428,6 @@ input:focus, select:focus { border-color: var(--accent); }
   </div>
 </div>
 
-<!-- Ad Loading Full Screen Overlay -->
 <div id="adLoadingScreen" class="ad-loading-screen">
   <div class="radar-circle">
     <div class="radar-sweep"></div>
@@ -741,7 +736,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div style="font-size: 13px; font-weight: bold; margin-bottom: 2px;">Recommended Add-ons</div>
 <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Boost your campaign reach and conversion</div>
 
-<div id="addonVerifiedCard" onclick="toggleAddon('verified')" style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-space-between; align-items: center;">
+<div id="addonVerifiedCard" onclick="toggleAddon('verified')" style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
 <div style="display: flex; align-items: flex-start; gap: 8px;">
 <span id="addonVerifiedCheck" style="font-size: 16px; color: var(--accent);">🟢</span>
 <div>
@@ -752,7 +747,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;" id="addonVerifiedPrice">+$0.10 / 100</span>
 </div>
 
-<div id="addonBannerCard" onclick="toggleAddon('banner')" style="background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; display: flex; justify-space-between; align-items: center;">
+<div id="addonBannerCard" onclick="toggleAddon('banner')" style="background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
 <div style="display: flex; align-items: flex-start; gap: 8px;">
 <span id="addonBannerCheck" style="font-size: 16px; color: var(--text-muted);">⚪</span>
 <div>
@@ -1234,13 +1229,11 @@ No recent transactions yet.
   }, 25);
 })();
 
-// Telegram WebApp Expand Early
 if (window.Telegram && window.Telegram.WebApp) {
   window.Telegram.WebApp.ready();
   window.Telegram.WebApp.expand();
 }
 
-// Deferred Firebase & SDK Setup
 window.addEventListener('load', function() {
   if (typeof firebase !== 'undefined') {
     const firebaseConfig = {
@@ -1307,7 +1300,6 @@ var currentSelectedRewardVal = 0.08;
 var modalState = "initial";
 var modalTimerInterval = null;
 
-// AD CREDENTIALS & LIMIT CONFIGS
 const ADSTERRA_LINK = "https://araplhn.org/4/74b4cb017b96a6c502c11da164a77205";
 
 var clickPackagesData = [
@@ -2319,7 +2311,6 @@ function toggleMiningBoxes() {
   }
 }
 
-/* HELPER: Show/Hide Loading Overlay */
 function showAdLoadingScreen(subText) {
   var loader = document.getElementById('adLoadingScreen');
   var subEl = document.getElementById('adLoadingSubText');
@@ -2331,7 +2322,6 @@ function hideAdLoadingScreen() {
   if (loader) loader.classList.remove('active');
 }
 
-/* HELPER: Direct Call for Monetix Stream Ads */
 function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
   try {
     if (typeof window.showMxAd === 'function') {
@@ -2356,9 +2346,6 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
   }
 }
 
-/* =========================================================
-   1. WATCH ADS MONETAG AD FUNCTION
-   ========================================================= */
 function watchMonetagAd() {
   var limitElementId = 'taskMonetagLimit';
   var btn = document.getElementById('taskMonetagBtn');
@@ -2394,9 +2381,6 @@ function watchMonetagAd() {
   }, 1500);
 }
 
-/* =========================================================
-   2. WATCH ADS GIGAPUB AD FUNCTION
-   ========================================================= */
 function watchGigapubAd() {
   var limitElementId = 'taskGigapubLimit';
   var btn = document.getElementById('taskGigapubBtn');
@@ -2439,9 +2423,6 @@ function watchGigapubAd() {
   }, 1500);
 }
 
-/* =========================================================
-   3. WATCH ADS ADSBITVEX AD FUNCTION (APP ID: 000533)
-   ========================================================= */
 function watchAdsBitvexAd() {
   var limitElementId = 'taskAdsbitvexLimit';
   var btn = document.getElementById('taskAdsbitvexBtn');
@@ -2487,9 +2468,6 @@ function watchAdsBitvexAd() {
   }, 1000);
 }
 
-/* =========================================================
-   4. WATCH ADS MONETIX (MONETIX + ADSBITVEX BANNER FALLBACK)
-   ========================================================= */
 function watchMonetixAd() {
   var limitElementId = 'taskMonetixLimit';
   var btn = document.getElementById('taskMonetixBtn');
@@ -2506,12 +2484,9 @@ function watchMonetixAd() {
   if (btn) btn.disabled = true;
   showAdLoadingScreen("LOADING MONETIX VIDEO...");
 
-  // First Attempt: Try loading Monetix
   triggerMonetixDirectAd(
     function() {
-      // Monetix Successful
       hideAdLoadingScreen();
-      // Try triggering AdsBitvex Banner concurrently as well
       if (typeof window.showadsbitvex_init === 'function') {
         window.showadsbitvex_init().catch(function(e){});
       }
@@ -2519,7 +2494,6 @@ function watchMonetixAd() {
       startTaskCountdownTimer(btn, timerSec);
     },
     function() {
-      // Monetix Failed -> Fallback to AdsBitvex Banner
       showAdLoadingScreen("MONETIX UNAVAILABLE, LOADING ADSBITVEX BANNER...");
       if (typeof window.showadsbitvex_init === 'function') {
         window.showadsbitvex_init()
@@ -2542,9 +2516,6 @@ function watchMonetixAd() {
   );
 }
 
-/* =========================================================
-   5. WATCH ADS ADSTERRA AD FUNCTION
-   ========================================================= */
 function watchAdsterraAd() {
   var limitElementId = 'taskAdsterraLimit';
   var btn = document.getElementById('taskAdsterraBtn');
