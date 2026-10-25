@@ -205,7 +205,7 @@ display: inline-block;
 .nav-item { 
     color: var(--text-muted); 
     text-decoration: none; 
-    font-size: 11px; 
+    font-size: 10px; 
     text-align: center; 
     cursor: pointer; 
     font-weight: 500; 
@@ -218,8 +218,8 @@ display: inline-block;
     transition: all 0.3s ease;
     border-radius: 10px;
 }
-.nav-item span { font-size: 10px; margin-top: 3px; letter-spacing: 0.3px; }
-.nav-emoji { font-size: 20px; transition: transform 0.3s ease; }
+.nav-item span { font-size: 9px; margin-top: 2px; letter-spacing: 0.2px; }
+.nav-emoji { font-size: 18px; transition: transform 0.3s ease; }
 .nav-item.active { 
     color: var(--accent); 
     background: rgba(34, 197, 94, 0.1);
@@ -280,6 +280,12 @@ input:focus, select:focus { border-color: var(--accent); }
 
 .gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
 .gram-pay-info { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
+
+/* LOTTERY WHEEL STYLES */
+.lottery-wheel-container { position: relative; width: 260px; height: 260px; margin: 20px auto; border-radius: 50%; border: 6px solid #eab308; box-shadow: 0 0 25px rgba(234, 179, 8, 0.4); overflow: hidden; background: #0f172a; }
+.lottery-wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1); background: conic-gradient(#3b82f6 0deg 60deg, #10b981 60deg 120deg, #eab308 120deg 180deg, #ef4444 180deg 240deg, #8b5cf6 240deg 300deg, #ec4899 300deg 360deg); }
+.lottery-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 24px solid #ffffff; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.lottery-center-hub { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background: #1e293b; border: 3px solid #eab308; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; z-index: 5; box-shadow: 0 0 10px rgba(0,0,0,0.6); }
 
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -411,7 +417,7 @@ input:focus, select:focus { border-color: var(--accent); }
     background: #0a84c1;
 }
 
-/* FEATURED PARTNER BANNER STYLES (Positioned exclusively in Ads tab between Category Tabs and Ads Cards) */
+/* FEATURED PARTNER BANNER STYLES */
 .featured-banner-wrapper {
     background: linear-gradient(135deg, #1b2845 0%, #0f172a 100%);
     border: 1px solid rgba(168, 85, 247, 0.3);
@@ -624,7 +630,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- MINING BOX 2: GIGAPUB ADS ONLY -->
+<!-- MINING BOX 2: GIGAPUB ADS -->
 <div class="mining-box" id="mBox-1">
 <span class="limit-badge" id="rocket2Limit">0 / <span id="cosmicLimitMax">50</span></span>
 <div>
@@ -660,7 +666,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
 
-<!-- FEATURED PARTNER BANNER SLIDER (Shows default card; 2nd card appears only when published) -->
+<!-- FEATURED PARTNER BANNER SLIDER -->
 <div class="featured-banner-wrapper" id="featuredBannerWrapper">
   <div class="featured-top-row">
     <div class="featured-title-badge">
@@ -668,16 +674,12 @@ input:focus, select:focus { border-color: var(--accent); }
       <span class="featured-ad-tag">Ad</span>
     </div>
     <div style="display: flex; align-items: center; gap: 10px;">
-      <div class="featured-dots-container" id="featuredDotsContainer">
-        <!-- Dots injected dynamically -->
-      </div>
+      <div class="featured-dots-container" id="featuredDotsContainer"></div>
       <button class="add-task-link-btn" onclick="switchTaskCategory('create', document.querySelector('.task-cat-btn:nth-child(4)'));">+ Add task</button>
     </div>
   </div>
 
-  <div class="featured-card-box" id="featuredCardBoxContent">
-    <!-- Dynamic Banner Card Content injected via JS -->
-  </div>
+  <div class="featured-card-box" id="featuredCardBoxContent"></div>
 </div>
 
 <div id="adsTasksAll">
@@ -970,6 +972,35 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
+<!-- LOTTERY / LUCKY SPIN WHEEL PAGE -->
+<div id="lottery" class="tab-content">
+<h3 style="margin-bottom: 8px;">🎡 Lucky Wheel Lottery</h3>
+<div class="card" style="text-align: center; background: #111827; border: 1px solid #eab308; padding: 20px;">
+<p style="font-size: 13px; color: var(--text-muted); margin: 0 0 10px 0;">Spin the wheel and win exciting coin rewards instantly!</p>
+<div style="font-size: 14px; font-weight: bold; color: var(--yellow); margin-bottom: 15px;">Free Spins Left Today: <span id="freeSpinsCount">3</span> / 3</div>
+
+<div class="lottery-wheel-container">
+<div class="lottery-pointer"></div>
+<div class="lottery-wheel" id="luckyWheelElement"></div>
+<div class="lottery-center-hub">🎯</div>
+</div>
+
+<button class="btn btn-yellow" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 15px;" id="spinWheelBtn" onclick="spinLuckyWheel()">SPIN THE WHEEL 🎡</button>
+</div>
+
+<div class="card" style="background: #1e293b; border: 1px solid var(--border);">
+<h4 style="margin: 0 0 8px 0; color: var(--accent); font-size: 14px;">🎁 Prizes on Wheel</h4>
+<div style="font-size: 12px; color: var(--text-muted); display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+<div>🔹 0.05 Coin</div>
+<div>🔹 0.10 Coin</div>
+<div>🔹 0.25 Coin</div>
+<div>🔹 0.50 Coin</div>
+<div>🔹 1.00 Coin</div>
+<div>🔹 5.00 Coin (Jackpot!)</div>
+</div>
+</div>
+</div>
+
 <!-- STAKING PAGE -->
 <div id="staking" class="tab-content">
 <h3 data-i18n="stakingOptions">💎 Staking Options</h3>
@@ -1208,9 +1239,7 @@ Balance: <span id="convertSourceBalanceDisplay">0.00 Coin</span>
 </div>
 
 <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block;">STEP 2: CONVERT TO</label>
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;" id="convertTargetGrid">
-<!-- Target cards injected via JS -->
-</div>
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;" id="convertTargetGrid"></div>
 
 <label style="margin-top:8px; display:block;">Amount to Convert:</label>
 <input type="number" id="exchangeAmount" placeholder="Enter amount" oninput="calculateExchange()">
@@ -1304,27 +1333,31 @@ No recent transactions yet.
 <div class="nav-bar">
 <div class="nav-item active" onclick="switchTab('home')">
 <span class="nav-emoji">🏠</span>
-<span data-i18n="navHome">Home</span>
+<span>Home</span>
 </div>
 <div class="nav-item" onclick="switchTab('tasks')">
 <span class="nav-emoji">📋</span>
-<span data-i18n="navTasks">Tasks</span>
+<span>Tasks</span>
+</div>
+<div class="nav-item" onclick="switchTab('lottery')">
+<span class="nav-emoji">🎡</span>
+<span>Lottery</span>
 </div>
 <div class="nav-item" onclick="switchTab('staking')">
 <span class="nav-emoji">💎</span>
-<span data-i18n="navStaking">Staking</span>
+<span>Staking</span>
 </div>
 <div class="nav-item" onclick="switchTab('referrals')">
 <span class="nav-emoji">👥</span>
-<span data-i18n="navReferrals">Referrals</span>
+<span>Referrals</span>
 </div>
 <div class="nav-item" onclick="switchTab('wallet')">
 <span class="nav-emoji">💼</span>
-<span data-i18n="navWallet">Wallet</span>
+<span>Wallet</span>
 </div>
 <div class="nav-item" onclick="switchTab('leaderboard')">
 <span class="nav-emoji">🏆</span>
-<span data-i18n="navRank">Rank</span>
+<span>Rank</span>
 </div>
 </div>
 
@@ -1392,6 +1425,8 @@ var totalInvited = 0;
 var savedTonAddress = "";
 var activeStakes = [];
 var lastCheckin = 0;
+var freeSpinsLeft = 3;
+var lastSpinDate = "";
 
 var coinUsdtValue = 0.01;
 var currentDailyBonus = 0.01;
@@ -1434,7 +1469,6 @@ var currentSelectedRewardVal = 0.08;
 var modalState = "initial";
 var modalTimerInterval = null;
 
-// FEATURED BANNER SLIDER VARIABLES (5s interval)
 var bannerTasksList = [];
 var currentBannerIndex = 0;
 var bannerIntervalTimer = null;
@@ -1600,13 +1634,23 @@ function initAppListeners() {
       savedTonAddress = data.savedTonAddress || "";
       activeStakes = data.activeStakes || [];
       lastCheckin = data.lastCheckin || 0;
+      if (data.freeSpinsLeft !== undefined) freeSpinsLeft = data.freeSpinsLeft;
+      if (data.lastSpinDate) lastSpinDate = data.lastSpinDate;
       if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
+
+      var todayStr = new Date().toDateString();
+      if (lastSpinDate !== todayStr) {
+        freeSpinsLeft = 3;
+        lastSpinDate = todayStr;
+        saveToFirebase();
+      }
 
       saveToLocalStorage();
     } else {
       userRef.set({
         name: displayName,
         balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
+        freeSpinsLeft: 3, lastSpinDate: new Date().toDateString(),
         adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 }
       });
     }
@@ -1849,6 +1893,8 @@ function loadFromLocalStorage() {
       savedTonAddress = parsed.savedTonAddress || "";
       activeStakes = parsed.activeStakes || [];
       lastCheckin = parsed.lastCheckin || 0;
+      if (parsed.freeSpinsLeft !== undefined) freeSpinsLeft = parsed.freeSpinsLeft;
+      if (parsed.lastSpinDate) lastSpinDate = parsed.lastSpinDate;
       if (parsed.adWatchedCounts) adWatchedCounts = parsed.adWatchedCounts;
       renderUIValues();
       renderStakingList();
@@ -1858,7 +1904,7 @@ function loadFromLocalStorage() {
 
 function saveToLocalStorage() {
   try {
-    var dataToCache = { balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin, adWatchedCounts: adWatchedCounts };
+    var dataToCache = { balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin, freeSpinsLeft: freeSpinsLeft, lastSpinDate: lastSpinDate, adWatchedCounts: adWatchedCounts };
     localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
   } catch (e) {}
 }
@@ -1941,6 +1987,7 @@ function saveToFirebase() {
   if (window.db) {
     db.ref('users/' + userId).update({
       balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin,
+      freeSpinsLeft: freeSpinsLeft, lastSpinDate: lastSpinDate,
       adWatchedCounts: adWatchedCounts
     });
     if (savedTonAddress) {
@@ -1995,6 +2042,7 @@ function renderUIValues() {
   if(document.getElementById('rankBalance')) document.getElementById('rankBalance').innerText = balance.toFixed(2);
   if(document.getElementById('displayCoinVolume')) document.getElementById('displayCoinVolume').innerText = "1 Coin = $" + coinUsdtValue;
   if(document.getElementById('dailyBonusDisplay')) document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
+  if(document.getElementById('freeSpinsCount')) document.getElementById('freeSpinsCount').innerText = freeSpinsLeft;
 
   updateConvertSourceBalanceDisplay();
 
@@ -2046,6 +2094,40 @@ function switchTab(tabId) {
   if (window.event && window.event.currentTarget) {
     window.event.currentTarget.classList.add('active');
   }
+}
+
+var currentWheelRotation = 0;
+function spinLuckyWheel() {
+  if (freeSpinsLeft <= 0) {
+    showToast("Aapke aaj ke sabhi free spins khatam ho gaye hain!", "error");
+    return;
+  }
+
+  var spinBtn = document.getElementById('spinWheelBtn');
+  var wheelEl = document.getElementById('luckyWheelElement');
+  if(spinBtn) spinBtn.disabled = true;
+
+  freeSpinsLeft--;
+  saveToFirebase();
+  renderUIValues();
+
+  var prizes = [0.05, 0.10, 0.25, 0.50, 1.00, 5.00];
+  var randomIndex = Math.floor(Math.random() * prizes.length);
+  var wonAmount = prizes[randomIndex];
+
+  var degreesPerSegment = 360 / prizes.length;
+  var targetDegree = 360 * 5 + (randomIndex * degreesPerSegment) + (degreesPerSegment / 2);
+  currentWheelRotation += targetDegree;
+
+  if(wheelEl) {
+    wheelEl.style.transform = 'rotate(' + currentWheelRotation + 'deg)';
+  }
+
+  setTimeout(function() {
+    addEarningsWithReferral(wonAmount);
+    showToast("🎉 Congratulations! You won " + wonAmount.toFixed(2) + " Coins in Lottery!", "success");
+    if(spinBtn) spinBtn.disabled = false;
+  }, 4000);
 }
 
 function setStakingCurrency(curr) {
@@ -3514,8 +3596,7 @@ function renderCustomTasksFromFirebase() {
   db.ref('customTasks').on('value', function(snapshot) {
     var listEl = document.getElementById('dynamicTasksList');
     var noticeEl = document.getElementById('emptyTasksNotice');
-    
-    // Always start with the official default partner card as card #1
+
     bannerTasksList = [
       {
         key: 'default_partner_1',
@@ -3545,7 +3626,6 @@ function renderCustomTasksFromFirebase() {
 
         if (clicksLeft <= 0) return;
 
-        // If user published with bannerAddon enabled, add as card #2 (or subsequent)
         if (task.bannerAddon === true) {
           bannerTasksList.push({
             key: key,
@@ -3681,7 +3761,6 @@ function renderCurrentBannerTask() {
     '</div>' +
     '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05)">' + actionBtnText + '</button>';
 
-  // If there is only 1 banner (default), dots can either be hidden or show 1 active dot.
   var dotsHtml = '';
   if (bannerTasksList.length > 1) {
     for (var i = 0; i < bannerTasksList.length; i++) {
@@ -3722,7 +3801,7 @@ function loadMyPublishedTasks() {
         html += '<div class="card" style="background:#111827; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(10, 132, 193, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0f172a; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
       }
     });
-    myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi nahi kiya hai.</div>';
+    myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi kiya hai.</div>';
   });
 }
 </script>
