@@ -619,6 +619,28 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="progress-line-bg"><div class="progress-line-fill" id="progAdsbitvexFill" style="width: 0%; background: #ff9500;"></div></div>
 </div>
 
+<!-- 🌟 ADSBITVEX FULL-SCREEN BANNER REWARD CARD (FORMAT 02) -->
+<div class="ad-task-card" style="border: 1px solid #0a84c1;">
+<div class="flex-between">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="ad-icon-box" style="background: #061c2b; border-color: #0a84c1;">
+<span style="font-size: 24px;">🖼️</span>
+</div>
+<div>
+<b style="font-size: 15px; color: #fff;">AdsBitvex Banner Reward</b><br>
+<small style="color:var(--text-muted);">Full-Screen Banner Format 02</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardAdsbitvexBannerVal">0.03</span> 🪙 / view</span>
+</div>
+</div>
+<button class="btn" id="taskAdsbitvexBannerBtn" onclick="watchAdsBitvexBannerAd()" style="background: #0a84c1; color: #fff; font-weight: bold;">▶ Watch</button>
+</div>
+<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
+<span>Daily Limit</span>
+<span id="textAdsbitvexBannerLimit">0 / 50 (0%)</span>
+</div>
+<div class="progress-line-bg"><div class="progress-line-fill" id="progAdsbitvexBannerFill" style="width: 0%; background: #0a84c1;"></div></div>
+</div>
+
 <!-- 🌟 RICHADS TELEGRAM MINI APP NATIVE VIDEO CARD -->
 <div class="ad-task-card" style="border: 1px solid #ff3b30;">
 <div class="flex-between">
@@ -1416,16 +1438,16 @@ var clickPackagesData = [
 ];
 
 var stakingApyRates = { 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20 };
-var maxLimits = { monetag: 60, gigapub: 60, monetix: 30, adsterra: 50, adexium: 50, tads: 50, richads: 50, adsbitvex: 50 };
-var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03, adsterra: 0.05, adexium: 0.05, tads: 0.05, richads: 0.05, adsbitvex: 0.05 };
-var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adexium: 60, tads: 60, richads: 60, adsbitvex: 60 };
+var maxLimits = { monetag: 60, gigapub: 60, monetix: 30, adsterra: 50, adexium: 50, tads: 50, richads: 50, adsbitvex: 50, adsbitvexBanner: 50 };
+var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03, adsterra: 0.05, adexium: 0.05, tads: 0.05, richads: 0.05, adsbitvex: 0.05, adsbitvexBanner: 0.03 };
+var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adexium: 60, tads: 60, richads: 60, adsbitvex: 60, adsbitvexBanner: 60 };
 
-var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0 };
+var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0, taskAdsbitvexBannerLimit: 0 };
 
 var lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 var todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-  adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0 };
+  adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0, taskAdsbitvexBannerLimit: 0 };
   localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -1484,7 +1506,7 @@ function check530AmRestartAndStaking() {
 
   if (realNow >= today530 && lastResetStored !== todayStr) {
     processStakingDailyTransfer();
-    adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0 };
+    adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0, taskAdsbitvexBannerLimit: 0 };
     localStorage.setItem('last_530_reset_date', todayStr);
     saveToFirebase();
 
@@ -1570,7 +1592,7 @@ function initAppListeners() {
       userRef.set({
         name: displayName,
         balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0 }
+        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0, taskAdsbitvexBannerLimit: 0 }
       });
     }
     renderUIValues();
@@ -1661,6 +1683,7 @@ function initAppListeners() {
       if (data.tadsLimit) maxLimits.tads = parseInt(data.tadsLimit);
       if (data.richadsLimit) maxLimits.richads = parseInt(data.richadsLimit);
       if (data.adsbitvexLimit) maxLimits.adsbitvex = parseInt(data.adsbitvexLimit);
+      if (data.adsbitvexBannerLimit) maxLimits.adsbitvexBanner = parseInt(data.adsbitvexBannerLimit);
 
       if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
       if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
@@ -1670,6 +1693,7 @@ function initAppListeners() {
       if (data.tadsReward) rewards.tads = parseFloat(data.tadsReward);
       if (data.richadsReward) rewards.richads = parseFloat(data.richadsReward);
       if (data.adsbitvexReward) rewards.adsbitvex = parseFloat(data.adsbitvexReward);
+      if (data.adsbitvexBannerReward) rewards.adsbitvexBanner = parseFloat(data.adsbitvexBannerReward);
 
       if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
       if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
@@ -1679,6 +1703,7 @@ function initAppListeners() {
       if (data.tadsTimer) adTimers.tads = parseInt(data.tadsTimer);
       if (data.richadsTimer) adTimers.richads = parseInt(data.richadsTimer);
       if (data.adsbitvexTimer) adTimers.adsbitvex = parseInt(data.adsbitvexTimer);
+      if (data.adsbitvexBannerTimer) adTimers.adsbitvexBanner = parseInt(data.adsbitvexBannerTimer);
 
       renderUIValues();
     }
@@ -1976,6 +2001,7 @@ function renderUIValues() {
   var tadsCount = adWatchedCounts.taskTadsLimit || 0;
   var richadsCount = adWatchedCounts.taskRichadsLimit || 0;
   var adsbitvexCount = adWatchedCounts.taskAdsbitvexLimit || 0;
+  var adsbitvexBannerCount = adWatchedCounts.taskAdsbitvexBannerLimit || 0;
 
   var mMax = maxLimits.monetag;
   var gMax = maxLimits.gigapub;
@@ -1984,6 +2010,7 @@ function renderUIValues() {
   var tadsMax = maxLimits.tads || 50;
   var richadsMax = maxLimits.richads || 50;
   var adsbitvexMax = maxLimits.adsbitvex || 50;
+  var adsbitvexBannerMax = maxLimits.adsbitvexBanner || 50;
 
   if(document.getElementById('textMonetagLimit')) document.getElementById('textMonetagLimit').innerText = mCount + " / " + mMax + " (" + Math.round((mCount/mMax)*100) + "%)";
   if(document.getElementById('progMonetagFill')) document.getElementById('progMonetagFill').style.width = Math.min(100, (mCount/mMax)*100) + "%";
@@ -2006,6 +2033,9 @@ function renderUIValues() {
   if(document.getElementById('textAdsbitvexLimit')) document.getElementById('textAdsbitvexLimit').innerText = adsbitvexCount + " / " + adsbitvexMax + " (" + Math.round((adsbitvexCount/adsbitvexMax)*100) + "%)";
   if(document.getElementById('progAdsbitvexFill')) document.getElementById('progAdsbitvexFill').style.width = Math.min(100, (adsbitvexCount/adsbitvexMax)*100) + "%";
 
+  if(document.getElementById('textAdsbitvexBannerLimit')) document.getElementById('textAdsbitvexBannerLimit').innerText = adsbitvexBannerCount + " / " + adsbitvexBannerMax + " (" + Math.round((adsbitvexBannerCount/adsbitvexBannerMax)*100) + "%)";
+  if(document.getElementById('progAdsbitvexBannerFill')) document.getElementById('progAdsbitvexBannerFill').style.width = Math.min(100, (adsbitvexBannerCount/adsbitvexBannerMax)*100) + "%";
+
   if(document.getElementById('rewardMonetagVal')) document.getElementById('rewardMonetagVal').innerText = rewards.monetag;
   if(document.getElementById('rewardGigapubVal')) document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
   if(document.getElementById('rewardMonetixVal')) document.getElementById('rewardMonetixVal').innerText = rewards.monetix;
@@ -2013,6 +2043,7 @@ function renderUIValues() {
   if(document.getElementById('rewardTadsVal')) document.getElementById('rewardTadsVal').innerText = rewards.tads || 0.05;
   if(document.getElementById('rewardRichadsVal')) document.getElementById('rewardRichadsVal').innerText = rewards.richads || 0.05;
   if(document.getElementById('rewardAdsbitvexVal')) document.getElementById('rewardAdsbitvexVal').innerText = rewards.adsbitvex || 0.05;
+  if(document.getElementById('rewardAdsbitvexBannerVal')) document.getElementById('rewardAdsbitvexBannerVal').innerText = rewards.adsbitvexBanner || 0.03;
 
   var availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
   if(document.getElementById('availableWithdrawBalance')) document.getElementById('availableWithdrawBalance').innerText = "Available: " + availVal.toFixed(4);
@@ -2514,6 +2545,54 @@ function watchAdsBitvexAd() {
       hideAdLoadingScreen();
       console.error("AdsBitvex Execution Exception:", err);
       showToast("AdsBitvex ad error occurred.", "error");
+      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+    }
+  }, 1000);
+}
+
+/* =========================================================
+   🌟 ADSBITVEX FULL-SCREEN BANNER REWARD AD FUNCTION
+   ========================================================= */
+function watchAdsBitvexBannerAd() {
+  var limitElementId = 'taskAdsbitvexBannerLimit';
+  var btn = document.getElementById('taskAdsbitvexBannerBtn');
+  var maxLimit = maxLimits.adsbitvexBanner || 50;
+  var reward = rewards.adsbitvexBanner || 0.03;
+  var timerSec = adTimers.adsbitvexBanner || 60;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for AdsBitvex Banner!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen("LOADING FULL-SCREEN BANNER REWARD...");
+
+  setTimeout(function() {
+    try {
+      if (typeof window.showadsbitvex_init === 'function') {
+        window.showadsbitvex_init()
+          .then(function() {
+            hideAdLoadingScreen();
+            finishAdWatchSuccess(limitElementId, btn, reward);
+            startTaskCountdownTimer(btn, timerSec);
+          })
+          .catch(function(err) {
+            hideAdLoadingScreen();
+            console.error("AdsBitvex Banner Error:", err);
+            showToast("Banner ad currently unavailable.", "error");
+            if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+          });
+      } else {
+        hideAdLoadingScreen();
+        showToast("AdsBitvex SDK is loading, please try again in a moment.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      }
+    } catch(err) {
+      hideAdLoadingScreen();
+      console.error("AdsBitvex Banner Exception:", err);
+      showToast("Banner ad error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
   }, 1000);
