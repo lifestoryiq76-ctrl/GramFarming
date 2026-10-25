@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://telegram.org">
 <link rel="preconnect" href="https://www.gstatic.com">
 <link rel="preconnect" href="https://tads.me">
+<link rel="preconnect" href="https://sdk.adsbitvex.com">
 
 <!-- Core Telegram SDK (Fastest inline setup) -->
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
@@ -27,6 +28,9 @@
     appId: "9411",
   });
 </script>
+
+<!-- 🌟 AdsBitvex Rewarded Video SDK (App ID: 000533) -->
+<script src="https://sdk.adsbitvex.com/functions/v1/ad-script?appid=000533"></script>
 
 <!-- 1. Monetag Telegram Mini App SDK Script (Deferred) -->
 <script src='//libtl.com/sdk.js' data-zone='11989490' data-sdk='show_11989490' defer></script>
@@ -208,7 +212,7 @@ display: inline-block;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex; 
-    justify-style: space-around; 
+    justify-space: around; 
     padding: 8px 4px 12px 4px; 
     border-top: 1px solid rgba(51, 65, 85, 0.6); 
     z-index: 1000; 
@@ -592,6 +596,28 @@ input:focus, select:focus { border-color: var(--accent); }
 <!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
 <div id="adsTasksAll">
+
+<!-- 🌟 ADSBITVEX REWARDED VIDEO CARD (APP ID: 000533) -->
+<div class="ad-task-card" style="border: 1px solid #ff9500;">
+<div class="flex-between">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="ad-icon-box" style="background: #2b1800; border-color: #ff9500;">
+<span style="font-size: 24px;">⚡</span>
+</div>
+<div>
+<b style="font-size: 15px; color: #fff;">AdsBitvex Video</b><br>
+<small style="color:var(--text-muted);">Rewarded Video Sponsor</small><br>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardAdsbitvexVal">0.05</span> 🪙 / view</span>
+</div>
+</div>
+<button class="btn" id="taskAdsbitvexBtn" onclick="watchAdsBitvexAd()" style="background: #ff9500; color: #000; font-weight: bold;">▶ Watch</button>
+</div>
+<div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" class="flex-between">
+<span>Daily Limit</span>
+<span id="textAdsbitvexLimit">0 / 50 (0%)</span>
+</div>
+<div class="progress-line-bg"><div class="progress-line-fill" id="progAdsbitvexFill" style="width: 0%; background: #ff9500;"></div></div>
+</div>
 
 <!-- 🌟 RICHADS TELEGRAM MINI APP NATIVE VIDEO CARD -->
 <div class="ad-task-card" style="border: 1px solid #ff3b30;">
@@ -1390,16 +1416,16 @@ var clickPackagesData = [
 ];
 
 var stakingApyRates = { 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20 };
-var maxLimits = { monetag: 60, gigapub: 60, monetix: 30, adsterra: 50, adexium: 50, tads: 50, richads: 50 };
-var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03, adsterra: 0.05, adexium: 0.05, tads: 0.05, richads: 0.05 };
-var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adexium: 60, tads: 60, richads: 60 };
+var maxLimits = { monetag: 60, gigapub: 60, monetix: 30, adsterra: 50, adexium: 50, tads: 50, richads: 50, adsbitvex: 50 };
+var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03, adsterra: 0.05, adexium: 0.05, tads: 0.05, richads: 0.05, adsbitvex: 0.05 };
+var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adexium: 60, tads: 60, richads: 60, adsbitvex: 60 };
 
-var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0 };
+var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0 };
 
 var lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 var todayDateStr = new Date().toDateString();
 if (lastAdsResetDate !== todayDateStr) {
-  adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0 };
+  adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0 };
   localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
@@ -1458,7 +1484,7 @@ function check530AmRestartAndStaking() {
 
   if (realNow >= today530 && lastResetStored !== todayStr) {
     processStakingDailyTransfer();
-    adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0 };
+    adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0 };
     localStorage.setItem('last_530_reset_date', todayStr);
     saveToFirebase();
 
@@ -1544,7 +1570,7 @@ function initAppListeners() {
       userRef.set({
         name: displayName,
         balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0 }
+        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdexiumLimit: 0, taskTadsLimit: 0, taskRichadsLimit: 0, taskAdsbitvexLimit: 0 }
       });
     }
     renderUIValues();
@@ -1634,6 +1660,7 @@ function initAppListeners() {
       if (data.adexiumLimit) maxLimits.adexium = parseInt(data.adexiumLimit);
       if (data.tadsLimit) maxLimits.tads = parseInt(data.tadsLimit);
       if (data.richadsLimit) maxLimits.richads = parseInt(data.richadsLimit);
+      if (data.adsbitvexLimit) maxLimits.adsbitvex = parseInt(data.adsbitvexLimit);
 
       if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
       if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
@@ -1642,6 +1669,7 @@ function initAppListeners() {
       if (data.adexiumReward) rewards.adexium = parseFloat(data.adexiumReward);
       if (data.tadsReward) rewards.tads = parseFloat(data.tadsReward);
       if (data.richadsReward) rewards.richads = parseFloat(data.richadsReward);
+      if (data.adsbitvexReward) rewards.adsbitvex = parseFloat(data.adsbitvexReward);
 
       if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
       if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
@@ -1650,6 +1678,7 @@ function initAppListeners() {
       if (data.adexiumTimer) adTimers.adexium = parseInt(data.adexiumTimer);
       if (data.tadsTimer) adTimers.tads = parseInt(data.tadsTimer);
       if (data.richadsTimer) adTimers.richads = parseInt(data.richadsTimer);
+      if (data.adsbitvexTimer) adTimers.adsbitvex = parseInt(data.adsbitvexTimer);
 
       renderUIValues();
     }
@@ -1946,6 +1975,7 @@ function renderUIValues() {
   var adstCount = adWatchedCounts.taskAdsterraLimit || 0;
   var tadsCount = adWatchedCounts.taskTadsLimit || 0;
   var richadsCount = adWatchedCounts.taskRichadsLimit || 0;
+  var adsbitvexCount = adWatchedCounts.taskAdsbitvexLimit || 0;
 
   var mMax = maxLimits.monetag;
   var gMax = maxLimits.gigapub;
@@ -1953,6 +1983,7 @@ function renderUIValues() {
   var adstMax = maxLimits.adsterra;
   var tadsMax = maxLimits.tads || 50;
   var richadsMax = maxLimits.richads || 50;
+  var adsbitvexMax = maxLimits.adsbitvex || 50;
 
   if(document.getElementById('textMonetagLimit')) document.getElementById('textMonetagLimit').innerText = mCount + " / " + mMax + " (" + Math.round((mCount/mMax)*100) + "%)";
   if(document.getElementById('progMonetagFill')) document.getElementById('progMonetagFill').style.width = Math.min(100, (mCount/mMax)*100) + "%";
@@ -1972,12 +2003,16 @@ function renderUIValues() {
   if(document.getElementById('textRichadsLimit')) document.getElementById('textRichadsLimit').innerText = richadsCount + " / " + richadsMax + " (" + Math.round((richadsCount/richadsMax)*100) + "%)";
   if(document.getElementById('progRichadsFill')) document.getElementById('progRichadsFill').style.width = Math.min(100, (richadsCount/richadsMax)*100) + "%";
 
+  if(document.getElementById('textAdsbitvexLimit')) document.getElementById('textAdsbitvexLimit').innerText = adsbitvexCount + " / " + adsbitvexMax + " (" + Math.round((adsbitvexCount/adsbitvexMax)*100) + "%)";
+  if(document.getElementById('progAdsbitvexFill')) document.getElementById('progAdsbitvexFill').style.width = Math.min(100, (adsbitvexCount/adsbitvexMax)*100) + "%";
+
   if(document.getElementById('rewardMonetagVal')) document.getElementById('rewardMonetagVal').innerText = rewards.monetag;
   if(document.getElementById('rewardGigapubVal')) document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
   if(document.getElementById('rewardMonetixVal')) document.getElementById('rewardMonetixVal').innerText = rewards.monetix;
   if(document.getElementById('rewardAdsterraVal')) document.getElementById('rewardAdsterraVal').innerText = rewards.adsterra;
   if(document.getElementById('rewardTadsVal')) document.getElementById('rewardTadsVal').innerText = rewards.tads || 0.05;
   if(document.getElementById('rewardRichadsVal')) document.getElementById('rewardRichadsVal').innerText = rewards.richads || 0.05;
+  if(document.getElementById('rewardAdsbitvexVal')) document.getElementById('rewardAdsbitvexVal').innerText = rewards.adsbitvex || 0.05;
 
   var availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
   if(document.getElementById('availableWithdrawBalance')) document.getElementById('availableWithdrawBalance').innerText = "Available: " + availVal.toFixed(4);
@@ -2434,6 +2469,54 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
     console.error("Monetix Execution Error:", err);
     onErrorCallback();
   }
+}
+
+/* =========================================================
+   🌟 ADSBITVEX REWARDED VIDEO AD FUNCTION (APP ID: 000533)
+   ========================================================= */
+function watchAdsBitvexAd() {
+  var limitElementId = 'taskAdsbitvexLimit';
+  var btn = document.getElementById('taskAdsbitvexBtn');
+  var maxLimit = maxLimits.adsbitvex || 50;
+  var reward = rewards.adsbitvex || 0.05;
+  var timerSec = adTimers.adsbitvex || 60;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for AdsBitvex!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen("LOADING ADSBITVEX REWARDED VIDEO...");
+
+  setTimeout(function() {
+    try {
+      if (typeof window.showadsbitvex === 'function') {
+        window.showadsbitvex()
+          .then(function() {
+            hideAdLoadingScreen();
+            finishAdWatchSuccess(limitElementId, btn, reward);
+            startTaskCountdownTimer(btn, timerSec);
+          })
+          .catch(function(err) {
+            hideAdLoadingScreen();
+            console.error("AdsBitvex Show Error:", err);
+            showToast("AdsBitvex ad currently unavailable.", "error");
+            if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+          });
+      } else {
+        hideAdLoadingScreen();
+        showToast("AdsBitvex SDK is loading, please try again in a moment.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      }
+    } catch(err) {
+      hideAdLoadingScreen();
+      console.error("AdsBitvex Execution Exception:", err);
+      showToast("AdsBitvex ad error occurred.", "error");
+      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+    }
+  }, 1000);
 }
 
 /* =========================================================
