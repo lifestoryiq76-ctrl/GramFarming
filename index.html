@@ -660,8 +660,8 @@ input:focus, select:focus { border-color: var(--accent); }
 <!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
 
-<!-- FEATURED PARTNER BANNER SLIDER (Only shows when Ads tab is active, 5s interval) -->
-<div class="featured-banner-wrapper" id="featuredBannerWrapper" style="display: none;">
+<!-- FEATURED PARTNER BANNER SLIDER (Shows default card; 2nd card appears only when published) -->
+<div class="featured-banner-wrapper" id="featuredBannerWrapper">
   <div class="featured-top-row">
     <div class="featured-title-badge">
       <span>✨ FEATURED PARTNER</span>
@@ -2110,22 +2110,13 @@ function switchTaskCategory(catName, btnEl) {
     initBannerSlider();
   } else if(catName === 'task') {
     var tCT = document.getElementById('taskCat-task'); if(tCT) tCT.style.display = 'block';
-    hideBannerOnOtherTabs();
   } else if(catName === 'official') {
     var tCO = document.getElementById('taskCat-official'); if(tCO) tCO.style.display = 'block';
-    hideBannerOnOtherTabs();
   } else if(catName === 'create') {
     var tCC = document.getElementById('taskCat-create'); if(tCC) tCC.style.display = 'block';
     switchCreateSubTab('promote');
-    hideBannerOnOtherTabs();
   }
   if(btnEl) btnEl.classList.add('active');
-}
-
-function hideBannerOnOtherTabs() {
-  var wrapper = document.getElementById('featuredBannerWrapper');
-  if (wrapper) wrapper.style.display = 'none';
-  if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
 }
 
 function switchCreateSubTab(subName) {
@@ -2957,7 +2948,7 @@ function runRocketTimer(index, rocketName, maxLimitNeeded) {
 function claimLiveMiningEarnings(index, rocketName) {
   var state = rocketStates[index];
   if (state.accumulated <= 0.0001) {
-    showToast("Abhi tak kuch bhi coin accumulate nahi hua hai!", "error");
+    showToast("Abhi तक kuch bhi coin accumulate nahi hua hai!", "error");
     return;
   }
 
@@ -3524,7 +3515,17 @@ function renderCustomTasksFromFirebase() {
     var listEl = document.getElementById('dynamicTasksList');
     var noticeEl = document.getElementById('emptyTasksNotice');
     
-    bannerTasksList = [];
+    // Always start with the official default partner card as card #1
+    bannerTasksList = [
+      {
+        key: 'default_partner_1',
+        title: 'Gram Farming Official',
+        description: 'Join official news and updates channel',
+        link: 'https://t.me/GramFarming_Official',
+        objective: 'Channel',
+        image: 'https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png'
+      }
+    ];
 
     if (snapshot.exists()) {
       var data = snapshot.val();
@@ -3544,6 +3545,7 @@ function renderCustomTasksFromFirebase() {
 
         if (clicksLeft <= 0) return;
 
+        // If user published with bannerAddon enabled, add as card #2 (or subsequent)
         if (task.bannerAddon === true) {
           bannerTasksList.push({
             key: key,
@@ -3618,9 +3620,16 @@ function initBannerSlider() {
   }
 
   if (bannerTasksList.length === 0) {
-    wrapper.style.display = 'none';
-    if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
-    return;
+    bannerTasksList = [
+      {
+        key: 'default_partner_1',
+        title: 'Gram Farming Official',
+        description: 'Join official news and updates channel',
+        link: 'https://t.me/GramFarming_Official',
+        objective: 'Channel',
+        image: 'https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png'
+      }
+    ];
   }
 
   wrapper.style.display = 'block';
@@ -3632,7 +3641,7 @@ function initBannerSlider() {
 
   if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
   bannerIntervalTimer = setInterval(function() {
-    if (bannerTasksList.length > 0) {
+    if (bannerTasksList.length > 1) {
       currentBannerIndex = (currentBannerIndex + 1) % bannerTasksList.length;
       renderCurrentBannerTask();
     }
@@ -3665,17 +3674,22 @@ function renderCurrentBannerTask() {
         '<div class="featured-card-icon">' + imgHtml + '</div>' +
         '<div>' +
           '<b style="font-size:16px; color:#fff; display:block; margin-bottom:2px;">' + task.title + '</b>' +
-          '<div style="font-size:12px; color:#00ffa3; font-weight:600; margin-bottom:4px;">+0.0010 🪙</div>' +
+          '<div style="font-size:12px; color:#00ffa3; font-weight:600; margin-bottom:4px;">+0.05 🪙</div>' +
         '</div>' +
       '</div>' +
       '<span style="background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px; display:inline-flex; align-items:center; gap:4px;">🛡️ 8h Check</span>' +
     '</div>' +
     '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05)">' + actionBtnText + '</button>';
 
+  // If there is only 1 banner (default), dots can either be hidden or show 1 active dot.
   var dotsHtml = '';
-  for (var i = 0; i < bannerTasksList.length; i++) {
-    var activeClass = (i === currentBannerIndex) ? ' active' : '';
-    dotsHtml += '<div class="featured-dot' + activeClass + '"></div>';
+  if (bannerTasksList.length > 1) {
+    for (var i = 0; i < bannerTasksList.length; i++) {
+      var activeClass = (i === currentBannerIndex) ? ' active' : '';
+      dotsHtml += '<div class="featured-dot' + activeClass + '"></div>';
+    }
+  } else {
+    dotsHtml = '<div class="featured-dot active"></div>';
   }
   dotsContainer.innerHTML = dotsHtml;
 }
