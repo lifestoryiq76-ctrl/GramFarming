@@ -73,7 +73,76 @@
         <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
     </div>
 
-    <!-- 2. Rocket Space Mining Parameters Control -->
+    <!-- 2. LOTTERY CONTROL (NEW SECTION FOR DAILY & WEEKLY SWITCH & PARAMETERS) -->
+    <div class="card" style="border: 1px solid #0a84c1;">
+        <h2 style="color: #0a84c1;">🎟️ Lottery Control Panel (Daily & Weekly)</h2>
+        
+        <div class="net-box">
+            <h3>📅 Daily Lottery Master Control</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Status (Switch ON / OFF):</label>
+                    <select id="dailyLotteryStatus">
+                        <option value="true">🟢 ENABLED (ON)</option>
+                        <option value="false">🔴 DISABLED (OFF)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Initial Prize Pool (USDT):</label>
+                    <input type="number" id="dailyPoolVal" step="0.01" value="0.00">
+                </div>
+                <div>
+                    <label>Ticket Price (USDT):</label>
+                    <input type="number" id="dailyTicketPrice" step="0.01" value="0.10">
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top: 10px;">
+                <div>
+                    <label>Winners Count:</label>
+                    <input type="number" id="dailyWinnersCount" step="1" value="2">
+                </div>
+                <div>
+                    <label>Max Tickets Per User:</label>
+                    <input type="number" id="dailyMaxTickets" step="1" value="100">
+                </div>
+            </div>
+        </div>
+
+        <div class="net-box" style="margin-top: 15px;">
+            <h3>🗓️ Weekly Lottery Master Control</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Status (Switch ON / OFF):</label>
+                    <select id="weeklyLotteryStatus">
+                        <option value="true">🟢 ENABLED (ON)</option>
+                        <option value="false">🔴 DISABLED (OFF)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Initial Prize Pool (USDT):</label>
+                    <input type="number" id="weeklyPoolVal" step="0.01" value="25.50">
+                </div>
+                <div>
+                    <label>Ticket Price (USDT):</label>
+                    <input type="number" id="weeklyTicketPrice" step="0.01" value="0.50">
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top: 10px;">
+                <div>
+                    <label>Winners Count:</label>
+                    <input type="number" id="weeklyWinnersCount" step="1" value="10">
+                </div>
+                <div>
+                    <label>Max Tickets Per User:</label>
+                    <input type="number" id="weeklyMaxTickets" step="1" value="500">
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn-blue" style="margin-top: 12px;" onclick="saveSettings('lottery')">💾 Save Lottery Settings</button>
+    </div>
+
+    <!-- 3. Rocket Space Mining Parameters Control -->
     <div class="card">
         <h2>🚀 Space Rocket Mining Control</h2>
         
@@ -124,7 +193,7 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 3. Task Ads Networks Control (Updated with all 5 Networks) -->
+    <!-- 4. Task Ads Networks Control (Updated with all 5 Networks) -->
     <div class="card">
         <h2>📺 Task Ads Watch Networks Setup</h2>
         
@@ -221,7 +290,7 @@
         <button type="button" onclick="saveSettings('adsNetworks')">💾 Save All Ad Networks Setup</button>
     </div>
 
-    <!-- 4. Staking APY Control -->
+    <!-- 5. Staking APY Control -->
     <div class="card" style="border: 1px solid var(--yellow);">
         <h2 style="color: var(--yellow);">💎 Staking Plans APY Control</h2>
         <div class="grid-4">
@@ -261,7 +330,7 @@
         <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
     </div>
 
-    <!-- 5. User Campaign Click Rates Control -->
+    <!-- 6. User Campaign Click Rates Control -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚙️ User Campaign Publish Rates (Clicks Pricing)</h2>
         <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">Yahan se aap sabhi click packages (100 se 5000) ke Coin cost/rates change kar sakte hain.</p>
@@ -315,7 +384,7 @@
         <button type="button" style="margin-top: 12px;" onclick="saveSettings('clickRates')">💾 Save Click Rates</button>
     </div>
 
-    <!-- 6. Add Custom Task -->
+    <!-- 7. Add Custom Task -->
     <div class="card">
         <h2>📋 Add New Custom Task (Telegram / YouTube / Ads)</h2>
         <div class="grid-2">
@@ -351,7 +420,7 @@
         </div>
     </div>
 
-    <!-- 🔄 7. ONLY PARTNER & TASK RESET CONTROLLER -->
+    <!-- 🔄 8. ONLY PARTNER & TASK RESET CONTROLLER -->
     <div class="card" style="border: 1px solid #f59e0b;">
         <h2 style="color: #f59e0b;">🔄 Partner & Task Reset Manager (Only 'Partner' & 'Task' Tabs)</h2>
         <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">
@@ -372,7 +441,7 @@
         </div>
     </div>
 
-    <!-- 8. User Balance Manual Manager -->
+    <!-- 9. User Balance Manual Manager -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚡ User Balance Modifier</h2>
         <div class="grid-3">
@@ -395,7 +464,7 @@
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 9A. FaucetPay Withdrawal Requests -->
+    <!-- 10A. FaucetPay Withdrawal Requests -->
     <div class="card">
         <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
@@ -417,7 +486,7 @@
         </div>
     </div>
 
-    <!-- 9B. TON Withdrawal Requests -->
+    <!-- 10B. TON Withdrawal Requests -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests (Manual)</h2>
         <button type="button" onclick="approveAllTonWithdrawals()" style="background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 12px; width: 100%;">
@@ -442,7 +511,7 @@
         </div>
     </div>
 
-    <!-- 10. Registered Users List -->
+    <!-- 11. Registered Users List -->
     <div class="card">
         <h2>👥 Registered Users, IP Address & Security Management</h2>
         <div class="table-container">
@@ -509,6 +578,22 @@
                     document.getElementById('refBonus').value = data.general.refPercent ?? 20;
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? data.general.minWithdrawal ?? 0.01;
                     document.getElementById('minTon').value = data.general.minTon ?? data.general.minTonWithdrawal ?? 0.01;
+                }
+                if(data.lottery) {
+                    if(data.lottery.daily) {
+                        document.getElementById('dailyLotteryStatus').value = String(data.lottery.daily.status ?? true);
+                        document.getElementById('dailyPoolVal').value = data.lottery.daily.poolVal ?? 0.00;
+                        document.getElementById('dailyTicketPrice').value = data.lottery.daily.ticketPrice ?? 0.10;
+                        document.getElementById('dailyWinnersCount').value = data.lottery.daily.winnersCount ?? 2;
+                        document.getElementById('dailyMaxTickets').value = data.lottery.daily.maxTickets ?? 100;
+                    }
+                    if(data.lottery.weekly) {
+                        document.getElementById('weeklyLotteryStatus').value = String(data.lottery.weekly.status ?? true);
+                        document.getElementById('weeklyPoolVal').value = data.lottery.weekly.poolVal ?? 25.50;
+                        document.getElementById('weeklyTicketPrice').value = data.lottery.weekly.ticketPrice ?? 0.50;
+                        document.getElementById('weeklyWinnersCount').value = data.lottery.weekly.winnersCount ?? 10;
+                        document.getElementById('weeklyMaxTickets').value = data.lottery.weekly.maxTickets ?? 500;
+                    }
                 }
                 if(data.clickRates) {
                     document.getElementById('rateCoin100').value = data.clickRates.coin100 ?? 35;
@@ -796,6 +881,21 @@
                     'adminSettings/general/minTonWithdrawal': minT
                 };
                 update(ref(db), data).then(() => alert('General Settings Saved Successfully!'));
+            } else if (type === 'lottery') {
+                let lotteryData = {
+                    'adminSettings/lottery/daily/status': document.getElementById('dailyLotteryStatus').value === 'true',
+                    'adminSettings/lottery/daily/poolVal': parseFloat(document.getElementById('dailyPoolVal').value) || 0,
+                    'adminSettings/lottery/daily/ticketPrice': parseFloat(document.getElementById('dailyTicketPrice').value) || 0.10,
+                    'adminSettings/lottery/daily/winnersCount': parseInt(document.getElementById('dailyWinnersCount').value) || 2,
+                    'adminSettings/lottery/daily/maxTickets': parseInt(document.getElementById('dailyMaxTickets').value) || 100,
+
+                    'adminSettings/lottery/weekly/status': document.getElementById('weeklyLotteryStatus').value === 'true',
+                    'adminSettings/lottery/weekly/poolVal': parseFloat(document.getElementById('weeklyPoolVal').value) || 25.50,
+                    'adminSettings/lottery/weekly/ticketPrice': parseFloat(document.getElementById('weeklyTicketPrice').value) || 0.50,
+                    'adminSettings/lottery/weekly/winnersCount': parseInt(document.getElementById('weeklyWinnersCount').value) || 10,
+                    'adminSettings/lottery/weekly/maxTickets': parseInt(document.getElementById('weeklyMaxTickets').value) || 500
+                };
+                update(ref(db), lotteryData).then(() => alert('✅ Lottery Settings Saved Successfully!'));
             } else if (type === 'clickRates') {
                 let ratesData = {
                     'adminSettings/clickRates/coin100': parseFloat(document.getElementById('rateCoin100').value) || 35,
