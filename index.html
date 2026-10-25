@@ -411,7 +411,7 @@ input:focus, select:focus { border-color: var(--accent); }
     background: #0a84c1;
 }
 
-/* BRONZE RANK CARD (Screenshot Match) */
+/* BRONZE RANK CARD (Screenshot Match: Bronze to Gold with dynamic published task count) */
 .rank-card-wrapper {
     background: linear-gradient(135deg, #1e293b 100%, #0f172a 0%);
     border: 1px solid var(--border);
@@ -469,7 +469,7 @@ input:focus, select:focus { border-color: var(--accent); }
     border-radius: 8px;
 }
 
-/* FEATURED PARTNER BANNER STYLES (Screenshot Match) */
+/* FEATURED PARTNER BANNER STYLES (Screenshot Match with 5s Interval & Home Banner Filter) */
 .featured-banner-wrapper {
     background: linear-gradient(135deg, #1b2845 0%, #0f172a 100%);
     border: 1px solid rgba(168, 85, 247, 0.3);
@@ -720,23 +720,23 @@ input:focus, select:focus { border-color: var(--accent); }
 <small style="color:var(--text-muted);">Complete tasks, collect Coins & create campaigns</small>
 </div>
 
-<!-- BRONZE RANK CARD (Added above Featured Partner Banner) -->
+<!-- BRONZE RANK CARD (Bronze to Gold with dynamic published task count)[span_3](start_span)[span_3](end_span) -->
 <div class="rank-card-wrapper">
   <div class="rank-top-row">
     <div class="rank-title-group">
       <span>🥉</span>
       <span>Bronze</span>
-      <span style="color: var(--text-muted); font-weight: normal; font-size: 13px;">· 4/50 to Silver</span>
+      <span style="color: var(--text-muted); font-weight: normal; font-size: 13px;" id="rankProgressText">· 0/0 to Gold</span>
     </div>
     <span class="rank-badge-percent">+0%</span>
   </div>
   <div class="rank-progress-track">
-    <div class="rank-progress-fill"></div>
-    <div class="rank-thumb-dot"></div>
+    <div class="rank-progress-fill" id="rankProgressFill" style="width: 0%;"></div>
+    <div class="rank-thumb-dot" id="rankThumbDot" style="left: 0%;"></div>
   </div>
 </div>
 
-<!-- FEATURED PARTNER BANNER SLIDER (Live Carousel above Monetag) -->
+<!-- FEATURED PARTNER BANNER SLIDER (Placed above Ads card, 5s interval, Home Banner filter)[span_4](start_span)[span_4](end_span) -->
 <div class="featured-banner-wrapper" id="featuredBannerWrapper" style="display: none;">
   <div class="featured-top-row">
     <div class="featured-title-badge">
@@ -752,7 +752,7 @@ input:focus, select:focus { border-color: var(--accent); }
   </div>
 
   <div class="featured-card-box" id="featuredCardBoxContent">
-    <!-- Dynamic Banner Card Content injected via JS -->
+    <!-- Dynamic Banner Card Content matching 9294.png layout injected via JS -->
   </div>
 </div>
 
@@ -1520,7 +1520,7 @@ var currentSelectedRewardVal = 0.08;
 var modalState = "initial";
 var modalTimerInterval = null;
 
-// FEATURED BANNER SLIDER VARIABLES
+// FEATURED BANNER SLIDER VARIABLES (5s interval)[span_5](start_span)[span_5](end_span)
 var bannerTasksList = [];
 var currentBannerIndex = 0;
 var bannerIntervalTimer = null;
@@ -3601,6 +3601,7 @@ function renderCustomTasksFromFirebase() {
     var noticeEl = document.getElementById('emptyTasksNotice');
     
     bannerTasksList = [];
+    var totalPublishedCount = 0;
 
     if (snapshot.exists()) {
       var data = snapshot.val();
@@ -3610,6 +3611,7 @@ function renderCustomTasksFromFirebase() {
       Object.entries(data).forEach(function(entry) {
         var key = entry[0];
         var task = entry[1];
+        totalPublishedCount++;
 
         var isCompleted = completedTasksSet.includes(key);
         if (isCompleted) return;
@@ -3620,13 +3622,14 @@ function renderCustomTasksFromFirebase() {
 
         if (clicksLeft <= 0) return;
 
+        // ONLY tasks with Home Screen Banner addon requirement enabled will show in the live banner slider
         if (task.bannerAddon === true) {
           bannerTasksList.push({
             key: key,
             title: task.title,
             description: task.description || "Complete task & claim reward!",
             link: task.link,
-            objective: task.objective || "Bot",
+            objective: task.objective || "Channel",
             image: task.image || ""
           });
         }
@@ -3678,6 +3681,17 @@ function renderCustomTasksFromFirebase() {
       }
     }
 
+    // Update Bronze to Gold rank card dynamic published task count
+    var rankProgText = document.getElementById('rankProgressText');
+    if (rankProgText) {
+      var pct = totalPublishedCount > 0 ? Math.min(100, (totalPublishedCount / 50) * 100) : 0;
+      rankProgText.innerText = '· ' + totalPublishedCount + '/50 to Gold';
+      var rFill = document.getElementById('rankProgressFill');
+      var rDot = document.getElementById('rankThumbDot');
+      if (rFill) rFill.style.width = pct + '%';
+      if (rDot) rDot.style.left = pct + '%';
+    }
+
     initBannerSlider();
   });
 }
@@ -3700,6 +3714,7 @@ function initBannerSlider() {
   renderCurrentBannerTask();
 
   if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
+  // Integration: 5 seconds auto-change interval for dots and banner items[span_6](start_span)[span_6](end_span)
   bannerIntervalTimer = setInterval(function() {
     if (bannerTasksList.length > 0) {
       currentBannerIndex = (currentBannerIndex + 1) % bannerTasksList.length;
@@ -3723,18 +3738,24 @@ function renderCurrentBannerTask() {
   var safeTitle = task.title.replace(/'/g, "\\'");
   var safeLink = task.link.replace(/'/g, "\\'");
 
+  // Publisher task objective ke anusaar Join ya Play button & 8h Check badge display
+  var actionBtnText = "Join 👥";
+  if (task.objective === "Mini App" || task.objective === "Bot (MAU)") {
+    actionBtnText = "Play ▶";
+  }
+
   boxContent.innerHTML = 
     '<div class="featured-card-content">' +
       '<div class="featured-card-info">' +
         '<div class="featured-card-icon">' + imgHtml + '</div>' +
         '<div>' +
           '<b style="font-size:16px; color:#fff; display:block; margin-bottom:2px;">' + task.title + '</b>' +
-          '<div style="font-size:12px; color:#94a3b8; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">' + task.description + '</div>' +
-          '<span class="featured-badge-type">⚡ ' + task.objective + ' · 20s</span>' +
+          '<div style="font-size:12px; color:#00ffa3; font-weight:600; margin-bottom:4px;">+0.0010 🪙</div>' +
         '</div>' +
       '</div>' +
+      '<span style="background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px; display:inline-flex; align-items:center; gap:4px;">🛡️ 8h Check</span>' +
     '</div>' +
-    '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05)">Play ▶</button>';
+    '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05)">' + actionBtnText + '</button>';
 
   var dotsHtml = '';
   for (var i = 0; i < bannerTasksList.length; i++) {
