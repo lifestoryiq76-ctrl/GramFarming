@@ -304,6 +304,13 @@ input:focus, select:focus { border-color: var(--accent); }
   gap: 8px;
 }
 
+.lottery-pool-icon-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
 .lottery-winners-badge {
   display: inline-flex;
   align-items: center;
@@ -1146,7 +1153,7 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
-<!-- LOTTERY PAGE (UPDATED WITH DAILY & WEEKLY CARDS) -->
+<!-- LOTTERY PAGE (UPDATED WITH IMAGE LOGO & WITHOUT WEB3 WALLET BUTTON) -->
 <div id="lottery" class="tab-content">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
     <h3 style="margin: 0;" id="lotteryMainTitle">Daily Lottery</h3>
@@ -1168,7 +1175,7 @@ Cost: <strong>35 Coins</strong>
       <div style="font-size: 11px; font-weight: 800; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase;">DAILY PRIZE POOL</div>
       <div class="lottery-prize-text">
         <span id="dailyPrizePoolVal">0.00</span>
-        <span style="font-size: 20px;">💎</span>
+        <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" alt="Prize Pool Icon" class="lottery-pool-icon-img" />
       </div>
 
       <div>
@@ -1200,10 +1207,6 @@ Cost: <strong>35 Coins</strong>
         <div class="lottery-pay-btn active" id="dailyPayInAppBtn" onclick="setLotteryPayMethod('daily', 'inapp')">
           <span>🔄 In-App Balance</span>
           <small style="opacity: 0.8;">($<span class="usdtBalanceDisp">0.00</span>)</small>
-        </div>
-        <div class="lottery-pay-btn" id="dailyPayWeb3Btn" onclick="setLotteryPayMethod('daily', 'web3')">
-          <span>👛 Web3 Wallet</span>
-          <small style="opacity: 0.8;">(GRAM)</small>
         </div>
       </div>
 
@@ -1265,7 +1268,7 @@ Cost: <strong>35 Coins</strong>
       <div style="font-size: 11px; font-weight: 800; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase;">WEEKLY JACKPOT POOL</div>
       <div class="lottery-prize-text">
         <span id="weeklyPrizePoolVal">25.50</span>
-        <span style="font-size: 20px;">💎</span>
+        <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" alt="Prize Pool Icon" class="lottery-pool-icon-img" />
       </div>
 
       <div>
@@ -1297,10 +1300,6 @@ Cost: <strong>35 Coins</strong>
         <div class="lottery-pay-btn active" id="weeklyPayInAppBtn" onclick="setLotteryPayMethod('weekly', 'inapp')">
           <span>🔄 In-App Balance</span>
           <small style="opacity: 0.8;">($<span class="usdtBalanceDisp">0.00</span>)</small>
-        </div>
-        <div class="lottery-pay-btn" id="weeklyPayWeb3Btn" onclick="setLotteryPayMethod('weekly', 'web3')">
-          <span>👛 Web3 Wallet</span>
-          <small style="opacity: 0.8;">(GRAM)</small>
         </div>
       </div>
 
@@ -2558,13 +2557,10 @@ function switchLotteryType(type) {
 function setLotteryPayMethod(type, method) {
   lotteryPayMethods[type] = method;
   var inAppBtn = document.getElementById(type + 'PayInAppBtn');
-  var web3Btn = document.getElementById(type + 'PayWeb3Btn');
 
   if(inAppBtn) inAppBtn.classList.remove('active');
-  if(web3Btn) web3Btn.classList.remove('active');
 
   if (method === 'inapp' && inAppBtn) inAppBtn.classList.add('active');
-  if (method === 'web3' && web3Btn) web3Btn.classList.add('active');
 }
 
 function changeLotteryTicketQty(type, change) {
@@ -2689,14 +2685,6 @@ function buyLotteryTickets(type) {
   var price = lotteryConfig[type].ticketPrice;
   var totalCost = qty * price;
   var payMethod = lotteryPayMethods[type];
-
-  if (payMethod === 'web3') {
-    if (!isWalletConnected) {
-      showToast("Kripya pehle Web3 Wallet (GRAM) connect karein!", "error");
-      handleGramWalletConnect();
-      return;
-    }
-  }
 
   if (payMethod === 'inapp') {
     if (usdtBalance < totalCost) {
