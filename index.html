@@ -411,6 +411,132 @@ input:focus, select:focus { border-color: var(--accent); }
 .loading-dots div.active {
     background: #0a84c1;
 }
+
+/* FEATURED PARTNER BANNER STYLES (Screenshot Match) */
+.featured-banner-wrapper {
+    background: linear-gradient(135deg, #1b2845 0%, #0f172a 100%);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+}
+.featured-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.featured-title-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #c084fc;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.featured-ad-tag {
+    background: #3b82f6;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+.featured-dots-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.featured-dot {
+    width: 6px;
+    height: 6px;
+    background: #475569;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+.featured-dot.active {
+    width: 16px;
+    border-radius: 4px;
+    background: #a855f7;
+}
+.add-task-link-btn {
+    background: transparent;
+    border: none;
+    color: #c084fc;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.featured-card-box {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    border-radius: 14px;
+    padding: 14px;
+    transition: all 0.4s ease;
+}
+.featured-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+.featured-card-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.featured-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #000;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.featured-card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.featured-badge-type {
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.featured-play-btn {
+    width: 100%;
+    background: linear-gradient(90deg, #9333ea 0%, #a855f7 100%);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+    transition: 0.2s;
+}
+.featured-play-btn:active {
+    transform: scale(0.98);
+}
 </style>
 </head>
 <body>
@@ -478,6 +604,26 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="btn" onclick="switchTab('tasks')" style="margin-right: 6px; background: var(--accent);" data-i18n="earnBtn">⚡ Earn</button>
 <button class="btn" onclick="switchTab('wallet')" style="margin-left: 6px; background: #0a84c1;" data-i18n="withdrawNavBtn">🪙 Withdraw</button>
 </div>
+</div>
+
+<!-- FEATURED PARTNER BANNER SLIDER (Home Screen Banner Add-on Live Carousel) -->
+<div class="featured-banner-wrapper" id="featuredBannerWrapper" style="display: none;">
+  <div class="featured-top-row">
+    <div class="featured-title-badge">
+      <span>✨ FEATURED PARTNER</span>
+      <span class="featured-ad-tag">Ad</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div class="featured-dots-container" id="featuredDotsContainer">
+        <!-- Dots injected dynamically -->
+      </div>
+      <button class="add-task-link-btn" onclick="switchTab('tasks'); switchTaskCategory('create', document.querySelector('.task-cat-btn:nth-child(4)'));">+ Add task</button>
+    </div>
+  </div>
+
+  <div class="featured-card-box" id="featuredCardBoxContent">
+    <!-- Dynamic Banner Card Content injected via JS -->
+  </div>
 </div>
 
 <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
@@ -1023,7 +1169,7 @@ Fee (5%): 0.00 | You will receive: 0.00
 <button class="btn" style="margin-top:12px; width:100%; background: var(--accent); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
 </div>
 
-<!-- DEPOSIT SECTION UPDATED (ONLY GRAM) -->
+<!-- DEPOSIT SECTION -->
 <div id="wContentDeposit" class="wallet-subcard-content card" style="border: 1px solid var(--sky-blue); box-shadow: 0 4px 20px rgba(10, 132, 193, 0.15);">
 <div class="flex-between" style="margin-bottom: 8px;">
 <h4 style="margin:0; color: var(--sky-blue);">💵 Deposit Funds (Gram)</h4>
@@ -1057,7 +1203,7 @@ Enter the amount in USD, then pay the equivalent in TON from your connected wall
 </div>
 </div>
 
-<!-- CONVERT SECTION UPDATED WITH 3 SKY BLUE CARDS -->
+<!-- CONVERT SECTION -->
 <div id="wContentConvert" class="wallet-subcard-content card" style="border: 1px solid #0a84c1; box-shadow: 0 4px 20px rgba(10, 132, 193, 0.15);">
 <div class="flex-between" style="margin-bottom: 10px;">
 <h4 style="margin:0; color: var(--sky-blue);" data-i18n="exchangeCoin">🔄 Convert Balance</h4>
@@ -1288,9 +1434,8 @@ var addonBannerActive = false;
 var uploadedCampaignImageBase64 = "";
 
 var currentWithdrawSubMethod = 'faucetpay';
-var currentDepositSubMethod = 'gram'; // Defaulted to Gram
+var currentDepositSubMethod = 'gram';
 
-// NEW CONVERT SELECTION VARIABLES
 var convertMainSource = 'Coin';
 var convertTargetCurrency = 'USDT';
 
@@ -1300,6 +1445,11 @@ var currentSelectedTaskKey = "";
 var currentSelectedRewardVal = 0.08;
 var modalState = "initial";
 var modalTimerInterval = null;
+
+// FEATURED BANNER SLIDER VARIABLES
+var bannerTasksList = [];
+var currentBannerIndex = 0;
+var bannerIntervalTimer = null;
 
 const ADSTERRA_LINK = "https://araplhn.org/4/74b4cb017b96a6c502c11da164a77205";
 
@@ -2849,9 +2999,6 @@ function claimRocketReward(index, rocketName, maxLimitNeeded) {
   showToast("Claim Successful! Mining cycle complete for " + rocketName + ".", "success");
 }
 
-/* -------------------------------------------------------------
-   DYNAMIC CONVERT FUNCTIONALITY (3 MAIN SKY BLUE CARDS + TARGETS)
-------------------------------------------------------------- */
 function selectConvertMain(curr) {
   convertMainSource = curr;
   
@@ -2980,12 +3127,10 @@ function exchangeCoins() {
     return;
   }
 
-  // Deduct main balance
   if (convertMainSource === 'Coin') balance -= amt;
   else if (convertMainSource === 'USDT') usdtBalance -= amt;
   else if (convertMainSource === 'Gram') tonBalance -= amt;
 
-  // Add target balance
   if (convertMainSource === 'Coin') {
     var usdtVal = amt * coinUsdtValue;
     if (convertTargetCurrency === 'USDT') {
@@ -3377,78 +3522,154 @@ function claimTaskReward(reward, taskKey) {
 
 function renderCustomTasksFromFirebase() {
   if (!window.db) return;
-  db.ref('customTasks').once('value', function(snapshot) {
+  db.ref('customTasks').on('value', function(snapshot) {
     var listEl = document.getElementById('dynamicTasksList');
     var noticeEl = document.getElementById('emptyTasksNotice');
-    if (!snapshot.exists()) {
-      if(listEl) listEl.innerHTML = "";
-      if (noticeEl) noticeEl.style.display = 'block';
-      return;
-    }
+    
+    bannerTasksList = [];
 
-    var data = snapshot.val();
-    var html = '';
-    var visibleTaskCount = 0;
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      var html = '';
+      var visibleTaskCount = 0;
 
-    Object.entries(data).forEach(function(entry) {
-      var key = entry[0];
-      var task = entry[1];
+      Object.entries(data).forEach(function(entry) {
+        var key = entry[0];
+        var task = entry[1];
 
-      var isCompleted = completedTasksSet.includes(key);
-      if (isCompleted) return;
+        var isCompleted = completedTasksSet.includes(key);
+        if (isCompleted) return;
 
-      var totalClicks = task.totalClicks || 100;
-      var clicksDone = task.clicksDone || 0;
-      var clicksLeft = task.clicksRemaining !== undefined ? task.clicksRemaining : (totalClicks - clicksDone);
+        var totalClicks = task.totalClicks || 100;
+        var clicksDone = task.clicksDone || 0;
+        var clicksLeft = task.clicksRemaining !== undefined ? task.clicksRemaining : (totalClicks - clicksDone);
 
-      if (clicksLeft <= 0) return;
+        if (clicksLeft <= 0) return;
 
-      visibleTaskCount++;
+        // Collect tasks that have Home Screen Banner add-on enabled
+        if (task.bannerAddon === true) {
+          bannerTasksList.push({
+            key: key,
+            title: task.title,
+            description: task.description || "Complete task & claim reward!",
+            link: task.link,
+            objective: task.objective || "Bot",
+            image: task.image || ""
+          });
+        }
 
-      var imgHtml = task.image 
-        ? '<img src="' + task.image + '" style="width:44px; height:44px; border-radius:50%; object-fit:cover; margin-right:12px;" />' 
-        : '<div style="width:44px; height:44px; border-radius:50%; background:#0a84c1; display:flex; align-items:center; justify-content:center; font-size:20px; margin-right:12px;">🚀</div>';
+        visibleTaskCount++;
 
-      var safeTitle = task.title.replace(/'/g, "\\'");
-      var safeLink = task.link.replace(/'/g, "\\'");
-      var isVerified = task.verifiedAddon || false;
+        var imgHtml = task.image 
+          ? '<img src="' + task.image + '" style="width:44px; height:44px; border-radius:50%; object-fit:cover; margin-right:12px;" />' 
+          : '<div style="width:44px; height:44px; border-radius:50%; background:#0a84c1; display:flex; align-items:center; justify-content:center; font-size:20px; margin-right:12px;">🚀</div>';
 
-      var btnText = "Join 👥";
-      var btnBg = "#10b981";
+        var safeTitle = task.title.replace(/'/g, "\\'");
+        var safeLink = task.link.replace(/'/g, "\\'");
+        var isVerified = task.verifiedAddon || false;
 
-      var verifiedBadgeHtml = isVerified 
-        ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
-        : '';
+        var btnText = "Join 👥";
+        var btnBg = "#10b981";
 
-      html += '<div class="card flex-between" style="background:#111827; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
-        '<div style="display:flex; align-items:center; flex:1; overflow:hidden;">' + 
-          imgHtml + 
-          '<div style="overflow:hidden;">' +
-            '<div style="display:flex; align-items:center;">' +
-              '<b style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; color:#fff;">' + task.title + '</b>' +
-              verifiedBadgeHtml +
-            '</div>' +
-            '<div style="margin-top:2px; font-size:12px; font-weight:bold; color:var(--accent);">' +
-              '+0.05 🪙' +
-            '</div>' +
-            '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">' +
-              '🕒 ' + Math.max(0, clicksLeft) + ' clicks left' +
+        var verifiedBadgeHtml = isVerified 
+          ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
+          : '';
+
+        html += '<div class="card flex-between" style="background:#111827; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
+          '<div style="display:flex; align-items:center; flex:1; overflow:hidden;">' + 
+            imgHtml + 
+            '<div style="overflow:hidden;">' +
+              '<div style="display:flex; align-items:center;">' +
+                '<b style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; color:#fff;">' + task.title + '</b>' +
+                verifiedBadgeHtml +
+              '</div>' +
+              '<div style="margin-top:2px; font-size:12px; font-weight:bold; color:var(--accent);">' +
+                '+0.05 🪙' +
+              '</div>' +
+              '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">' +
+                '🕒 ' + Math.max(0, clicksLeft) + ' clicks left' +
+              '</div>' +
             '</div>' +
           '</div>' +
-        '</div>' +
-        '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
-        'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
-      '</div>';
-    });
+          '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
+          'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
+        '</div>';
+      });
 
-    if (visibleTaskCount === 0) {
-      if(listEl) listEl.innerHTML = "";
-      if (noticeEl) noticeEl.style.display = 'block';
-    } else {
-      if (noticeEl) noticeEl.style.display = 'none';
-      if(listEl) listEl.innerHTML = html;
+      if (visibleTaskCount === 0) {
+        if(listEl) listEl.innerHTML = "";
+        if (noticeEl) noticeEl.style.display = 'block';
+      } else {
+        if (noticeEl) noticeEl.style.display = 'none';
+        if(listEl) listEl.innerHTML = html;
+      }
     }
+
+    initBannerSlider();
   });
+}
+
+// FEATURED BANNER SLIDER LOGIC (Changes every 5 seconds)
+function initBannerSlider() {
+  var wrapper = document.getElementById('featuredBannerWrapper');
+  if (!wrapper) return;
+
+  if (bannerTasksList.length === 0) {
+    wrapper.style.display = 'none';
+    if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
+    return;
+  }
+
+  wrapper.style.display = 'block';
+  if (currentBannerIndex >= bannerTasksList.length) {
+    currentBannerIndex = 0;
+  }
+
+  renderCurrentBannerTask();
+
+  if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
+  bannerIntervalTimer = setInterval(function() {
+    if (bannerTasksList.length > 0) {
+      currentBannerIndex = (currentBannerIndex + 1) % bannerTasksList.length;
+      renderCurrentBannerTask();
+    }
+  }, 5000);
+}
+
+function renderCurrentBannerTask() {
+  if (bannerTasksList.length === 0) return;
+  var task = bannerTasksList[currentBannerIndex];
+
+  var boxContent = document.getElementById('featuredCardBoxContent');
+  var dotsContainer = document.getElementById('featuredDotsContainer');
+  if (!boxContent || !dotsContainer) return;
+
+  var imgHtml = task.image 
+    ? '<img src="' + task.image + '" alt="Logo" />' 
+    : '<div style="width:100%; height:100%; background:#9333ea; display:flex; align-items:center; justify-content:center; font-size:22px;">⚡</div>';
+
+  var safeTitle = task.title.replace(/'/g, "\\'");
+  var safeLink = task.link.replace(/'/g, "\\'");
+
+  boxContent.innerHTML = 
+    '<div class="featured-card-content">' +
+      '<div class="featured-card-info">' +
+        '<div class="featured-card-icon">' + imgHtml + '</div>' +
+        '<div>' +
+          '<b style="font-size:16px; color:#fff; display:block; margin-bottom:2px;">' + task.title + '</b>' +
+          '<div style="font-size:12px; color:#94a3b8; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">' + task.description + '</div>' +
+          '<span class="featured-badge-type">⚡ ' + task.objective + ' · 20s</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05)">Play ▶</button>';
+
+  var dotsHtml = '';
+  for (var i = 0; i < bannerTasksList.length; i++) {
+    var activeClass = (i === currentBannerIndex) ? ' active' : '';
+    dotsHtml += '<div class="featured-dot' + activeClass + '"></div>';
+  }
+  dotsContainer.innerHTML = dotsHtml;
 }
 
 function loadMyPublishedTasks() {
