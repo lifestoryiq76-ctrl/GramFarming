@@ -411,65 +411,7 @@ input:focus, select:focus { border-color: var(--accent); }
     background: #0a84c1;
 }
 
-/* BRONZE RANK CARD (Screenshot Match: Bronze to Gold with dynamic published task count) */
-.rank-card-wrapper {
-    background: linear-gradient(135deg, #1e293b 100%, #0f172a 0%);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-.rank-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-.rank-title-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: bold;
-    color: var(--text-main);
-}
-.rank-progress-track {
-    width: 100%;
-    background: #334155;
-    height: 6px;
-    border-radius: 3px;
-    position: relative;
-    overflow: visible;
-}
-.rank-progress-fill {
-    background: var(--accent);
-    height: 100%;
-    width: 8%;
-    border-radius: 3px;
-}
-.rank-thumb-dot {
-    position: absolute;
-    top: 50%;
-    left: 8%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 12px;
-    background: var(--yellow);
-    border: 2px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 8px rgba(234, 179, 8, 0.8);
-}
-.rank-badge-percent {
-    background: rgba(34, 197, 94, 0.15);
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: bold;
-    padding: 3px 8px;
-    border-radius: 8px;
-}
-
-/* FEATURED PARTNER BANNER STYLES (Screenshot Match with 5s Interval & Home Banner Filter) */
+/* FEATURED PARTNER BANNER STYLES (Positioned exclusively in Ads tab between Category Tabs and Ads Cards) */
 .featured-banner-wrapper {
     background: linear-gradient(135deg, #1b2845 0%, #0f172a 100%);
     border: 1px solid rgba(168, 85, 247, 0.3);
@@ -564,18 +506,6 @@ input:focus, select:focus { border-color: var(--accent); }
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-.featured-badge-type {
-    background: rgba(234, 179, 8, 0.15);
-    color: #eab308;
-    border: 1px solid rgba(234, 179, 8, 0.3);
-    font-size: 11px;
-    font-weight: bold;
-    padding: 2px 8px;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
 }
 .featured-play-btn {
     width: 100%;
@@ -720,23 +650,17 @@ input:focus, select:focus { border-color: var(--accent); }
 <small style="color:var(--text-muted);">Complete tasks, collect Coins & create campaigns</small>
 </div>
 
-<!-- BRONZE RANK CARD (Bronze to Gold with dynamic published task count)[span_3](start_span)[span_3](end_span) -->
-<div class="rank-card-wrapper">
-  <div class="rank-top-row">
-    <div class="rank-title-group">
-      <span>🥉</span>
-      <span>Bronze</span>
-      <span style="color: var(--text-muted); font-weight: normal; font-size: 13px;" id="rankProgressText">· 0/0 to Gold</span>
-    </div>
-    <span class="rank-badge-percent">+0%</span>
-  </div>
-  <div class="rank-progress-track">
-    <div class="rank-progress-fill" id="rankProgressFill" style="width: 0%;"></div>
-    <div class="rank-thumb-dot" id="rankThumbDot" style="left: 0%;"></div>
-  </div>
+<div class="task-category-bar">
+<button class="task-cat-btn active" onclick="switchTaskCategory('ads', this)">📺 Ads</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('official', this)">⭐ Official</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- FEATURED PARTNER BANNER SLIDER (Placed above Ads card, 5s interval, Home Banner filter)[span_4](start_span)[span_4](end_span) -->
+<!-- ADS CATEGORY CONTENT (FEATURED PARTNER BANNER DISPLAYED ONLY HERE BETWEEN CATEGORY BAR & ADS CARDS) -->
+<div id="taskCat-ads" class="task-category-content">
+
+<!-- FEATURED PARTNER BANNER SLIDER (Only shows when Ads tab is active, 5s interval)[span_1](start_span)[span_1](end_span) -->
 <div class="featured-banner-wrapper" id="featuredBannerWrapper" style="display: none;">
   <div class="featured-top-row">
     <div class="featured-title-badge">
@@ -752,19 +676,9 @@ input:focus, select:focus { border-color: var(--accent); }
   </div>
 
   <div class="featured-card-box" id="featuredCardBoxContent">
-    <!-- Dynamic Banner Card Content matching 9294.png layout injected via JS -->
+    <!-- Dynamic Banner Card Content matching reference layout injected via JS -->
   </div>
 </div>
-
-<div class="task-category-bar">
-<button class="task-cat-btn active" onclick="switchTaskCategory('ads', this)">📺 Ads</button>
-<button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
-<button class="task-cat-btn" onclick="switchTaskCategory('official', this)">⭐ Official</button>
-<button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
-</div>
-
-<!-- ADS CATEGORY CONTENT -->
-<div id="taskCat-ads" class="task-category-content">
 
 <div id="adsTasksAll">
 
@@ -1520,7 +1434,7 @@ var currentSelectedRewardVal = 0.08;
 var modalState = "initial";
 var modalTimerInterval = null;
 
-// FEATURED BANNER SLIDER VARIABLES (5s interval)[span_5](start_span)[span_5](end_span)
+// FEATURED BANNER SLIDER VARIABLES (5s interval)[span_2](start_span)[span_2](end_span)
 var bannerTasksList = [];
 var currentBannerIndex = 0;
 var bannerIntervalTimer = null;
@@ -2193,15 +2107,29 @@ function switchTaskCategory(catName, btnEl) {
 
   if(catName === 'ads') {
     var tCA = document.getElementById('taskCat-ads'); if(tCA) tCA.style.display = 'block';
+    // Re-initialize banner when Ads tab is opened
+    initBannerSlider();
   } else if(catName === 'task') {
     var tCT = document.getElementById('taskCat-task'); if(tCT) tCT.style.display = 'block';
+    // Hide banner when other tab is clicked
+    hideBannerOnOtherTabs();
   } else if(catName === 'official') {
     var tCO = document.getElementById('taskCat-official'); if(tCO) tCO.style.display = 'block';
+    // Hide banner when other tab is clicked
+    hideBannerOnOtherTabs();
   } else if(catName === 'create') {
     var tCC = document.getElementById('taskCat-create'); if(tCC) tCC.style.display = 'block';
     switchCreateSubTab('promote');
+    // Hide banner when other tab is clicked
+    hideBannerOnOtherTabs();
   }
   if(btnEl) btnEl.classList.add('active');
+}
+
+function hideBannerOnOtherTabs() {
+  var wrapper = document.getElementById('featuredBannerWrapper');
+  if (wrapper) wrapper.style.display = 'none';
+  if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
 }
 
 function switchCreateSubTab(subName) {
@@ -3601,7 +3529,6 @@ function renderCustomTasksFromFirebase() {
     var noticeEl = document.getElementById('emptyTasksNotice');
     
     bannerTasksList = [];
-    var totalPublishedCount = 0;
 
     if (snapshot.exists()) {
       var data = snapshot.val();
@@ -3611,7 +3538,6 @@ function renderCustomTasksFromFirebase() {
       Object.entries(data).forEach(function(entry) {
         var key = entry[0];
         var task = entry[1];
-        totalPublishedCount++;
 
         var isCompleted = completedTasksSet.includes(key);
         if (isCompleted) return;
@@ -3681,17 +3607,6 @@ function renderCustomTasksFromFirebase() {
       }
     }
 
-    // Update Bronze to Gold rank card dynamic published task count
-    var rankProgText = document.getElementById('rankProgressText');
-    if (rankProgText) {
-      var pct = totalPublishedCount > 0 ? Math.min(100, (totalPublishedCount / 50) * 100) : 0;
-      rankProgText.innerText = '· ' + totalPublishedCount + '/50 to Gold';
-      var rFill = document.getElementById('rankProgressFill');
-      var rDot = document.getElementById('rankThumbDot');
-      if (rFill) rFill.style.width = pct + '%';
-      if (rDot) rDot.style.left = pct + '%';
-    }
-
     initBannerSlider();
   });
 }
@@ -3699,6 +3614,13 @@ function renderCustomTasksFromFirebase() {
 function initBannerSlider() {
   var wrapper = document.getElementById('featuredBannerWrapper');
   if (!wrapper) return;
+
+  var adsTabContent = document.getElementById('taskCat-ads');
+  if (!adsTabContent || adsTabContent.style.display === 'none') {
+    wrapper.style.display = 'none';
+    if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
+    return;
+  }
 
   if (bannerTasksList.length === 0) {
     wrapper.style.display = 'none';
@@ -3714,7 +3636,7 @@ function initBannerSlider() {
   renderCurrentBannerTask();
 
   if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
-  // Integration: 5 seconds auto-change interval for dots and banner items[span_6](start_span)[span_6](end_span)
+  // Integration: 5 seconds auto-change interval for dots and banner items[span_3](start_span)[span_3](end_span)
   bannerIntervalTimer = setInterval(function() {
     if (bannerTasksList.length > 0) {
       currentBannerIndex = (currentBannerIndex + 1) % bannerTasksList.length;
