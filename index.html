@@ -1182,14 +1182,14 @@ Cost: <strong>35 Coins</strong>
     <div class="lottery-card">
       <div class="flex-between" style="margin-bottom: 6px;">
         <span style="font-size: 13px; font-weight: 700; color: #cbd5e1;">🎫 My Tickets</span>
-        <span style="font-size: 12px; font-weight: 700; color: #94a3b8;"><span id="dailyMyTicketsCount">0</span> / 100</span>
+        <span style="font-size: 12px; font-weight: 700; color: #94a3b8;"><span id="dailyMyTicketsCount">0</span> / <span id="dailyMaxTicketsDisp">100</span></span>
       </div>
       <div class="progress-line-bg" style="height: 8px; border-radius: 4px; margin-bottom: 6px; background: #0f172a;">
         <div class="progress-line-fill" id="dailyTicketsProgFill" style="width: 0%; background: #0a84c1;"></div>
       </div>
       <div class="flex-between" style="font-size: 11px; color: #64748b;">
-        <span>0.1 USDT / ticket</span>
-        <span>Max 100 tickets/day</span>
+        <span><span id="dailyTicketPriceDisp">0.1</span> USDT / ticket</span>
+        <span>Max <span id="dailyMaxTicketsDisp2">100</span> tickets/day</span>
       </div>
     </div>
 
@@ -1279,14 +1279,14 @@ Cost: <strong>35 Coins</strong>
     <div class="lottery-card">
       <div class="flex-between" style="margin-bottom: 6px;">
         <span style="font-size: 13px; font-weight: 700; color: #cbd5e1;">🎫 My Weekly Tickets</span>
-        <span style="font-size: 12px; font-weight: 700; color: #94a3b8;"><span id="weeklyMyTicketsCount">0</span> / 500</span>
+        <span style="font-size: 12px; font-weight: 700; color: #94a3b8;"><span id="weeklyMyTicketsCount">0</span> / <span id="weeklyMaxTicketsDisp">500</span></span>
       </div>
       <div class="progress-line-bg" style="height: 8px; border-radius: 4px; margin-bottom: 6px; background: #0f172a;">
         <div class="progress-line-fill" id="weeklyTicketsProgFill" style="width: 0%; background: #a855f7;"></div>
       </div>
       <div class="flex-between" style="font-size: 11px; color: #64748b;">
-        <span>0.5 USDT / ticket</span>
-        <span>Max 500 tickets/week</span>
+        <span><span id="weeklyTicketPriceDisp">0.5</span> USDT / ticket</span>
+        <span>Max <span id="weeklyMaxTicketsDisp2">500</span> tickets/week</span>
       </div>
     </div>
 
@@ -1706,7 +1706,7 @@ No recent transactions yet.
 <span class="nav-emoji">📋</span>
 <span>Tasks</span>
 </div>
-<div class="nav-item" onclick="switchTab('lottery')">
+<div class="nav-item" id="navLotteryBtn" onclick="switchTab('lottery')">
 <span class="nav-emoji">🎟️</span>
 <span>Lottery</span>
 </div>
@@ -1808,8 +1808,8 @@ var lotteryTicketQuantities = { daily: 1, weekly: 1 };
 var userLotteryTickets = { daily: 0, weekly: 0 };
 
 var lotteryConfig = {
-  daily: { ticketPrice: 0.10, maxTickets: 100, poolVal: 0.00, winners: 0 },
-  weekly: { ticketPrice: 0.50, maxTickets: 500, poolVal: 25.50, winners: 10 }
+  daily: { status: true, ticketPrice: 0.10, maxTickets: 100, poolVal: 0.00, winners: 2 },
+  weekly: { status: true, ticketPrice: 0.50, maxTickets: 500, poolVal: 25.50, winners: 10 }
 };
 
 var miningDurationSeconds = 28800;
@@ -2029,13 +2029,18 @@ function initAppListeners() {
     updateLotteryUI();
   });
 
+  // 1. GENERAL SETTINGS REALTIME LISTENER
   db.ref('adminSettings/general').on('value', function(snapshot) {
     if (snapshot.exists()) {
       var data = snapshot.val();
       if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
       if (data.dailyBonus !== undefined) currentDailyBonus = parseFloat(data.dailyBonus);
-      if (data.minWithdrawal !== undefined) minWithdrawalAmt = parseFloat(data.minWithdrawal);
-      if (data.minTonWithdrawal !== undefined) minTonWithdrawalAmt = parseFloat(data.minTonWithdrawal);
+      if (data.minWithdrawal !== undefined || data.minFaucetPay !== undefined) {
+        minWithdrawalAmt = parseFloat(data.minFaucetPay !== undefined ? data.minFaucetPay : data.minWithdrawal);
+      }
+      if (data.minTonWithdrawal !== undefined || data.minTon !== undefined) {
+        minTonWithdrawalAmt = parseFloat(data.minTon !== undefined ? data.minTon : data.minTonWithdrawal);
+      }
       if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
         referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
         var refEl = document.getElementById('refPercentText');
@@ -2048,6 +2053,50 @@ function initAppListeners() {
     }
   });
 
+  // 2. LOTTERY SETTINGS REALTIME LISTENER
+  db.ref('adminSettings/lottery').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var lotData = snapshot.val();
+      if (lotData.daily) {
+        lotteryConfig.daily.status = lotData.daily.status !== undefined ? lotData.daily.status : true;
+        if (lotData.daily.poolVal !== undefined) lotteryConfig.daily.poolVal = parseFloat(lotData.daily.poolVal);
+        if (lotData.daily.ticketPrice !== undefined) lotteryConfig.daily.ticketPrice = parseFloat(lotData.daily.ticketPrice);
+        if (lotData.daily.maxTickets !== undefined) lotteryConfig.daily.maxTickets = parseInt(lotData.daily.maxTickets);
+        if (lotData.daily.winnersCount !== undefined) lotteryConfig.daily.winners = parseInt(lotData.daily.winnersCount);
+      }
+      if (lotData.weekly) {
+        lotteryConfig.weekly.status = lotData.weekly.status !== undefined ? lotData.weekly.status : true;
+        if (lotData.weekly.poolVal !== undefined) lotteryConfig.weekly.poolVal = parseFloat(lotData.weekly.poolVal);
+        if (lotData.weekly.ticketPrice !== undefined) lotteryConfig.weekly.ticketPrice = parseFloat(lotData.weekly.ticketPrice);
+        if (lotData.weekly.maxTickets !== undefined) lotteryConfig.weekly.maxTickets = parseInt(lotData.weekly.maxTickets);
+        if (lotData.weekly.winnersCount !== undefined) lotteryConfig.weekly.winners = parseInt(lotData.weekly.winnersCount);
+      }
+
+      var navLotteryBtn = document.getElementById('navLotteryBtn');
+      if (navLotteryBtn) {
+        if (!lotteryConfig.daily.status && !lotteryConfig.weekly.status) {
+          navLotteryBtn.style.display = 'none';
+        } else {
+          navLotteryBtn.style.display = 'flex';
+        }
+      }
+
+      var dTypeBtn = document.getElementById('lotteryTypeDailyBtn');
+      var wTypeBtn = document.getElementById('lotteryTypeWeeklyBtn');
+      if(dTypeBtn) dTypeBtn.style.display = lotteryConfig.daily.status ? 'block' : 'none';
+      if(wTypeBtn) wTypeBtn.style.display = lotteryConfig.weekly.status ? 'block' : 'none';
+
+      if (currentLotteryType === 'daily' && !lotteryConfig.daily.status && lotteryConfig.weekly.status) {
+        switchLotteryType('weekly');
+      } else if (currentLotteryType === 'weekly' && !lotteryConfig.weekly.status && lotteryConfig.daily.status) {
+        switchLotteryType('daily');
+      }
+
+      updateLotteryUI();
+    }
+  });
+
+  // 3. CAMPAIGN CLICK RATES REALTIME LISTENER
   db.ref('adminSettings/clickRates').on('value', function(snapshot) {
     if (snapshot.exists()) {
       var rates = snapshot.val();
@@ -2068,10 +2117,12 @@ function initAppListeners() {
     }
   });
 
+  // 4. SPACE ROCKET MINING REALTIME LISTENER
   db.ref('adminSettings/mining').on('value', function(snapshot) {
     if (snapshot.exists()) applyMiningData(snapshot.val());
   });
 
+  // 5. STAKING APY RATES REALTIME LISTENER
   db.ref('adminSettings/stakingApy').on('value', function(snapshot) {
     if (snapshot.exists()) {
       var data = snapshot.val();
@@ -2101,6 +2152,7 @@ function initAppListeners() {
     }
   });
 
+  // 6. AD NETWORKS REALTIME LISTENER
   db.ref('adminSettings/ads').on('value', function(snapshot) {
     if (snapshot.exists()) {
       var data = snapshot.val();
@@ -2491,14 +2543,14 @@ function switchLotteryType(type) {
     if(dBtn) dBtn.classList.add('active');
     if(dSec) dSec.style.display = 'block';
     if(mainTitle) mainTitle.innerText = 'Daily Lottery';
-    document.getElementById('ruleTicketPriceText').innerText = '0.1 USDT';
-    document.getElementById('ruleMaxTicketsText').innerText = '100';
+    document.getElementById('ruleTicketPriceText').innerText = lotteryConfig.daily.ticketPrice + ' USDT';
+    document.getElementById('ruleMaxTicketsText').innerText = lotteryConfig.daily.maxTickets;
   } else {
     if(wBtn) wBtn.classList.add('active');
     if(wSec) wSec.style.display = 'block';
     if(mainTitle) mainTitle.innerText = 'Weekly Lottery';
-    document.getElementById('ruleTicketPriceText').innerText = '0.5 USDT';
-    document.getElementById('ruleMaxTicketsText').innerText = '500';
+    document.getElementById('ruleTicketPriceText').innerText = lotteryConfig.weekly.ticketPrice + ' USDT';
+    document.getElementById('ruleMaxTicketsText').innerText = lotteryConfig.weekly.maxTickets;
   }
   updateLotteryUI();
 }
@@ -2566,6 +2618,31 @@ function updateLotteryUI() {
   if(dCountEl) dCountEl.innerText = dUserTix;
   if(wCountEl) wCountEl.innerText = wUserTix;
 
+  var dMaxEl = document.getElementById('dailyMaxTicketsDisp');
+  var dMaxEl2 = document.getElementById('dailyMaxTicketsDisp2');
+  var wMaxEl = document.getElementById('weeklyMaxTicketsDisp');
+  var wMaxEl2 = document.getElementById('weeklyMaxTicketsDisp2');
+
+  if(dMaxEl) dMaxEl.innerText = lotteryConfig.daily.maxTickets;
+  if(dMaxEl2) dMaxEl2.innerText = lotteryConfig.daily.maxTickets;
+  if(wMaxEl) wMaxEl.innerText = lotteryConfig.weekly.maxTickets;
+  if(wMaxEl2) wMaxEl2.innerText = lotteryConfig.weekly.maxTickets;
+
+  var dPriceEl = document.getElementById('dailyTicketPriceDisp');
+  var wPriceEl = document.getElementById('weeklyTicketPriceDisp');
+  if(dPriceEl) dPriceEl.innerText = lotteryConfig.daily.ticketPrice;
+  if(wPriceEl) wPriceEl.innerText = lotteryConfig.weekly.ticketPrice;
+
+  var dPoolEl = document.getElementById('dailyPrizePoolVal');
+  var wPoolEl = document.getElementById('weeklyPrizePoolVal');
+  if(dPoolEl) dPoolEl.innerText = lotteryConfig.daily.poolVal.toFixed(2);
+  if(wPoolEl) wPoolEl.innerText = lotteryConfig.weekly.poolVal.toFixed(2);
+
+  var dWinnersEl = document.getElementById('dailyWinnersText');
+  var wWinnersEl = document.getElementById('weeklyWinnersText');
+  if(dWinnersEl) dWinnersEl.innerText = lotteryConfig.daily.winners + " Winners";
+  if(wWinnersEl) wWinnersEl.innerText = lotteryConfig.weekly.winners + " Winners";
+
   var dFill = document.getElementById('dailyTicketsProgFill');
   var wFill = document.getElementById('weeklyTicketsProgFill');
   if(dFill) dFill.style.width = Math.min(100, (dUserTix / lotteryConfig.daily.maxTickets) * 100) + '%';
@@ -2603,6 +2680,11 @@ function updateLotteryCountdowns() {
 }
 
 function buyLotteryTickets(type) {
+  if (!lotteryConfig[type].status) {
+    showToast("Yeh lottery abhi active nahi hai!", "error");
+    return;
+  }
+
   var qty = lotteryTicketQuantities[type] || 1;
   var price = lotteryConfig[type].ticketPrice;
   var totalCost = qty * price;
@@ -2626,6 +2708,10 @@ function buyLotteryTickets(type) {
 
   userLotteryTickets[type] = (userLotteryTickets[type] || 0) + qty;
   lotteryConfig[type].poolVal += (totalCost * 0.80);
+
+  if (window.db) {
+    db.ref('adminSettings/lottery/' + type + '/poolVal').set(lotteryConfig[type].poolVal);
+  }
 
   saveToFirebase();
   renderUIValues();
