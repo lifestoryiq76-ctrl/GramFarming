@@ -657,10 +657,10 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- ADS CATEGORY CONTENT (FEATURED PARTNER BANNER DISPLAYED ONLY HERE BETWEEN CATEGORY BAR & ADS CARDS) -->
+<!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
 
-<!-- FEATURED PARTNER BANNER SLIDER (Only shows when Ads tab is active, 5s interval)[span_1](start_span)[span_1](end_span) -->
+<!-- FEATURED PARTNER BANNER SLIDER (Only shows when Ads tab is active, 5s interval) -->
 <div class="featured-banner-wrapper" id="featuredBannerWrapper" style="display: none;">
   <div class="featured-top-row">
     <div class="featured-title-badge">
@@ -676,7 +676,7 @@ input:focus, select:focus { border-color: var(--accent); }
   </div>
 
   <div class="featured-card-box" id="featuredCardBoxContent">
-    <!-- Dynamic Banner Card Content matching reference layout injected via JS -->
+    <!-- Dynamic Banner Card Content injected via JS -->
   </div>
 </div>
 
@@ -1434,7 +1434,7 @@ var currentSelectedRewardVal = 0.08;
 var modalState = "initial";
 var modalTimerInterval = null;
 
-// FEATURED BANNER SLIDER VARIABLES (5s interval)[span_2](start_span)[span_2](end_span)
+// FEATURED BANNER SLIDER VARIABLES (5s interval)
 var bannerTasksList = [];
 var currentBannerIndex = 0;
 var bannerIntervalTimer = null;
@@ -2107,20 +2107,16 @@ function switchTaskCategory(catName, btnEl) {
 
   if(catName === 'ads') {
     var tCA = document.getElementById('taskCat-ads'); if(tCA) tCA.style.display = 'block';
-    // Re-initialize banner when Ads tab is opened
     initBannerSlider();
   } else if(catName === 'task') {
     var tCT = document.getElementById('taskCat-task'); if(tCT) tCT.style.display = 'block';
-    // Hide banner when other tab is clicked
     hideBannerOnOtherTabs();
   } else if(catName === 'official') {
     var tCO = document.getElementById('taskCat-official'); if(tCO) tCO.style.display = 'block';
-    // Hide banner when other tab is clicked
     hideBannerOnOtherTabs();
   } else if(catName === 'create') {
     var tCC = document.getElementById('taskCat-create'); if(tCC) tCC.style.display = 'block';
     switchCreateSubTab('promote');
-    // Hide banner when other tab is clicked
     hideBannerOnOtherTabs();
   }
   if(btnEl) btnEl.classList.add('active');
@@ -3548,7 +3544,6 @@ function renderCustomTasksFromFirebase() {
 
         if (clicksLeft <= 0) return;
 
-        // ONLY tasks with Home Screen Banner addon requirement enabled will show in the live banner slider
         if (task.bannerAddon === true) {
           bannerTasksList.push({
             key: key,
@@ -3636,7 +3631,6 @@ function initBannerSlider() {
   renderCurrentBannerTask();
 
   if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
-  // Integration: 5 seconds auto-change interval for dots and banner items[span_3](start_span)[span_3](end_span)
   bannerIntervalTimer = setInterval(function() {
     if (bannerTasksList.length > 0) {
       currentBannerIndex = (currentBannerIndex + 1) % bannerTasksList.length;
@@ -3660,7 +3654,6 @@ function renderCurrentBannerTask() {
   var safeTitle = task.title.replace(/'/g, "\\'");
   var safeLink = task.link.replace(/'/g, "\\'");
 
-  // Publisher task objective ke anusaar Join ya Play button & 8h Check badge display
   var actionBtnText = "Join 👥";
   if (task.objective === "Mini App" || task.objective === "Bot (MAU)") {
     actionBtnText = "Play ▶";
