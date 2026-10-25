@@ -7,14 +7,14 @@
     <meta name="clckd" content="a4942e4a5f319085b03d008d9ef168b9">
 
   <style>
-        :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --accent: #22c55e; --text: #f8fafc; --text-muted: #94a3b8; --yellow: #eab308; }
+        :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --accent: #22c55e; --text: #f8fafc; --text-muted: #94a3b8; --yellow: #eab308; --sky-blue: #0a84c1; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; margin: 0; }
         .container { max-width: 950px; margin: 0 auto; }
         .card { background: var(--card); padding: 20px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         input, select, textarea { background: var(--bg); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-top: 6px; margin-bottom: 12px; box-sizing: border-box; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent); }
         label { font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 500; }
-        button { background: var(--accent); color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; transition: 0.2s; }
+        button { background: var(--sky-blue); color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; transition: 0.2s; }
         button:active { transform: scale(0.98); }
         .btn-success { background: #10b981; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; margin-right: 4px; }
         .btn-danger { background: #ef4444; padding: 6px 10px; width: auto; font-size: 12px; border-radius: 6px; margin-right: 4px; }
@@ -78,7 +78,7 @@
         <h2>🚀 Space Rocket Mining Control</h2>
         
         <div class="net-box">
-            <h3>🛸 Nova Rocket</h3>
+            <h3>🛸 Nova Rocket (Monetag)</h3>
             <div class="grid-4">
                 <div>
                     <label>Reward (Coins):</label>
@@ -100,7 +100,7 @@
         </div>
 
         <div class="net-box">
-            <h3>🛰️ Cosmic Rocket</h3>
+            <h3>🛰️ Cosmic Rocket (Gigapub)</h3>
             <div class="grid-4">
                 <div>
                     <label>Reward (Coins):</label>
@@ -124,7 +124,7 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 3. Task Ads Networks Control -->
+    <!-- 3. Task Ads Networks Control (Updated with all 5 Networks) -->
     <div class="card">
         <h2>📺 Task Ads Watch Networks Setup</h2>
         
@@ -165,19 +165,19 @@
         </div>
 
         <div class="net-box">
-            <h3>🔵 USL Ads</h3>
+            <h3>💎 AdsBitvex Rewarded Video</h3>
             <div class="grid-3">
                 <div>
                     <label>Daily Limit (Ads):</label>
-                    <input type="number" id="uslLimit" step="1" value="40">
+                    <input type="number" id="adsbitvexLimit" step="1" value="50">
                 </div>
                 <div>
                     <label>Reward Per Ad (Coin):</label>
-                    <input type="number" id="uslReward" step="0.001" value="0.04">
+                    <input type="number" id="adsbitvexReward" step="0.001" value="0.05">
                 </div>
                 <div>
                     <label>Ad Timer (Seconds):</label>
-                    <input type="number" id="uslTimer" step="1" value="60">
+                    <input type="number" id="adsbitvexTimer" step="1" value="60">
                 </div>
             </div>
         </div>
@@ -196,6 +196,24 @@
                 <div>
                     <label>Ad Timer (Seconds):</label>
                     <input type="number" id="monetixTimer" step="1" value="60">
+                </div>
+            </div>
+        </div>
+
+        <div class="net-box">
+            <h3>🚀 Adsterra Smartlink</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Daily Limit (Ads):</label>
+                    <input type="number" id="adsterraLimit" step="1" value="50">
+                </div>
+                <div>
+                    <label>Reward Per Ad (Coin):</label>
+                    <input type="number" id="adsterraReward" step="0.001" value="0.05">
+                </div>
+                <div>
+                    <label>Ad Timer (Seconds):</label>
+                    <input type="number" id="adsterraTimer" step="1" value="60">
                 </div>
             </div>
         </div>
@@ -522,13 +540,17 @@
                     document.getElementById('gigapubReward').value = data.ads.gigapubReward ?? 0.04;
                     document.getElementById('gigapubTimer').value = data.ads.gigapubTimer ?? 60;
 
-                    document.getElementById('uslLimit').value = data.ads.uslLimit ?? 40;
-                    document.getElementById('uslReward').value = data.ads.uslReward ?? 0.04;
-                    document.getElementById('uslTimer').value = data.ads.uslTimer ?? 60;
+                    document.getElementById('adsbitvexLimit').value = data.ads.adsbitvexLimit ?? 50;
+                    document.getElementById('adsbitvexReward').value = data.ads.adsbitvexReward ?? 0.05;
+                    document.getElementById('adsbitvexTimer').value = data.ads.adsbitvexTimer ?? 60;
 
                     document.getElementById('monetixLimit').value = data.ads.monetixLimit ?? 30;
                     document.getElementById('monetixReward').value = data.ads.monetixReward ?? 0.03;
                     document.getElementById('monetixTimer').value = data.ads.monetixTimer ?? 60;
+
+                    document.getElementById('adsterraLimit').value = data.ads.adsterraLimit ?? 50;
+                    document.getElementById('adsterraReward').value = data.ads.adsterraReward ?? 0.05;
+                    document.getElementById('adsterraTimer').value = data.ads.adsterraTimer ?? 60;
                 }
                 if(data.stakingApy) {
                     document.getElementById('stakeApy0').value = data.stakingApy[0] ?? 4;
@@ -809,13 +831,17 @@
                     'adminSettings/ads/gigapubReward': parseFloat(document.getElementById('gigapubReward').value) || 0.04,
                     'adminSettings/ads/gigapubTimer': parseInt(document.getElementById('gigapubTimer').value) || 60,
 
-                    'adminSettings/ads/uslLimit': parseInt(document.getElementById('uslLimit').value) || 40,
-                    'adminSettings/ads/uslReward': parseFloat(document.getElementById('uslReward').value) || 0.04,
-                    'adminSettings/ads/uslTimer': parseInt(document.getElementById('uslTimer').value) || 60,
+                    'adminSettings/ads/adsbitvexLimit': parseInt(document.getElementById('adsbitvexLimit').value) || 50,
+                    'adminSettings/ads/adsbitvexReward': parseFloat(document.getElementById('adsbitvexReward').value) || 0.05,
+                    'adminSettings/ads/adsbitvexTimer': parseInt(document.getElementById('adsbitvexTimer').value) || 60,
 
                     'adminSettings/ads/monetixLimit': parseInt(document.getElementById('monetixLimit').value) || 30,
                     'adminSettings/ads/monetixReward': parseFloat(document.getElementById('monetixReward').value) || 0.03,
-                    'adminSettings/ads/monetixTimer': parseInt(document.getElementById('monetixTimer').value) || 60
+                    'adminSettings/ads/monetixTimer': parseInt(document.getElementById('monetixTimer').value) || 60,
+
+                    'adminSettings/ads/adsterraLimit': parseInt(document.getElementById('adsterraLimit').value) || 50,
+                    'adminSettings/ads/adsterraReward': parseFloat(document.getElementById('adsterraReward').value) || 0.05,
+                    'adminSettings/ads/adsterraTimer': parseInt(document.getElementById('adsterraTimer').value) || 60
                 };
                 update(ref(db), adsData).then(() => alert('All Ad Networks Setup Saved Successfully!'));
             } else if (type === 'staking') {
