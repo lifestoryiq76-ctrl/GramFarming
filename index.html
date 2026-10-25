@@ -418,7 +418,7 @@ input:focus, select:focus { border-color: var(--accent); }
     border: 1px solid rgba(168, 85, 247, 0.3);
     border-radius: 16px;
     padding: 14px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     position: relative;
     overflow: hidden;
@@ -606,26 +606,6 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<!-- FEATURED PARTNER BANNER SLIDER (Home Screen Banner Add-on Live Carousel) -->
-<div class="featured-banner-wrapper" id="featuredBannerWrapper" style="display: none;">
-  <div class="featured-top-row">
-    <div class="featured-title-badge">
-      <span>✨ FEATURED PARTNER</span>
-      <span class="featured-ad-tag">Ad</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <div class="featured-dots-container" id="featuredDotsContainer">
-        <!-- Dots injected dynamically -->
-      </div>
-      <button class="add-task-link-btn" onclick="switchTab('tasks'); switchTaskCategory('create', document.querySelector('.task-cat-btn:nth-child(4)'));">+ Add task</button>
-    </div>
-  </div>
-
-  <div class="featured-card-box" id="featuredCardBoxContent">
-    <!-- Dynamic Banner Card Content injected via JS -->
-  </div>
-</div>
-
 <div class="card btn-yellow flex-between" onclick="claimDailyBonus()" style="cursor:pointer;">
 <span style="font-size: 15px;">🎁 Today's reward: <span id="dailyBonusDisplay">0.01</span> Coin</span>
 <span id="dailyBonusStatus" style="font-size: 13px;" data-i18n="clickToClaim">Click to Claim!</span>
@@ -692,6 +672,27 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
+
+<!-- FEATURED PARTNER BANNER SLIDER (Live Carousel above Monetag) -->
+<div class="featured-banner-wrapper" id="featuredBannerWrapper" style="display: none;">
+  <div class="featured-top-row">
+    <div class="featured-title-badge">
+      <span>✨ FEATURED PARTNER</span>
+      <span class="featured-ad-tag">Ad</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div class="featured-dots-container" id="featuredDotsContainer">
+        <!-- Dots injected dynamically -->
+      </div>
+      <button class="add-task-link-btn" onclick="switchTaskCategory('create', document.querySelector('.task-cat-btn:nth-child(4)'));">+ Add task</button>
+    </div>
+  </div>
+
+  <div class="featured-card-box" id="featuredCardBoxContent">
+    <!-- Dynamic Banner Card Content injected via JS -->
+  </div>
+</div>
+
 <div id="adsTasksAll">
 
 <!-- 1. WATCH ADS MONETAG -->
@@ -902,7 +903,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <span id="addonBannerCheck" style="font-size: 16px; color: var(--text-muted);">⚪</span>
 <div>
 <div style="font-size: 13px; font-weight: bold;">Home Screen Banner</div>
-<div style="font-size: 11px; color: var(--text-muted);">Featured placement in home screen carousel + task feed</div>
+<div style="font-size: 11px; color: var(--text-muted);">Featured placement in Ads tab carousel + task feed</div>
 </div>
 </div>
 <span style="background: rgba(10, 132, 193, 0.2); color: #0a84c1; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">+$0.15 / 100</span>
@@ -3700,7 +3701,7 @@ function loadMyPublishedTasks() {
         html += '<div class="card" style="background:#111827; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(10, 132, 193, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0f172a; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
       }
     });
-    myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi kiya hai.</div>';
+    myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi nahi kiya hai.</div>';
   });
 }
 </script>
