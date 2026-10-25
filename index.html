@@ -271,6 +271,10 @@ input:focus, select:focus { border-color: var(--accent); }
 .wallet-subcard-content { display: none; margin-top: 10px; }
 .wallet-subcard-content.active { display: block; }
 
+/* Sky Blue Card Style for Conversion Cards */
+.convert-sky-card { background: #0f172a; border: 1.5px solid var(--sky-blue); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); transition: all 0.25s ease-in-out; }
+.convert-sky-card.active { border: 2px solid var(--sky-blue) !important; background: var(--sky-blue) !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(10, 132, 193, 0.6) !important; transform: translateY(-2px); }
+
 .stake-currency-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; position: relative; z-index: 50; }
 .stake-currency-card { background: #0f172a; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; user-select: none; }
 .stake-currency-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
@@ -1019,27 +1023,13 @@ Fee (5%): 0.00 | You will receive: 0.00
 <button class="btn" style="margin-top:12px; width:100%; background: var(--accent); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
 </div>
 
-<div id="wContentDeposit" class="wallet-subcard-content card" style="border: 1px solid var(--yellow); box-shadow: 0 4px 20px rgba(234, 179, 8, 0.15);">
+<!-- DEPOSIT SECTION UPDATED (ONLY GRAM) -->
+<div id="wContentDeposit" class="wallet-subcard-content card" style="border: 1px solid var(--sky-blue); box-shadow: 0 4px 20px rgba(10, 132, 193, 0.15);">
 <div class="flex-between" style="margin-bottom: 8px;">
-<h4 style="margin:0; color: var(--yellow);">💵 Deposit Funds</h4>
+<h4 style="margin:0; color: var(--sky-blue);">💵 Deposit Funds (Gram)</h4>
 </div>
 
-<div class="grid-cards" style="margin-bottom: 10px;">
-<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--yellow); cursor:pointer;" onclick="setDepositSubMethod('faucetpay')" id="dSubMethodFaucetpay">
-<b style="font-size:12px; color:var(--yellow);">1. Faucetpay</b>
-</div>
-<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--border); cursor:pointer;" onclick="setDepositSubMethod('gram')" id="dSubMethodGram">
-<b style="font-size:12px; color:var(--accent);">2. Gram</b>
-</div>
-</div>
-
-<div id="faucetpayDepositSection">
-<label style="margin-top:8px; display:block;">Deposit Amount (USDT):</label>
-<input type="number" id="depositAmountInput" placeholder="Enter amount to deposit" step="0.01">
-<button class="btn btn-yellow" style="margin-top:12px; width:100%;" onclick="processDeposit()">Proceed Deposit</button>
-</div>
-
-<div id="gramDepositSection" style="display:none;">
+<div id="gramDepositSection">
 <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5;">
 Enter the amount in USD, then pay the equivalent in TON from your connected wallet. Your User ID is added as the transaction comment.
 </div>
@@ -1065,29 +1055,35 @@ Enter the amount in USD, then pay the equivalent in TON from your connected wall
 <button class="btn" style="margin-top:12px; width:100%; background: var(--ton-blue); font-weight:bold; padding:12px;" onclick="sendGramDepositTransaction()">Send Deposit</button>
 <button class="btn" style="margin-top:8px; width:100%; background: #334155; color: var(--text-muted);" onclick="resetGramDepositForm()">Cancel</button>
 </div>
-
 </div>
 
+<!-- CONVERT SECTION UPDATED WITH 3 SKY BLUE CARDS -->
 <div id="wContentConvert" class="wallet-subcard-content card" style="border: 1px solid #0a84c1; box-shadow: 0 4px 20px rgba(10, 132, 193, 0.15);">
 <div class="flex-between" style="margin-bottom: 10px;">
-<h4 style="margin:0; color: var(--yellow);" data-i18n="exchangeCoin">🔄 Convert Balance</h4>
-<span style="background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid var(--yellow); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
-🪙 Balance: <span id="walletCoinDisplay">0.00</span>
+<h4 style="margin:0; color: var(--sky-blue);" data-i18n="exchangeCoin">🔄 Convert Balance</h4>
+<span style="background: rgba(10, 132, 193, 0.15); color: var(--sky-blue); border: 1px solid var(--sky-blue); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
+Balance: <span id="convertSourceBalanceDisplay">0.00 Coin</span>
 </span>
 </div>
 
-<label>Convert Currency:</label>
-<select id="exchangeCurrency" onchange="calculateExchange()">
-<option value="USDT">USDT (1 Coin = $0.01)</option>
-<option value="TON">Gram / TON (Based on Live Rate)</option>
-</select>
+<label style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block;">STEP 1: SELECT SOURCE CURRENCY</label>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
+<div class="convert-sky-card active" id="cMainCoin" onclick="selectConvertMain('Coin')">🪙 Coin</div>
+<div class="convert-sky-card" id="cMainUSDT" onclick="selectConvertMain('USDT')">💵 USDT</div>
+<div class="convert-sky-card" id="cMainGram" onclick="selectConvertMain('Gram')">💎 Gram</div>
+</div>
 
-<label style="margin-top:8px; display:block;">Amount to Exchange:</label>
-<input type="number" id="exchangeAmount" placeholder="Enter coin amount" oninput="calculateExchange()">
+<label style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block;">STEP 2: CONVERT TO</label>
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;" id="convertTargetGrid">
+<!-- Target cards injected via JS -->
+</div>
+
+<label style="margin-top:8px; display:block;">Amount to Convert:</label>
+<input type="number" id="exchangeAmount" placeholder="Enter amount" oninput="calculateExchange()">
 
 <p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
 
-<button class="btn" style="margin-top:10px; width:100%; background:var(--yellow); color:#000;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
+<button class="btn" style="margin-top:10px; width:100%; background:var(--sky-blue); color:#fff;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
 </div>
 
 <div class="card" style="background: #111827; border: 1px solid var(--border);">
@@ -1251,6 +1247,7 @@ window.addEventListener('load', function() {
     window.db = firebase.database();
     initAppListeners();
   }
+  selectConvertMain('Coin');
 });
 
 var balance = 0.00;
@@ -1291,7 +1288,11 @@ var addonBannerActive = false;
 var uploadedCampaignImageBase64 = "";
 
 var currentWithdrawSubMethod = 'faucetpay';
-var currentDepositSubMethod = 'faucetpay';
+var currentDepositSubMethod = 'gram'; // Defaulted to Gram
+
+// NEW CONVERT SELECTION VARIABLES
+var convertMainSource = 'Coin';
+var convertTargetCurrency = 'USDT';
 
 var currentSelectedTaskTitle = "";
 var currentSelectedTaskLink = "";
@@ -1848,7 +1849,6 @@ function fetchLiveTonPrice() {
 
 function renderUIValues() {
   if(document.getElementById('userBalance')) document.getElementById('userBalance').innerText = balance.toFixed(2);
-  if(document.getElementById('walletCoinDisplay')) document.getElementById('walletCoinDisplay').innerText = balance.toFixed(2);
   if(document.getElementById('tonBalance')) document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
   if(document.getElementById('usdtBalance')) document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4) + " USDT";
 
@@ -1857,6 +1857,8 @@ function renderUIValues() {
   if(document.getElementById('rankBalance')) document.getElementById('rankBalance').innerText = balance.toFixed(2);
   if(document.getElementById('displayCoinVolume')) document.getElementById('displayCoinVolume').innerText = "1 Coin = $" + coinUsdtValue;
   if(document.getElementById('dailyBonusDisplay')) document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
+
+  updateConvertSourceBalanceDisplay();
 
   var mCount = adWatchedCounts.taskMonetagLimit || 0;
   var gCount = adWatchedCounts.taskGigapubLimit || 0;
@@ -1959,25 +1961,6 @@ function setWithdrawSubMethod(subMethod) {
     gPay.style.borderColor = 'var(--yellow)';
   }
   toggleWithdrawFields();
-}
-
-function setDepositSubMethod(subMethod) {
-  currentDepositSubMethod = subMethod;
-  var dFPay = document.getElementById('dSubMethodFaucetpay');
-  var dGPay = document.getElementById('dSubMethodGram');
-  if(dFPay) dFPay.style.borderColor = 'var(--border)';
-  if(dGPay) dGPay.style.borderColor = 'var(--border)';
-
-  if(subMethod === 'faucetpay') {
-    if(dFPay) dFPay.style.borderColor = 'var(--yellow)';
-    var fDS = document.getElementById('faucetpayDepositSection'); if(fDS) fDS.style.display = 'block';
-    var gDS = document.getElementById('gramDepositSection'); if(gDS) gDS.style.display = 'none';
-  } else {
-    if(dGPay) dGPay.style.borderColor = 'var(--accent)';
-    var fDS2 = document.getElementById('faucetpayDepositSection'); if(fDS2) fDS2.style.display = 'none';
-    var gDS2 = document.getElementById('gramDepositSection'); if(gDS2) gDS2.style.display = 'block';
-    calculateGramPayAmount();
-  }
 }
 
 function switchTaskCategory(catName, btnEl) {
@@ -2181,57 +2164,6 @@ function updateCostCalculation() {
   } else if(selectedPaymentMethod === 'Gram') {
     costBox.innerHTML = 'Cost: <strong>' + gramCost + ' Gram</strong> (~' + usdtCost.toFixed(4) + ' USDT) (' + selectedClickCount + ' Clicks)';
   }
-}
-
-function processDeposit() {
-  var amountInput = parseFloat(document.getElementById('depositAmountInput').value) || 0;
-  if(amountInput <= 0) {
-    showToast("Kripya valid amount enter karein.", "error");
-    return;
-  }
-
-  if(currentDepositSubMethod === 'faucetpay') {
-    showToast("⏳ Opening FaucetPay Checkout...", "success");
-
-    var merchantUsername = "lifestoryiq76"; 
-    var currencyType = "USDT";
-    var description = "Gram Farming Deposit";
-    var customOrderId = "dep_" + userId + "_" + Date.now();
-
-    var faucetPayCheckoutUrl = "https://faucetpay.io/merchant/webpay?" +
-                               "merchant_username=" + encodeURIComponent(merchantUsername) +
-                               "&item_description=" + encodeURIComponent(description) +
-                               "&amount=" + amountInput.toFixed(2) +
-                               "&currency1=" + currencyType +
-                               "&custom=" + encodeURIComponent(customOrderId);
-
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-      window.Telegram.WebApp.openLink(faucetPayCheckoutUrl);
-    } else {
-      window.open(faucetPayCheckoutUrl, '_blank');
-    }
-
-  } else {
-    tonBalance += amountInput;
-    showToast("Successfully deposited " + amountInput + " Gram!", "success");
-    saveToFirebase();
-    renderUIValues();
-  }
-
-  var depInp = document.getElementById('depositAmountInput'); 
-  if(depInp) depInp.value = '';
-
-  var depositRecord = {
-    id: Date.now(),
-    userName: displayName,
-    userId: userId,
-    method: currentDepositSubMethod === 'faucetpay' ? 'Faucetpay Deposit' : 'Gram Deposit',
-    amount: amountInput,
-    status: 'PENDING',
-    date: new Date().toLocaleString()
-  };
-  if (window.db) db.ref('deposits/' + userId).push(depositRecord);
-  loadTransactionHistory();
 }
 
 function publishCampaign() {
@@ -2917,45 +2849,173 @@ function claimRocketReward(index, rocketName, maxLimitNeeded) {
   showToast("Claim Successful! Mining cycle complete for " + rocketName + ".", "success");
 }
 
+/* -------------------------------------------------------------
+   DYNAMIC CONVERT FUNCTIONALITY (3 MAIN SKY BLUE CARDS + TARGETS)
+------------------------------------------------------------- */
+function selectConvertMain(curr) {
+  convertMainSource = curr;
+  
+  var cCoin = document.getElementById('cMainCoin');
+  var cUSDT = document.getElementById('cMainUSDT');
+  var cGram = document.getElementById('cMainGram');
+
+  if(cCoin) cCoin.classList.remove('active');
+  if(cUSDT) cUSDT.classList.remove('active');
+  if(cGram) cGram.classList.remove('active');
+
+  if(curr === 'Coin' && cCoin) cCoin.classList.add('active');
+  if(curr === 'USDT' && cUSDT) cUSDT.classList.add('active');
+  if(curr === 'Gram' && cGram) cGram.classList.add('active');
+
+  var targetGrid = document.getElementById('convertTargetGrid');
+  if(!targetGrid) return;
+
+  if(curr === 'Coin') {
+    convertTargetCurrency = 'USDT';
+    targetGrid.innerHTML = 
+      '<div class="convert-sky-card active" id="cTargetUSDT" onclick="selectConvertTarget(\'USDT\')">💵 USDT</div>' +
+      '<div class="convert-sky-card" id="cTargetGram" onclick="selectConvertTarget(\'Gram\')">💎 Gram</div>';
+  } else if(curr === 'USDT') {
+    convertTargetCurrency = 'Coin';
+    targetGrid.innerHTML = 
+      '<div class="convert-sky-card active" id="cTargetCoin" onclick="selectConvertTarget(\'Coin\')">🪙 Coin</div>' +
+      '<div class="convert-sky-card" id="cTargetGram" onclick="selectConvertTarget(\'Gram\')">💎 Gram</div>';
+  } else if(curr === 'Gram') {
+    convertTargetCurrency = 'Coin';
+    targetGrid.innerHTML = 
+      '<div class="convert-sky-card active" id="cTargetCoin" onclick="selectConvertTarget(\'Coin\')">🪙 Coin</div>' +
+      '<div class="convert-sky-card" id="cTargetUSDT" onclick="selectConvertTarget(\'USDT\')">💵 USDT</div>';
+  }
+
+  updateConvertSourceBalanceDisplay();
+  calculateExchange();
+}
+
+function selectConvertTarget(targetCurr) {
+  convertTargetCurrency = targetCurr;
+  var targetGrid = document.getElementById('convertTargetGrid');
+  if(targetGrid) {
+    var cards = targetGrid.querySelectorAll('.convert-sky-card');
+    cards.forEach(function(card) {
+      card.classList.remove('active');
+      if(card.innerText.indexOf(targetCurr) !== -1) {
+        card.classList.add('active');
+      }
+    });
+  }
+  calculateExchange();
+}
+
+function updateConvertSourceBalanceDisplay() {
+  var disp = document.getElementById('convertSourceBalanceDisplay');
+  if(!disp) return;
+  if(convertMainSource === 'Coin') {
+    disp.innerText = balance.toFixed(2) + " Coin";
+  } else if(convertMainSource === 'USDT') {
+    disp.innerText = usdtBalance.toFixed(4) + " USDT";
+  } else if(convertMainSource === 'Gram') {
+    disp.innerText = tonBalance.toFixed(4) + " Gram";
+  }
+}
+
 function calculateExchange() {
   var amt = parseFloat(document.getElementById('exchangeAmount').value) || 0;
-  var curr = document.getElementById('exchangeCurrency').value || 'USDT';
-  var totalUsdtValue = amt * coinUsdtValue;
-
   var prevEl = document.getElementById('previewExchange');
   if(!prevEl) return;
 
-  if(curr === 'USDT') {
-    prevEl.innerText = totalUsdtValue.toFixed(4) + " USDT";
-  } else {
-    var tonReceived = totalUsdtValue / liveTonPrice;
-    prevEl.innerText = tonReceived.toFixed(4) + " Gram / TON";
+  if (amt <= 0) {
+    prevEl.innerText = "0.00 " + convertTargetCurrency;
+    return;
+  }
+
+  var result = 0;
+
+  if (convertMainSource === 'Coin') {
+    var usdtVal = amt * coinUsdtValue;
+    if (convertTargetCurrency === 'USDT') {
+      result = usdtVal;
+      prevEl.innerText = result.toFixed(4) + " USDT";
+    } else if (convertTargetCurrency === 'Gram') {
+      result = usdtVal / liveTonPrice;
+      prevEl.innerText = result.toFixed(4) + " Gram";
+    }
+  } else if (convertMainSource === 'USDT') {
+    if (convertTargetCurrency === 'Coin') {
+      result = amt / coinUsdtValue;
+      prevEl.innerText = result.toFixed(2) + " Coin";
+    } else if (convertTargetCurrency === 'Gram') {
+      result = amt / liveTonPrice;
+      prevEl.innerText = result.toFixed(4) + " Gram";
+    }
+  } else if (convertMainSource === 'Gram') {
+    var usdtVal = amt * liveTonPrice;
+    if (convertTargetCurrency === 'Coin') {
+      result = usdtVal / coinUsdtValue;
+      prevEl.innerText = result.toFixed(2) + " Coin";
+    } else if (convertTargetCurrency === 'USDT') {
+      result = usdtVal;
+      prevEl.innerText = result.toFixed(4) + " USDT";
+    }
   }
 }
 
 function exchangeCoins() {
   var amt = parseFloat(document.getElementById('exchangeAmount').value) || 0;
-  var curr = document.getElementById('exchangeCurrency').value || 'USDT';
 
   if (amt <= 0 || isNaN(amt)) {
-    showToast("Kripya valid coin amount enter karein.", "error");
-    return;
-  }
-  if (balance < amt) {
-    showToast("Aapke paas sufficient coin balance nahi hai!", "error");
+    showToast("Kripya valid amount enter karein.", "error");
     return;
   }
 
-  balance -= amt;
-  var totalUsdtValue = amt * coinUsdtValue;
+  if (convertMainSource === 'Coin' && balance < amt) {
+    showToast("Aapke paas sufficient Coin balance nahi hai!", "error");
+    return;
+  }
+  if (convertMainSource === 'USDT' && usdtBalance < amt) {
+    showToast("Aapke paas sufficient USDT balance nahi hai!", "error");
+    return;
+  }
+  if (convertMainSource === 'Gram' && tonBalance < amt) {
+    showToast("Aapke paas sufficient Gram balance nahi hai!", "error");
+    return;
+  }
 
-  if (curr === 'USDT') {
-    usdtBalance += totalUsdtValue;
-    showToast("Claim Successful! Exchanged " + amt + " Coins for " + totalUsdtValue.toFixed(4) + " USDT!", "success");
-  } else {
-    var tonReceived = totalUsdtValue / liveTonPrice;
-    tonBalance += tonReceived;
-    showToast("Claim Successful! Exchanged " + amt + " Coins for " + totalUsdtValue.toFixed(4) + " Gram!", "success");
+  // Deduct main balance
+  if (convertMainSource === 'Coin') balance -= amt;
+  else if (convertMainSource === 'USDT') usdtBalance -= amt;
+  else if (convertMainSource === 'Gram') tonBalance -= amt;
+
+  // Add target balance
+  if (convertMainSource === 'Coin') {
+    var usdtVal = amt * coinUsdtValue;
+    if (convertTargetCurrency === 'USDT') {
+      usdtBalance += usdtVal;
+      showToast("Exchanged " + amt + " Coins for " + usdtVal.toFixed(4) + " USDT!", "success");
+    } else if (convertTargetCurrency === 'Gram') {
+      var gramVal = usdtVal / liveTonPrice;
+      tonBalance += gramVal;
+      showToast("Exchanged " + amt + " Coins for " + gramVal.toFixed(4) + " Gram!", "success");
+    }
+  } else if (convertMainSource === 'USDT') {
+    if (convertTargetCurrency === 'Coin') {
+      var coinVal = amt / coinUsdtValue;
+      balance += coinVal;
+      showToast("Exchanged " + amt + " USDT for " + coinVal.toFixed(2) + " Coins!", "success");
+    } else if (convertTargetCurrency === 'Gram') {
+      var gramVal = amt / liveTonPrice;
+      tonBalance += gramVal;
+      showToast("Exchanged " + amt + " USDT for " + gramVal.toFixed(4) + " Gram!", "success");
+    }
+  } else if (convertMainSource === 'Gram') {
+    var usdtVal = amt * liveTonPrice;
+    if (convertTargetCurrency === 'Coin') {
+      var coinVal = usdtVal / coinUsdtValue;
+      balance += coinVal;
+      showToast("Exchanged " + amt + " Gram for " + coinVal.toFixed(2) + " Coins!", "success");
+    } else if (convertTargetCurrency === 'USDT') {
+      usdtBalance += usdtVal;
+      showToast("Exchanged " + amt + " Gram for " + usdtVal.toFixed(4) + " USDT!", "success");
+    }
   }
 
   var exInp = document.getElementById('exchangeAmount'); if(exInp) exInp.value = '';
