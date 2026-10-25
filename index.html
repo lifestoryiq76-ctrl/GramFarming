@@ -271,7 +271,6 @@ input:focus, select:focus { border-color: var(--accent); }
 .wallet-subcard-content { display: none; margin-top: 10px; }
 .wallet-subcard-content.active { display: block; }
 
-/* Sky Blue Card Style for Conversion Cards */
 .convert-sky-card { background: #0f172a; border: 1.5px solid var(--sky-blue); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); transition: all 0.25s ease-in-out; }
 .convert-sky-card.active { border: 2px solid var(--sky-blue) !important; background: var(--sky-blue) !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(10, 132, 193, 0.6) !important; transform: translateY(-2px); }
 
@@ -410,6 +409,64 @@ input:focus, select:focus { border-color: var(--accent); }
 }
 .loading-dots div.active {
     background: #0a84c1;
+}
+
+/* BRONZE RANK CARD (Screenshot Match) */
+.rank-card-wrapper {
+    background: linear-gradient(135deg, #1e293b 100%, #0f172a 0%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.rank-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.rank-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-main);
+}
+.rank-progress-track {
+    width: 100%;
+    background: #334155;
+    height: 6px;
+    border-radius: 3px;
+    position: relative;
+    overflow: visible;
+}
+.rank-progress-fill {
+    background: var(--accent);
+    height: 100%;
+    width: 8%;
+    border-radius: 3px;
+}
+.rank-thumb-dot {
+    position: absolute;
+    top: 50%;
+    left: 8%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: var(--yellow);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(234, 179, 8, 0.8);
+}
+.rank-badge-percent {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 8px;
 }
 
 /* FEATURED PARTNER BANNER STYLES (Screenshot Match) */
@@ -663,15 +720,21 @@ input:focus, select:focus { border-color: var(--accent); }
 <small style="color:var(--text-muted);">Complete tasks, collect Coins & create campaigns</small>
 </div>
 
-<div class="task-category-bar">
-<button class="task-cat-btn active" onclick="switchTaskCategory('ads', this)">📺 Ads</button>
-<button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
-<button class="task-cat-btn" onclick="switchTaskCategory('official', this)">⭐ Official</button>
-<button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
+<!-- BRONZE RANK CARD (Added above Featured Partner Banner) -->
+<div class="rank-card-wrapper">
+  <div class="rank-top-row">
+    <div class="rank-title-group">
+      <span>🥉</span>
+      <span>Bronze</span>
+      <span style="color: var(--text-muted); font-weight: normal; font-size: 13px;">· 4/50 to Silver</span>
+    </div>
+    <span class="rank-badge-percent">+0%</span>
+  </div>
+  <div class="rank-progress-track">
+    <div class="rank-progress-fill"></div>
+    <div class="rank-thumb-dot"></div>
+  </div>
 </div>
-
-<!-- ADS CATEGORY CONTENT -->
-<div id="taskCat-ads" class="task-category-content">
 
 <!-- FEATURED PARTNER BANNER SLIDER (Live Carousel above Monetag) -->
 <div class="featured-banner-wrapper" id="featuredBannerWrapper" style="display: none;">
@@ -692,6 +755,16 @@ input:focus, select:focus { border-color: var(--accent); }
     <!-- Dynamic Banner Card Content injected via JS -->
   </div>
 </div>
+
+<div class="task-category-bar">
+<button class="task-cat-btn active" onclick="switchTaskCategory('ads', this)">📺 Ads</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('task', this)">📋 Task</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('official', this)">⭐ Official</button>
+<button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
+</div>
+
+<!-- ADS CATEGORY CONTENT -->
+<div id="taskCat-ads" class="task-category-content">
 
 <div id="adsTasksAll">
 
@@ -3547,7 +3620,6 @@ function renderCustomTasksFromFirebase() {
 
         if (clicksLeft <= 0) return;
 
-        // Collect tasks that have Home Screen Banner add-on enabled
         if (task.bannerAddon === true) {
           bannerTasksList.push({
             key: key,
@@ -3610,7 +3682,6 @@ function renderCustomTasksFromFirebase() {
   });
 }
 
-// FEATURED BANNER SLIDER LOGIC (Changes every 5 seconds)
 function initBannerSlider() {
   var wrapper = document.getElementById('featuredBannerWrapper');
   if (!wrapper) return;
