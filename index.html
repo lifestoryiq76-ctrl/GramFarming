@@ -232,6 +232,186 @@ display: inline-block;
 .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
 input:focus, select:focus { border-color: var(--accent); }
+
+/* LOTTERY CUSTOM STYLES BASED ON ATTACHED SCREENSHOTS */
+.lottery-tab-selector {
+  display: flex;
+  background: #0f172a;
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.lottery-tab-btn {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lottery-tab-btn.active {
+  background: #0a84c1;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(10, 132, 193, 0.4);
+}
+
+.lottery-card {
+  background: #182232;
+  border: 1px solid #28374d;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.lottery-pool-box {
+  background: linear-gradient(180deg, #1c2b3d 0%, #121c29 100%);
+  border: 1px solid #2a3c54;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.lottery-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 12px;
+}
+
+.lottery-prize-text {
+  font-size: 32px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.lottery-winners-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #eab308;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.lottery-pay-methods {
+  display: flex;
+  background: #0f172a;
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid #28374d;
+  margin-bottom: 14px;
+}
+.lottery-pay-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.lottery-pay-btn.active {
+  background: linear-gradient(90deg, #0284c7 0%, #0a84c1 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(10, 132, 193, 0.5);
+}
+
+.ticket-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f172a;
+  border: 1px solid #28374d;
+  border-radius: 14px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.ticket-qty-btn {
+  width: 44px;
+  height: 44px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.ticket-qty-btn:active { transform: scale(0.95); }
+
+.quick-qty-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.quick-qty-btn {
+  background: #182232;
+  border: 1px solid #28374d;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 0;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.quick-qty-btn.active {
+  background: #eab308;
+  color: #000;
+  border-color: #eab308;
+}
+
+.buy-ticket-btn {
+  width: 100%;
+  background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+  color: #000000;
+  font-size: 16px;
+  font-weight: 900;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
+  transition: 0.2s;
+}
+.buy-ticket-btn:active { transform: scale(0.98); }
+
 .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
 .rocket-icon { font-size: 32px; margin: 5px 0; }
@@ -280,12 +460,6 @@ input:focus, select:focus { border-color: var(--accent); }
 
 .gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
 .gram-pay-info { background: #111827; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
-
-/* LOTTERY WHEEL STYLES */
-.lottery-wheel-container { position: relative; width: 260px; height: 260px; margin: 20px auto; border-radius: 50%; border: 6px solid #eab308; box-shadow: 0 0 25px rgba(234, 179, 8, 0.4); overflow: hidden; background: #0f172a; }
-.lottery-wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1); background: conic-gradient(#3b82f6 0deg 60deg, #10b981 60deg 120deg, #eab308 120deg 180deg, #ef4444 180deg 240deg, #8b5cf6 240deg 300deg, #ec4899 300deg 360deg); }
-.lottery-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 24px solid #ffffff; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-.lottery-center-hub { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background: #1e293b; border: 3px solid #eab308; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; z-index: 5; box-shadow: 0 0 10px rgba(0,0,0,0.6); }
 
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -972,33 +1146,226 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
-<!-- LOTTERY / LUCKY SPIN WHEEL PAGE -->
+<!-- LOTTERY PAGE (UPDATED WITH DAILY & WEEKLY CARDS) -->
 <div id="lottery" class="tab-content">
-<h3 style="margin-bottom: 8px;">🎡 Lucky Wheel Lottery</h3>
-<div class="card" style="text-align: center; background: #111827; border: 1px solid #eab308; padding: 20px;">
-<p style="font-size: 13px; color: var(--text-muted); margin: 0 0 10px 0;">Spin the wheel and win exciting coin rewards instantly!</p>
-<div style="font-size: 14px; font-weight: bold; color: var(--yellow); margin-bottom: 15px;">Free Spins Left Today: <span id="freeSpinsCount">3</span> / 3</div>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+    <h3 style="margin: 0;" id="lotteryMainTitle">Daily Lottery</h3>
+  </div>
 
-<div class="lottery-wheel-container">
-<div class="lottery-pointer"></div>
-<div class="lottery-wheel" id="luckyWheelElement"></div>
-<div class="lottery-center-hub">🎯</div>
-</div>
+  <div class="lottery-tab-selector">
+    <div class="lottery-tab-btn active" id="lotteryTypeDailyBtn" onclick="switchLotteryType('daily')">📅 Daily Lottery</div>
+    <div class="lottery-tab-btn" id="lotteryTypeWeeklyBtn" onclick="switchLotteryType('weekly')">🗓️ Weekly Lottery</div>
+  </div>
 
-<button class="btn btn-yellow" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 15px;" id="spinWheelBtn" onclick="spinLuckyWheel()">SPIN THE WHEEL 🎡</button>
-</div>
+  <!-- DAILY LOTTERY CARD -->
+  <div id="dailyLotterySection">
+    <div class="lottery-pool-box">
+      <div class="lottery-timer-badge">
+        <span>🕒 Draw in</span>
+        <strong id="dailyDrawCountdown" style="color: #60a5fa;">11:26:37</strong>
+      </div>
+      
+      <div style="font-size: 11px; font-weight: 800; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase;">DAILY PRIZE POOL</div>
+      <div class="lottery-prize-text">
+        <span id="dailyPrizePoolVal">0.00</span>
+        <span style="font-size: 20px;">💎</span>
+      </div>
 
-<div class="card" style="background: #1e293b; border: 1px solid var(--border);">
-<h4 style="margin: 0 0 8px 0; color: var(--accent); font-size: 14px;">🎁 Prizes on Wheel</h4>
-<div style="font-size: 12px; color: var(--text-muted); display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-<div>🔹 0.05 Coin</div>
-<div>🔹 0.10 Coin</div>
-<div>🔹 0.25 Coin</div>
-<div>🔹 0.50 Coin</div>
-<div>🔹 1.00 Coin</div>
-<div>🔹 5.00 Coin (Jackpot!)</div>
-</div>
-</div>
+      <div>
+        <div class="lottery-winners-badge">
+          🏆 <span id="dailyWinnersText">0 Winners</span>
+        </div>
+      </div>
+      <div style="font-size: 10px; color: #64748b; margin-top: 6px;">2 winners + 2 per every 10 tickets</div>
+    </div>
+
+    <div class="lottery-card">
+      <div class="flex-between" style="margin-bottom: 6px;">
+        <span style="font-size: 13px; font-weight: 700; color: #cbd5e1;">🎫 My Tickets</span>
+        <span style="font-size: 12px; font-weight: 700; color: #94a3b8;"><span id="dailyMyTicketsCount">0</span> / 100</span>
+      </div>
+      <div class="progress-line-bg" style="height: 8px; border-radius: 4px; margin-bottom: 6px; background: #0f172a;">
+        <div class="progress-line-fill" id="dailyTicketsProgFill" style="width: 0%; background: #0a84c1;"></div>
+      </div>
+      <div class="flex-between" style="font-size: 11px; color: #64748b;">
+        <span>0.1 USDT / ticket</span>
+        <span>Max 100 tickets/day</span>
+      </div>
+    </div>
+
+    <div class="lottery-card">
+      <div style="font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">PAYMENT METHOD</div>
+      
+      <div class="lottery-pay-methods">
+        <div class="lottery-pay-btn active" id="dailyPayInAppBtn" onclick="setLotteryPayMethod('daily', 'inapp')">
+          <span>🔄 In-App Balance</span>
+          <small style="opacity: 0.8;">($<span class="usdtBalanceDisp">0.00</span>)</small>
+        </div>
+        <div class="lottery-pay-btn" id="dailyPayWeb3Btn" onclick="setLotteryPayMethod('daily', 'web3')">
+          <span>👛 Web3 Wallet</span>
+          <small style="opacity: 0.8;">(GRAM)</small>
+        </div>
+      </div>
+
+      <div class="flex-between" style="margin-bottom: 8px; font-size: 13px; font-weight: 700;">
+        <span>Tickets</span>
+        <span style="color: #94a3b8; font-size: 12px;">Balance: <strong style="color: #fff;" class="usdtBalanceDisp">0.00</strong> 💎</span>
+      </div>
+
+      <div class="ticket-control-row">
+        <div class="ticket-qty-btn" onclick="changeLotteryTicketQty('daily', -1)">-</div>
+        <div style="text-align: center;">
+          <div style="font-size: 22px; font-weight: 900; color: #fff;" id="dailyTicketQtyVal">1</div>
+          <div style="font-size: 10px; color: #64748b; font-weight: 700;">Tickets</div>
+        </div>
+        <div class="ticket-qty-btn" onclick="changeLotteryTicketQty('daily', 1)">+</div>
+      </div>
+
+      <div class="quick-qty-grid">
+        <div class="quick-qty-btn active" onclick="setLotteryQuickQty('daily', 1, this)">+1</div>
+        <div class="quick-qty-btn" onclick="setLotteryQuickQty('daily', 5, this)">+5</div>
+        <div class="quick-qty-btn" onclick="setLotteryQuickQty('daily', 10, this)">+10</div>
+        <div class="quick-qty-btn" onclick="setLotteryQuickQty('daily', 25, this)">+25</div>
+        <div class="quick-qty-btn" onclick="setLotteryQuickQty('daily', 'MAX', this)">MAX</div>
+      </div>
+
+      <button class="buy-ticket-btn" id="dailyBuyBtn" onclick="buyLotteryTickets('daily')">Buy for 0.10 USDT</button>
+    </div>
+
+    <div class="lottery-card">
+      <div class="flex-between" style="margin-bottom: 12px;">
+        <span style="font-size: 14px; font-weight: 800; color: #fff;">🎖️ Yesterday's Draw</span>
+        <span style="font-size: 11px; color: #64748b;" id="dailyLastDrawDate">2026-10-24</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">PRIZE POOL</small>
+          <div style="font-size: 13px; font-weight: 900; color: #fff; margin-top: 2px;" id="dailyLastPoolVal">1.28 USDT</div>
+        </div>
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">WINNERS</small>
+          <div style="font-size: 13px; font-weight: 900; color: #eab308; margin-top: 2px;" id="dailyLastWinnersVal">4</div>
+        </div>
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">TICKETS</small>
+          <div style="font-size: 13px; font-weight: 900; color: #0a84c1; margin-top: 2px;" id="dailyLastTicketsVal">16</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEKLY LOTTERY CARD -->
+  <div id="weeklyLotterySection" style="display: none;">
+    <div class="lottery-pool-box" style="border-color: rgba(168, 85, 247, 0.4);">
+      <div class="lottery-timer-badge">
+        <span>🕒 Draw in</span>
+        <strong id="weeklyDrawCountdown" style="color: #c084fc;">4 Days 18:42:10</strong>
+      </div>
+      
+      <div style="font-size: 11px; font-weight: 800; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase;">WEEKLY JACKPOT POOL</div>
+      <div class="lottery-prize-text">
+        <span id="weeklyPrizePoolVal">25.50</span>
+        <span style="font-size: 20px;">💎</span>
+      </div>
+
+      <div>
+        <div class="lottery-winners-badge" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.3); color: #c084fc;">
+          🏆 <span id="weeklyWinnersText">10 Winners</span>
+        </div>
+      </div>
+      <div style="font-size: 10px; color: #64748b; margin-top: 6px;">Mega weekly distribution every Sunday 00:00 UTC</div>
+    </div>
+
+    <div class="lottery-card">
+      <div class="flex-between" style="margin-bottom: 6px;">
+        <span style="font-size: 13px; font-weight: 700; color: #cbd5e1;">🎫 My Weekly Tickets</span>
+        <span style="font-size: 12px; font-weight: 700; color: #94a3b8;"><span id="weeklyMyTicketsCount">0</span> / 500</span>
+      </div>
+      <div class="progress-line-bg" style="height: 8px; border-radius: 4px; margin-bottom: 6px; background: #0f172a;">
+        <div class="progress-line-fill" id="weeklyTicketsProgFill" style="width: 0%; background: #a855f7;"></div>
+      </div>
+      <div class="flex-between" style="font-size: 11px; color: #64748b;">
+        <span>0.5 USDT / ticket</span>
+        <span>Max 500 tickets/week</span>
+      </div>
+    </div>
+
+    <div class="lottery-card">
+      <div style="font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">PAYMENT METHOD</div>
+      
+      <div class="lottery-pay-methods">
+        <div class="lottery-pay-btn active" id="weeklyPayInAppBtn" onclick="setLotteryPayMethod('weekly', 'inapp')">
+          <span>🔄 In-App Balance</span>
+          <small style="opacity: 0.8;">($<span class="usdtBalanceDisp">0.00</span>)</small>
+        </div>
+        <div class="lottery-pay-btn" id="weeklyPayWeb3Btn" onclick="setLotteryPayMethod('weekly', 'web3')">
+          <span>👛 Web3 Wallet</span>
+          <small style="opacity: 0.8;">(GRAM)</small>
+        </div>
+      </div>
+
+      <div class="flex-between" style="margin-bottom: 8px; font-size: 13px; font-weight: 700;">
+        <span>Tickets</span>
+        <span style="color: #94a3b8; font-size: 12px;">Balance: <strong style="color: #fff;" class="usdtBalanceDisp">0.00</strong> 💎</span>
+      </div>
+
+      <div class="ticket-control-row">
+        <div class="ticket-qty-btn" onclick="changeLotteryTicketQty('weekly', -1)">-</div>
+        <div style="text-align: center;">
+          <div style="font-size: 22px; font-weight: 900; color: #fff;" id="weeklyTicketQtyVal">1</div>
+          <div style="font-size: 10px; color: #64748b; font-weight: 700;">Tickets</div>
+        </div>
+        <div class="ticket-qty-btn" onclick="changeLotteryTicketQty('weekly', 1)">+</div>
+      </div>
+
+      <div class="quick-qty-grid">
+        <div class="quick-qty-btn active" onclick="setLotteryQuickQty('weekly', 1, this)">+1</div>
+        <div class="quick-qty-btn" onclick="setLotteryQuickQty('weekly', 5, this)">+5</div>
+        <div class="quick-qty-btn" onclick="setLotteryQuickQty('weekly', 10, this)">+10</div>
+        <div class="quick-qty-btn" onclick="setLotteryQuickQty('weekly', 25, this)">+25</div>
+        <div class="quick-qty-btn" onclick="setLotteryQuickQty('weekly', 'MAX', this)">MAX</div>
+      </div>
+
+      <button class="buy-ticket-btn" style="background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); color: #fff;" id="weeklyBuyBtn" onclick="buyLotteryTickets('weekly')">Buy for 0.50 USDT</button>
+    </div>
+
+    <div class="lottery-card">
+      <div class="flex-between" style="margin-bottom: 12px;">
+        <span style="font-size: 14px; font-weight: 800; color: #fff;">🎖️ Last Week's Draw</span>
+        <span style="font-size: 11px; color: #64748b;" id="weeklyLastDrawDate">2026-10-18</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">PRIZE POOL</small>
+          <div style="font-size: 13px; font-weight: 900; color: #fff; margin-top: 2px;" id="weeklyLastPoolVal">18.50 USDT</div>
+        </div>
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">WINNERS</small>
+          <div style="font-size: 13px; font-weight: 900; color: #c084fc; margin-top: 2px;" id="weeklyLastWinnersVal">8</div>
+        </div>
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">TICKETS</small>
+          <div style="font-size: 13px; font-weight: 900; color: #0a84c1; margin-top: 2px;" id="weeklyLastTicketsVal">42</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS INSTRUCTIONS CARD -->
+  <div class="lottery-card" style="background: #0f172a;">
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: #cbd5e1; margin-bottom: 10px;">
+      <span>❔ How it works</span>
+    </div>
+    <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: #94a3b8; line-height: 1.8;">
+      <li>1 ticket = <strong style="color:#fff;" id="ruleTicketPriceText">0.1 USDT</strong> (max <span id="ruleMaxTicketsText">100</span> tickets/period per user)</li>
+      <li>80% of ticket cost is added directly to the jackpot pool</li>
+      <li>Draw runs automatically at 00:00 UTC using provably fair RNG</li>
+      <li>Prizes are credited directly to your balance and notifications sent</li>
+    </ul>
+    <div style="margin-top: 12px; font-size: 11px; color: #22c55e; display: flex; align-items: center; gap: 6px;">
+      <span>🛡️ Mobile-only verified accounts. Multi-accounting is strictly prohibited.</span>
+    </div>
+  </div>
 </div>
 
 <!-- STAKING PAGE -->
@@ -1340,7 +1707,7 @@ No recent transactions yet.
 <span>Tasks</span>
 </div>
 <div class="nav-item" onclick="switchTab('lottery')">
-<span class="nav-emoji">🎡</span>
+<span class="nav-emoji">🎟️</span>
 <span>Lottery</span>
 </div>
 <div class="nav-item" onclick="switchTab('staking')">
@@ -1415,6 +1782,7 @@ window.addEventListener('load', function() {
     initAppListeners();
   }
   selectConvertMain('Coin');
+  initLotteryData();
 });
 
 var balance = 0.00;
@@ -1425,8 +1793,6 @@ var totalInvited = 0;
 var savedTonAddress = "";
 var activeStakes = [];
 var lastCheckin = 0;
-var freeSpinsLeft = 3;
-var lastSpinDate = "";
 
 var coinUsdtValue = 0.01;
 var currentDailyBonus = 0.01;
@@ -1434,6 +1800,17 @@ var minWithdrawalAmt = 0.01;
 var minTonWithdrawalAmt = 0.01;
 var liveTonPrice = 1.35; 
 var referralPercentage = 20;
+
+/* LOTTERY STATE DATA */
+var currentLotteryType = 'daily'; // 'daily' or 'weekly'
+var lotteryPayMethods = { daily: 'inapp', weekly: 'inapp' };
+var lotteryTicketQuantities = { daily: 1, weekly: 1 };
+var userLotteryTickets = { daily: 0, weekly: 0 };
+
+var lotteryConfig = {
+  daily: { ticketPrice: 0.10, maxTickets: 100, poolVal: 0.00, winners: 0 },
+  weekly: { ticketPrice: 0.50, maxTickets: 500, poolVal: 25.50, winners: 10 }
+};
 
 var miningDurationSeconds = 28800;
 var miningRewardCoins = 1.00;
@@ -1634,29 +2011,22 @@ function initAppListeners() {
       savedTonAddress = data.savedTonAddress || "";
       activeStakes = data.activeStakes || [];
       lastCheckin = data.lastCheckin || 0;
-      if (data.freeSpinsLeft !== undefined) freeSpinsLeft = data.freeSpinsLeft;
-      if (data.lastSpinDate) lastSpinDate = data.lastSpinDate;
+      if (data.userLotteryTickets) userLotteryTickets = data.userLotteryTickets;
       if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
-
-      var todayStr = new Date().toDateString();
-      if (lastSpinDate !== todayStr) {
-        freeSpinsLeft = 3;
-        lastSpinDate = todayStr;
-        saveToFirebase();
-      }
 
       saveToLocalStorage();
     } else {
       userRef.set({
         name: displayName,
         balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
-        freeSpinsLeft: 3, lastSpinDate: new Date().toDateString(),
+        userLotteryTickets: { daily: 0, weekly: 0 },
         adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 }
       });
     }
     renderUIValues();
     renderStakingList();
     toggleWithdrawFields();
+    updateLotteryUI();
   });
 
   db.ref('adminSettings/general').on('value', function(snapshot) {
@@ -1893,8 +2263,7 @@ function loadFromLocalStorage() {
       savedTonAddress = parsed.savedTonAddress || "";
       activeStakes = parsed.activeStakes || [];
       lastCheckin = parsed.lastCheckin || 0;
-      if (parsed.freeSpinsLeft !== undefined) freeSpinsLeft = parsed.freeSpinsLeft;
-      if (parsed.lastSpinDate) lastSpinDate = parsed.lastSpinDate;
+      if (parsed.userLotteryTickets) userLotteryTickets = parsed.userLotteryTickets;
       if (parsed.adWatchedCounts) adWatchedCounts = parsed.adWatchedCounts;
       renderUIValues();
       renderStakingList();
@@ -1904,7 +2273,7 @@ function loadFromLocalStorage() {
 
 function saveToLocalStorage() {
   try {
-    var dataToCache = { balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin, freeSpinsLeft: freeSpinsLeft, lastSpinDate: lastSpinDate, adWatchedCounts: adWatchedCounts };
+    var dataToCache = { balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin, userLotteryTickets: userLotteryTickets, adWatchedCounts: adWatchedCounts };
     localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
   } catch (e) {}
 }
@@ -1987,7 +2356,7 @@ function saveToFirebase() {
   if (window.db) {
     db.ref('users/' + userId).update({
       balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin,
-      freeSpinsLeft: freeSpinsLeft, lastSpinDate: lastSpinDate,
+      userLotteryTickets: userLotteryTickets,
       adWatchedCounts: adWatchedCounts
     });
     if (savedTonAddress) {
@@ -2037,12 +2406,15 @@ function renderUIValues() {
   if(document.getElementById('tonBalance')) document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
   if(document.getElementById('usdtBalance')) document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4) + " USDT";
 
+  document.querySelectorAll('.usdtBalanceDisp').forEach(function(el) {
+    el.innerText = usdtBalance.toFixed(2);
+  });
+
   if(document.getElementById('refRewardBalance')) document.getElementById('refRewardBalance').innerText = "+" + refReward.toFixed(2) + " 🪙";
   if(document.getElementById('totalInvitedCount')) document.getElementById('totalInvitedCount').innerText = totalInvited + " USERS";
   if(document.getElementById('rankBalance')) document.getElementById('rankBalance').innerText = balance.toFixed(2);
   if(document.getElementById('displayCoinVolume')) document.getElementById('displayCoinVolume').innerText = "1 Coin = $" + coinUsdtValue;
   if(document.getElementById('dailyBonusDisplay')) document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
-  if(document.getElementById('freeSpinsCount')) document.getElementById('freeSpinsCount').innerText = freeSpinsLeft;
 
   updateConvertSourceBalanceDisplay();
 
@@ -2096,38 +2468,170 @@ function switchTab(tabId) {
   }
 }
 
-var currentWheelRotation = 0;
-function spinLuckyWheel() {
-  if (freeSpinsLeft <= 0) {
-    showToast("Aapke aaj ke sabhi free spins khatam ho gaye hain!", "error");
-    return;
+/* --- LOTTERY CONTROLLER FUNCTIONS --- */
+function initLotteryData() {
+  updateLotteryUI();
+  setInterval(updateLotteryCountdowns, 1000);
+}
+
+function switchLotteryType(type) {
+  currentLotteryType = type;
+  var dBtn = document.getElementById('lotteryTypeDailyBtn');
+  var wBtn = document.getElementById('lotteryTypeWeeklyBtn');
+  var dSec = document.getElementById('dailyLotterySection');
+  var wSec = document.getElementById('weeklyLotterySection');
+  var mainTitle = document.getElementById('lotteryMainTitle');
+
+  if(dBtn) dBtn.classList.remove('active');
+  if(wBtn) wBtn.classList.remove('active');
+  if(dSec) dSec.style.display = 'none';
+  if(wSec) wSec.style.display = 'none';
+
+  if (type === 'daily') {
+    if(dBtn) dBtn.classList.add('active');
+    if(dSec) dSec.style.display = 'block';
+    if(mainTitle) mainTitle.innerText = 'Daily Lottery';
+    document.getElementById('ruleTicketPriceText').innerText = '0.1 USDT';
+    document.getElementById('ruleMaxTicketsText').innerText = '100';
+  } else {
+    if(wBtn) wBtn.classList.add('active');
+    if(wSec) wSec.style.display = 'block';
+    if(mainTitle) mainTitle.innerText = 'Weekly Lottery';
+    document.getElementById('ruleTicketPriceText').innerText = '0.5 USDT';
+    document.getElementById('ruleMaxTicketsText').innerText = '500';
+  }
+  updateLotteryUI();
+}
+
+function setLotteryPayMethod(type, method) {
+  lotteryPayMethods[type] = method;
+  var inAppBtn = document.getElementById(type + 'PayInAppBtn');
+  var web3Btn = document.getElementById(type + 'PayWeb3Btn');
+
+  if(inAppBtn) inAppBtn.classList.remove('active');
+  if(web3Btn) web3Btn.classList.remove('active');
+
+  if (method === 'inapp' && inAppBtn) inAppBtn.classList.add('active');
+  if (method === 'web3' && web3Btn) web3Btn.classList.add('active');
+}
+
+function changeLotteryTicketQty(type, change) {
+  var current = lotteryTicketQuantities[type] || 1;
+  var max = lotteryConfig[type].maxTickets;
+  current += change;
+  if (current < 1) current = 1;
+  if (current > max) current = max;
+  lotteryTicketQuantities[type] = current;
+  updateLotteryUI();
+}
+
+function setLotteryQuickQty(type, qty, btnEl) {
+  var max = lotteryConfig[type].maxTickets;
+  if (qty === 'MAX') {
+    lotteryTicketQuantities[type] = max;
+  } else {
+    lotteryTicketQuantities[type] = parseInt(qty);
   }
 
-  var spinBtn = document.getElementById('spinWheelBtn');
-  var wheelEl = document.getElementById('luckyWheelElement');
-  if(spinBtn) spinBtn.disabled = true;
+  var parentGrid = btnEl ? btnEl.parentElement : null;
+  if (parentGrid) {
+    parentGrid.querySelectorAll('.quick-qty-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btnEl) btnEl.classList.add('active');
+  }
+  updateLotteryUI();
+}
 
-  freeSpinsLeft--;
+function updateLotteryUI() {
+  var dQty = lotteryTicketQuantities.daily || 1;
+  var wQty = lotteryTicketQuantities.weekly || 1;
+
+  var dQtyEl = document.getElementById('dailyTicketQtyVal');
+  var wQtyEl = document.getElementById('weeklyTicketQtyVal');
+  if(dQtyEl) dQtyEl.innerText = dQty;
+  if(wQtyEl) wQtyEl.innerText = wQty;
+
+  var dCost = (dQty * lotteryConfig.daily.ticketPrice).toFixed(2);
+  var wCost = (wQty * lotteryConfig.weekly.ticketPrice).toFixed(2);
+
+  var dBuyBtn = document.getElementById('dailyBuyBtn');
+  var wBuyBtn = document.getElementById('weeklyBuyBtn');
+  if(dBuyBtn) dBuyBtn.innerText = 'Buy for ' + dCost + ' USDT';
+  if(wBuyBtn) wBuyBtn.innerText = 'Buy for ' + wCost + ' USDT';
+
+  var dUserTix = userLotteryTickets.daily || 0;
+  var wUserTix = userLotteryTickets.weekly || 0;
+
+  var dCountEl = document.getElementById('dailyMyTicketsCount');
+  var wCountEl = document.getElementById('weeklyMyTicketsCount');
+  if(dCountEl) dCountEl.innerText = dUserTix;
+  if(wCountEl) wCountEl.innerText = wUserTix;
+
+  var dFill = document.getElementById('dailyTicketsProgFill');
+  var wFill = document.getElementById('weeklyTicketsProgFill');
+  if(dFill) dFill.style.width = Math.min(100, (dUserTix / lotteryConfig.daily.maxTickets) * 100) + '%';
+  if(wFill) wFill.style.width = Math.min(100, (wUserTix / lotteryConfig.weekly.maxTickets) * 100) + '%';
+}
+
+function updateLotteryCountdowns() {
+  var now = new Date();
+  
+  // Daily reset (00:00 UTC)
+  var nextDaily = new Date();
+  nextDaily.setUTCHours(24, 0, 0, 0);
+  var diffD = Math.max(0, Math.floor((nextDaily - now) / 1000));
+  var dHours = String(Math.floor(diffD / 3600)).padStart(2, '0');
+  var dMins = String(Math.floor((diffD % 3600) / 60)).padStart(2, '0');
+  var dSecs = String(diffD % 60).padStart(2, '0');
+  var dTimerEl = document.getElementById('dailyDrawCountdown');
+  if(dTimerEl) dTimerEl.innerText = dHours + ":" + dMins + ":" + dSecs;
+
+  // Weekly reset (Next Sunday 00:00 UTC)
+  var nextWeekly = new Date();
+  var dayOfWeek = nextWeekly.getUTCDay();
+  var daysUntilSunday = (7 - dayOfWeek) % 7;
+  if (daysUntilSunday === 0) daysUntilSunday = 7;
+  nextWeekly.setUTCDate(nextWeekly.getUTCDate() + daysUntilSunday);
+  nextWeekly.setUTCHours(0, 0, 0, 0);
+
+  var diffW = Math.max(0, Math.floor((nextWeekly - now) / 1000));
+  var wDays = Math.floor(diffW / (24 * 3600));
+  var wHours = String(Math.floor((diffW % (24 * 3600)) / 3600)).padStart(2, '0');
+  var wMins = String(Math.floor((diffW % 3600) / 60)).padStart(2, '0');
+  var wSecs = String(diffW % 60).padStart(2, '0');
+  var wTimerEl = document.getElementById('weeklyDrawCountdown');
+  if(wTimerEl) wTimerEl.innerText = wDays + " Days " + wHours + ":" + wMins + ":" + wSecs;
+}
+
+function buyLotteryTickets(type) {
+  var qty = lotteryTicketQuantities[type] || 1;
+  var price = lotteryConfig[type].ticketPrice;
+  var totalCost = qty * price;
+  var payMethod = lotteryPayMethods[type];
+
+  if (payMethod === 'web3') {
+    if (!isWalletConnected) {
+      showToast("Kripya pehle Web3 Wallet (GRAM) connect karein!", "error");
+      handleGramWalletConnect();
+      return;
+    }
+  }
+
+  if (payMethod === 'inapp') {
+    if (usdtBalance < totalCost) {
+      showToast("Insufficient USDT Balance! Exchanged Coin or Deposit USDT.", "error");
+      return;
+    }
+    usdtBalance -= totalCost;
+  }
+
+  userLotteryTickets[type] = (userLotteryTickets[type] || 0) + qty;
+  lotteryConfig[type].poolVal += (totalCost * 0.80);
+
   saveToFirebase();
   renderUIValues();
+  updateLotteryUI();
 
-  var prizes = [0.05, 0.10, 0.25, 0.50, 1.00, 5.00];
-  var randomIndex = Math.floor(Math.random() * prizes.length);
-  var wonAmount = prizes[randomIndex];
-
-  var degreesPerSegment = 360 / prizes.length;
-  var targetDegree = 360 * 5 + (randomIndex * degreesPerSegment) + (degreesPerSegment / 2);
-  currentWheelRotation += targetDegree;
-
-  if(wheelEl) {
-    wheelEl.style.transform = 'rotate(' + currentWheelRotation + 'deg)';
-  }
-
-  setTimeout(function() {
-    addEarningsWithReferral(wonAmount);
-    showToast("🎉 Congratulations! You won " + wonAmount.toFixed(2) + " Coins in Lottery!", "success");
-    if(spinBtn) spinBtn.disabled = false;
-  }, 4000);
+  showToast("🎟️ " + qty + " " + (type === 'daily' ? 'Daily' : 'Weekly') + " Lottery Tickets bought successfully!", "success");
 }
 
 function setStakingCurrency(curr) {
@@ -3030,7 +3534,7 @@ function runRocketTimer(index, rocketName, maxLimitNeeded) {
 function claimLiveMiningEarnings(index, rocketName) {
   var state = rocketStates[index];
   if (state.accumulated <= 0.0001) {
-    showToast("Abhi तक kuch bhi coin accumulate nahi hua hai!", "error");
+    showToast("Abhi tak kuch bhi coin accumulate nahi hua hai!", "error");
     return;
   }
 
