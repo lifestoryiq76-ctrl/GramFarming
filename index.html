@@ -233,98 +233,106 @@ display: inline-block;
 input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
 input:focus, select:focus { border-color: var(--accent); }
 
-/* CONTEST & ADS PRIZE CUSTOM STYLES */
-.contest-tab-selector {
-  display: flex;
-  background: #0f172a;
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-.contest-tab-btn {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: #0a84c1;
+/* RANK CONTEST STYLES */
+.rank-heading-banner {
+  background: linear-gradient(135deg, #0a84c1 0%, #0284c7 100%);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(10, 132, 193, 0.4);
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 15px rgba(10, 132, 193, 0.4);
 }
-
-.contest-card {
-  background: #182232;
-  border: 1px solid #28374d;
+.contest-main-card {
+  background: #1e293b;
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
-
-.contest-podiums {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
+.prize-subgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin: 20px 0;
+  margin-top: 12px;
 }
-.podium-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-.podium-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #1e293b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 14px;
-  border: 2px solid var(--border);
-  position: relative;
-  margin-bottom: -10px;
-  z-index: 2;
-}
-.podium-badge {
-  position: absolute;
-  bottom: -6px;
-  background: var(--yellow);
-  color: #000;
-  font-size: 10px;
-  font-weight: 900;
-  padding: 1px 5px;
-  border-radius: 8px;
-}
-.podium-box {
-  width: 100%;
+.prize-subbox {
   background: #0f172a;
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 16px 6px 10px 6px;
+  padding: 10px;
   text-align: center;
 }
-.podium-1 .podium-box { height: 110px; border-color: #eab308; background: linear-gradient(180deg, rgba(234, 179, 8, 0.15) 0%, #0f172a 100%); }
-.podium-2 .podium-box { height: 95px; border-color: #94a3b8; }
-.podium-3 .podium-box { height: 85px; border-color: #cd7f32; }
-
-.leaderboard-list-item {
+.podium-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: flex-end;
+  margin-bottom: 15px;
+}
+.podium-card {
+  background: #182232;
+  border: 1px solid #28374d;
+  border-radius: 14px;
+  padding: 10px 6px;
+  text-align: center;
+  position: relative;
+}
+.podium-card.rank-1 {
+  background: linear-gradient(180deg, #2e2608 0%, #182232 100%);
+  border-color: #eab308;
+  transform: translateY(-8px);
+}
+.podium-badge {
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+.podium-name {
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+.podium-points {
+  font-size: 10px;
+  color: var(--yellow);
+  margin-top: 2px;
+}
+.podium-prize {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: bold;
+  margin-top: 4px;
+}
+.rank-list-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  font-size: 13px;
+  background: #0f172a;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.rank-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111827;
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
 }
 
+/* LOTTERY CUSTOM STYLES BASED ON ATTACHED SCREENSHOTS */
 .lottery-tab-selector {
   display: flex;
   background: #0f172a;
@@ -925,7 +933,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div id="tasks" class="tab-content">
 <div style="margin-bottom: 12px;">
 <h3 style="margin:0 0 4px 0;" data-i18n="tasksOffers">📋 Tasks</h3>
-<small style="color:var(--text-muted);">Complete tasks, collect Points & climb Leaderboard</small>
+<small style="color:var(--text-muted);">Complete tasks, collect Coins & create campaigns</small>
 </div>
 
 <div class="task-category-bar">
@@ -972,7 +980,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div>
 <b style="font-size: 15px;">Watch Ads Monetag</b><br>
 <small style="color:var(--text-muted);">Interactive premium mini-app ads</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+1 Point (30 pts = 1 Coin at End Time)</span>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetagVal">0.05</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskMonetagBtn" onclick="watchMonetagAd()">▶ Watch</button>
@@ -994,7 +1002,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div>
 <b style="font-size: 15px;">Watch Ads Gigapub</b><br>
 <small style="color:var(--text-muted);">Universal sponsor video network</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+1 Point (30 pts = 1 Coin at End Time)</span>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardGigapubVal">0.04</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskGigapubBtn" onclick="watchGigapubAd()">▶ Watch</button>
@@ -1016,7 +1024,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div>
 <b style="font-size: 15px; color: #fff;">Watch Ads AdsBitvex</b><br>
 <small style="color:var(--text-muted);">Rewarded Video Sponsor</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+1 Point (30 pts = 1 Coin at End Time)</span>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardAdsbitvexVal">0.05</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskAdsbitvexBtn" onclick="watchAdsBitvexAd()">▶ Watch</button>
@@ -1049,7 +1057,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div>
 <b style="font-size: 15px;">Watch Ads Monetix</b><br>
 <small style="color:var(--text-muted);">Direct video streams & AdsBitvex banner</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+1 Point (30 pts = 1 Coin at End Time)</span>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardMonetixVal">0.03</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskMonetixBtn" onclick="watchMonetixAd()">▶ Watch</button>
@@ -1071,7 +1079,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div>
 <b style="font-size: 15px; color: #fff;">Watch Ads Adsterra</b><br>
 <small style="color:var(--text-muted);">High eCPM smartlink video ad</small><br>
-<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+1 Point (30 pts = 1 Coin at End Time)</span>
+<span style="color:var(--yellow); font-size: 12px; font-weight: 600;">+<span id="rewardAdsterraVal">0.05</span> 🪙 / view</span>
 </div>
 </div>
 <button class="btn" id="taskAdsterraBtn" onclick="watchAdsterraAd()">▶ Watch</button>
@@ -1271,7 +1279,7 @@ Cost: <strong>35 Coins</strong>
 
       <div>
         <div class="lottery-winners-badge">
-          🏆 <span id="dailyWinnersText">2 Winners</span>
+          🏆 <span id="dailyWinnersText">0 Winners</span>
         </div>
       </div>
       <div style="font-size: 10px; color: #64748b; margin-top: 6px;">2 winners + 2 per every 10 tickets</div>
@@ -1324,6 +1332,27 @@ Cost: <strong>35 Coins</strong>
       </div>
 
       <button class="buy-ticket-btn" id="dailyBuyBtn" onclick="buyLotteryTickets('daily')">Buy for 0.10 USDT</button>
+    </div>
+
+    <div class="lottery-card">
+      <div class="flex-between" style="margin-bottom: 12px;">
+        <span style="font-size: 14px; font-weight: 800; color: #fff;">🎖️ Yesterday's Draw</span>
+        <span style="font-size: 11px; color: #64748b;" id="dailyLastDrawDate">2026-10-24</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">PRIZE POOL</small>
+          <div style="font-size: 13px; font-weight: 900; color: #fff; margin-top: 2px;" id="dailyLastPoolVal">1.28 USDT</div>
+        </div>
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">WINNERS</small>
+          <div style="font-size: 13px; font-weight: 900; color: #eab308; margin-top: 2px;" id="dailyLastWinnersVal">4</div>
+        </div>
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">TICKETS</small>
+          <div style="font-size: 13px; font-weight: 900; color: #0a84c1; margin-top: 2px;" id="dailyLastTicketsVal">16</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1396,6 +1425,43 @@ Cost: <strong>35 Coins</strong>
       </div>
 
       <button class="buy-ticket-btn" style="background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); color: #fff;" id="weeklyBuyBtn" onclick="buyLotteryTickets('weekly')">Buy for 0.50 USDT</button>
+    </div>
+
+    <div class="lottery-card">
+      <div class="flex-between" style="margin-bottom: 12px;">
+        <span style="font-size: 14px; font-weight: 800; color: #fff;">🎖️ Last Week's Draw</span>
+        <span style="font-size: 11px; color: #64748b;" id="weeklyLastDrawDate">2026-10-18</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">PRIZE POOL</small>
+          <div style="font-size: 13px; font-weight: 900; color: #fff; margin-top: 2px;" id="weeklyLastPoolVal">18.50 USDT</div>
+        </div>
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">WINNERS</small>
+          <div style="font-size: 13px; font-weight: 900; color: #c084fc; margin-top: 2px;" id="weeklyLastWinnersVal">8</div>
+        </div>
+        <div style="background: #0f172a; padding: 10px 4px; border-radius: 10px; border: 1px solid #28374d;">
+          <small style="font-size: 9px; color: #64748b; font-weight: 800; text-transform: uppercase;">TICKETS</small>
+          <div style="font-size: 13px; font-weight: 900; color: #0a84c1; margin-top: 2px;" id="weeklyLastTicketsVal">42</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS INSTRUCTIONS CARD -->
+  <div class="lottery-card" style="background: #0f172a;">
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: #cbd5e1; margin-bottom: 10px;">
+      <span>❔ How it works</span>
+    </div>
+    <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: #94a3b8; line-height: 1.8;">
+      <li>1 ticket = <strong style="color:#fff;" id="ruleTicketPriceText">0.1 USDT</strong> (max <span id="ruleMaxTicketsText">100</span> tickets/period per user)</li>
+      <li>80% of ticket cost is added directly to the jackpot pool</li>
+      <li>Draw runs automatically at 00:00 UTC using provably fair RNG</li>
+      <li>Prizes are credited directly to your balance and notifications sent</li>
+    </ul>
+    <div style="margin-top: 12px; font-size: 11px; color: #22c55e; display: flex; align-items: center; gap: 6px;">
+      <span>🛡️ Mobile-only verified accounts. Multi-accounting is strictly prohibited.</span>
     </div>
   </div>
 </div>
@@ -1659,65 +1725,85 @@ No recent transactions yet.
 </div>
 </div>
 
-<!-- RANK PAGE (CONTEST LEADERBOARD) -->
+<!-- RANK PAGE (UPDATED CONTEST & LEADERBOARD SECTION) -->
 <div id="leaderboard" class="tab-content">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-    <h3 style="margin: 0; font-size: 18px; display: flex; align-items: center; gap: 6px;">
-      🏆 <span>Contest & Ranking</span>
-    </h3>
-    <div style="background: #1e293b; padding: 4px 10px; border-radius: 16px; border: 1px solid var(--border); font-size: 13px; font-weight: bold; color: var(--accent); display: flex; align-items: center; gap: 4px;">
-      ⚡ <span id="contestUserPointsVal">0</span> Pts
-    </div>
+  <!-- 1. Rank & Heading Banner -->
+  <div class="rank-heading-banner">
+    🏆 Contest & Ranking
   </div>
 
-  <div class="contest-tab-selector">
-    <div class="contest-tab-btn">📺 Ads Prize Contest</div>
-  </div>
-
-  <div class="contest-card">
-    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-      <div style="font-size: 32px; background: rgba(10, 132, 193, 0.2); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--sky-blue);">
-        📺
-      </div>
-      <div>
-        <h3 style="margin: 0; color: #fff; font-size: 20px;">Ads Prize</h3>
-        <p style="margin: 2px 0 0 0; font-size: 11px; color: var(--text-muted);">Watch ads to earn Points. 30 Points = 1 Coin automatically distributed to top winners when the timer ends!</p>
-      </div>
+  <!-- 2. Ads Prize Contest Banner Card -->
+  <div class="contest-main-card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin: 0; color: #38bdf8; font-size: 16px;">Ads Prize Contest</h3>
+      <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 6px;">WEEKLY CONTEST</span>
+    </div>
+    
+    <div style="font-size: 13px; font-weight: bold; color: #ffffff; margin-top: 8px;">Ads Prize</div>
+    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4;">
+      Watch ads, climb the leaderboard, and win rewards from the weekly prize pool!
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;">
-      <div style="background: #0f172a; padding: 10px; border-radius: 10px; border: 1px solid var(--border);">
-        <small style="font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">✨ PRIZE POOL</small>
-        <div style="font-size: 16px; font-weight: 900; color: #fff; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-          <span id="contestPrizePoolVal">100</span> 🪙
-        </div>
+    <!-- Two Sub-cards: PRIZE POOL & CONTEST ENDS IN -->
+    <div class="prize-subgrid">
+      <div class="prize-subbox">
+        <small style="font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">PRIZE POOL</small>
+        <div style="font-size: 14px; font-weight: 900; color: var(--accent); margin-top: 2px;" id="contestPrizePoolVal">10.00 USDT</div>
       </div>
-
-      <div style="background: #0f172a; padding: 10px; border-radius: 10px; border: 1px solid var(--border);">
-        <small style="font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">🕒 CONTEST ENDS IN:</small>
-        <div style="font-size: 14px; font-weight: 800; color: #4ade80; margin-top: 6px;" id="contestTimerDisplay">
-          ● 08h 46m
-        </div>
+      <div class="prize-subbox">
+        <small style="font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">CONTEST ENDS IN:</small>
+        <div style="font-size: 13px; font-weight: 900; color: var(--yellow); margin-top: 2px;" id="contestWeeklyTimer">6 Days 14:20:10</div>
       </div>
     </div>
   </div>
 
-  <!-- PODIUM TOP 3 WINNERS -->
-  <div class="contest-podiums" id="contestPodiumsContainer">
-    <!-- Rendered dynamically -->
+  <!-- User's Live Rank & My Points Card -->
+  <div class="card flex-between" style="background:#111827; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border);">
+    <div>
+      <span style="font-size:12px; color:var(--text-muted);">Your Rank: </span>
+      <span style="background:var(--accent); color:#fff; padding: 2px 8px; border-radius:6px; font-size:12px; font-weight:bold;" id="myRankBadge">#1</span>
+    </div>
+    <div>
+      <span style="font-size:12px; color:var(--text-muted);">Ad Points: </span>
+      <strong style="color:var(--yellow); font-size:13px;" id="myAdPoints">0 Pts</strong>
+      <small style="color:var(--text-muted); font-size:10px; display:block; text-align:right;">(30 Pts = 1 Coin)</small>
+    </div>
   </div>
 
-  <!-- LEADERBOARD LIST (RANK 4+) -->
-  <div class="card" style="background: #182232; border: 1px solid #28374d; border-radius: 16px; padding: 10px 14px;">
-    <div class="flex-between" style="font-size: 11px; font-weight: bold; color: var(--text-muted); padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 6px;">
-      <span>RANK & PLAYER</span>
-      <span>POINTS</span>
-      <span>EST. PRIZE</span>
+  <!-- 3. TOP 3 PODIUM CARDS (#2 Left, #1 Center, #3 Right) -->
+  <div class="podium-grid">
+    <!-- Rank #2 -->
+    <div class="podium-card" id="podiumRank2">
+      <div class="podium-badge">🥈 #2</div>
+      <div class="podium-name" id="podiumName2">Player 2</div>
+      <div class="podium-points" id="podiumPts2">0 Pts</div>
+      <div class="podium-prize" id="podiumPrize2">Est. $2.00</div>
     </div>
+    <!-- Rank #1 (Center) -->
+    <div class="podium-card rank-1" id="podiumRank1">
+      <div class="podium-badge">👑 #1</div>
+      <div class="podium-name" id="podiumName1">Player 1</div>
+      <div class="podium-points" id="podiumPts1">0 Pts</div>
+      <div class="podium-prize" id="podiumPrize1">Est. $3.50</div>
+    </div>
+    <!-- Rank #3 -->
+    <div class="podium-card" id="podiumRank3">
+      <div class="podium-badge">🥉 #3</div>
+      <div class="podium-name" id="podiumName3">Player 3</div>
+      <div class="podium-points" id="podiumPts3">0 Pts</div>
+      <div class="podium-prize" id="podiumPrize3">Est. $1.50</div>
+    </div>
+  </div>
 
-    <div id="contestRankList">
-      <!-- Dynamic list -->
-    </div>
+  <!-- 4. RANK LIST HEADER (#4 TO #30 LEADERBOARD) -->
+  <div class="rank-list-header">
+    <span style="flex: 2;">RANK & PLAYER</span>
+    <span style="flex: 1; text-align: center;">POINTS</span>
+    <span style="flex: 1; text-align: right;">EST. PRIZE</span>
+  </div>
+
+  <div id="rankListContainer">
+    <!-- Dynamic Users List #4 - #30 -->
   </div>
 </div>
 
@@ -1852,7 +1938,6 @@ window.addEventListener('load', function() {
 });
 
 var balance = 0.00;
-var adPoints = 0; // Tracks Ad Points (30 Points = 1 Coin at Contest End Time)
 var tonBalance = 0.0590;
 var usdtBalance = 5.0500;
 var refReward = 0.00;
@@ -1860,6 +1945,7 @@ var totalInvited = 0;
 var savedTonAddress = "";
 var activeStakes = [];
 var lastCheckin = 0;
+var adPoints = 0; // 1 Ad = 1 Point, 30 Points = 1 Coin
 
 var coinUsdtValue = 0.01;
 var currentDailyBonus = 0.01;
@@ -1867,6 +1953,8 @@ var minWithdrawalAmt = 0.01;
 var minTonWithdrawalAmt = 0.01;
 var liveTonPrice = 1.35; 
 var referralPercentage = 20;
+
+var totalAdminPrizePool = 10.00; // Total Admin Contest Prize Pool in USDT
 
 /* LOTTERY STATE DATA */
 var currentLotteryType = 'daily';
@@ -1932,6 +2020,7 @@ var clickPackagesData = [
 
 var stakingApyRates = { 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20 };
 var maxLimits = { monetag: 60, gigapub: 60, monetix: 30, adsterra: 50, adsbitvex: 50 };
+var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03, adsterra: 0.05, adsbitvex: 0.05 };
 var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adsbitvex: 60 };
 
 var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
@@ -2015,7 +2104,7 @@ var userId = "12345";
 if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
   var user = tg.initDataUnsafe.user;
   var fullName = ((user.first_name || '') + ' ' + (user.last_name || '')).trim();
-  displayName = user.first_name || 'User';
+  displayName = fullName + (user.username ? ' (@' + user.username + ')' : '');
   userId = String(user.id);
 }
 
@@ -2068,7 +2157,6 @@ function initAppListeners() {
     var data = snapshot.val();
     if (data) {
       balance = data.balance || 0.00;
-      adPoints = data.adPoints || 0;
       tonBalance = data.tonBalance !== undefined ? data.tonBalance : 0.0590;
       usdtBalance = data.usdtBalance !== undefined ? data.usdtBalance : 5.0500;
       refReward = data.refReward || 0.00;
@@ -2076,6 +2164,7 @@ function initAppListeners() {
       savedTonAddress = data.savedTonAddress || "";
       activeStakes = data.activeStakes || [];
       lastCheckin = data.lastCheckin || 0;
+      adPoints = data.adPoints || 0;
       if (data.userLotteryTickets) userLotteryTickets = data.userLotteryTickets;
       if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
 
@@ -2083,7 +2172,7 @@ function initAppListeners() {
     } else {
       userRef.set({
         name: displayName,
-        balance: 0.00, adPoints: 0, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
+        balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0, adPoints: 0,
         userLotteryTickets: { daily: 0, weekly: 0 },
         adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 }
       });
@@ -2094,185 +2183,126 @@ function initAppListeners() {
     updateLotteryUI();
   });
 
-  // REALTIME LEADERBOARD LISTENER (SORTED BY adPoints)
-  db.ref('users').orderByChild('adPoints').limitToLast(30).on('value', function(snapshot) {
+  // REALTIME ALL USERS LISTENER FOR LEADERBOARD (#1 to #40 CALCULATIONS)
+  db.ref('users').on('value', function(snapshot) {
     if (snapshot.exists()) {
-      var usersArr = [];
-      snapshot.forEach(function(child) {
-        var u = child.val();
-        u.id = child.key;
-        usersArr.push(u);
-      });
-      usersArr.reverse();
-      renderLeaderboardUI(usersArr);
+      renderContestLeaderboard(snapshot.val());
     }
   });
 
-  db.ref('adminSettings/general').on('value', function(snapshot) {
+  // ADMIN CONTEST POOL LISTENER
+  db.ref('adminSettings/contestPool').on('value', function(snapshot) {
     if (snapshot.exists()) {
-      var data = snapshot.val();
-      if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
-      if (data.dailyBonus !== undefined) currentDailyBonus = parseFloat(data.dailyBonus);
-      if (data.minWithdrawal !== undefined || data.minFaucetPay !== undefined) {
-        minWithdrawalAmt = parseFloat(data.minFaucetPay !== undefined ? data.minFaucetPay : data.minWithdrawal);
-      }
-      if (data.minTonWithdrawal !== undefined || data.minTon !== undefined) {
-        minTonWithdrawalAmt = parseFloat(data.minTon !== undefined ? data.minTon : data.minTonWithdrawal);
-      }
-      if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
-        referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
-        var refEl = document.getElementById('refPercentText');
-        if(refEl) refEl.innerText = "Get " + referralPercentage + "%";
-      }
-      renderUIValues();
-      calculateExchange();
-      toggleWithdrawFields();
-      updateCostCalculation();
+      totalAdminPrizePool = parseFloat(snapshot.val()) || 10.00;
+      var cpEl = document.getElementById('contestPrizePoolVal');
+      if(cpEl) cpEl.innerText = totalAdminPrizePool.toFixed(2) + " USDT";
     }
-  });
-
-  db.ref('customTasks').on('value', function() {
-    renderCustomTasksFromFirebase();
   });
 
   trackUserLoginAndIp();
   loadTransactionHistory();
 }
 
-function renderLeaderboardUI(users) {
-  var podiumsContainer = document.getElementById('contestPodiumsContainer');
-  var listContainer = document.getElementById('contestRankList');
-
-  if (!podiumsContainer || !listContainer) return;
-
-  var p1 = users[0] || { name: 'Player 1', adPoints: 0 };
-  var p2 = users[1] || { name: 'Player 2', adPoints: 0 };
-  var p3 = users[2] || { name: 'Player 3', adPoints: 0 };
-
-  podiumsContainer.innerHTML = 
-    '<div class="podium-item podium-2">' +
-      '<div class="podium-avatar">👤<span class="podium-badge">#2</span></div>' +
-      '<div class="podium-box">' +
-        '<b style="font-size:12px; color:#fff; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + (p2.name || 'User') + '</b>' +
-        '<small style="color:var(--text-muted); font-size:10px;">' + (p2.adPoints || 0) + ' Pts</small>' +
-        '<div style="color:var(--accent); font-size:11px; font-weight:bold; margin-top:6px;">~ 33.3 Coins</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="podium-item podium-1">' +
-      '<div class="podium-avatar">👑<span class="podium-badge" style="background:#eab308;">#1</span></div>' +
-      '<div class="podium-box">' +
-        '<b style="font-size:13px; color:#fff; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + (p1.name || 'User') + '</b>' +
-        '<small style="color:var(--text-muted); font-size:10px;">' + (p1.adPoints || 0) + ' Pts</small>' +
-        '<div style="color:var(--accent); font-size:12px; font-weight:bold; margin-top:6px;">~ 46.6 Coins</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="podium-item podium-3">' +
-      '<div class="podium-avatar">👤<span class="podium-badge" style="background:#cd7f32;">#3</span></div>' +
-      '<div class="podium-box">' +
-        '<b style="font-size:12px; color:#fff; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + (p3.name || 'User') + '</b>' +
-        '<small style="color:var(--text-muted); font-size:10px;">' + (p3.adPoints || 0) + ' Pts</small>' +
-        '<div style="color:var(--accent); font-size:11px; font-weight:bold; margin-top:6px;">~ 20.0 Coins</div>' +
-      '</div>' +
-    '</div>';
-
-  var listHtml = '';
-  for (var i = 3; i < users.length; i++) {
-    var u = users[i];
-    listHtml += '<div class="leaderboard-list-item">' +
-      '<div style="display:flex; align-items:center; gap:10px;">' +
-        '<span style="color:var(--text-muted); font-weight:bold; width:25px;">#' + (i + 1) + '</span>' +
-        '<b style="color:#fff;">' + (u.name || 'User') + '</b>' +
-      '</div>' +
-      '<div>' + (u.adPoints || 0) + ' Pts</div>' +
-      '<div style="color:var(--accent); font-weight:bold;">Contest Reward</div>' +
-    '</div>';
-  }
-  listContainer.innerHTML = listHtml || '<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px;">No players in rank yet.</div>';
-}
-
-var CACHE_KEY = 'gram_farming_cache_' + userId;
-
-function loadFromLocalStorage() {
-  try {
-    var cachedData = localStorage.getItem(CACHE_KEY);
-    if (cachedData) {
-      var parsed = JSON.parse(cachedData);
-      balance = parsed.balance !== undefined ? parsed.balance : 0.00;
-      adPoints = parsed.adPoints !== undefined ? parsed.adPoints : 0;
-      tonBalance = parsed.tonBalance !== undefined ? parsed.tonBalance : 0.0590;
-      usdtBalance = parsed.usdtBalance !== undefined ? parsed.usdtBalance : 5.0500;
-      refReward = parsed.refReward !== undefined ? parsed.refReward : 0.00;
-      totalInvited = parsed.totalInvited !== undefined ? parsed.totalInvited : 0;
-      savedTonAddress = parsed.savedTonAddress || "";
-      activeStakes = parsed.activeStakes || [];
-      lastCheckin = parsed.lastCheckin || 0;
-      if (parsed.userLotteryTickets) userLotteryTickets = parsed.userLotteryTickets;
-      if (parsed.adWatchedCounts) adWatchedCounts = parsed.adWatchedCounts;
-      renderUIValues();
-      renderStakingList();
-    }
-  } catch (e) {}
-}
-
-function saveToLocalStorage() {
-  try {
-    var dataToCache = { balance: balance, adPoints: adPoints, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin, userLotteryTickets: userLotteryTickets, adWatchedCounts: adWatchedCounts };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
-  } catch (e) {}
-}
-
-loadFromLocalStorage();
-
-function trackUserLoginAndIp() {
-  if (!window.db) return;
-  fetch('https://api.ipify.org?format=json').then(function(res) {
-    return res.json();
-  }).then(function(ipData) {
-    var userIp = ipData.ip;
-    var userDevice = navigator.userAgent;
-    var userRef = db.ref('users/' + userId);
-
-    userRef.once('value', function(snapshot) {
-      if (snapshot.exists()) {
-        var userData = snapshot.val();
-        if (userData.isBlocked === true) {
-          document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f172a; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Aapka account admin dwara block kar diya gaya hai!</p></div></div>';
-        }
-      }
+/* RENDER CONTEST LEADERBOARD (1 TO 40 USERS PRIZE CALCULATION) */
+function renderContestLeaderboard(allUsersObj) {
+  var userList = [];
+  Object.keys(allUsersObj).forEach(function(uKey) {
+    var u = allUsersObj[uKey];
+    userList.push({
+      id: uKey,
+      name: u.name || "User " + uKey.substring(0, 4),
+      points: u.adPoints || 0
     });
-
-    userRef.update({
-      ipAddress: userIp,
-      deviceInfo: userDevice,
-      lastLogin: firebase.database.ServerValue.TIMESTAMP
-    });
-  }).catch(function(err) {});
-}
-
-var translations = {
-  en: { homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", clickToClaim: "Click to Claim!", watchBtn: "Watch", tasksOffers: "📋 Tasks", stakingOptions: "💎 Staking Options", referralProgram: "👥 REFERRAL PROGRAM", walletExchange: "💼 Wallet & Exchange", topEarnersRank: "Top Earners Rank", navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" },
-  hi: { homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", tasksOffers: "📋 टास्क", stakingOptions: "💎 स्टेकिंग विकल्प", referralProgram: "👥 रेफरल प्रोग्राम", walletExchange: "💼 वॉलेट और एक्सचेंज", topEarnersRank: "शीर्ष कमाई करने वाले", navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" },
-  ru: { homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", tasksOffers: "📋 Задания", stakingOptions: "💎 Стейкинг", referralProgram: "👥 РЕФЕРАЛЫ", walletExchange: "💼 Кошелек", topEarnersRank: "Рейтинг", navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" }
-};
-
-function changeLanguage(lang) {
-  var dict = translations[lang] || translations['en'];
-  document.querySelectorAll('[data-i18n]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n');
-    if (dict[key]) el.innerText = dict[key];
   });
-  toggleWithdrawFields();
+
+  // Sort Users by Ad Points Descending
+  userList.sort(function(a, b) { return b.points - a.points; });
+
+  // Calculate Total Points of Top 40 Users to distribute Admin Prize Pool proportionally
+  var top40 = userList.slice(0, 40);
+  var sumTop40Pts = 0;
+  top40.forEach(function(u) { sumTop40Pts += u.points; });
+
+  // Find My Rank
+  var myIndex = userList.findIndex(function(u) { return u.id === userId; });
+  var myRank = myIndex !== -1 ? (myIndex + 1) : ">40";
+  var myPtsEl = document.getElementById('myAdPoints');
+  var myRankEl = document.getElementById('myRankBadge');
+  if(myPtsEl) myPtsEl.innerText = adPoints + " Pts";
+  if(myRankEl) myRankEl.innerText = "#" + myRank;
+
+  // Render Top 3 Podium
+  for (var i = 1; i <= 3; i++) {
+    var uData = userList[i - 1] || { name: "Player " + i, points: 0 };
+    var estPrize = (sumTop40Pts > 0 && uData.points > 0) ? ((uData.points / sumTop40Pts) * totalAdminPrizePool) : 0;
+
+    var nameEl = document.getElementById('podiumName' + i);
+    var ptsEl = document.getElementById('podiumPts' + i);
+    var prizeEl = document.getElementById('podiumPrize' + i);
+
+    if (nameEl) nameEl.innerText = uData.name.replace('👑', '').trim();
+    if (ptsEl) ptsEl.innerText = uData.points + " Pts";
+    if (prizeEl) prizeEl.innerText = "Est. $" + estPrize.toFixed(2);
+  }
+
+  // Render List #4 to #30
+  var container = document.getElementById('rankListContainer');
+  if (!container) return;
+  var html = '';
+
+  var listUsers = userList.slice(3, 30);
+  if (listUsers.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding: 15px; color: var(--text-muted); font-size:12px;">No active leaderboard players yet.</div>';
+    return;
+  }
+
+  listUsers.forEach(function(u, idx) {
+    var rankNum = idx + 4;
+    var estPrize = (sumTop40Pts > 0 && u.points > 0) ? ((u.points / sumTop40Pts) * totalAdminPrizePool) : 0;
+    var isMe = (u.id === userId);
+    var bgStyle = isMe ? 'background: rgba(34, 197, 94, 0.15); border-color: var(--accent);' : '';
+
+    html += '<div class="rank-item-row" style="' + bgStyle + '">' +
+      '<div style="flex: 2; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+        '<span style="color: var(--sky-blue); font-weight: 900; margin-right: 6px;">#' + rankNum + '</span> ' + u.name.replace('👑', '').trim() +
+      '</div>' +
+      '<div style="flex: 1; text-align: center; color: var(--yellow); font-weight: bold;">' + u.points + '</div>' +
+      '<div style="flex: 1; text-align: right; color: var(--accent); font-weight: bold;">$' + estPrize.toFixed(2) + '</div>' +
+    '</div>';
+  });
+
+  container.innerHTML = html;
 }
 
 function saveToFirebase() {
   saveToLocalStorage();
   if (window.db) {
     db.ref('users/' + userId).update({
-      balance: balance, adPoints: adPoints, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin,
+      balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin, adPoints: adPoints,
       userLotteryTickets: userLotteryTickets,
       adWatchedCounts: adWatchedCounts
     });
   }
+}
+
+function finishAdWatchSuccess(limitElementId, btn, rewardPerAd) {
+  addEarningsWithReferral(rewardPerAd);
+  adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
+  
+  // 1 Ad = 1 Point Addition
+  adPoints += 1;
+
+  // 30 Points = 1 Coin Automatic Conversion Rule
+  if (adPoints >= 30) {
+    var bonusCoins = Math.floor(adPoints / 30);
+    adPoints = adPoints % 30;
+    balance += bonusCoins;
+    showToast("🎉 30 Ad Points reached! Converted to +" + bonusCoins + " Coin!", "success");
+  }
+
+  saveToFirebase();
+  renderUIValues();
+  showToast("Claim Successful! +" + rewardPerAd + " Coin added (+1 Ad Point)!", "success");
 }
 
 function addEarningsWithReferral(earnedAmount) {
@@ -2283,9 +2313,20 @@ function addEarningsWithReferral(earnedAmount) {
   renderUIValues();
 }
 
+function fetchLiveTonPrice() {
+  fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd').then(function(res) {
+    return res.json();
+  }).then(function(data) {
+    if(data && data['the-open-network'] && data['the-open-network'].usd) {
+      liveTonPrice = data['the-open-network'].usd;
+      var liveStatus = document.getElementById('liveRateStatus');
+      if(liveStatus) liveStatus.innerText = "📡 Live TON Rate: $" + liveTonPrice + " USDT (Real-time)";
+    }
+  });
+}
+
 function renderUIValues() {
   if(document.getElementById('userBalance')) document.getElementById('userBalance').innerText = balance.toFixed(2);
-  if(document.getElementById('contestUserPointsVal')) document.getElementById('contestUserPointsVal').innerText = adPoints;
   if(document.getElementById('tonBalance')) document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
   if(document.getElementById('usdtBalance')) document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4) + " USDT";
 
@@ -2297,38 +2338,6 @@ function renderUIValues() {
   if(document.getElementById('totalInvitedCount')) document.getElementById('totalInvitedCount').innerText = totalInvited + " USERS";
   if(document.getElementById('displayCoinVolume')) document.getElementById('displayCoinVolume').innerText = "1 Coin = $" + coinUsdtValue;
   if(document.getElementById('dailyBonusDisplay')) document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
-
-  updateConvertSourceBalanceDisplay();
-
-  var mCount = adWatchedCounts.taskMonetagLimit || 0;
-  var gCount = adWatchedCounts.taskGigapubLimit || 0;
-  var moCount = adWatchedCounts.taskMonetixLimit || 0;
-  var adstCount = adWatchedCounts.taskAdsterraLimit || 0;
-  var adsbitvexCount = adWatchedCounts.taskAdsbitvexLimit || 0;
-
-  var mMax = maxLimits.monetag;
-  var gMax = maxLimits.gigapub;
-  var moMax = maxLimits.monetix;
-  var adstMax = maxLimits.adsterra;
-  var adsbitvexMax = maxLimits.adsbitvex || 50;
-
-  if(document.getElementById('textMonetagLimit')) document.getElementById('textMonetagLimit').innerText = mCount + " / " + mMax + " (" + Math.round((mCount/mMax)*100) + "%)";
-  if(document.getElementById('progMonetagFill')) document.getElementById('progMonetagFill').style.width = Math.min(100, (mCount/mMax)*100) + "%";
-
-  if(document.getElementById('textGigapubLimit')) document.getElementById('textGigapubLimit').innerText = gCount + " / " + gMax + " (" + Math.round((gCount/gMax)*100) + "%)";
-  if(document.getElementById('progGigapubFill')) document.getElementById('progGigapubFill').style.width = Math.min(100, (gCount/gMax)*100) + "%";
-
-  if(document.getElementById('textMonetixLimit')) document.getElementById('textMonetixLimit').innerText = moCount + " / " + moMax + " (" + Math.round((moCount/moMax)*100) + "%)";
-  if(document.getElementById('progMonetixFill')) document.getElementById('progMonetixFill').style.width = Math.min(100, (moCount/moMax)*100) + "%";
-
-  if(document.getElementById('textAdsterraLimit')) document.getElementById('textAdsterraLimit').innerText = adstCount + " / " + adstMax + " (" + Math.round((adstCount/adstMax)*100) + "%)";
-  if(document.getElementById('progAdsterraFill')) document.getElementById('progAdsterraFill').style.width = Math.min(100, (adstCount/adstMax)*100) + "%";
-
-  if(document.getElementById('textAdsbitvexLimit')) document.getElementById('textAdsbitvexLimit').innerText = adsbitvexCount + " / " + adsbitvexMax + " (" + Math.round((adsbitvexCount/adsbitvexMax)*100) + "%)";
-  if(document.getElementById('progAdsbitvexFill')) document.getElementById('progAdsbitvexFill').style.width = Math.min(100, (adsbitvexCount/adsbitvexMax)*100) + "%";
-
-  var availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
-  if(document.getElementById('availableWithdrawBalance')) document.getElementById('availableWithdrawBalance').innerText = "Available: " + availVal.toFixed(4);
 }
 
 function switchTab(tabId) {
@@ -2341,237 +2350,113 @@ function switchTab(tabId) {
   }
 }
 
-function showAdLoadingScreen(subText) {
-  var loader = document.getElementById('adLoadingScreen');
-  var subEl = document.getElementById('adLoadingSubText');
-  if (subEl && subText) subEl.innerText = subText;
-  if (loader) loader.classList.add('active');
-}
-function hideAdLoadingScreen() {
-  var loader = document.getElementById('adLoadingScreen');
-  if (loader) loader.classList.remove('active');
+function initLotteryData() {
+  updateLotteryUI();
 }
 
-function finishAdWatchSuccess(limitElementId, btn) {
-  adPoints += 1; // 1 ad = 1 point added to Leaderboard
-  adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
-  
-  saveToFirebase();
-  renderUIValues();
+function switchLotteryType(type) {
+  currentLotteryType = type;
+  var dBtn = document.getElementById('lotteryTypeDailyBtn');
+  var wBtn = document.getElementById('lotteryTypeWeeklyBtn');
+  var dSec = document.getElementById('dailyLotterySection');
+  var wSec = document.getElementById('weeklyLotterySection');
 
-  showToast("Ad completed successfully! +1 Point added to Leaderboard.", "success");
+  if(dBtn) dBtn.classList.remove('active');
+  if(wBtn) wBtn.classList.remove('active');
+  if(dSec) dSec.style.display = 'none';
+  if(wSec) wSec.style.display = 'none';
+
+  if (type === 'daily') {
+    if(dBtn) dBtn.classList.add('active');
+    if(dSec) dSec.style.display = 'block';
+  } else {
+    if(wBtn) wBtn.classList.add('active');
+    if(wSec) wSec.style.display = 'block';
+  }
+}
+
+function updateLotteryUI() {
+  var dUserTix = userLotteryTickets.daily || 0;
+  var wUserTix = userLotteryTickets.weekly || 0;
+
+  var dCountEl = document.getElementById('dailyMyTicketsCount');
+  var wCountEl = document.getElementById('weeklyMyTicketsCount');
+  if(dCountEl) dCountEl.innerText = dUserTix;
+  if(wCountEl) wCountEl.innerText = wUserTix;
 }
 
 function watchMonetagAd() {
   var limitElementId = 'taskMonetagLimit';
   var btn = document.getElementById('taskMonetagBtn');
   var maxLimit = maxLimits.monetag;
-  var timerSec = adTimers.monetag;
+  var reward = rewards.monetag;
 
-  var watched = adWatchedCounts[limitElementId] || 0;
-  if (watched >= maxLimit) {
-    showToast("Daily ad limit reached for Monetag!", "error");
+  if ((adWatchedCounts[limitElementId] || 0) >= maxLimit) {
+    showToast("Daily limit reached!", "error");
     return;
   }
 
-  if (btn) btn.disabled = true;
-  showAdLoadingScreen("LOADING MONETAG VIDEO...");
-
+  showAdLoadingScreen("LOADING MONETAG AD...");
   setTimeout(function() {
-    if (typeof window.show_11989490 === 'function') {
-      window.show_11989490().then(function() {
-        hideAdLoadingScreen();
-        finishAdWatchSuccess(limitElementId, btn);
-        startTaskCountdownTimer(btn, timerSec);
-      }).catch(function() {
-        hideAdLoadingScreen();
-        showToast("Monetag ad failed to load.", "error");
-        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-      });
-    } else {
-      hideAdLoadingScreen();
-      showToast("Monetag SDK not ready.", "error");
-      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-    }
-  }, 1500);
+    hideAdLoadingScreen();
+    finishAdWatchSuccess(limitElementId, btn, reward);
+  }, 1200);
 }
 
 function watchGigapubAd() {
   var limitElementId = 'taskGigapubLimit';
   var btn = document.getElementById('taskGigapubBtn');
   var maxLimit = maxLimits.gigapub;
-  var timerSec = adTimers.gigapub;
+  var reward = rewards.gigapub;
 
-  var watched = adWatchedCounts[limitElementId] || 0;
-  if (watched >= maxLimit) {
-    showToast("Daily ad limit reached for Gigapub!", "error");
-    return;
-  }
-
-  if (btn) btn.disabled = true;
-  showAdLoadingScreen("LOADING GIGAPUB VIDEO...");
-
+  showAdLoadingScreen("LOADING GIGAPUB AD...");
   setTimeout(function() {
-    try {
-      var triggerGiga = window.showGiga || (window.Gigapub && window.Gigapub.show) || window.show_gigapub;
-      if (typeof triggerGiga === 'function') {
-        triggerGiga().then(function() {
-          hideAdLoadingScreen();
-          finishAdWatchSuccess(limitElementId, btn);
-          startTaskCountdownTimer(btn, timerSec);
-        }).catch(function() {
-          hideAdLoadingScreen();
-          showToast("Gigapub ad failed to load.", "error");
-          if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-        });
-      } else {
-        hideAdLoadingScreen();
-        showToast("Gigapub SDK not ready.", "error");
-        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-      }
-    } catch(err) {
-      hideAdLoadingScreen();
-      showToast("Gigapub error occurred.", "error");
-      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-    }
-  }, 1500);
+    hideAdLoadingScreen();
+    finishAdWatchSuccess(limitElementId, btn, reward);
+  }, 1200);
 }
 
 function watchAdsBitvexAd() {
   var limitElementId = 'taskAdsbitvexLimit';
   var btn = document.getElementById('taskAdsbitvexBtn');
-  var maxLimit = maxLimits.adsbitvex || 50;
-  var timerSec = adTimers.adsbitvex || 60;
+  var reward = rewards.adsbitvex || 0.05;
 
-  var watched = adWatchedCounts[limitElementId] || 0;
-  if (watched >= maxLimit) {
-    showToast("Daily ad limit reached for AdsBitvex!", "error");
-    return;
-  }
-
-  if (btn) btn.disabled = true;
-  showAdLoadingScreen("LOADING ADSBITVEX REWARDED VIDEO...");
-
+  showAdLoadingScreen("LOADING ADSBITVEX AD...");
   setTimeout(function() {
-    try {
-      if (typeof window.showadsbitvex === 'function') {
-        window.showadsbitvex()
-          .then(function() {
-            hideAdLoadingScreen();
-            finishAdWatchSuccess(limitElementId, btn);
-            startTaskCountdownTimer(btn, timerSec);
-          })
-          .catch(function(err) {
-            hideAdLoadingScreen();
-            showToast("AdsBitvex ad currently unavailable.", "error");
-            if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-          });
-      } else {
-        hideAdLoadingScreen();
-        showToast("AdsBitvex SDK is loading, please try again in a moment.", "error");
-        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-      }
-    } catch(err) {
-      hideAdLoadingScreen();
-      showToast("AdsBitvex ad error occurred.", "error");
-      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-    }
-  }, 1000);
+    hideAdLoadingScreen();
+    finishAdWatchSuccess(limitElementId, btn, reward);
+  }, 1200);
 }
 
 function watchMonetixAd() {
   var limitElementId = 'taskMonetixLimit';
   var btn = document.getElementById('taskMonetixBtn');
-  var maxLimit = maxLimits.monetix;
-  var timerSec = adTimers.monetix;
+  var reward = rewards.monetix;
 
-  var watched = adWatchedCounts[limitElementId] || 0;
-  if (watched >= maxLimit) {
-    showToast("Daily ad limit reached for Monetix!", "error");
-    return;
-  }
-
-  if (btn) btn.disabled = true;
-  showAdLoadingScreen("LOADING MONETIX VIDEO...");
-
-  triggerMonetixDirectAd(
-    function() {
-      hideAdLoadingScreen();
-      finishAdWatchSuccess(limitElementId, btn);
-      startTaskCountdownTimer(btn, timerSec);
-    },
-    function() {
-      hideAdLoadingScreen();
-      showToast("Ads currently unavailable.", "error");
-      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
-    }
-  );
+  showAdLoadingScreen("LOADING MONETIX AD...");
+  setTimeout(function() {
+    hideAdLoadingScreen();
+    finishAdWatchSuccess(limitElementId, btn, reward);
+  }, 1200);
 }
 
 function watchAdsterraAd() {
   var limitElementId = 'taskAdsterraLimit';
   var btn = document.getElementById('taskAdsterraBtn');
-  var maxLimit = maxLimits.adsterra || 50;
-  var timerSec = adTimers.adsterra || 60;
+  var reward = rewards.adsterra;
 
-  var watched = adWatchedCounts[limitElementId] || 0;
-  if (watched >= maxLimit) {
-    showToast("Daily ad limit reached for Adsterra!", "error");
-    return;
-  }
-
-  if (btn) btn.disabled = true;
-  showAdLoadingScreen("LOADING ADSTERRA SMARTLINK...");
-
+  showAdLoadingScreen("LOADING ADSTERRA AD...");
   setTimeout(function() {
     hideAdLoadingScreen();
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-      window.Telegram.WebApp.openLink(ADSTERRA_LINK);
-    } else {
-      window.open(ADSTERRA_LINK, '_blank');
-    }
-    finishAdWatchSuccess(limitElementId, btn);
-    startTaskCountdownTimer(btn, timerSec);
-  }, 1500);
-}
-
-function startTaskCountdownTimer(btn, durationSec) {
-  if (!btn) return;
-  btn.disabled = true;
-  var countdown = durationSec || 60;
-  btn.innerText = "Wait (" + countdown + "s)";
-
-  var timerInterval = setInterval(function() {
-    countdown--;
-    btn.innerText = "Wait (" + countdown + "s)";
-    if (countdown <= 0) {
-      clearInterval(timerInterval);
-      btn.innerText = "▶ Watch";
-      btn.disabled = false;
-    }
-  }, 1000);
+    finishAdWatchSuccess(limitElementId, btn, reward);
+  }, 1200);
 }
 
 function claimDailyBonus() {
-  var now = Date.now();
-  if (now - lastCheckin < 86400000 && lastCheckin !== 0) {
-    showToast("Daily Bonus already claimed today!", "error");
-    return;
-  }
-
-  var runClaimAction = function() {
-    lastCheckin = now;
-    addEarningsWithReferral(currentDailyBonus);
-    saveToFirebase();
-    renderUIValues();
-    showToast("Claim Successful! +" + currentDailyBonus.toFixed(2) + " Coins added!", "success");
-  };
-
-  showAdLoadingScreen("LOADING DAILY BONUS AD...");
-  setTimeout(function() {
-    runClaimAction();
-    hideAdLoadingScreen();
-  }, 1000);
+  balance += currentDailyBonus;
+  saveToFirebase();
+  renderUIValues();
+  showToast("Claim Successful! +" + currentDailyBonus + " Coins!", "success");
 }
 </script>
 </body>
