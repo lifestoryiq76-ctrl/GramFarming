@@ -233,7 +233,7 @@ display: inline-block;
 input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
 input:focus, select:focus { border-color: var(--accent); }
 
-/* LOTTERY CUSTOM STYLES BASED ON ATTACHED SCREENSHOTS */
+/* LOTTERY CUSTOM STYLES */
 .lottery-tab-selector {
   display: flex;
   background: #0f172a;
@@ -1180,7 +1180,7 @@ Cost: <strong>35 Coins</strong>
 
       <div>
         <div class="lottery-winners-badge">
-          🏆 <span id="dailyWinnersText">0 Winners</span>
+          🏆 <span id="dailyWinnersText">2 Winners</span>
         </div>
       </div>
       <div style="font-size: 10px; color: #64748b; margin-top: 6px;">2 winners + 2 per every 10 tickets</div>
@@ -1195,7 +1195,7 @@ Cost: <strong>35 Coins</strong>
         <div class="progress-line-fill" id="dailyTicketsProgFill" style="width: 0%; background: #0a84c1;"></div>
       </div>
       <div class="flex-between" style="font-size: 11px; color: #64748b;">
-        <span><span id="dailyTicketPriceDisp">0.1</span> USDT / ticket</span>
+        <span><span id="dailyTicketPriceDisp">0.02</span> USDT / ticket</span>
         <span>Max <span id="dailyMaxTicketsDisp2">100</span> tickets/day</span>
       </div>
     </div>
@@ -1232,7 +1232,7 @@ Cost: <strong>35 Coins</strong>
         <div class="quick-qty-btn" onclick="setLotteryQuickQty('daily', 'MAX', this)">MAX</div>
       </div>
 
-      <button class="buy-ticket-btn" id="dailyBuyBtn" onclick="buyLotteryTickets('daily')">Buy for 0.10 USDT</button>
+      <button class="buy-ticket-btn" id="dailyBuyBtn" onclick="buyLotteryTickets('daily')">Buy for 0.02 USDT</button>
     </div>
 
     <div class="lottery-card">
@@ -1356,7 +1356,7 @@ Cost: <strong>35 Coins</strong>
       <span>❔ How it works</span>
     </div>
     <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: #94a3b8; line-height: 1.8;">
-      <li>1 ticket = <strong style="color:#fff;" id="ruleTicketPriceText">0.1 USDT</strong> (max <span id="ruleMaxTicketsText">100</span> tickets/period per user)</li>
+      <li>1 ticket = <strong style="color:#fff;" id="ruleTicketPriceText">0.02 USDT</strong> (max <span id="ruleMaxTicketsText">100</span> tickets/period per user)</li>
       <li>80% of ticket cost is added directly to the jackpot pool</li>
       <li>Draw runs automatically at 00:00 UTC using provably fair RNG</li>
       <li>Prizes are credited directly to your balance and notifications sent</li>
@@ -1775,7 +1775,7 @@ var lotteryTicketQuantities = { daily: 1, weekly: 1 };
 var userLotteryTickets = { daily: 0, weekly: 0 };
 
 var lotteryConfig = {
-  daily: { status: true, ticketPrice: 0.10, maxTickets: 100, poolVal: 0.00, winners: 2 },
+  daily: { status: true, ticketPrice: 0.02, maxTickets: 100, poolVal: 1.28, winners: 2 },
   weekly: { status: true, ticketPrice: 0.50, maxTickets: 500, poolVal: 25.50, winners: 10 }
 };
 
@@ -2484,10 +2484,50 @@ function switchTab(tabId) {
   }
 }
 
-/* --- LOTTERY CONTROLLER FUNCTIONS --- */
+/* --- LOTTERY CONTROLLER FUNCTIONS WITH AUTO-REFRESH & HISTORY --- */
 function initLotteryData() {
+  checkAndRefreshLotteryHistory();
   updateLotteryUI();
   setInterval(updateLotteryCountdowns, 1000);
+}
+
+function checkAndRefreshLotteryHistory() {
+  var now = new Date();
+  
+  // Yesterday's Date Formatter (YYYY-MM-DD)
+  var yesterday = new Date(now);
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  var yStr = yesterday.toISOString().split('T')[0];
+  var dDateEl = document.getElementById('dailyLastDrawDate');
+  if (dDateEl) dDateEl.innerText = yStr;
+
+  // Last Sunday's Date Formatter for Weekly
+  var lastSunday = new Date(now);
+  var dayOfWeek = lastSunday.getUTCDay();
+  var diffToLastSun = dayOfWeek === 0 ? 7 : dayOfWeek;
+  lastSunday.setUTCDate(lastSunday.getUTCDate() - diffToLastSun);
+  var wStr = lastSunday.toISOString().split('T')[0];
+  var wDateEl = document.getElementById('weeklyLastDrawDate');
+  if (wDateEl) wDateEl.innerText = wStr;
+
+  // Fetch or listen to Firebase lottery history archive
+  if (window.db) {
+    db.ref('adminSettings/lotteryHistory').on('value', function(snapshot) {
+      if (snapshot.exists()) {
+        var hist = snapshot.val();
+        if (hist.daily) {
+          if (document.getElementById('dailyLastPoolVal')) document.getElementById('dailyLastPoolVal').innerText = (hist.daily.poolVal || 1.28) + " USDT";
+          if (document.getElementById('dailyLastWinnersVal')) document.getElementById('dailyLastWinnersVal').innerText = hist.daily.winners || 4;
+          if (document.getElementById('dailyLastTicketsVal')) document.getElementById('dailyLastTicketsVal').innerText = hist.daily.tickets || 16;
+        }
+        if (hist.weekly) {
+          if (document.getElementById('weeklyLastPoolVal')) document.getElementById('weeklyLastPoolVal').innerText = (hist.weekly.poolVal || 18.50) + " USDT";
+          if (document.getElementById('weeklyLastWinnersVal')) document.getElementById('weeklyLastWinnersVal').innerText = hist.weekly.winners || 8;
+          if (document.getElementById('weeklyLastTicketsVal')) document.getElementById('weeklyLastTicketsVal').innerText = hist.weekly.tickets || 42;
+        }
+      }
+    });
+  }
 }
 
 function switchLotteryType(type) {
@@ -2522,9 +2562,7 @@ function switchLotteryType(type) {
 function setLotteryPayMethod(type, method) {
   lotteryPayMethods[type] = method;
   var inAppBtn = document.getElementById(type + 'PayInAppBtn');
-
   if(inAppBtn) inAppBtn.classList.remove('active');
-
   if (method === 'inapp' && inAppBtn) inAppBtn.classList.add('active');
 }
 
@@ -2617,6 +2655,12 @@ function updateLotteryCountdowns() {
   var nextDaily = new Date();
   nextDaily.setUTCHours(24, 0, 0, 0);
   var diffD = Math.max(0, Math.floor((nextDaily - now) / 1000));
+  
+  // Check if timer just hit 00:00 UTC to auto-refresh lottery data
+  if (diffD <= 1) {
+    checkAndRefreshLotteryHistory();
+  }
+
   var dHours = String(Math.floor(diffD / 3600)).padStart(2, '0');
   var dMins = String(Math.floor((diffD % 3600) / 60)).padStart(2, '0');
   var dSecs = String(diffD % 60).padStart(2, '0');
