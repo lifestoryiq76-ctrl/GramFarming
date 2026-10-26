@@ -266,25 +266,8 @@ input:focus, select:focus { border-color: var(--accent); }
 .contest-info-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 .contest-info-value { font-size: 18px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
 
-/* PODIUM TOP 3 VERTICAL CARDS STYLING */
-.podium-wrapper { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; position: relative; z-index: 2; }
-.podium-item-vertical { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #182b48 0%, #101c30 100%); border: 1.5px solid rgba(14, 165, 233, 0.35); border-radius: 16px; padding: 14px 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
-.podium-item-vertical.rank-1 { background: linear-gradient(135deg, #23395d 0%, #152742 100%); border-color: rgba(234, 179, 8, 0.6); }
-
-.podium-user-info-left { display: flex; align-items: center; gap: 12px; }
-.podium-avatar-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; background: #1e293b; border: 2px solid var(--border); flex-shrink: 0; }
-.podium-avatar-circle.gold { border-color: #facc15; box-shadow: 0 0 15px rgba(250, 204, 21, 0.4); }
-.podium-avatar-circle.silver { border-color: #94a3b8; }
-.podium-avatar-circle.bronze { border-color: #d97706; }
-
-.rank-tag-badge { position: absolute; bottom: -4px; right: -4px; background: #eab308; color: #000; font-size: 9px; font-weight: 900; padding: 1px 5px; border-radius: 8px; }
-.podium-name { font-size: 13px; font-weight: bold; color: #fff; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.podium-score { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-
-.podium-prize-right { text-align: right; }
-.podium-prize-title { font-size: 9px; font-weight: 800; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 2px; text-transform: uppercase; }
-.podium-prize-val { font-size: 14px; font-weight: 800; color: #22c55e; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
-.podium-item-vertical.rank-1 .podium-prize-val { color: #facc15; }
+/* PODIUM TOP 3 HORIZONTAL CARDS STYLING */
+.podium-wrapper { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin-bottom: 20px; position: relative; z-index: 2; }
 
 .user-status-bar {
   background: linear-gradient(135deg, #162238 0%, #0e1728 100%); border: 1px solid rgba(14, 165, 233, 0.4); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; z-index: 2;
@@ -1028,14 +1011,14 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
-<!-- RANKING PAGE WITH BHAIRAVALI WATERMARK & LIVE STATUS (REMOVED REFS TAB) -->
+<!-- RANKING PAGE WITH BHAIRAVALI WATERMARK & LIVE STATUS -->
 <div id="ranking" class="tab-content ranking-watermark-container">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
     <h3 style="margin: 0; font-size: 20px;">LEADERBOARD</h3>
     <span class="live-badge" style="font-size: 11px; padding: 3px 8px;">LIVE</span>
   </div>
 
-  <!-- SECTION: ADS CONTEST & LEADERBOARD (VERTICAL TOP 3 CARDS) -->
+  <!-- SECTION: ADS CONTEST & LEADERBOARD (HORIZONTAL TOP 3 CARDS) -->
   <div id="contestAdsSection">
     <div class="contest-banner-card">
       <div class="contest-banner-header">
@@ -1057,60 +1040,54 @@ Cost: <strong>35 Coins</strong>
       </div>
     </div>
 
-    <!-- VERTICAL PODIUM TOP 3 CARDS -->
+    <!-- HORIZONTAL PODIUM TOP 3 CARDS -->
     <div class="podium-wrapper">
       
-      <!-- #1 GOLD VERTICAL CARD -->
-      <div class="podium-item-vertical rank-1">
-        <div class="podium-user-info-left">
-          <div class="podium-avatar-circle gold">
-            <span style="font-size: 18px;">👑</span>
-            <span class="rank-tag-badge">#1</span>
-          </div>
-          <div>
-            <div class="podium-name" style="color:#facc15;">Kelvin Carter</div>
-            <div class="podium-score" id="podiumScoreAds1">0 Points</div>
-          </div>
+      <!-- #2 SILVER CARD (LEFT) -->
+      <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(148, 163, 184, 0.4); border-radius: 16px; padding: 14px 8px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 130px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="position: relative; width: 42px; height: 42px; margin: 0 auto 6px auto;">
+          <div style="width: 42px; height: 42px; background: #1e293b; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 12px;">RR</div>
+          <span style="position: absolute; bottom: -4px; right: -4px; background: #94a3b8; color: #000; font-size: 8px; font-weight: 900; padding: 1px 4px; border-radius: 6px;">#2</span>
         </div>
-        <div class="podium-prize-right">
-          <div class="podium-prize-title">PRIZE</div>
-          <div class="podium-prize-val">+0.70 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
+        <div>
+          <div style="font-size: 11px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="podiumName2">Rezki Rezki</div>
+          <div style="font-size: 10px; color: var(--text-muted);" id="podiumScoreAds2">0 Points</div>
+        </div>
+        <div style="background: rgba(14, 165, 233, 0.15); border-radius: 10px; padding: 6px; margin-top: 6px;">
+          <div style="font-size: 8px; font-weight: 800; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase;">PRIZE</div>
+          <div style="font-size: 12px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; justify-content: center; gap: 2px;">+0.55 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:12px; height:12px;" /></div>
         </div>
       </div>
 
-      <!-- #2 SILVER VERTICAL CARD -->
-      <div class="podium-item-vertical">
-        <div class="podium-user-info-left">
-          <div class="podium-avatar-circle silver">
-            <span style="font-size:13px; font-weight:bold; color:#fff;">RR</span>
-            <span class="rank-tag-badge" style="background:#94a3b8;">#2</span>
-          </div>
-          <div>
-            <div class="podium-name">Rezki Rezki</div>
-            <div class="podium-score" id="podiumScoreAds2">0 Points</div>
-          </div>
+      <!-- #1 GOLD CARD (CENTER - HIGHER) -->
+      <div style="flex: 1.1; background: linear-gradient(135deg, #23395d 0%, #152742 100%); border: 1.5px solid rgba(234, 179, 8, 0.7); border-radius: 16px; padding: 16px 8px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.5); min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; transform: translateY(-8px);">
+        <div style="position: relative; width: 48px; height: 48px; margin: 0 auto 6px auto;">
+          <div style="width: 48px; height: 48px; background: #1e293b; border: 2px solid #facc15; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);">👑</div>
+          <span style="position: absolute; bottom: -4px; right: -4px; background: #eab308; color: #000; font-size: 9px; font-weight: 900; padding: 1px 5px; border-radius: 8px;">#1</span>
         </div>
-        <div class="podium-prize-right">
-          <div class="podium-prize-title">PRIZE</div>
-          <div class="podium-prize-val">+0.55 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
+        <div>
+          <div style="font-size: 12px; font-weight: bold; color: #facc15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="podiumName1">Kelvin Carter</div>
+          <div style="font-size: 10px; color: var(--text-muted);" id="podiumScoreAds1">0 Points</div>
+        </div>
+        <div style="background: rgba(234, 179, 8, 0.15); border-radius: 10px; padding: 8px; margin-top: 6px;">
+          <div style="font-size: 8px; font-weight: 800; color: #eab308; letter-spacing: 0.5px; text-transform: uppercase;">PRIZE</div>
+          <div style="font-size: 13px; font-weight: 900; color: #facc15; display: flex; align-items: center; justify-content: center; gap: 2px;">+0.70 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:12px; height:12px;" /></div>
         </div>
       </div>
 
-      <!-- #3 BRONZE VERTICAL CARD -->
-      <div class="podium-item-vertical">
-        <div class="podium-user-info-left">
-          <div class="podium-avatar-circle bronze">
-            <span style="font-size:11px; font-weight:bold; color:#fff;">GJ</span>
-            <span class="rank-tag-badge" style="background:#d97706; color:#fff;">#3</span>
-          </div>
-          <div>
-            <div class="podium-name">GODWILL *TAPX...</div>
-            <div class="podium-score" id="podiumScoreAds3">0 Points</div>
-          </div>
+      <!-- #3 BRONZE CARD (RIGHT) -->
+      <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(217, 119, 6, 0.4); border-radius: 16px; padding: 14px 8px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 130px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="position: relative; width: 42px; height: 42px; margin: 0 auto 6px auto;">
+          <div style="width: 42px; height: 42px; background: #1e293b; border: 2px solid #d97706; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 11px;">GJ</div>
+          <span style="position: absolute; bottom: -4px; right: -4px; background: #d97706; color: #fff; font-size: 8px; font-weight: 900; padding: 1px 4px; border-radius: 6px;">#3</span>
         </div>
-        <div class="podium-prize-right">
-          <div class="podium-prize-title">PRIZE</div>
-          <div class="podium-prize-val">+0.45 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
+        <div>
+          <div style="font-size: 11px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="podiumName3">GODWILL *TAPX...</div>
+          <div style="font-size: 10px; color: var(--text-muted);" id="podiumScoreAds3">0 Points</div>
+        </div>
+        <div style="background: rgba(217, 119, 6, 0.15); border-radius: 10px; padding: 6px; margin-top: 6px;">
+          <div style="font-size: 8px; font-weight: 800; color: #d97706; letter-spacing: 0.5px; text-transform: uppercase;">PRIZE</div>
+          <div style="font-size: 12px; font-weight: 800; color: #fbbf24; display: flex; align-items: center; justify-content: center; gap: 2px;">+0.45 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:12px; height:12px;" /></div>
         </div>
       </div>
 
