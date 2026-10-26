@@ -332,7 +332,7 @@ input:focus, select:focus { border-color: var(--accent); }
   font-size: 12px;
 }
 
-/* LOTTERY CUSTOM STYLES BASED ON ATTACHED SCREENSHOTS */
+/* LOTTERY STYLES */
 .lottery-tab-selector {
   display: flex;
   background: #0f172a;
@@ -1449,7 +1449,7 @@ Cost: <strong>35 Coins</strong>
     </div>
   </div>
 
-  <!-- HOW IT WORKS INSTRUCTIONS CARD -->
+  <!-- HOW IT WORKS -->
   <div class="lottery-card" style="background: #0f172a;">
     <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: #cbd5e1; margin-bottom: 10px;">
       <span>❔ How it works</span>
@@ -1460,9 +1460,6 @@ Cost: <strong>35 Coins</strong>
       <li>Draw runs automatically at 00:00 UTC using provably fair RNG</li>
       <li>Prizes are credited directly to your balance and notifications sent</li>
     </ul>
-    <div style="margin-top: 12px; font-size: 11px; color: #22c55e; display: flex; align-items: center; gap: 6px;">
-      <span>🛡️ Mobile-only verified accounts. Multi-accounting is strictly prohibited.</span>
-    </div>
   </div>
 </div>
 
@@ -1477,11 +1474,11 @@ Cost: <strong>35 Coins</strong>
 </div>
 
 <div class="card" style="background:#111827; border:1px solid var(--accent);">
-<h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="stakingCalc">🧮 Staking Calculator & Preview</h4>
+<h4 style="margin:0 0 8px 0; color: var(--accent);">🧮 Staking Calculator & Preview</h4>
 <label style="font-size:13px; color:var(--text-muted);">Enter Staking <span id="calcCurrencyLabel">Coin</span>:</label>
 <input type="number" id="stakeCalcInput" placeholder="e.g. 100" oninput="calculateStakeRewards()">
 
-<label style="font-size:13px; color:var(--text-muted); margin-top:8px; display:block;" data-i18n="selectPlan">Select Plan:</label>
+<label style="font-size:13px; color:var(--text-muted); margin-top:8px; display:block;">Select Plan:</label>
 <select id="stakeCalcPlan" onchange="calculateStakeRewards()">
 <option value="0|4">Flexible (0 Days - 4% APY)</option>
 <option value="7|3">Fixed (7 Days - 3% APY)</option>
@@ -1494,245 +1491,111 @@ Cost: <strong>35 Coins</strong>
 </select>
 
 <div style="margin-top:10px; padding:10px; background:#0f172a; border-radius:8px; font-size:13px; border:1px solid var(--border);">
-<div>☀ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
-<div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
+<div>☀ Daily Reward: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
+<div>🌟 Total Period Reward: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
 </div>
 </div>
 
-<h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;" data-i18n="flexHeader">1. Flexible Staking</h4>
+<h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;">1. Flexible Staking</h4>
 <div class="card">
 <div class="flex-between">
 <div>
-<b data-i18n="flexTitle">Flexible Staking</b><br>
-<small style="color:var(--text-muted);" data-i18n="flexDesc">Unstake anytime with zero locking period.</small><br>
+<b>Flexible Staking</b><br>
+<small style="color:var(--text-muted);">Unstake anytime with zero locking period.</small><br>
 <span style="color: var(--accent); font-size: 13px; font-weight: bold;"><span id="displayFlexApy">4</span>% APY</span>
 </div>
-<button class="btn" style="width: auto; background: var(--accent);" onclick="stake('Flexible', 0, stakingApyRates[0] || 4)" data-i18n="stakeBtn">Stake</button>
+<button class="btn" style="width: auto; background: var(--accent);" onclick="stake('Flexible', 0, stakingApyRates[0] || 4)">Stake</button>
 </div>
 </div>
 
-<h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;" data-i18n="fixedHeader">2. Fixed Staking (Up to 20% APY)</h4>
+<h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;">2. Fixed Staking (Up to 20% APY)</h4>
 <div class="grid-cards">
 <div class="card" style="text-align:center; margin:0;">
-<b>7 Days</b><br>
-<span style="color: var(--accent);"><span id="displayApy7">3</span>% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, stakingApyRates[7] || 3)">Lock</button>
+<b>7 Days</b><br><span style="color: var(--accent);">3% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, 3)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>15 Days</b><br>
-<span style="color: var(--accent);"><span id="displayApy15">4.5</span>% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, stakingApyRates[15] || 4.5)">Lock</button>
+<b>15 Days</b><br><span style="color: var(--accent);">4.5% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, 4.5)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>30 Days</b><br>
-<span style="color: var(--accent);"><span id="displayApy30">6.25</span>% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, stakingApyRates[30] || 6.25)">Lock</button>
+<b>30 Days</b><br><span style="color: var(--accent);">6.25% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, 6.25)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>60 Days</b><br>
-<span style="color: var(--accent);"><span id="displayApy60">8</span>% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, stakingApyRates[60] || 8)">Lock</button>
-</div>
-<div class="card" style="text-align:center; margin:0;">
-<b>90 Days</b><br>
-<span style="color: var(--accent);"><span id="displayApy90">11.25</span>% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (90 Days)', 90, stakingApyRates[90] || 11.25)">Lock</button>
-</div>
-<div class="card" style="text-align:center; margin:0;">
-<b>120 Days</b><br>
-<span style="color: var(--accent);"><span id="displayApy120">14.5</span>% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (120 Days)', 120, stakingApyRates[120] || 14.5)">Lock</button>
-</div>
-<div class="card" style="text-align:center; margin:0; grid-column: span 2;">
-<b>365 Days</b> - <span style="color: var(--accent);"><span id="displayApy365">20</span>% APY</span>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (365 Days)', 365, stakingApyRates[365] || 20)">Lock</button>
+<b>60 Days</b><br><span style="color: var(--accent);">8% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, 8)">Lock</button>
 </div>
 </div>
 
 <h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;">📋 Active Staking Investments</h4>
 <div id="activeStakingList" class="card" style="background: #111827; border: 1px solid var(--border);">
-<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">
-No active staking plans found.
-</div>
+<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No active staking plans found.</div>
 </div>
 </div>
 
 <!-- REFERRALS PAGE -->
 <div id="referrals" class="tab-content">
-<h3 data-i18n="referralProgram">👥 REFERRAL PROGRAM</h3>
+<h3>👥 REFERRAL PROGRAM</h3>
 <div class="grid-cards" style="margin-bottom: 12px;">
 <div class="card" style="margin:0;">
-<div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-<span>👤</span> <b data-i18n="friendsTitle">Friends</b>
-</div>
-<small style="color:var(--text-muted); font-size:11px;" data-i18n="totalInvited">Total invited</small>
-<div style="margin-top:12px; font-size:18px; font-weight:bold; color:var(--text-main);" id="totalInvitedCount">0 USERS</div>
+<div style="font-size:14px; color:var(--text-muted);"><span>👤</span> <b>Friends</b></div>
+<small style="color:var(--text-muted); font-size:11px;">Total invited</small>
+<div style="margin-top:12px; font-size:18px; font-weight:bold;" id="totalInvitedCount">0 USERS</div>
 </div>
 <div class="card" style="margin:0;">
-<div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-<span>🎁</span> <b data-i18n="rewardsTitle">Rewards</b>
-</div>
-<small style="color:var(--text-muted); font-size:11px;" data-i18n="minClaim1Coin">Min. claim 1 Coin</small>
+<div style="font-size:14px; color:var(--text-muted);"><span>🎁</span> <b>Rewards</b></div>
+<small style="color:var(--text-muted); font-size:11px;">Min. claim 1 Coin</small>
 <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
 <span style="font-size:16px; font-weight:bold; color:var(--yellow);" id="refRewardBalance">+0.00 🪙</span>
-<button class="btn" style="width: auto; padding: 6px 12px; font-size:12px; background:var(--accent);" onclick="claimRefRewards()" data-i18n="claimBtn">Claim</button>
+<button class="btn" style="width: auto; padding: 6px 12px; font-size:12px; background:var(--accent);" onclick="claimRefRewards()">Claim</button>
 </div>
 </div>
 </div>
-
 <div class="card">
-<div style="font-size:14px; font-weight:bold; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
-<span>🔗</span> <span data-i18n="inviteEarn">Invite & Earn</span>
-</div>
-<p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;"><span id="refPercentText">Get 20%</span> bonus from all 🪙 earned by your invited friends.</p>
+<div style="font-size:14px; font-weight:bold; margin-bottom:6px;"><span>🔗</span> Invite & Earn</div>
+<p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;">Get 20% bonus from all 🪙 earned by your invited friends.</p>
 <div style="display:flex; gap:8px;">
-<button class="btn" style="background:#334155; flex:1;" onclick="copyRef()" data-i18n="copyLinkBtn">Copy Link</button>
-<button class="btn" style="background:#0a84c1; flex:1;" onclick="shareRef()" data-i18n="shareBtn">Share</button>
+<button class="btn" style="background:#334155; flex:1;" onclick="copyRef()">Copy Link</button>
+<button class="btn" style="background:#0a84c1; flex:1;" onclick="shareRef()">Share</button>
 </div>
 </div>
 </div>
 
 <!-- WALLET PAGE -->
 <div id="wallet" class="tab-content">
-<h3 data-i18n="walletExchange" style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
-
-<div class="card" style="background:#0f172a; padding:14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-<div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent); font-size: 15px;">0.0590</strong></div>
-<div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent); font-size: 15px;">5.0500 USDT</strong></div>
-<div style="font-size:13px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT (Real-time)</div>
+<h3 style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
+<div class="card" style="background:#0f172a; padding:14px; border-radius:12px; margin-bottom:14px; border:1px solid var(--border);">
+<div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent);">0.0590</strong></div>
+<div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">5.0500 USDT</strong></div>
+<div style="font-size:13px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT</div>
 </div>
-
 <div class="wallet-subcard-container">
 <div class="wallet-subcard active" id="wCardWithdraw" onclick="switchWalletCard('withdraw')">
-<div style="font-size: 20px;">🪙</div>
-<b style="font-size: 13px; color: var(--accent);">Withdraw</b>
+<div style="font-size: 20px;">🪙</div><b style="font-size: 13px; color: var(--accent);">Withdraw</b>
 </div>
 <div class="wallet-subcard" id="wCardDeposit" onclick="switchWalletCard('deposit')">
-<div style="font-size: 20px;">💵</div>
-<b style="font-size: 13px; color: var(--yellow);">Deposit</b>
+<div style="font-size: 20px;">💵</div><b style="font-size: 13px; color: var(--yellow);">Deposit</b>
 </div>
 </div>
 <div class="wallet-subcard" id="wCardConvert" onclick="switchWalletCard('convert')" style="margin-bottom: 12px;">
-<div style="font-size: 20px;">🔄</div>
-<b style="font-size: 13px; color: #0a84c1;">Convert</b>
+<div style="font-size: 20px;">🔄</div><b style="font-size: 13px; color: #0a84c1;">Convert</b>
 </div>
 
-<div id="wContentWithdraw" class="wallet-subcard-content card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
-<div class="flex-between" style="margin-bottom: 8px;">
-<h4 style="margin:0; color: var(--accent);">⚡ Withdraw Funds</h4>
-<span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
-</div>
-
-<div class="grid-cards" style="margin-bottom: 10px;">
-<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--accent); cursor:pointer;" onclick="setWithdrawSubMethod('faucetpay')" id="wSubMethodFaucetpay">
-<b style="font-size:12px; color:var(--accent);">1. Faucetpay</b>
-</div>
-<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--border); cursor:pointer;" onclick="setWithdrawSubMethod('gram')" id="wSubMethodGram">
-<b style="font-size:12px; color:var(--yellow);">2. Gram</b>
+<div id="wContentWithdraw" class="wallet-subcard-content card active" style="border: 1px solid var(--accent);">
+<h4 style="margin:0 0 8px 0; color: var(--accent);">⚡ Withdraw Funds</h4>
+<label style="margin-top:8px; display:block;">Amount:</label>
+<input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001">
+<button class="btn" style="margin-top:12px; width:100%; background: var(--accent);" onclick="requestWithdrawal()">Submit Withdraw</button>
 </div>
 </div>
 
-<label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT/Gram):</label>
-<input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001" oninput="calculateWithdrawFee()">
-
-<div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
-<span id="withdrawMinLabel">Min 0.01 USDT</span>
-<div>
-<span id="availableWithdrawBalance" style="color:var(--text-muted); margin-right:8px;">Available: 0.0000</span>
-<button onclick="setMaxWithdraw()" style="background:none; border:none; color:var(--accent); font-weight:bold; cursor:pointer;">MAX</button>
-</div>
-</div>
-
-<div style="margin-top:4px; font-size:12px; color:var(--yellow);" id="withdrawFeePreview">
-Fee (5%): 0.00 | You will receive: 0.00
-</div>
-
-<label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
-<input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
-
-<button class="btn" style="margin-top:12px; width:100%; background: var(--accent); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
-</div>
-
-<!-- DEPOSIT SECTION -->
-<div id="wContentDeposit" class="wallet-subcard-content card" style="border: 1px solid var(--sky-blue); box-shadow: 0 4px 20px rgba(10, 132, 193, 0.15);">
-<div class="flex-between" style="margin-bottom: 8px;">
-<h4 style="margin:0; color: var(--sky-blue);">💵 Deposit Funds (Gram)</h4>
-</div>
-
-<div id="gramDepositSection">
-<div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5;">
-Enter the amount in USD, then pay the equivalent in TON from your connected wallet. Your User ID is added as the transaction comment.
-</div>
-
-<button class="gram-connect-btn" id="btnGramConnectWallet" onclick="handleGramWalletConnect()">
-<span id="tonIconBtn">💎</span> <span id="tonWalletBtnText">Connect Wallet</span>
-</button>
-
-<label style="margin-top:12px; display:block; font-size:12px; color:var(--text-muted);">Amount in USD / USDT:</label>
-<input type="number" id="gramDepositUsdInput" placeholder="Enter USD Amount" step="0.01" oninput="calculateGramPayAmount()">
-
-<div class="gram-pay-info">
-<div class="flex-between" style="margin-bottom:4px;">
-<span>You will pay:</span>
-<strong id="gramPayAmountTon" style="color:var(--accent);">0.0000 TON</strong>
-</div>
-<div class="flex-between">
-<span>Rate:</span>
-<span id="gramRateDisplay">1 TON = $1.35</span>
-</div>
-</div>
-
-<button class="btn" style="margin-top:12px; width:100%; background: var(--ton-blue); font-weight:bold; padding:12px;" onclick="sendGramDepositTransaction()">Send Deposit</button>
-<button class="btn" style="margin-top:8px; width:100%; background: #334155; color: var(--text-muted);" onclick="resetGramDepositForm()">Cancel</button>
-</div>
-</div>
-
-<!-- CONVERT SECTION -->
-<div id="wContentConvert" class="wallet-subcard-content card" style="border: 1px solid #0a84c1; box-shadow: 0 4px 20px rgba(10, 132, 193, 0.15);">
-<div class="flex-between" style="margin-bottom: 10px;">
-<h4 style="margin:0; color: var(--sky-blue);" data-i18n="exchangeCoin">🔄 Convert Balance</h4>
-<span style="background: rgba(10, 132, 193, 0.15); color: var(--sky-blue); border: 1px solid var(--sky-blue); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
-Balance: <span id="convertSourceBalanceDisplay">0.00 Coin</span>
-</span>
-</div>
-
-<label style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block;">STEP 1: SELECT SOURCE CURRENCY</label>
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
-<div class="convert-sky-card active" id="cMainCoin" onclick="selectConvertMain('Coin')">🪙 Coin</div>
-<div class="convert-sky-card" id="cMainUSDT" onclick="selectConvertMain('USDT')">💵 USDT</div>
-<div class="convert-sky-card" id="cMainGram" onclick="selectConvertMain('Gram')">💎 Gram</div>
-</div>
-
-<label style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block;">STEP 2: CONVERT TO</label>
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;" id="convertTargetGrid"></div>
-
-<label style="margin-top:8px; display:block;">Amount to Convert:</label>
-<input type="number" id="exchangeAmount" placeholder="Enter amount" oninput="calculateExchange()">
-
-<p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
-
-<button class="btn" style="margin-top:10px; width:100%; background:var(--sky-blue); color:#fff;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
-</div>
-
-<div class="card" style="background: #111827; border: 1px solid var(--border);">
-<div class="flex-between" style="margin-bottom: 8px;">
-<h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
-<span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
-</div>
-<div id="transactionHistoryList" style="font-size: 12px; color: var(--text-muted); min-height: 40px; display: flex; flex-direction: column; gap: 6px;">
-No recent transactions yet.
-</div>
-</div>
-</div>
-
-<!-- RANK PAGE (UPDATED CONTEST & LEADERBOARD SECTION) -->
-<div id="leaderboard" class="tab-content">
-  <!-- 1. Rank & Heading Banner -->
+<!-- RANK PAGE (CONTEST LEADERBOARD) -->
+<div id="leaderboard" class="tab-content active">
   <div class="rank-heading-banner">
     🏆 Contest & Ranking
   </div>
 
-  <!-- 2. Ads Prize Contest Banner Card -->
   <div class="contest-main-card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h3 style="margin: 0; color: #38bdf8; font-size: 16px;">Ads Prize Contest</h3>
@@ -1744,7 +1607,6 @@ No recent transactions yet.
       Watch ads, climb the leaderboard, and win rewards from the weekly prize pool!
     </div>
 
-    <!-- Two Sub-cards: PRIZE POOL & CONTEST ENDS IN -->
     <div class="prize-subgrid">
       <div class="prize-subbox">
         <small style="font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">PRIZE POOL</small>
@@ -1757,7 +1619,6 @@ No recent transactions yet.
     </div>
   </div>
 
-  <!-- User's Live Rank & My Points Card -->
   <div class="card flex-between" style="background:#111827; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border);">
     <div>
       <span style="font-size:12px; color:var(--text-muted);">Your Rank: </span>
@@ -1770,23 +1631,20 @@ No recent transactions yet.
     </div>
   </div>
 
-  <!-- 3. TOP 3 PODIUM CARDS (#2 Left, #1 Center, #3 Right) -->
+  <!-- TOP 3 PODIUM (#2 Left, #1 Center, #3 Right) -->
   <div class="podium-grid">
-    <!-- Rank #2 -->
     <div class="podium-card" id="podiumRank2">
       <div class="podium-badge">🥈 #2</div>
       <div class="podium-name" id="podiumName2">Player 2</div>
       <div class="podium-points" id="podiumPts2">0 Pts</div>
       <div class="podium-prize" id="podiumPrize2">Est. $2.00</div>
     </div>
-    <!-- Rank #1 (Center) -->
     <div class="podium-card rank-1" id="podiumRank1">
       <div class="podium-badge">👑 #1</div>
       <div class="podium-name" id="podiumName1">Player 1</div>
       <div class="podium-points" id="podiumPts1">0 Pts</div>
       <div class="podium-prize" id="podiumPrize1">Est. $3.50</div>
     </div>
-    <!-- Rank #3 -->
     <div class="podium-card" id="podiumRank3">
       <div class="podium-badge">🥉 #3</div>
       <div class="podium-name" id="podiumName3">Player 3</div>
@@ -1795,122 +1653,29 @@ No recent transactions yet.
     </div>
   </div>
 
-  <!-- 4. RANK LIST HEADER (#4 TO #30 LEADERBOARD) -->
   <div class="rank-list-header">
     <span style="flex: 2;">RANK & PLAYER</span>
     <span style="flex: 1; text-align: center;">POINTS</span>
     <span style="flex: 1; text-align: right;">EST. PRIZE</span>
   </div>
 
-  <div id="rankListContainer">
-    <!-- Dynamic Users List #4 - #30 -->
-  </div>
+  <div id="rankListContainer"></div>
 </div>
 
-<!-- VERIFICATION MODAL SHEET -->
-<div id="taskVerifyModal" class="modal-overlay" onclick="closeTaskModal(event)">
-  <div class="modal-sheet" onclick="event.stopPropagation()">
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 0px;">
-      <span onclick="closeTaskModal()" style="font-size: 18px; cursor: pointer; color: #94a3b8; background: rgba(255,255,255,0.08); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</span>
-    </div>
-
-    <h3 id="modalTaskHeading" style="color: #ffffff; font-size: 18px; font-weight: 800; margin: 0 0 10px 0; text-align: left;">
-      Verify Channel Subscription
-    </h3>
-
-    <div class="info-box-card">
-      <div style="font-size: 12px; color: #0a84c1; font-weight: bold;" id="modalHandleDisplay">@GramFarmingOfficial</div>
-      <div style="font-size: 15px; font-weight: bold; color: #fff; margin-top: 2px;" id="modalTitleDisplay">Gram Farming Official</div>
-      <div style="margin-top: 6px;">
-        <span class="badge-gold" id="modalRewardBadge">+0.08 Coin</span>
-      </div>
-    </div>
-
-    <div class="info-box-card">
-      <div style="font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">Subscribe & Stay in Channel</div>
-      <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
-        Join the channel and stay subscribed. Click '<span style="color:#0a84c1;">Join Channel &gt;</span>' below to open Telegram and join.
-      </div>
-    </div>
-
-    <div class="info-box-card">
-      <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">
-        <span>⏱️</span> Proof of Activity · <span id="modalTimerDisplay">20s</span>
-      </div>
-      <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
-        Open the join Channel, stay for at least 15 seconds, then return and tap CHECK when the full 20 seconds is verified.
-      </div>
-    </div>
-
-    <button onclick="handleModalButtonClick()" id="modalActionBtn" class="btn" style="width: 100%; background: #0098ea; color: #ffffff; padding: 14px; border-radius: 25px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 152, 234, 0.4);">
-      Join Channel &gt;
-    </button>
-  </div>
-</div>
-
-<!-- Navigation -->
+<!-- Navigation Bar -->
 <div class="nav-bar">
-<div class="nav-item active" onclick="switchTab('home')">
-<span class="nav-emoji">🏠</span>
-<span>Home</span>
-</div>
-<div class="nav-item" onclick="switchTab('tasks')">
-<span class="nav-emoji">📋</span>
-<span>Tasks</span>
-</div>
-<div class="nav-item" id="navLotteryBtn" onclick="switchTab('lottery')">
-<span class="nav-emoji">🎟️</span>
-<span>Lottery</span>
-</div>
-<div class="nav-item" onclick="switchTab('staking')">
-<span class="nav-emoji">💎</span>
-<span>Staking</span>
-</div>
-<div class="nav-item" onclick="switchTab('referrals')">
-<span class="nav-emoji">👥</span>
-<span>Referrals</span>
-</div>
-<div class="nav-item" onclick="switchTab('wallet')">
-<span class="nav-emoji">💼</span>
-<span>Wallet</span>
-</div>
-<div class="nav-item" onclick="switchTab('leaderboard')">
-<span class="nav-emoji">🏆</span>
-<span>Rank</span>
-</div>
+<div class="nav-item active" onclick="switchTab('home')"><span class="nav-emoji">🏠</span><span>Home</span></div>
+<div class="nav-item" onclick="switchTab('tasks')"><span class="nav-emoji">📋</span><span>Tasks</span></div>
+<div class="nav-item" onclick="switchTab('lottery')"><span class="nav-emoji">🎟️</span><span>Lottery</span></div>
+<div class="nav-item" onclick="switchTab('staking')"><span class="nav-emoji">💎</span><span>Staking</span></div>
+<div class="nav-item" onclick="switchTab('referrals')"><span class="nav-emoji">👥</span><span>Referrals</span></div>
+<div class="nav-item" onclick="switchTab('wallet')"><span class="nav-emoji">💼</span><span>Wallet</span></div>
+<div class="nav-item" onclick="switchTab('leaderboard')"><span class="nav-emoji">🏆</span><span>Rank</span></div>
 </div>
 
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
 <script>
-/* INSTANT APP SPLASH LOADING CONTROLLER */
-(function() {
-  var fillEl = document.getElementById('splashProgressFill');
-  var textEl = document.getElementById('splashPercentText');
-  var splashScreen = document.getElementById('appSplashScreen');
-  var currentPercent = 0;
-
-  var splashInterval = setInterval(function() {
-    currentPercent += Math.floor(Math.random() * 8) + 5;
-    if (currentPercent >= 100) {
-      currentPercent = 100;
-      clearInterval(splashInterval);
-      if (fillEl) fillEl.style.width = '100%';
-      if (textEl) textEl.innerText = '100%';
-      
-      setTimeout(function() {
-        if (splashScreen) {
-          splashScreen.style.opacity = '0';
-          splashScreen.style.visibility = 'hidden';
-        }
-      }, 200);
-    } else {
-      if (fillEl) fillEl.style.width = currentPercent + '%';
-      if (textEl) textEl.innerText = currentPercent + '%';
-    }
-  }, 25);
-})();
-
 if (window.Telegram && window.Telegram.WebApp) {
   window.Telegram.WebApp.ready();
   window.Telegram.WebApp.expand();
@@ -1933,103 +1698,22 @@ window.addEventListener('load', function() {
     window.db = firebase.database();
     initAppListeners();
   }
-  selectConvertMain('Coin');
-  initLotteryData();
 });
 
 var balance = 0.00;
 var tonBalance = 0.0590;
 var usdtBalance = 5.0500;
 var refReward = 0.00;
-var totalInvited = 0;
-var savedTonAddress = "";
-var activeStakes = [];
-var lastCheckin = 0;
-var adPoints = 0; // 1 Ad = 1 Point, 30 Points = 1 Coin
+var adPoints = 0;
+var totalAdminPrizePool = 10.00;
 
-var coinUsdtValue = 0.01;
-var currentDailyBonus = 0.01;
-var minWithdrawalAmt = 0.01;
-var minTonWithdrawalAmt = 0.01;
-var liveTonPrice = 1.35; 
-var referralPercentage = 20;
-
-var totalAdminPrizePool = 10.00; // Total Admin Contest Prize Pool in USDT
-
-/* LOTTERY STATE DATA */
-var currentLotteryType = 'daily';
-var lotteryPayMethods = { daily: 'inapp', weekly: 'inapp' };
-var lotteryTicketQuantities = { daily: 1, weekly: 1 };
-var userLotteryTickets = { daily: 0, weekly: 0 };
-
-var lotteryConfig = {
-  daily: { status: true, ticketPrice: 0.10, maxTickets: 100, poolVal: 0.00, winners: 2 },
-  weekly: { status: true, ticketPrice: 0.50, maxTickets: 500, poolVal: 25.50, winners: 10 }
-};
-
-var miningDurationSeconds = 28800;
-var miningRewardCoins = 1.00;
-var novaRequiredAds = 50;
-var cosmicRequiredAds = 50;
-var novaTimerSec = 60;
-var cosmicTimerSec = 60;
-
-var selectedStakingCurrency = 'Coin';
-var tonConnectUI = null;
-var isWalletConnected = false;
-var userConnectedAddress = "";
-
-var selectedCampaignObj = 'Channel';
-var selectedClickCount = 100;
-var selectedCoinCost = 35;
-var selectedPaymentMethod = 'Coin';
-
-var addonVerifiedActive = true;
-var addonBannerActive = false;
-var uploadedCampaignImageBase64 = "";
-
-var currentWithdrawSubMethod = 'faucetpay';
-var currentDepositSubMethod = 'gram';
-
-var convertMainSource = 'Coin';
-var convertTargetCurrency = 'USDT';
-
-var currentSelectedTaskTitle = "";
-var currentSelectedTaskLink = "";
-var currentSelectedTaskKey = "";
-var currentSelectedRewardVal = 0.08;
-var modalState = "initial";
-var modalTimerInterval = null;
-
-var bannerTasksList = [];
-var currentBannerIndex = 0;
-var bannerIntervalTimer = null;
-
-const ADSTERRA_LINK = "https://araplhn.org/4/74b4cb017b96a6c502c11da164a77205";
-
-var clickPackagesData = [
-  { clicks: 100, coin: 35 },
-  { clicks: 250, coin: 87.5 },
-  { clicks: 500, coin: 175 },
-  { clicks: 1000, coin: 350 },
-  { clicks: 2000, coin: 600 },
-  { clicks: 3000, coin: 750 },
-  { clicks: 4000, coin: 900 },
-  { clicks: 5000, coin: 1100 }
-];
-
-var stakingApyRates = { 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20 };
-var maxLimits = { monetag: 60, gigapub: 60, monetix: 30, adsterra: 50, adsbitvex: 50 };
-var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03, adsterra: 0.05, adsbitvex: 0.05 };
-var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adsbitvex: 60 };
-
-var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
-
-var lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
-var todayDateStr = new Date().toDateString();
-if (lastAdsResetDate !== todayDateStr) {
-  adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
-  localStorage.setItem('last_ads_reset_date', todayDateStr);
+var tg = window.Telegram ? window.Telegram.WebApp : null;
+var displayName = "👑 My Account";
+var userId = "12345";
+if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+  var user = tg.initDataUnsafe.user;
+  displayName = ((user.first_name || '') + ' ' + (user.last_name || '')).trim();
+  userId = String(user.id);
 }
 
 function showToast(message, type) {
@@ -2038,119 +1722,14 @@ function showToast(message, type) {
   if(!container) return;
   container.innerHTML = '';
   var toast = document.createElement('div');
-  toast.style.cssText = 'background: ' + (type === 'success' ? '#22c55e' : '#1e293b') + '; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid ' + (type === 'success' ? '#22c55e' : '#ef4444') + '; display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease; opacity: 0;';
-
-  var icon = type === 'success' ? '✅' : '⚠️';
-  toast.innerHTML = '<span style="font-size:18px;">' + icon + '</span><span>' + message + '</span>';
+  toast.style.cssText = 'background: ' + (type === 'success' ? '#22c55e' : '#1e293b') + '; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px;';
+  toast.innerHTML = '<span>' + (type === 'success' ? '✅' : '⚠️') + '</span><span>' + message + '</span>';
   container.appendChild(toast);
-
-  setTimeout(function() { toast.style.opacity = '1'; }, 10);
-  setTimeout(function() {
-    toast.style.opacity = '0';
-    setTimeout(function() { if (toast.parentNode) container.removeChild(toast); }, 300);
-  }, 3500);
-}
-
-function openTelegramBotLink() {
-  var botUrl = "https://t.me/GramFarmingbot_bot?startchannel=true";
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
-    window.Telegram.WebApp.openTelegramLink(botUrl);
-  } else {
-    window.open(botUrl, '_blank');
-  }
-}
-
-function check530AmRestartAndStaking() {
-  var now = new Date();
-  var lastResetStored = localStorage.getItem('last_530_reset_date');
-  var targetTime = new Date();
-  targetTime.setHours(5, 30, 0, 0);
-
-  if (now > targetTime) {
-    targetTime.setDate(targetTime.getDate() + 1);
-  }
-
-  var diff = targetTime.getTime() - now.getTime();
-  var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-  var timerEl = document.getElementById('restartTimerDisplay');
-  if (timerEl) {
-    timerEl.innerText = '⏳ Reset in: ' + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
-  }
-
-  var realNow = new Date();
-  var todayStr = realNow.toDateString();
-  var today530 = new Date();
-  today530.setHours(5, 30, 0, 0);
-
-  if (realNow >= today530 && lastResetStored !== todayStr) {
-    processStakingDailyTransfer();
-    adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
-    localStorage.setItem('last_530_reset_date', todayStr);
-    saveToFirebase();
-
-    showToast("🔄 Mini App successfully restarted at 5:30 AM!", "success");
-    setTimeout(function() { location.reload(); }, 1500);
-  }
-}
-setInterval(check530AmRestartAndStaking, 1000);
-
-var tg = window.Telegram ? window.Telegram.WebApp : null;
-
-var displayName = "👑 My Account";
-var userId = "12345";
-if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-  var user = tg.initDataUnsafe.user;
-  var fullName = ((user.first_name || '') + ' ' + (user.last_name || '')).trim();
-  displayName = fullName + (user.username ? ' (@' + user.username + ')' : '');
-  userId = String(user.id);
-}
-
-var completedTasksSet = [];
-var joinedTasksSet = JSON.parse(localStorage.getItem('joined_tasks_' + userId) || '[]');
-
-function updateOfficialButtonsState() {
-  var newsBtn = document.getElementById('officialBtn_news');
-  if (newsBtn) {
-    if (completedTasksSet.includes('official_news_chan')) {
-      newsBtn.innerText = "Joined ✅";
-      newsBtn.style.background = "#334155";
-    } else {
-      newsBtn.innerText = "Join 👥";
-      newsBtn.style.background = "#10b981";
-    }
-  }
-
-  var payoutBtn = document.getElementById('officialBtn_payout');
-  if (payoutBtn) {
-    if (completedTasksSet.includes('official_payout_chan')) {
-      payoutBtn.innerText = "Joined ✅";
-      payoutBtn.style.background = "#334155";
-    } else {
-      payoutBtn.innerText = "Join 👥";
-      payoutBtn.style.background = "#10b981";
-    }
-  }
+  setTimeout(function() { if (toast.parentNode) container.removeChild(toast); }, 3500);
 }
 
 function initAppListeners() {
   if (!window.db) return;
-
-  db.ref('completedTasks/' + userId).on('value', function(snapshot) {
-    if (snapshot.exists()) {
-      completedTasksSet = Object.keys(snapshot.val());
-    } else {
-      completedTasksSet = [];
-      joinedTasksSet = [];
-      localStorage.removeItem('joined_tasks_' + userId);
-    }
-    localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
-    updateOfficialButtonsState();
-    renderCustomTasksFromFirebase();
-  });
-
   var userRef = db.ref('users/' + userId);
 
   userRef.on('value', function(snapshot) {
@@ -2159,102 +1738,49 @@ function initAppListeners() {
       balance = data.balance || 0.00;
       tonBalance = data.tonBalance !== undefined ? data.tonBalance : 0.0590;
       usdtBalance = data.usdtBalance !== undefined ? data.usdtBalance : 5.0500;
-      refReward = data.refReward || 0.00;
-      totalInvited = data.totalInvited || 0;
-      savedTonAddress = data.savedTonAddress || "";
-      activeStakes = data.activeStakes || [];
-      lastCheckin = data.lastCheckin || 0;
       adPoints = data.adPoints || 0;
-      if (data.userLotteryTickets) userLotteryTickets = data.userLotteryTickets;
-      if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
-
-      saveToLocalStorage();
     } else {
-      userRef.set({
-        name: displayName,
-        balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0, adPoints: 0,
-        userLotteryTickets: { daily: 0, weekly: 0 },
-        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 }
-      });
+      userRef.set({ name: displayName, balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, adPoints: 0 });
     }
     renderUIValues();
-    renderStakingList();
-    toggleWithdrawFields();
-    updateLotteryUI();
   });
 
-  // REALTIME ALL USERS LISTENER FOR LEADERBOARD (#1 to #40 CALCULATIONS)
   db.ref('users').on('value', function(snapshot) {
     if (snapshot.exists()) {
       renderContestLeaderboard(snapshot.val());
     }
   });
-
-  // ADMIN CONTEST POOL LISTENER
-  db.ref('adminSettings/contestPool').on('value', function(snapshot) {
-    if (snapshot.exists()) {
-      totalAdminPrizePool = parseFloat(snapshot.val()) || 10.00;
-      var cpEl = document.getElementById('contestPrizePoolVal');
-      if(cpEl) cpEl.innerText = totalAdminPrizePool.toFixed(2) + " USDT";
-    }
-  });
-
-  trackUserLoginAndIp();
-  loadTransactionHistory();
 }
 
-/* RENDER CONTEST LEADERBOARD (1 TO 40 USERS PRIZE CALCULATION) */
 function renderContestLeaderboard(allUsersObj) {
   var userList = [];
   Object.keys(allUsersObj).forEach(function(uKey) {
     var u = allUsersObj[uKey];
-    userList.push({
-      id: uKey,
-      name: u.name || "User " + uKey.substring(0, 4),
-      points: u.adPoints || 0
-    });
+    userList.push({ id: uKey, name: u.name || "User", points: u.adPoints || 0 });
   });
 
-  // Sort Users by Ad Points Descending
   userList.sort(function(a, b) { return b.points - a.points; });
-
-  // Calculate Total Points of Top 40 Users to distribute Admin Prize Pool proportionally
   var top40 = userList.slice(0, 40);
   var sumTop40Pts = 0;
   top40.forEach(function(u) { sumTop40Pts += u.points; });
 
-  // Find My Rank
   var myIndex = userList.findIndex(function(u) { return u.id === userId; });
   var myRank = myIndex !== -1 ? (myIndex + 1) : ">40";
-  var myPtsEl = document.getElementById('myAdPoints');
-  var myRankEl = document.getElementById('myRankBadge');
-  if(myPtsEl) myPtsEl.innerText = adPoints + " Pts";
-  if(myRankEl) myRankEl.innerText = "#" + myRank;
+  if(document.getElementById('myAdPoints')) document.getElementById('myAdPoints').innerText = adPoints + " Pts";
+  if(document.getElementById('myRankBadge')) document.getElementById('myRankBadge').innerText = "#" + myRank;
 
-  // Render Top 3 Podium
   for (var i = 1; i <= 3; i++) {
     var uData = userList[i - 1] || { name: "Player " + i, points: 0 };
     var estPrize = (sumTop40Pts > 0 && uData.points > 0) ? ((uData.points / sumTop40Pts) * totalAdminPrizePool) : 0;
-
-    var nameEl = document.getElementById('podiumName' + i);
-    var ptsEl = document.getElementById('podiumPts' + i);
-    var prizeEl = document.getElementById('podiumPrize' + i);
-
-    if (nameEl) nameEl.innerText = uData.name.replace('👑', '').trim();
-    if (ptsEl) ptsEl.innerText = uData.points + " Pts";
-    if (prizeEl) prizeEl.innerText = "Est. $" + estPrize.toFixed(2);
+    if(document.getElementById('podiumName' + i)) document.getElementById('podiumName' + i).innerText = uData.name;
+    if(document.getElementById('podiumPts' + i)) document.getElementById('podiumPts' + i).innerText = uData.points + " Pts";
+    if(document.getElementById('podiumPrize' + i)) document.getElementById('podiumPrize' + i).innerText = "Est. $" + estPrize.toFixed(2);
   }
 
-  // Render List #4 to #30
   var container = document.getElementById('rankListContainer');
   if (!container) return;
   var html = '';
-
   var listUsers = userList.slice(3, 30);
-  if (listUsers.length === 0) {
-    container.innerHTML = '<div style="text-align:center; padding: 15px; color: var(--text-muted); font-size:12px;">No active leaderboard players yet.</div>';
-    return;
-  }
 
   listUsers.forEach(function(u, idx) {
     var rankNum = idx + 4;
@@ -2263,36 +1789,24 @@ function renderContestLeaderboard(allUsersObj) {
     var bgStyle = isMe ? 'background: rgba(34, 197, 94, 0.15); border-color: var(--accent);' : '';
 
     html += '<div class="rank-item-row" style="' + bgStyle + '">' +
-      '<div style="flex: 2; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
-        '<span style="color: var(--sky-blue); font-weight: 900; margin-right: 6px;">#' + rankNum + '</span> ' + u.name.replace('👑', '').trim() +
-      '</div>' +
+      '<div style="flex: 2; font-weight: bold;"><span style="color: var(--sky-blue); margin-right: 6px;">#' + rankNum + '</span> ' + u.name + '</div>' +
       '<div style="flex: 1; text-align: center; color: var(--yellow); font-weight: bold;">' + u.points + '</div>' +
       '<div style="flex: 1; text-align: right; color: var(--accent); font-weight: bold;">$' + estPrize.toFixed(2) + '</div>' +
     '</div>';
   });
-
   container.innerHTML = html;
 }
 
 function saveToFirebase() {
-  saveToLocalStorage();
   if (window.db) {
-    db.ref('users/' + userId).update({
-      balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin, adPoints: adPoints,
-      userLotteryTickets: userLotteryTickets,
-      adWatchedCounts: adWatchedCounts
-    });
+    db.ref('users/' + userId).update({ balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, adPoints: adPoints });
   }
 }
 
-function finishAdWatchSuccess(limitElementId, btn, rewardPerAd) {
-  addEarningsWithReferral(rewardPerAd);
-  adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
-  
-  // 1 Ad = 1 Point Addition
-  adPoints += 1;
+function finishAdWatchSuccess(rewardPerAd) {
+  balance += rewardPerAd;
+  adPoints += 1; // 1 Ad = 1 Point
 
-  // 30 Points = 1 Coin Automatic Conversion Rule
   if (adPoints >= 30) {
     var bonusCoins = Math.floor(adPoints / 30);
     adPoints = adPoints % 30;
@@ -2305,158 +1819,23 @@ function finishAdWatchSuccess(limitElementId, btn, rewardPerAd) {
   showToast("Claim Successful! +" + rewardPerAd + " Coin added (+1 Ad Point)!", "success");
 }
 
-function addEarningsWithReferral(earnedAmount) {
-  balance += earnedAmount;
-  var refCommission = earnedAmount * (referralPercentage / 100);
-  refReward += refCommission;
-  saveToFirebase();
-  renderUIValues();
-}
-
-function fetchLiveTonPrice() {
-  fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd').then(function(res) {
-    return res.json();
-  }).then(function(data) {
-    if(data && data['the-open-network'] && data['the-open-network'].usd) {
-      liveTonPrice = data['the-open-network'].usd;
-      var liveStatus = document.getElementById('liveRateStatus');
-      if(liveStatus) liveStatus.innerText = "📡 Live TON Rate: $" + liveTonPrice + " USDT (Real-time)";
-    }
-  });
+function watchMonetagAd() {
+  showToast("Loading ad...", "success");
+  setTimeout(function() {
+    finishAdWatchSuccess(0.05);
+  }, 1000);
 }
 
 function renderUIValues() {
   if(document.getElementById('userBalance')) document.getElementById('userBalance').innerText = balance.toFixed(2);
   if(document.getElementById('tonBalance')) document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
   if(document.getElementById('usdtBalance')) document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4) + " USDT";
-
-  document.querySelectorAll('.usdtBalanceDisp').forEach(function(el) {
-    el.innerText = usdtBalance.toFixed(2);
-  });
-
-  if(document.getElementById('refRewardBalance')) document.getElementById('refRewardBalance').innerText = "+" + refReward.toFixed(2) + " 🪙";
-  if(document.getElementById('totalInvitedCount')) document.getElementById('totalInvitedCount').innerText = totalInvited + " USERS";
-  if(document.getElementById('displayCoinVolume')) document.getElementById('displayCoinVolume').innerText = "1 Coin = $" + coinUsdtValue;
-  if(document.getElementById('dailyBonusDisplay')) document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 }
 
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
-  document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
   var targetTab = document.getElementById(tabId);
   if(targetTab) targetTab.classList.add('active');
-  if (window.event && window.event.currentTarget) {
-    window.event.currentTarget.classList.add('active');
-  }
-}
-
-function initLotteryData() {
-  updateLotteryUI();
-}
-
-function switchLotteryType(type) {
-  currentLotteryType = type;
-  var dBtn = document.getElementById('lotteryTypeDailyBtn');
-  var wBtn = document.getElementById('lotteryTypeWeeklyBtn');
-  var dSec = document.getElementById('dailyLotterySection');
-  var wSec = document.getElementById('weeklyLotterySection');
-
-  if(dBtn) dBtn.classList.remove('active');
-  if(wBtn) wBtn.classList.remove('active');
-  if(dSec) dSec.style.display = 'none';
-  if(wSec) wSec.style.display = 'none';
-
-  if (type === 'daily') {
-    if(dBtn) dBtn.classList.add('active');
-    if(dSec) dSec.style.display = 'block';
-  } else {
-    if(wBtn) wBtn.classList.add('active');
-    if(wSec) wSec.style.display = 'block';
-  }
-}
-
-function updateLotteryUI() {
-  var dUserTix = userLotteryTickets.daily || 0;
-  var wUserTix = userLotteryTickets.weekly || 0;
-
-  var dCountEl = document.getElementById('dailyMyTicketsCount');
-  var wCountEl = document.getElementById('weeklyMyTicketsCount');
-  if(dCountEl) dCountEl.innerText = dUserTix;
-  if(wCountEl) wCountEl.innerText = wUserTix;
-}
-
-function watchMonetagAd() {
-  var limitElementId = 'taskMonetagLimit';
-  var btn = document.getElementById('taskMonetagBtn');
-  var maxLimit = maxLimits.monetag;
-  var reward = rewards.monetag;
-
-  if ((adWatchedCounts[limitElementId] || 0) >= maxLimit) {
-    showToast("Daily limit reached!", "error");
-    return;
-  }
-
-  showAdLoadingScreen("LOADING MONETAG AD...");
-  setTimeout(function() {
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-  }, 1200);
-}
-
-function watchGigapubAd() {
-  var limitElementId = 'taskGigapubLimit';
-  var btn = document.getElementById('taskGigapubBtn');
-  var maxLimit = maxLimits.gigapub;
-  var reward = rewards.gigapub;
-
-  showAdLoadingScreen("LOADING GIGAPUB AD...");
-  setTimeout(function() {
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-  }, 1200);
-}
-
-function watchAdsBitvexAd() {
-  var limitElementId = 'taskAdsbitvexLimit';
-  var btn = document.getElementById('taskAdsbitvexBtn');
-  var reward = rewards.adsbitvex || 0.05;
-
-  showAdLoadingScreen("LOADING ADSBITVEX AD...");
-  setTimeout(function() {
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-  }, 1200);
-}
-
-function watchMonetixAd() {
-  var limitElementId = 'taskMonetixLimit';
-  var btn = document.getElementById('taskMonetixBtn');
-  var reward = rewards.monetix;
-
-  showAdLoadingScreen("LOADING MONETIX AD...");
-  setTimeout(function() {
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-  }, 1200);
-}
-
-function watchAdsterraAd() {
-  var limitElementId = 'taskAdsterraLimit';
-  var btn = document.getElementById('taskAdsterraBtn');
-  var reward = rewards.adsterra;
-
-  showAdLoadingScreen("LOADING ADSTERRA AD...");
-  setTimeout(function() {
-    hideAdLoadingScreen();
-    finishAdWatchSuccess(limitElementId, btn, reward);
-  }, 1200);
-}
-
-function claimDailyBonus() {
-  balance += currentDailyBonus;
-  saveToFirebase();
-  renderUIValues();
-  showToast("Claim Successful! +" + currentDailyBonus + " Coins!", "success");
 }
 </script>
 </body>
