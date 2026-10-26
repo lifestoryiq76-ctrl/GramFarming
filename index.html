@@ -1153,7 +1153,7 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
-<!-- LOTTERY PAGE (UPDATED WITH IMAGE LOGO & WITHOUT WEB3 WALLET BUTTON) -->
+<!-- LOTTERY PAGE -->
 <div id="lottery" class="tab-content">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
     <h3 style="margin: 0;" id="lotteryMainTitle">Daily Lottery</h3>
@@ -1626,34 +1626,6 @@ No recent transactions yet.
 </div>
 </div>
 
-<!-- RANK PAGE -->
-<div id="leaderboard" class="tab-content">
-<div class="card" style="background:var(--card-bg); border:1px solid var(--border); padding: 14px; margin-bottom: 12px;">
-<div class="flex-between" style="margin-bottom: 10px;">
-<div style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:16px;">
-<span>🏆</span> <span data-i18n="topEarnersRank">Top Earners Rank</span>
-</div>
-</div>
-<div style="font-size:12px; color:var(--text-muted); margin-bottom: 5px;" data-i18n="liveRankingStats">Your live ranking and stats</div>
-</div>
-
-<div class="card flex-between" style="background:#111827; padding: 12px; margin-bottom: 12px;">
-<span style="font-size:13px; color:var(--text-muted);" data-i18n="yourRank">Your Rank:</span>
-<span style="background:var(--accent); color:#fff; padding: 4px 10px; border-radius:6px; font-size:12px; font-weight:bold;" data-i18n="rankPlace">#1 place</span>
-</div>
-
-<div id="rankListContainer">
-<div class="card" style="margin-bottom:8px; padding: 14px; background:#111827;">
-<div class="flex-between" style="margin-bottom: 8px;">
-<span style="font-weight:bold; font-size:14px; color:var(--yellow);" id="telegramUserName">👑 Loading User...</span>
-</div>
-<div class="flex-between" style="font-size:12px; border-top:1px solid var(--border); padding-top:8px; margin-top:6px;">
-<span style="color:var(--text-muted); display:flex; align-items:center; gap:4px;">🪙 BALANCE: <b id="rankBalance" style="color:var(--yellow);">0.00</b></span>
-</div>
-</div>
-</div>
-</div>
-
 <!-- VERIFICATION MODAL SHEET -->
 <div id="taskVerifyModal" class="modal-overlay" onclick="closeTaskModal(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
@@ -1720,10 +1692,6 @@ No recent transactions yet.
 <div class="nav-item" onclick="switchTab('wallet')">
 <span class="nav-emoji">💼</span>
 <span>Wallet</span>
-</div>
-<div class="nav-item" onclick="switchTab('leaderboard')">
-<span class="nav-emoji">🏆</span>
-<span>Rank</span>
 </div>
 </div>
 
@@ -1951,8 +1919,6 @@ if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
   displayName = "👑 " + fullName + (user.username ? ' (@' + user.username + ')' : '');
   userId = String(user.id);
 }
-var tgUserNameEl = document.getElementById('telegramUserName');
-if(tgUserNameEl) tgUserNameEl.innerText = displayName;
 
 var completedTasksSet = [];
 var joinedTasksSet = JSON.parse(localStorage.getItem('joined_tasks_' + userId) || '[]');
@@ -2388,9 +2354,9 @@ function applyMiningData(data) {
 }
 
 var translations = {
-  en: { homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", clickToClaim: "Click to Claim!", watchBtn: "Watch", tasksOffers: "📋 Tasks", stakingOptions: "💎 Staking Options", referralProgram: "👥 REFERRAL PROGRAM", walletExchange: "💼 Wallet & Exchange", topEarnersRank: "Top Earners Rank", navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" },
-  hi: { homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", tasksOffers: "📋 टास्क", stakingOptions: "💎 स्टेकिंग विकल्प", referralProgram: "👥 रेफरल प्रोग्राम", walletExchange: "💼 वॉलेट और एक्सचेंज", topEarnersRank: "शीर्ष कमाई करने वाले", navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" },
-  ru: { homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", tasksOffers: "📋 Задания", stakingOptions: "💎 Стейкинг", referralProgram: "👥 РЕФЕРАЛЫ", walletExchange: "💼 Кошелек", topEarnersRank: "Рейтинг", navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" }
+  en: { homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", clickToClaim: "Click to Claim!", watchBtn: "Watch", tasksOffers: "📋 Tasks", stakingOptions: "💎 Staking Options", referralProgram: "👥 REFERRAL PROGRAM", walletExchange: "💼 Wallet & Exchange", navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet" },
+  hi: { homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", tasksOffers: "📋 टास्क", stakingOptions: "💎 स्टेकिंग विकल्प", referralProgram: "👥 रेफरल प्रोग्राम", walletExchange: "💼 वॉलेट और एक्सचेंज", navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट" },
+  ru: { homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", tasksOffers: "📋 Задания", stakingOptions: "💎 Стейкинг", referralProgram: "👥 РЕФЕРАЛЫ", walletExchange: "💼 Кошелек", navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек" }
 };
 
 function changeLanguage(lang) {
@@ -2463,7 +2429,6 @@ function renderUIValues() {
 
   if(document.getElementById('refRewardBalance')) document.getElementById('refRewardBalance').innerText = "+" + refReward.toFixed(2) + " 🪙";
   if(document.getElementById('totalInvitedCount')) document.getElementById('totalInvitedCount').innerText = totalInvited + " USERS";
-  if(document.getElementById('rankBalance')) document.getElementById('rankBalance').innerText = balance.toFixed(2);
   if(document.getElementById('displayCoinVolume')) document.getElementById('displayCoinVolume').innerText = "1 Coin = $" + coinUsdtValue;
   if(document.getElementById('dailyBonusDisplay')) document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
 
