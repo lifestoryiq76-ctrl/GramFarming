@@ -233,106 +233,7 @@ display: inline-block;
 input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
 input:focus, select:focus { border-color: var(--accent); }
 
-/* RANK CONTEST STYLES */
-.rank-heading-banner {
-  background: linear-gradient(135deg, #0a84c1 0%, #0284c7 100%);
-  color: #ffffff;
-  padding: 12px;
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 900;
-  font-size: 18px;
-  margin-bottom: 12px;
-  box-shadow: 0 4px 15px rgba(10, 132, 193, 0.4);
-}
-.contest-main-card {
-  background: #1e293b;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 12px;
-}
-.prize-subgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 12px;
-}
-.prize-subbox {
-  background: #0f172a;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px;
-  text-align: center;
-}
-.podium-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  align-items: flex-end;
-  margin-bottom: 15px;
-}
-.podium-card {
-  background: #182232;
-  border: 1px solid #28374d;
-  border-radius: 14px;
-  padding: 10px 6px;
-  text-align: center;
-  position: relative;
-}
-.podium-card.rank-1 {
-  background: linear-gradient(180deg, #2e2608 0%, #182232 100%);
-  border-color: #eab308;
-  transform: translateY(-8px);
-}
-.podium-badge {
-  font-size: 20px;
-  font-weight: 900;
-  margin-bottom: 4px;
-}
-.podium-name {
-  font-size: 11px;
-  font-weight: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #fff;
-}
-.podium-points {
-  font-size: 10px;
-  color: var(--yellow);
-  margin-top: 2px;
-}
-.podium-prize {
-  font-size: 11px;
-  color: var(--accent);
-  font-weight: bold;
-  margin-top: 4px;
-}
-.rank-list-header {
-  display: flex;
-  justify-content: space-between;
-  background: #0f172a;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-.rank-item-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #111827;
-  border: 1px solid var(--border);
-  padding: 10px 12px;
-  border-radius: 10px;
-  margin-bottom: 6px;
-  font-size: 12px;
-}
-
-/* LOTTERY STYLES */
+/* LOTTERY CUSTOM STYLES BASED ON ATTACHED SCREENSHOTS */
 .lottery-tab-selector {
   display: flex;
   background: #0f172a;
@@ -1252,7 +1153,7 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
-<!-- LOTTERY PAGE -->
+<!-- LOTTERY PAGE (UPDATED WITH IMAGE LOGO & WITHOUT WEB3 WALLET BUTTON) -->
 <div id="lottery" class="tab-content">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
     <h3 style="margin: 0;" id="lotteryMainTitle">Daily Lottery</h3>
@@ -1449,7 +1350,7 @@ Cost: <strong>35 Coins</strong>
     </div>
   </div>
 
-  <!-- HOW IT WORKS -->
+  <!-- HOW IT WORKS INSTRUCTIONS CARD -->
   <div class="lottery-card" style="background: #0f172a;">
     <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: #cbd5e1; margin-bottom: 10px;">
       <span>❔ How it works</span>
@@ -1460,6 +1361,9 @@ Cost: <strong>35 Coins</strong>
       <li>Draw runs automatically at 00:00 UTC using provably fair RNG</li>
       <li>Prizes are credited directly to your balance and notifications sent</li>
     </ul>
+    <div style="margin-top: 12px; font-size: 11px; color: #22c55e; display: flex; align-items: center; gap: 6px;">
+      <span>🛡️ Mobile-only verified accounts. Multi-accounting is strictly prohibited.</span>
+    </div>
   </div>
 </div>
 
@@ -1474,11 +1378,11 @@ Cost: <strong>35 Coins</strong>
 </div>
 
 <div class="card" style="background:#111827; border:1px solid var(--accent);">
-<h4 style="margin:0 0 8px 0; color: var(--accent);">🧮 Staking Calculator & Preview</h4>
+<h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="stakingCalc">🧮 Staking Calculator & Preview</h4>
 <label style="font-size:13px; color:var(--text-muted);">Enter Staking <span id="calcCurrencyLabel">Coin</span>:</label>
 <input type="number" id="stakeCalcInput" placeholder="e.g. 100" oninput="calculateStakeRewards()">
 
-<label style="font-size:13px; color:var(--text-muted); margin-top:8px; display:block;">Select Plan:</label>
+<label style="font-size:13px; color:var(--text-muted); margin-top:8px; display:block;" data-i18n="selectPlan">Select Plan:</label>
 <select id="stakeCalcPlan" onchange="calculateStakeRewards()">
 <option value="0|4">Flexible (0 Days - 4% APY)</option>
 <option value="7|3">Fixed (7 Days - 3% APY)</option>
@@ -1491,191 +1395,369 @@ Cost: <strong>35 Coins</strong>
 </select>
 
 <div style="margin-top:10px; padding:10px; background:#0f172a; border-radius:8px; font-size:13px; border:1px solid var(--border);">
-<div>☀ Daily Reward: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
-<div>🌟 Total Period Reward: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
+<div>☀ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
+<div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
 </div>
 </div>
 
-<h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;">1. Flexible Staking</h4>
+<h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;" data-i18n="flexHeader">1. Flexible Staking</h4>
 <div class="card">
 <div class="flex-between">
 <div>
-<b>Flexible Staking</b><br>
-<small style="color:var(--text-muted);">Unstake anytime with zero locking period.</small><br>
+<b data-i18n="flexTitle">Flexible Staking</b><br>
+<small style="color:var(--text-muted);" data-i18n="flexDesc">Unstake anytime with zero locking period.</small><br>
 <span style="color: var(--accent); font-size: 13px; font-weight: bold;"><span id="displayFlexApy">4</span>% APY</span>
 </div>
-<button class="btn" style="width: auto; background: var(--accent);" onclick="stake('Flexible', 0, stakingApyRates[0] || 4)">Stake</button>
+<button class="btn" style="width: auto; background: var(--accent);" onclick="stake('Flexible', 0, stakingApyRates[0] || 4)" data-i18n="stakeBtn">Stake</button>
 </div>
 </div>
 
-<h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;">2. Fixed Staking (Up to 20% APY)</h4>
+<h4 style="color: var(--yellow); margin-top: 15px; margin-bottom: 8px;" data-i18n="fixedHeader">2. Fixed Staking (Up to 20% APY)</h4>
 <div class="grid-cards">
 <div class="card" style="text-align:center; margin:0;">
-<b>7 Days</b><br><span style="color: var(--accent);">3% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, 3)">Lock</button>
+<b>7 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy7">3</span>% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (7 Days)', 7, stakingApyRates[7] || 3)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>15 Days</b><br><span style="color: var(--accent);">4.5% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, 4.5)">Lock</button>
+<b>15 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy15">4.5</span>% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (15 Days)', 15, stakingApyRates[15] || 4.5)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>30 Days</b><br><span style="color: var(--accent);">6.25% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, 6.25)">Lock</button>
+<b>30 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy30">6.25</span>% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (30 Days)', 30, stakingApyRates[30] || 6.25)">Lock</button>
 </div>
 <div class="card" style="text-align:center; margin:0;">
-<b>60 Days</b><br><span style="color: var(--accent);">8% APY</span><br>
-<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, 8)">Lock</button>
+<b>60 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy60">8</span>% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (60 Days)', 60, stakingApyRates[60] || 8)">Lock</button>
+</div>
+<div class="card" style="text-align:center; margin:0;">
+<b>90 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy90">11.25</span>% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (90 Days)', 90, stakingApyRates[90] || 11.25)">Lock</button>
+</div>
+<div class="card" style="text-align:center; margin:0;">
+<b>120 Days</b><br>
+<span style="color: var(--accent);"><span id="displayApy120">14.5</span>% APY</span><br>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (120 Days)', 120, stakingApyRates[120] || 14.5)">Lock</button>
+</div>
+<div class="card" style="text-align:center; margin:0; grid-column: span 2;">
+<b>365 Days</b> - <span style="color: var(--accent);"><span id="displayApy365">20</span>% APY</span>
+<button class="btn btn-yellow" style="margin-top:8px; padding:6px; font-size:12px;" onclick="stake('Fixed (365 Days)', 365, stakingApyRates[365] || 20)">Lock</button>
 </div>
 </div>
 
 <h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;">📋 Active Staking Investments</h4>
 <div id="activeStakingList" class="card" style="background: #111827; border: 1px solid var(--border);">
-<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No active staking plans found.</div>
+<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">
+No active staking plans found.
+</div>
 </div>
 </div>
 
 <!-- REFERRALS PAGE -->
 <div id="referrals" class="tab-content">
-<h3>👥 REFERRAL PROGRAM</h3>
+<h3 data-i18n="referralProgram">👥 REFERRAL PROGRAM</h3>
 <div class="grid-cards" style="margin-bottom: 12px;">
 <div class="card" style="margin:0;">
-<div style="font-size:14px; color:var(--text-muted);"><span>👤</span> <b>Friends</b></div>
-<small style="color:var(--text-muted); font-size:11px;">Total invited</small>
-<div style="margin-top:12px; font-size:18px; font-weight:bold;" id="totalInvitedCount">0 USERS</div>
+<div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+<span>👤</span> <b data-i18n="friendsTitle">Friends</b>
+</div>
+<small style="color:var(--text-muted); font-size:11px;" data-i18n="totalInvited">Total invited</small>
+<div style="margin-top:12px; font-size:18px; font-weight:bold; color:var(--text-main);" id="totalInvitedCount">0 USERS</div>
 </div>
 <div class="card" style="margin:0;">
-<div style="font-size:14px; color:var(--text-muted);"><span>🎁</span> <b>Rewards</b></div>
-<small style="color:var(--text-muted); font-size:11px;">Min. claim 1 Coin</small>
+<div style="font-size:14px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+<span>🎁</span> <b data-i18n="rewardsTitle">Rewards</b>
+</div>
+<small style="color:var(--text-muted); font-size:11px;" data-i18n="minClaim1Coin">Min. claim 1 Coin</small>
 <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
 <span style="font-size:16px; font-weight:bold; color:var(--yellow);" id="refRewardBalance">+0.00 🪙</span>
-<button class="btn" style="width: auto; padding: 6px 12px; font-size:12px; background:var(--accent);" onclick="claimRefRewards()">Claim</button>
+<button class="btn" style="width: auto; padding: 6px 12px; font-size:12px; background:var(--accent);" onclick="claimRefRewards()" data-i18n="claimBtn">Claim</button>
 </div>
 </div>
 </div>
+
 <div class="card">
-<div style="font-size:14px; font-weight:bold; margin-bottom:6px;"><span>🔗</span> Invite & Earn</div>
-<p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;">Get 20% bonus from all 🪙 earned by your invited friends.</p>
+<div style="font-size:14px; font-weight:bold; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+<span>🔗</span> <span data-i18n="inviteEarn">Invite & Earn</span>
+</div>
+<p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;"><span id="refPercentText">Get 20%</span> bonus from all 🪙 earned by your invited friends.</p>
 <div style="display:flex; gap:8px;">
-<button class="btn" style="background:#334155; flex:1;" onclick="copyRef()">Copy Link</button>
-<button class="btn" style="background:#0a84c1; flex:1;" onclick="shareRef()">Share</button>
+<button class="btn" style="background:#334155; flex:1;" onclick="copyRef()" data-i18n="copyLinkBtn">Copy Link</button>
+<button class="btn" style="background:#0a84c1; flex:1;" onclick="shareRef()" data-i18n="shareBtn">Share</button>
 </div>
 </div>
 </div>
 
 <!-- WALLET PAGE -->
 <div id="wallet" class="tab-content">
-<h3 style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
-<div class="card" style="background:#0f172a; padding:14px; border-radius:12px; margin-bottom:14px; border:1px solid var(--border);">
-<div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent);">0.0590</strong></div>
-<div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent);">5.0500 USDT</strong></div>
-<div style="font-size:13px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT</div>
+<h3 data-i18n="walletExchange" style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
+
+<div class="card" style="background:#0f172a; padding:14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+<div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent); font-size: 15px;">0.0590</strong></div>
+<div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent); font-size: 15px;">5.0500 USDT</strong></div>
+<div style="font-size:13px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT (Real-time)</div>
 </div>
+
 <div class="wallet-subcard-container">
 <div class="wallet-subcard active" id="wCardWithdraw" onclick="switchWalletCard('withdraw')">
-<div style="font-size: 20px;">🪙</div><b style="font-size: 13px; color: var(--accent);">Withdraw</b>
+<div style="font-size: 20px;">🪙</div>
+<b style="font-size: 13px; color: var(--accent);">Withdraw</b>
 </div>
 <div class="wallet-subcard" id="wCardDeposit" onclick="switchWalletCard('deposit')">
-<div style="font-size: 20px;">💵</div><b style="font-size: 13px; color: var(--yellow);">Deposit</b>
+<div style="font-size: 20px;">💵</div>
+<b style="font-size: 13px; color: var(--yellow);">Deposit</b>
 </div>
 </div>
 <div class="wallet-subcard" id="wCardConvert" onclick="switchWalletCard('convert')" style="margin-bottom: 12px;">
-<div style="font-size: 20px;">🔄</div><b style="font-size: 13px; color: #0a84c1;">Convert</b>
+<div style="font-size: 20px;">🔄</div>
+<b style="font-size: 13px; color: #0a84c1;">Convert</b>
 </div>
 
-<div id="wContentWithdraw" class="wallet-subcard-content card active" style="border: 1px solid var(--accent);">
-<h4 style="margin:0 0 8px 0; color: var(--accent);">⚡ Withdraw Funds</h4>
-<label style="margin-top:8px; display:block;">Amount:</label>
-<input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001">
-<button class="btn" style="margin-top:12px; width:100%; background: var(--accent);" onclick="requestWithdrawal()">Submit Withdraw</button>
+<div id="wContentWithdraw" class="wallet-subcard-content card" style="border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);">
+<div class="flex-between" style="margin-bottom: 8px;">
+<h4 style="margin:0; color: var(--accent);">⚡ Withdraw Funds</h4>
+<span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔒 Secure Lock</span>
+</div>
+
+<div class="grid-cards" style="margin-bottom: 10px;">
+<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--accent); cursor:pointer;" onclick="setWithdrawSubMethod('faucetpay')" id="wSubMethodFaucetpay">
+<b style="font-size:12px; color:var(--accent);">1. Faucetpay</b>
+</div>
+<div class="card" style="text-align:center; margin:0; padding:10px; background:#111827; border-color:var(--border); cursor:pointer;" onclick="setWithdrawSubMethod('gram')" id="wSubMethodGram">
+<b style="font-size:12px; color:var(--yellow);">2. Gram</b>
 </div>
 </div>
 
-<!-- RANK PAGE (CONTEST LEADERBOARD) -->
-<div id="leaderboard" class="tab-content active">
-  <div class="rank-heading-banner">
-    🏆 Contest & Ranking
-  </div>
+<label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT/Gram):</label>
+<input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001" oninput="calculateWithdrawFee()">
 
-  <div class="contest-main-card">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="margin: 0; color: #38bdf8; font-size: 16px;">Ads Prize Contest</h3>
-      <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 6px;">WEEKLY CONTEST</span>
+<div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
+<span id="withdrawMinLabel">Min 0.01 USDT</span>
+<div>
+<span id="availableWithdrawBalance" style="color:var(--text-muted); margin-right:8px;">Available: 0.0000</span>
+<button onclick="setMaxWithdraw()" style="background:none; border:none; color:var(--accent); font-weight:bold; cursor:pointer;">MAX</button>
+</div>
+</div>
+
+<div style="margin-top:4px; font-size:12px; color:var(--yellow);" id="withdrawFeePreview">
+Fee (5%): 0.00 | You will receive: 0.00
+</div>
+
+<label id="addressLabel" style="margin-top:8px; display:block;">FaucetPay Email ID:</label>
+<input type="text" id="withdrawDestination" placeholder="Enter FaucetPay email address">
+
+<button class="btn" style="margin-top:12px; width:100%; background: var(--accent); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="requestWithdrawal()">Submit Withdraw</button>
+</div>
+
+<!-- DEPOSIT SECTION -->
+<div id="wContentDeposit" class="wallet-subcard-content card" style="border: 1px solid var(--sky-blue); box-shadow: 0 4px 20px rgba(10, 132, 193, 0.15);">
+<div class="flex-between" style="margin-bottom: 8px;">
+<h4 style="margin:0; color: var(--sky-blue);">💵 Deposit Funds (Gram)</h4>
+</div>
+
+<div id="gramDepositSection">
+<div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5;">
+Enter the amount in USD, then pay the equivalent in TON from your connected wallet. Your User ID is added as the transaction comment.
+</div>
+
+<button class="gram-connect-btn" id="btnGramConnectWallet" onclick="handleGramWalletConnect()">
+<span id="tonIconBtn">💎</span> <span id="tonWalletBtnText">Connect Wallet</span>
+</button>
+
+<label style="margin-top:12px; display:block; font-size:12px; color:var(--text-muted);">Amount in USD / USDT:</label>
+<input type="number" id="gramDepositUsdInput" placeholder="Enter USD Amount" step="0.01" oninput="calculateGramPayAmount()">
+
+<div class="gram-pay-info">
+<div class="flex-between" style="margin-bottom:4px;">
+<span>You will pay:</span>
+<strong id="gramPayAmountTon" style="color:var(--accent);">0.0000 TON</strong>
+</div>
+<div class="flex-between">
+<span>Rate:</span>
+<span id="gramRateDisplay">1 TON = $1.35</span>
+</div>
+</div>
+
+<button class="btn" style="margin-top:12px; width:100%; background: var(--ton-blue); font-weight:bold; padding:12px;" onclick="sendGramDepositTransaction()">Send Deposit</button>
+<button class="btn" style="margin-top:8px; width:100%; background: #334155; color: var(--text-muted);" onclick="resetGramDepositForm()">Cancel</button>
+</div>
+</div>
+
+<!-- CONVERT SECTION -->
+<div id="wContentConvert" class="wallet-subcard-content card" style="border: 1px solid #0a84c1; box-shadow: 0 4px 20px rgba(10, 132, 193, 0.15);">
+<div class="flex-between" style="margin-bottom: 10px;">
+<h4 style="margin:0; color: var(--sky-blue);" data-i18n="exchangeCoin">🔄 Convert Balance</h4>
+<span style="background: rgba(10, 132, 193, 0.15); color: var(--sky-blue); border: 1px solid var(--sky-blue); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">
+Balance: <span id="convertSourceBalanceDisplay">0.00 Coin</span>
+</span>
+</div>
+
+<label style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block;">STEP 1: SELECT SOURCE CURRENCY</label>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
+<div class="convert-sky-card active" id="cMainCoin" onclick="selectConvertMain('Coin')">🪙 Coin</div>
+<div class="convert-sky-card" id="cMainUSDT" onclick="selectConvertMain('USDT')">💵 USDT</div>
+<div class="convert-sky-card" id="cMainGram" onclick="selectConvertMain('Gram')">💎 Gram</div>
+</div>
+
+<label style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block;">STEP 2: CONVERT TO</label>
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;" id="convertTargetGrid"></div>
+
+<label style="margin-top:8px; display:block;">Amount to Convert:</label>
+<input type="number" id="exchangeAmount" placeholder="Enter amount" oninput="calculateExchange()">
+
+<p style="margin:8px 0 0 0; font-size:13px; color:var(--text-muted);"><span data-i18n="youWillGet">You will get</span>: <strong id="previewExchange" style="color:var(--yellow);">0.00</strong></p>
+
+<button class="btn" style="margin-top:10px; width:100%; background:var(--sky-blue); color:#fff;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
+</div>
+
+<div class="card" style="background: #111827; border: 1px solid var(--border);">
+<div class="flex-between" style="margin-bottom: 8px;">
+<h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
+<span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
+</div>
+<div id="transactionHistoryList" style="font-size: 12px; color: var(--text-muted); min-height: 40px; display: flex; flex-direction: column; gap: 6px;">
+No recent transactions yet.
+</div>
+</div>
+</div>
+
+<!-- RANK PAGE -->
+<div id="leaderboard" class="tab-content">
+<div class="card" style="background:var(--card-bg); border:1px solid var(--border); padding: 14px; margin-bottom: 12px;">
+<div class="flex-between" style="margin-bottom: 10px;">
+<div style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:16px;">
+<span>🏆</span> <span data-i18n="topEarnersRank">Top Earners Rank</span>
+</div>
+</div>
+<div style="font-size:12px; color:var(--text-muted); margin-bottom: 5px;" data-i18n="liveRankingStats">Your live ranking and stats</div>
+</div>
+
+<div class="card flex-between" style="background:#111827; padding: 12px; margin-bottom: 12px;">
+<span style="font-size:13px; color:var(--text-muted);" data-i18n="yourRank">Your Rank:</span>
+<span style="background:var(--accent); color:#fff; padding: 4px 10px; border-radius:6px; font-size:12px; font-weight:bold;" data-i18n="rankPlace">#1 place</span>
+</div>
+
+<div id="rankListContainer">
+<div class="card" style="margin-bottom:8px; padding: 14px; background:#111827;">
+<div class="flex-between" style="margin-bottom: 8px;">
+<span style="font-weight:bold; font-size:14px; color:var(--yellow);" id="telegramUserName">👑 Loading User...</span>
+</div>
+<div class="flex-between" style="font-size:12px; border-top:1px solid var(--border); padding-top:8px; margin-top:6px;">
+<span style="color:var(--text-muted); display:flex; align-items:center; gap:4px;">🪙 BALANCE: <b id="rankBalance" style="color:var(--yellow);">0.00</b></span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- VERIFICATION MODAL SHEET -->
+<div id="taskVerifyModal" class="modal-overlay" onclick="closeTaskModal(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 0px;">
+      <span onclick="closeTaskModal()" style="font-size: 18px; cursor: pointer; color: #94a3b8; background: rgba(255,255,255,0.08); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</span>
     </div>
-    
-    <div style="font-size: 13px; font-weight: bold; color: #ffffff; margin-top: 8px;">Ads Prize</div>
-    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4;">
-      Watch ads, climb the leaderboard, and win rewards from the weekly prize pool!
-    </div>
 
-    <div class="prize-subgrid">
-      <div class="prize-subbox">
-        <small style="font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">PRIZE POOL</small>
-        <div style="font-size: 14px; font-weight: 900; color: var(--accent); margin-top: 2px;" id="contestPrizePoolVal">10.00 USDT</div>
+    <h3 id="modalTaskHeading" style="color: #ffffff; font-size: 18px; font-weight: 800; margin: 0 0 10px 0; text-align: left;">
+      Verify Channel Subscription
+    </h3>
+
+    <div class="info-box-card">
+      <div style="font-size: 12px; color: #0a84c1; font-weight: bold;" id="modalHandleDisplay">@GramFarmingOfficial</div>
+      <div style="font-size: 15px; font-weight: bold; color: #fff; margin-top: 2px;" id="modalTitleDisplay">Gram Farming Official</div>
+      <div style="margin-top: 6px;">
+        <span class="badge-gold" id="modalRewardBadge">+0.08 Coin</span>
       </div>
-      <div class="prize-subbox">
-        <small style="font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">CONTEST ENDS IN:</small>
-        <div style="font-size: 13px; font-weight: 900; color: var(--yellow); margin-top: 2px;" id="contestWeeklyTimer">6 Days 14:20:10</div>
+    </div>
+
+    <div class="info-box-card">
+      <div style="font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">Subscribe & Stay in Channel</div>
+      <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
+        Join the channel and stay subscribed. Click '<span style="color:#0a84c1;">Join Channel &gt;</span>' below to open Telegram and join.
       </div>
     </div>
-  </div>
 
-  <div class="card flex-between" style="background:#111827; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border);">
-    <div>
-      <span style="font-size:12px; color:var(--text-muted);">Your Rank: </span>
-      <span style="background:var(--accent); color:#fff; padding: 2px 8px; border-radius:6px; font-size:12px; font-weight:bold;" id="myRankBadge">#1</span>
+    <div class="info-box-card">
+      <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">
+        <span>⏱️</span> Proof of Activity · <span id="modalTimerDisplay">20s</span>
+      </div>
+      <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
+        Open the join Channel, stay for at least 15 seconds, then return and tap CHECK when the full 20 seconds is verified.
+      </div>
     </div>
-    <div>
-      <span style="font-size:12px; color:var(--text-muted);">Ad Points: </span>
-      <strong style="color:var(--yellow); font-size:13px;" id="myAdPoints">0 Pts</strong>
-      <small style="color:var(--text-muted); font-size:10px; display:block; text-align:right;">(30 Pts = 1 Coin)</small>
-    </div>
-  </div>
 
-  <!-- TOP 3 PODIUM (#2 Left, #1 Center, #3 Right) -->
-  <div class="podium-grid">
-    <div class="podium-card" id="podiumRank2">
-      <div class="podium-badge">🥈 #2</div>
-      <div class="podium-name" id="podiumName2">Player 2</div>
-      <div class="podium-points" id="podiumPts2">0 Pts</div>
-      <div class="podium-prize" id="podiumPrize2">Est. $2.00</div>
-    </div>
-    <div class="podium-card rank-1" id="podiumRank1">
-      <div class="podium-badge">👑 #1</div>
-      <div class="podium-name" id="podiumName1">Player 1</div>
-      <div class="podium-points" id="podiumPts1">0 Pts</div>
-      <div class="podium-prize" id="podiumPrize1">Est. $3.50</div>
-    </div>
-    <div class="podium-card" id="podiumRank3">
-      <div class="podium-badge">🥉 #3</div>
-      <div class="podium-name" id="podiumName3">Player 3</div>
-      <div class="podium-points" id="podiumPts3">0 Pts</div>
-      <div class="podium-prize" id="podiumPrize3">Est. $1.50</div>
-    </div>
+    <button onclick="handleModalButtonClick()" id="modalActionBtn" class="btn" style="width: 100%; background: #0098ea; color: #ffffff; padding: 14px; border-radius: 25px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 152, 234, 0.4);">
+      Join Channel &gt;
+    </button>
   </div>
-
-  <div class="rank-list-header">
-    <span style="flex: 2;">RANK & PLAYER</span>
-    <span style="flex: 1; text-align: center;">POINTS</span>
-    <span style="flex: 1; text-align: right;">EST. PRIZE</span>
-  </div>
-
-  <div id="rankListContainer"></div>
 </div>
 
-<!-- Navigation Bar -->
+<!-- Navigation -->
 <div class="nav-bar">
-<div class="nav-item active" onclick="switchTab('home')"><span class="nav-emoji">🏠</span><span>Home</span></div>
-<div class="nav-item" onclick="switchTab('tasks')"><span class="nav-emoji">📋</span><span>Tasks</span></div>
-<div class="nav-item" onclick="switchTab('lottery')"><span class="nav-emoji">🎟️</span><span>Lottery</span></div>
-<div class="nav-item" onclick="switchTab('staking')"><span class="nav-emoji">💎</span><span>Staking</span></div>
-<div class="nav-item" onclick="switchTab('referrals')"><span class="nav-emoji">👥</span><span>Referrals</span></div>
-<div class="nav-item" onclick="switchTab('wallet')"><span class="nav-emoji">💼</span><span>Wallet</span></div>
-<div class="nav-item" onclick="switchTab('leaderboard')"><span class="nav-emoji">🏆</span><span>Rank</span></div>
+<div class="nav-item active" onclick="switchTab('home')">
+<span class="nav-emoji">🏠</span>
+<span>Home</span>
+</div>
+<div class="nav-item" onclick="switchTab('tasks')">
+<span class="nav-emoji">📋</span>
+<span>Tasks</span>
+</div>
+<div class="nav-item" id="navLotteryBtn" onclick="switchTab('lottery')">
+<span class="nav-emoji">🎟️</span>
+<span>Lottery</span>
+</div>
+<div class="nav-item" onclick="switchTab('staking')">
+<span class="nav-emoji">💎</span>
+<span>Staking</span>
+</div>
+<div class="nav-item" onclick="switchTab('referrals')">
+<span class="nav-emoji">👥</span>
+<span>Referrals</span>
+</div>
+<div class="nav-item" onclick="switchTab('wallet')">
+<span class="nav-emoji">💼</span>
+<span>Wallet</span>
+</div>
+<div class="nav-item" onclick="switchTab('leaderboard')">
+<span class="nav-emoji">🏆</span>
+<span>Rank</span>
+</div>
 </div>
 
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
 <script>
+/* INSTANT APP SPLASH LOADING CONTROLLER */
+(function() {
+  var fillEl = document.getElementById('splashProgressFill');
+  var textEl = document.getElementById('splashPercentText');
+  var splashScreen = document.getElementById('appSplashScreen');
+  var currentPercent = 0;
+
+  var splashInterval = setInterval(function() {
+    currentPercent += Math.floor(Math.random() * 8) + 5;
+    if (currentPercent >= 100) {
+      currentPercent = 100;
+      clearInterval(splashInterval);
+      if (fillEl) fillEl.style.width = '100%';
+      if (textEl) textEl.innerText = '100%';
+      
+      setTimeout(function() {
+        if (splashScreen) {
+          splashScreen.style.opacity = '0';
+          splashScreen.style.visibility = 'hidden';
+        }
+      }, 200);
+    } else {
+      if (fillEl) fillEl.style.width = currentPercent + '%';
+      if (textEl) textEl.innerText = currentPercent + '%';
+    }
+  }, 25);
+})();
+
 if (window.Telegram && window.Telegram.WebApp) {
   window.Telegram.WebApp.ready();
   window.Telegram.WebApp.expand();
@@ -1698,22 +1780,100 @@ window.addEventListener('load', function() {
     window.db = firebase.database();
     initAppListeners();
   }
+  selectConvertMain('Coin');
+  initLotteryData();
 });
 
 var balance = 0.00;
 var tonBalance = 0.0590;
 var usdtBalance = 5.0500;
 var refReward = 0.00;
-var adPoints = 0;
-var totalAdminPrizePool = 10.00;
+var totalInvited = 0;
+var savedTonAddress = "";
+var activeStakes = [];
+var lastCheckin = 0;
 
-var tg = window.Telegram ? window.Telegram.WebApp : null;
-var displayName = "👑 My Account";
-var userId = "12345";
-if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-  var user = tg.initDataUnsafe.user;
-  displayName = ((user.first_name || '') + ' ' + (user.last_name || '')).trim();
-  userId = String(user.id);
+var coinUsdtValue = 0.01;
+var currentDailyBonus = 0.01;
+var minWithdrawalAmt = 0.01;
+var minTonWithdrawalAmt = 0.01;
+var liveTonPrice = 1.35; 
+var referralPercentage = 20;
+
+/* LOTTERY STATE DATA */
+var currentLotteryType = 'daily'; // 'daily' or 'weekly'
+var lotteryPayMethods = { daily: 'inapp', weekly: 'inapp' };
+var lotteryTicketQuantities = { daily: 1, weekly: 1 };
+var userLotteryTickets = { daily: 0, weekly: 0 };
+
+var lotteryConfig = {
+  daily: { status: true, ticketPrice: 0.10, maxTickets: 100, poolVal: 0.00, winners: 2 },
+  weekly: { status: true, ticketPrice: 0.50, maxTickets: 500, poolVal: 25.50, winners: 10 }
+};
+
+var miningDurationSeconds = 28800;
+var miningRewardCoins = 1.00;
+var novaRequiredAds = 50;
+var cosmicRequiredAds = 50;
+var novaTimerSec = 60;
+var cosmicTimerSec = 60;
+
+var selectedStakingCurrency = 'Coin';
+var tonConnectUI = null;
+var isWalletConnected = false;
+var userConnectedAddress = "";
+
+var selectedCampaignObj = 'Channel';
+var selectedClickCount = 100;
+var selectedCoinCost = 35;
+var selectedPaymentMethod = 'Coin';
+
+var addonVerifiedActive = true;
+var addonBannerActive = false;
+var uploadedCampaignImageBase64 = "";
+
+var currentWithdrawSubMethod = 'faucetpay';
+var currentDepositSubMethod = 'gram';
+
+var convertMainSource = 'Coin';
+var convertTargetCurrency = 'USDT';
+
+var currentSelectedTaskTitle = "";
+var currentSelectedTaskLink = "";
+var currentSelectedTaskKey = "";
+var currentSelectedRewardVal = 0.08;
+var modalState = "initial";
+var modalTimerInterval = null;
+
+var bannerTasksList = [];
+var currentBannerIndex = 0;
+var bannerIntervalTimer = null;
+
+const ADSTERRA_LINK = "https://araplhn.org/4/74b4cb017b96a6c502c11da164a77205";
+
+var clickPackagesData = [
+  { clicks: 100, coin: 35 },
+  { clicks: 250, coin: 87.5 },
+  { clicks: 500, coin: 175 },
+  { clicks: 1000, coin: 350 },
+  { clicks: 2000, coin: 600 },
+  { clicks: 3000, coin: 750 },
+  { clicks: 4000, coin: 900 },
+  { clicks: 5000, coin: 1100 }
+];
+
+var stakingApyRates = { 0: 4, 7: 3, 15: 4.5, 30: 6.25, 60: 8, 90: 11.25, 120: 14.5, 365: 20 };
+var maxLimits = { monetag: 60, gigapub: 60, monetix: 30, adsterra: 50, adsbitvex: 50 };
+var rewards = { monetag: 0.05, gigapub: 0.04, monetix: 0.03, adsterra: 0.05, adsbitvex: 0.05 };
+var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adsbitvex: 60 };
+
+var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
+
+var lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
+var todayDateStr = new Date().toDateString();
+if (lastAdsResetDate !== todayDateStr) {
+  adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
+  localStorage.setItem('last_ads_reset_date', todayDateStr);
 }
 
 function showToast(message, type) {
@@ -1722,14 +1882,121 @@ function showToast(message, type) {
   if(!container) return;
   container.innerHTML = '';
   var toast = document.createElement('div');
-  toast.style.cssText = 'background: ' + (type === 'success' ? '#22c55e' : '#1e293b') + '; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px;';
-  toast.innerHTML = '<span>' + (type === 'success' ? '✅' : '⚠️') + '</span><span>' + message + '</span>';
+  toast.style.cssText = 'background: ' + (type === 'success' ? '#22c55e' : '#1e293b') + '; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid ' + (type === 'success' ? '#22c55e' : '#ef4444') + '; display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease; opacity: 0;';
+
+  var icon = type === 'success' ? '✅' : '⚠️';
+  toast.innerHTML = '<span style="font-size:18px;">' + icon + '</span><span>' + message + '</span>';
   container.appendChild(toast);
-  setTimeout(function() { if (toast.parentNode) container.removeChild(toast); }, 3500);
+
+  setTimeout(function() { toast.style.opacity = '1'; }, 10);
+  setTimeout(function() {
+    toast.style.opacity = '0';
+    setTimeout(function() { if (toast.parentNode) container.removeChild(toast); }, 300);
+  }, 3500);
+}
+
+function openTelegramBotLink() {
+  var botUrl = "https://t.me/GramFarmingbot_bot?startchannel=true";
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+    window.Telegram.WebApp.openTelegramLink(botUrl);
+  } else {
+    window.open(botUrl, '_blank');
+  }
+}
+
+function check530AmRestartAndStaking() {
+  var now = new Date();
+  var lastResetStored = localStorage.getItem('last_530_reset_date');
+  var targetTime = new Date();
+  targetTime.setHours(5, 30, 0, 0);
+
+  if (now > targetTime) {
+    targetTime.setDate(targetTime.getDate() + 1);
+  }
+
+  var diff = targetTime.getTime() - now.getTime();
+  var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  var timerEl = document.getElementById('restartTimerDisplay');
+  if (timerEl) {
+    timerEl.innerText = '⏳ Reset in: ' + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+  }
+
+  var realNow = new Date();
+  var todayStr = realNow.toDateString();
+  var today530 = new Date();
+  today530.setHours(5, 30, 0, 0);
+
+  if (realNow >= today530 && lastResetStored !== todayStr) {
+    processStakingDailyTransfer();
+    adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
+    localStorage.setItem('last_530_reset_date', todayStr);
+    saveToFirebase();
+
+    showToast("🔄 Mini App successfully restarted at 5:30 AM!", "success");
+    setTimeout(function() { location.reload(); }, 1500);
+  }
+}
+setInterval(check530AmRestartAndStaking, 1000);
+
+var tg = window.Telegram ? window.Telegram.WebApp : null;
+
+var displayName = "👑 My Account";
+var userId = "12345";
+if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+  var user = tg.initDataUnsafe.user;
+  var fullName = ((user.first_name || '') + ' ' + (user.last_name || '')).trim();
+  displayName = "👑 " + fullName + (user.username ? ' (@' + user.username + ')' : '');
+  userId = String(user.id);
+}
+var tgUserNameEl = document.getElementById('telegramUserName');
+if(tgUserNameEl) tgUserNameEl.innerText = displayName;
+
+var completedTasksSet = [];
+var joinedTasksSet = JSON.parse(localStorage.getItem('joined_tasks_' + userId) || '[]');
+
+function updateOfficialButtonsState() {
+  var newsBtn = document.getElementById('officialBtn_news');
+  if (newsBtn) {
+    if (completedTasksSet.includes('official_news_chan')) {
+      newsBtn.innerText = "Joined ✅";
+      newsBtn.style.background = "#334155";
+    } else {
+      newsBtn.innerText = "Join 👥";
+      newsBtn.style.background = "#10b981";
+    }
+  }
+
+  var payoutBtn = document.getElementById('officialBtn_payout');
+  if (payoutBtn) {
+    if (completedTasksSet.includes('official_payout_chan')) {
+      payoutBtn.innerText = "Joined ✅";
+      payoutBtn.style.background = "#334155";
+    } else {
+      payoutBtn.innerText = "Join 👥";
+      payoutBtn.style.background = "#10b981";
+    }
+  }
 }
 
 function initAppListeners() {
   if (!window.db) return;
+
+  db.ref('completedTasks/' + userId).on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      completedTasksSet = Object.keys(snapshot.val());
+    } else {
+      completedTasksSet = [];
+      joinedTasksSet = [];
+      localStorage.removeItem('joined_tasks_' + userId);
+    }
+    localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
+    updateOfficialButtonsState();
+    renderCustomTasksFromFirebase();
+  });
+
   var userRef = db.ref('users/' + userId);
 
   userRef.on('value', function(snapshot) {
@@ -1738,104 +2005,2382 @@ function initAppListeners() {
       balance = data.balance || 0.00;
       tonBalance = data.tonBalance !== undefined ? data.tonBalance : 0.0590;
       usdtBalance = data.usdtBalance !== undefined ? data.usdtBalance : 5.0500;
-      adPoints = data.adPoints || 0;
+      refReward = data.refReward || 0.00;
+      totalInvited = data.totalInvited || 0;
+      savedTonAddress = data.savedTonAddress || "";
+      activeStakes = data.activeStakes || [];
+      lastCheckin = data.lastCheckin || 0;
+      if (data.userLotteryTickets) userLotteryTickets = data.userLotteryTickets;
+      if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
+
+      saveToLocalStorage();
     } else {
-      userRef.set({ name: displayName, balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, adPoints: 0 });
+      userRef.set({
+        name: displayName,
+        balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
+        userLotteryTickets: { daily: 0, weekly: 0 },
+        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 }
+      });
     }
     renderUIValues();
+    renderStakingList();
+    toggleWithdrawFields();
+    updateLotteryUI();
   });
 
-  db.ref('users').on('value', function(snapshot) {
+  // 1. GENERAL SETTINGS REALTIME LISTENER
+  db.ref('adminSettings/general').on('value', function(snapshot) {
     if (snapshot.exists()) {
-      renderContestLeaderboard(snapshot.val());
+      var data = snapshot.val();
+      if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
+      if (data.dailyBonus !== undefined) currentDailyBonus = parseFloat(data.dailyBonus);
+      if (data.minWithdrawal !== undefined || data.minFaucetPay !== undefined) {
+        minWithdrawalAmt = parseFloat(data.minFaucetPay !== undefined ? data.minFaucetPay : data.minWithdrawal);
+      }
+      if (data.minTonWithdrawal !== undefined || data.minTon !== undefined) {
+        minTonWithdrawalAmt = parseFloat(data.minTon !== undefined ? data.minTon : data.minTonWithdrawal);
+      }
+      if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
+        referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
+        var refEl = document.getElementById('refPercentText');
+        if(refEl) refEl.innerText = "Get " + referralPercentage + "%";
+      }
+      renderUIValues();
+      calculateExchange();
+      toggleWithdrawFields();
+      updateCostCalculation();
     }
+  });
+
+  // 2. LOTTERY SETTINGS REALTIME LISTENER
+  db.ref('adminSettings/lottery').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var lotData = snapshot.val();
+      if (lotData.daily) {
+        lotteryConfig.daily.status = lotData.daily.status !== undefined ? lotData.daily.status : true;
+        if (lotData.daily.poolVal !== undefined) lotteryConfig.daily.poolVal = parseFloat(lotData.daily.poolVal);
+        if (lotData.daily.ticketPrice !== undefined) lotteryConfig.daily.ticketPrice = parseFloat(lotData.daily.ticketPrice);
+        if (lotData.daily.maxTickets !== undefined) lotteryConfig.daily.maxTickets = parseInt(lotData.daily.maxTickets);
+        if (lotData.daily.winnersCount !== undefined) lotteryConfig.daily.winners = parseInt(lotData.daily.winnersCount);
+      }
+      if (lotData.weekly) {
+        lotteryConfig.weekly.status = lotData.weekly.status !== undefined ? lotData.weekly.status : true;
+        if (lotData.weekly.poolVal !== undefined) lotteryConfig.weekly.poolVal = parseFloat(lotData.weekly.poolVal);
+        if (lotData.weekly.ticketPrice !== undefined) lotteryConfig.weekly.ticketPrice = parseFloat(lotData.weekly.ticketPrice);
+        if (lotData.weekly.maxTickets !== undefined) lotteryConfig.weekly.maxTickets = parseInt(lotData.weekly.maxTickets);
+        if (lotData.weekly.winnersCount !== undefined) lotteryConfig.weekly.winners = parseInt(lotData.weekly.winnersCount);
+      }
+
+      var navLotteryBtn = document.getElementById('navLotteryBtn');
+      if (navLotteryBtn) {
+        if (!lotteryConfig.daily.status && !lotteryConfig.weekly.status) {
+          navLotteryBtn.style.display = 'none';
+        } else {
+          navLotteryBtn.style.display = 'flex';
+        }
+      }
+
+      var dTypeBtn = document.getElementById('lotteryTypeDailyBtn');
+      var wTypeBtn = document.getElementById('lotteryTypeWeeklyBtn');
+      if(dTypeBtn) dTypeBtn.style.display = lotteryConfig.daily.status ? 'block' : 'none';
+      if(wTypeBtn) wTypeBtn.style.display = lotteryConfig.weekly.status ? 'block' : 'none';
+
+      if (currentLotteryType === 'daily' && !lotteryConfig.daily.status && lotteryConfig.weekly.status) {
+        switchLotteryType('weekly');
+      } else if (currentLotteryType === 'weekly' && !lotteryConfig.weekly.status && lotteryConfig.daily.status) {
+        switchLotteryType('daily');
+      }
+
+      updateLotteryUI();
+    }
+  });
+
+  // 3. CAMPAIGN CLICK RATES REALTIME LISTENER
+  db.ref('adminSettings/clickRates').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var rates = snapshot.val();
+      if (rates.coin100 !== undefined) clickPackagesData[0].coin = parseFloat(rates.coin100);
+      if (rates.coin250 !== undefined) clickPackagesData[1].coin = parseFloat(rates.coin250);
+      if (rates.coin500 !== undefined) clickPackagesData[2].coin = parseFloat(rates.coin500);
+      if (rates.coin1000 !== undefined) clickPackagesData[3].coin = parseFloat(rates.coin1000);
+      if (rates.coin2000 !== undefined) clickPackagesData[4].coin = parseFloat(rates.coin2000);
+      if (rates.coin3000 !== undefined) clickPackagesData[5].coin = parseFloat(rates.coin3000);
+      if (rates.coin4000 !== undefined) clickPackagesData[6].coin = parseFloat(rates.coin4000);
+      if (rates.coin5000 !== undefined) clickPackagesData[7].coin = parseFloat(rates.coin5000);
+
+      var activePkg = clickPackagesData.find(function(p) { return p.clicks === selectedClickCount; });
+      if (activePkg) {
+        selectedCoinCost = activePkg.coin;
+      }
+      updateCostCalculation();
+    }
+  });
+
+  // 4. SPACE ROCKET MINING REALTIME LISTENER
+  db.ref('adminSettings/mining').on('value', function(snapshot) {
+    if (snapshot.exists()) applyMiningData(snapshot.val());
+  });
+
+  // 5. STAKING APY RATES REALTIME LISTENER
+  db.ref('adminSettings/stakingApy').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      for (var key in data) { stakingApyRates[key] = data[key]; }
+
+      if (data[0] !== undefined && document.getElementById('displayFlexApy')) document.getElementById('displayFlexApy').innerText = data[0];
+      if (data[7] !== undefined && document.getElementById('displayApy7')) document.getElementById('displayApy7').innerText = data[7];
+      if (data[15] !== undefined && document.getElementById('displayApy15')) document.getElementById('displayApy15').innerText = data[15];
+      if (data[30] !== undefined && document.getElementById('displayApy30')) document.getElementById('displayApy30').innerText = data[30];
+      if (data[60] !== undefined && document.getElementById('displayApy60')) document.getElementById('displayApy60').innerText = data[60];
+      if (data[90] !== undefined && document.getElementById('displayApy90')) document.getElementById('displayApy90').innerText = data[90];
+      if (data[120] !== undefined && document.getElementById('displayApy120')) document.getElementById('displayApy120').innerText = data[120];
+      if (data[365] !== undefined && document.getElementById('displayApy365')) document.getElementById('displayApy365').innerText = data[365];
+
+      var calcSelect = document.getElementById('stakeCalcPlan');
+      if (calcSelect) {
+        calcSelect.innerHTML = '<option value="0|' + stakingApyRates[0] + '">Flexible (0 Days - ' + stakingApyRates[0] + '% APY)</option>' +
+        '<option value="7|' + stakingApyRates[7] + '">Fixed (7 Days - ' + stakingApyRates[7] + '% APY)</option>' +
+        '<option value="15|' + stakingApyRates[15] + '">Fixed (15 Days - ' + stakingApyRates[15] + '% APY)</option>' +
+        '<option value="30|' + stakingApyRates[30] + '">Fixed (30 Days - ' + stakingApyRates[30] + '% APY)</option>' +
+        '<option value="60|' + stakingApyRates[60] + '">Fixed (60 Days - ' + stakingApyRates[60] + '% APY)</option>' +
+        '<option value="90|' + stakingApyRates[90] + '">Fixed (90 Days - ' + stakingApyRates[90] + '% APY)</option>' +
+        '<option value="120|' + stakingApyRates[120] + '">Fixed (120 Days - ' + stakingApyRates[120] + '% APY)</option>' +
+        '<option value="365|' + stakingApyRates[365] + '">Fixed (365 Days - ' + stakingApyRates[365] + '% APY)</option>';
+      }
+      calculateStakeRewards();
+    }
+  });
+
+  // 6. AD NETWORKS REALTIME LISTENER
+  db.ref('adminSettings/ads').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
+      if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
+      if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
+      if (data.adsterraLimit) maxLimits.adsterra = parseInt(data.adsterraLimit);
+      if (data.adsbitvexLimit) maxLimits.adsbitvex = parseInt(data.adsbitvexLimit);
+
+      if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
+      if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
+      if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
+      if (data.adsterraReward) rewards.adsterra = parseFloat(data.adsterraReward);
+      if (data.adsbitvexReward) rewards.adsbitvex = parseFloat(data.adsbitvexReward);
+
+      if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
+      if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
+      if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
+      if (data.adsterraTimer) adTimers.adsterra = parseInt(data.adsterraTimer);
+      if (data.adsbitvexTimer) adTimers.adsbitvex = parseInt(data.adsbitvexTimer);
+
+      renderUIValues();
+    }
+  });
+
+  db.ref('customTasks').on('value', function() {
+    renderCustomTasksFromFirebase();
+  });
+
+  trackUserLoginAndIp();
+  loadTransactionHistory();
+}
+
+function initTonConnectUI() {
+  try {
+    if (window.TON_CONNECT_UI) {
+      var manifestUrl = 'https://gramfarming.com/tonconnect-manifest.json?v=' + Date.now();
+      tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: manifestUrl,
+        buttonRootId: null
+      });
+
+      tonConnectUI.onStatusChange(function(wallet) {
+        if (wallet) {
+          isWalletConnected = true;
+          userConnectedAddress = wallet.account.address;
+          var shortAddr = userConnectedAddress.substring(0, 4) + '...' + userConnectedAddress.substring(userConnectedAddress.length - 4);
+          var tonWalletBtn = document.getElementById('tonWalletBtnText');
+          if(tonWalletBtn) tonWalletBtn.innerText = "Connected: " + shortAddr;
+          showToast("Wallet Connected Successfully!", "success");
+        } else {
+          isWalletConnected = false;
+          userConnectedAddress = "";
+          var tonWalletBtn = document.getElementById('tonWalletBtnText');
+          if(tonWalletBtn) tonWalletBtn.innerText = "Connect Wallet";
+        }
+      });
+    }
+  } catch(e) {
+    console.error("TON Connect init error:", e);
+  }
+}
+
+function handleGramWalletConnect() {
+  if (!tonConnectUI) {
+    initTonConnectUI();
+  }
+  if (tonConnectUI) {
+    if (isWalletConnected) {
+      tonConnectUI.disconnect();
+    } else {
+      tonConnectUI.openModal();
+    }
+  } else {
+    showToast("Wallet Connection SDK is initializing, try again in a moment.", "error");
+  }
+}
+
+function calculateGramPayAmount() {
+  var usdAmt = parseFloat(document.getElementById('gramDepositUsdInput').value) || 0;
+  var payTon = usdAmt > 0 ? (usdAmt / liveTonPrice) : 0;
+  var payAmountTonEl = document.getElementById('gramPayAmountTon');
+  var rateDisplayEl = document.getElementById('gramRateDisplay');
+  if(payAmountTonEl) payAmountTonEl.innerText = payTon.toFixed(4) + " TON";
+  if(rateDisplayEl) rateDisplayEl.innerText = "1 TON = $" + liveTonPrice.toFixed(2);
+}
+
+function sendGramDepositTransaction() {
+  var usdAmt = parseFloat(document.getElementById('gramDepositUsdInput').value) || 0;
+  if (usdAmt <= 0) {
+    showToast("Kripya valid USD amount enter karein.", "error");
+    return;
+  }
+
+  if (!isWalletConnected || !tonConnectUI) {
+    showToast("Kripya pehle apna TON Wallet connect karein!", "error");
+    handleGramWalletConnect();
+    return;
+  }
+
+  var payTon = usdAmt / liveTonPrice;
+  var nanoTon = Math.floor(payTon * 1000000000);
+
+  var transaction = {
+    validUntil: Math.floor(Date.now() / 1000) + 360,
+    messages: [
+      {
+        address: "UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd",
+        amount: nanoTon.toString()
+      }
+    ]
+  };
+
+  showToast("Confirming transaction in wallet...", "success");
+  tonConnectUI.sendTransaction(transaction).then(function(result) {
+    if (result) {
+      tonBalance += payTon;
+      saveToFirebase();
+      renderUIValues();
+      showToast("✅ Successfully deposited " + payTon.toFixed(4) + " Gram (TON)!", "success");
+
+      var depositRecord = {
+        id: Date.now(),
+        userName: displayName,
+        userId: userId,
+        method: 'Gram (TON) Deposit',
+        amount: payTon,
+        usdAmount: usdAmt,
+        status: 'SUCCESS',
+        date: new Date().toLocaleString()
+      };
+      if (window.db) db.ref('deposits/' + userId).push(depositRecord);
+      loadTransactionHistory();
+      resetGramDepositForm();
+    }
+  }).catch(function(e) {
+    console.error("TON Deposit Error:", e);
+    showToast("Transaction cancelled or failed.", "error");
   });
 }
 
-function renderContestLeaderboard(allUsersObj) {
-  var userList = [];
-  Object.keys(allUsersObj).forEach(function(uKey) {
-    var u = allUsersObj[uKey];
-    userList.push({ id: uKey, name: u.name || "User", points: u.adPoints || 0 });
+function resetGramDepositForm() {
+  var inp = document.getElementById('gramDepositUsdInput');
+  if(inp) inp.value = '';
+  calculateGramPayAmount();
+}
+
+var CACHE_KEY = 'gram_farming_cache_' + userId;
+
+function loadFromLocalStorage() {
+  try {
+    var cachedData = localStorage.getItem(CACHE_KEY);
+    if (cachedData) {
+      var parsed = JSON.parse(cachedData);
+      balance = parsed.balance !== undefined ? parsed.balance : 0.00;
+      tonBalance = parsed.tonBalance !== undefined ? parsed.tonBalance : 0.0590;
+      usdtBalance = parsed.usdtBalance !== undefined ? parsed.usdtBalance : 5.0500;
+      refReward = parsed.refReward !== undefined ? parsed.refReward : 0.00;
+      totalInvited = parsed.totalInvited !== undefined ? parsed.totalInvited : 0;
+      savedTonAddress = parsed.savedTonAddress || "";
+      activeStakes = parsed.activeStakes || [];
+      lastCheckin = parsed.lastCheckin || 0;
+      if (parsed.userLotteryTickets) userLotteryTickets = parsed.userLotteryTickets;
+      if (parsed.adWatchedCounts) adWatchedCounts = parsed.adWatchedCounts;
+      renderUIValues();
+      renderStakingList();
+    }
+  } catch (e) {}
+}
+
+function saveToLocalStorage() {
+  try {
+    var dataToCache = { balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin, userLotteryTickets: userLotteryTickets, adWatchedCounts: adWatchedCounts };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
+  } catch (e) {}
+}
+
+loadFromLocalStorage();
+
+function trackUserLoginAndIp() {
+  if (!window.db) return;
+  fetch('https://api.ipify.org?format=json').then(function(res) {
+    return res.json();
+  }).then(function(ipData) {
+    var userIp = ipData.ip;
+    var userDevice = navigator.userAgent;
+    var userRef = db.ref('users/' + userId);
+
+    userRef.once('value', function(snapshot) {
+      if (snapshot.exists()) {
+        var userData = snapshot.val();
+        if (userData.isBlocked === true) {
+          document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f172a; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Aapka account admin dwara block kar diya gaya hai!</p></div></div>';
+        }
+      }
+    });
+
+    userRef.update({
+      ipAddress: userIp,
+      deviceInfo: userDevice,
+      lastLogin: firebase.database.ServerValue.TIMESTAMP
+    });
+  }).catch(function(err) {
+    console.error("IP tracking error:", err);
   });
+}
 
-  userList.sort(function(a, b) { return b.points - a.points; });
-  var top40 = userList.slice(0, 40);
-  var sumTop40Pts = 0;
-  top40.forEach(function(u) { sumTop40Pts += u.points; });
+function applyMiningData(data) {
+  if (!data) return;
+  if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
+  if (data.novaDuration !== undefined) miningDurationSeconds = parseFloat(data.novaDuration) * 3600;
+  if (data.novaTimer !== undefined) novaTimerSec = parseInt(data.novaTimer);
+  if (data.cosmicTimer !== undefined) cosmicTimerSec = parseInt(data.cosmicTimer);
 
-  var myIndex = userList.findIndex(function(u) { return u.id === userId; });
-  var myRank = myIndex !== -1 ? (myIndex + 1) : ">40";
-  if(document.getElementById('myAdPoints')) document.getElementById('myAdPoints').innerText = adPoints + " Pts";
-  if(document.getElementById('myRankBadge')) document.getElementById('myRankBadge').innerText = "#" + myRank;
-
-  for (var i = 1; i <= 3; i++) {
-    var uData = userList[i - 1] || { name: "Player " + i, points: 0 };
-    var estPrize = (sumTop40Pts > 0 && uData.points > 0) ? ((uData.points / sumTop40Pts) * totalAdminPrizePool) : 0;
-    if(document.getElementById('podiumName' + i)) document.getElementById('podiumName' + i).innerText = uData.name;
-    if(document.getElementById('podiumPts' + i)) document.getElementById('podiumPts' + i).innerText = uData.points + " Pts";
-    if(document.getElementById('podiumPrize' + i)) document.getElementById('podiumPrize' + i).innerText = "Est. $" + estPrize.toFixed(2);
+  if (data.novaReqAds !== undefined) {
+    novaRequiredAds = parseInt(data.novaReqAds);
+    var novaMaxEl = document.getElementById('novaLimitMax');
+    if(novaMaxEl) novaMaxEl.innerText = novaRequiredAds;
+    if (rocketStates[0].status === 'ads') {
+      var rBtn0 = document.getElementById('rocketBtn-0');
+      if(rBtn0) rBtn0.innerText = "Watch Ad (" + rocketStates[0].adsWatched + "/" + novaRequiredAds + ")";
+    }
   }
 
-  var container = document.getElementById('rankListContainer');
-  if (!container) return;
-  var html = '';
-  var listUsers = userList.slice(3, 30);
+  if (data.cosmicReqAds !== undefined) {
+    cosmicRequiredAds = parseInt(data.cosmicReqAds);
+    var cosmicMaxEl = document.getElementById('cosmicLimitMax');
+    if(cosmicMaxEl) cosmicMaxEl.innerText = cosmicRequiredAds;
+    if (rocketStates[1].status === 'ads') {
+      var rBtn1 = document.getElementById('rocketBtn-1');
+      if(rBtn1) rBtn1.innerText = "Watch Ad (" + rocketStates[1].adsWatched + "/" + cosmicRequiredAds + ")";
+    }
+  }
+}
 
-  listUsers.forEach(function(u, idx) {
-    var rankNum = idx + 4;
-    var estPrize = (sumTop40Pts > 0 && u.points > 0) ? ((u.points / sumTop40Pts) * totalAdminPrizePool) : 0;
-    var isMe = (u.id === userId);
-    var bgStyle = isMe ? 'background: rgba(34, 197, 94, 0.15); border-color: var(--accent);' : '';
+var translations = {
+  en: { homeTitle: "🏠 Home", balanceText: "Balance", coinVolume: "Coin Volume", earnBtn: "⚡ Earn", withdrawNavBtn: "🪙 Withdraw", clickToClaim: "Click to Claim!", watchBtn: "Watch", tasksOffers: "📋 Tasks", stakingOptions: "💎 Staking Options", referralProgram: "👥 REFERRAL PROGRAM", walletExchange: "💼 Wallet & Exchange", topEarnersRank: "Top Earners Rank", navHome: "Home", navTasks: "Tasks", navStaking: "Staking", navReferrals: "Referrals", navWallet: "Wallet", navRank: "Rank" },
+  hi: { homeTitle: "🏠 होम", balanceText: "बैलेंस", coinVolume: "कॉइन वैल्यू", earnBtn: "⚡ कमाई करें", withdrawNavBtn: "🪙 निकासी", clickToClaim: "क्लेम करने के लिए क्लिक करें!", watchBtn: "देखें", tasksOffers: "📋 टास्क", stakingOptions: "💎 स्टेकिंग विकल्प", referralProgram: "👥 रेफरल प्रोग्राम", walletExchange: "💼 वॉलेट और एक्सचेंज", topEarnersRank: "शीर्ष कमाई करने वाले", navHome: "होम", navTasks: "टास्क", navStaking: "स्टेकिंग", navReferrals: "रेफरल", navWallet: "वॉलेट", navRank: "रैंक" },
+  ru: { homeTitle: "🏠 Главная", balanceText: "Баланс", coinVolume: "Курс монет", earnBtn: "⚡ Заработок", withdrawNavBtn: "🪙 Вывод", clickToClaim: "Нажмите, чтобы забрать!", watchBtn: "Смотреть", tasksOffers: "📋 Задания", stakingOptions: "💎 Стейкинг", referralProgram: "👥 РЕФЕРАЛЫ", walletExchange: "💼 Кошелек", topEarnersRank: "Рейтинг", navHome: "Главная", navTasks: "Задания", navStaking: "Стейкинг", navReferrals: "Рефералы", navWallet: "Кошелек", navRank: "Рейтинг" }
+};
 
-    html += '<div class="rank-item-row" style="' + bgStyle + '">' +
-      '<div style="flex: 2; font-weight: bold;"><span style="color: var(--sky-blue); margin-right: 6px;">#' + rankNum + '</span> ' + u.name + '</div>' +
-      '<div style="flex: 1; text-align: center; color: var(--yellow); font-weight: bold;">' + u.points + '</div>' +
-      '<div style="flex: 1; text-align: right; color: var(--accent); font-weight: bold;">$' + estPrize.toFixed(2) + '</div>' +
-    '</div>';
+function changeLanguage(lang) {
+  var dict = translations[lang] || translations['en'];
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (dict[key]) el.innerText = dict[key];
   });
-  container.innerHTML = html;
+  toggleWithdrawFields();
 }
 
 function saveToFirebase() {
+  saveToLocalStorage();
   if (window.db) {
-    db.ref('users/' + userId).update({ balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, adPoints: adPoints });
+    db.ref('users/' + userId).update({
+      balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin,
+      userLotteryTickets: userLotteryTickets,
+      adWatchedCounts: adWatchedCounts
+    });
+    if (savedTonAddress) {
+      db.ref('tonAddresses/' + userId).update({ address: savedTonAddress, userName: displayName, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+    }
   }
 }
 
-function finishAdWatchSuccess(rewardPerAd) {
-  balance += rewardPerAd;
-  adPoints += 1; // 1 Ad = 1 Point
-
-  if (adPoints >= 30) {
-    var bonusCoins = Math.floor(adPoints / 30);
-    adPoints = adPoints % 30;
-    balance += bonusCoins;
-    showToast("🎉 30 Ad Points reached! Converted to +" + bonusCoins + " Coin!", "success");
-  }
-
+function addEarningsWithReferral(earnedAmount) {
+  balance += earnedAmount;
+  var refCommission = earnedAmount * (referralPercentage / 100);
+  refReward += refCommission;
   saveToFirebase();
   renderUIValues();
-  showToast("Claim Successful! +" + rewardPerAd + " Coin added (+1 Ad Point)!", "success");
 }
 
-function watchMonetagAd() {
-  showToast("Loading ad...", "success");
-  setTimeout(function() {
-    finishAdWatchSuccess(0.05);
-  }, 1000);
+function fetchLiveTonPrice() {
+  fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd').then(function(res) {
+    return res.json();
+  }).then(function(data) {
+    if(data && data['the-open-network'] && data['the-open-network'].usd) {
+      liveTonPrice = data['the-open-network'].usd;
+      var liveStatus = document.getElementById('liveRateStatus');
+      if(liveStatus) liveStatus.innerText = "📡 Live TON Rate: $" + liveTonPrice + " USDT (Real-time)";
+      calculateExchange();
+      updateCostCalculation();
+      calculateGramPayAmount();
+    }
+  }).catch(function() {
+    fetch('https://api.binance.com/api/v3/ticker/price?symbol=TONUSDT').then(function(res) {
+      return res.json();
+    }).then(function(bData) {
+      if(bData && bData.price) {
+        liveTonPrice = parseFloat(bData.price);
+        var liveStatus = document.getElementById('liveRateStatus');
+        if(liveStatus) liveStatus.innerText = "📡 Live TON Rate: $" + liveTonPrice.toFixed(2) + " USDT (Binance)";
+        calculateExchange();
+        updateCostCalculation();
+        calculateGramPayAmount();
+      }
+    });
+  });
 }
 
 function renderUIValues() {
   if(document.getElementById('userBalance')) document.getElementById('userBalance').innerText = balance.toFixed(2);
   if(document.getElementById('tonBalance')) document.getElementById('tonBalance').innerText = tonBalance.toFixed(4);
   if(document.getElementById('usdtBalance')) document.getElementById('usdtBalance').innerText = usdtBalance.toFixed(4) + " USDT";
+
+  document.querySelectorAll('.usdtBalanceDisp').forEach(function(el) {
+    el.innerText = usdtBalance.toFixed(2);
+  });
+
+  if(document.getElementById('refRewardBalance')) document.getElementById('refRewardBalance').innerText = "+" + refReward.toFixed(2) + " 🪙";
+  if(document.getElementById('totalInvitedCount')) document.getElementById('totalInvitedCount').innerText = totalInvited + " USERS";
+  if(document.getElementById('rankBalance')) document.getElementById('rankBalance').innerText = balance.toFixed(2);
+  if(document.getElementById('displayCoinVolume')) document.getElementById('displayCoinVolume').innerText = "1 Coin = $" + coinUsdtValue;
+  if(document.getElementById('dailyBonusDisplay')) document.getElementById('dailyBonusDisplay').innerText = currentDailyBonus.toFixed(2);
+
+  updateConvertSourceBalanceDisplay();
+
+  var mCount = adWatchedCounts.taskMonetagLimit || 0;
+  var gCount = adWatchedCounts.taskGigapubLimit || 0;
+  var moCount = adWatchedCounts.taskMonetixLimit || 0;
+  var adstCount = adWatchedCounts.taskAdsterraLimit || 0;
+  var adsbitvexCount = adWatchedCounts.taskAdsbitvexLimit || 0;
+
+  var mMax = maxLimits.monetag;
+  var gMax = maxLimits.gigapub;
+  var moMax = maxLimits.monetix;
+  var adstMax = maxLimits.adsterra;
+  var adsbitvexMax = maxLimits.adsbitvex || 50;
+
+  if(document.getElementById('textMonetagLimit')) document.getElementById('textMonetagLimit').innerText = mCount + " / " + mMax + " (" + Math.round((mCount/mMax)*100) + "%)";
+  if(document.getElementById('progMonetagFill')) document.getElementById('progMonetagFill').style.width = Math.min(100, (mCount/mMax)*100) + "%";
+
+  if(document.getElementById('textGigapubLimit')) document.getElementById('textGigapubLimit').innerText = gCount + " / " + gMax + " (" + Math.round((gCount/gMax)*100) + "%)";
+  if(document.getElementById('progGigapubFill')) document.getElementById('progGigapubFill').style.width = Math.min(100, (gCount/gMax)*100) + "%";
+
+  if(document.getElementById('textMonetixLimit')) document.getElementById('textMonetixLimit').innerText = moCount + " / " + moMax + " (" + Math.round((moCount/moMax)*100) + "%)";
+  if(document.getElementById('progMonetixFill')) document.getElementById('progMonetixFill').style.width = Math.min(100, (moCount/moMax)*100) + "%";
+
+  if(document.getElementById('textAdsterraLimit')) document.getElementById('textAdsterraLimit').innerText = adstCount + " / " + adstMax + " (" + Math.round((adstCount/adstMax)*100) + "%)";
+  if(document.getElementById('progAdsterraFill')) document.getElementById('progAdsterraFill').style.width = Math.min(100, (adstCount/adstMax)*100) + "%";
+
+  if(document.getElementById('textAdsbitvexLimit')) document.getElementById('textAdsbitvexLimit').innerText = adsbitvexCount + " / " + adsbitvexMax + " (" + Math.round((adsbitvexCount/adsbitvexMax)*100) + "%)";
+  if(document.getElementById('progAdsbitvexFill')) document.getElementById('progAdsbitvexFill').style.width = Math.min(100, (adsbitvexCount/adsbitvexMax)*100) + "%";
+
+  if(document.getElementById('rewardMonetagVal')) document.getElementById('rewardMonetagVal').innerText = rewards.monetag;
+  if(document.getElementById('rewardGigapubVal')) document.getElementById('rewardGigapubVal').innerText = rewards.gigapub;
+  if(document.getElementById('rewardMonetixVal')) document.getElementById('rewardMonetixVal').innerText = rewards.monetix;
+  if(document.getElementById('rewardAdsterraVal')) document.getElementById('rewardAdsterraVal').innerText = rewards.adsterra;
+  if(document.getElementById('rewardAdsbitvexVal')) document.getElementById('rewardAdsbitvexVal').innerText = rewards.adsbitvex || 0.05;
+
+  var availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
+  if(document.getElementById('availableWithdrawBalance')) document.getElementById('availableWithdrawBalance').innerText = "Available: " + availVal.toFixed(4);
 }
+
+fetchLiveTonPrice();
+setInterval(fetchLiveTonPrice, 60000);
 
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
   var targetTab = document.getElementById(tabId);
   if(targetTab) targetTab.classList.add('active');
+  if (window.event && window.event.currentTarget) {
+    window.event.currentTarget.classList.add('active');
+  }
+}
+
+/* --- LOTTERY CONTROLLER FUNCTIONS --- */
+function initLotteryData() {
+  updateLotteryUI();
+  setInterval(updateLotteryCountdowns, 1000);
+}
+
+function switchLotteryType(type) {
+  currentLotteryType = type;
+  var dBtn = document.getElementById('lotteryTypeDailyBtn');
+  var wBtn = document.getElementById('lotteryTypeWeeklyBtn');
+  var dSec = document.getElementById('dailyLotterySection');
+  var wSec = document.getElementById('weeklyLotterySection');
+  var mainTitle = document.getElementById('lotteryMainTitle');
+
+  if(dBtn) dBtn.classList.remove('active');
+  if(wBtn) wBtn.classList.remove('active');
+  if(dSec) dSec.style.display = 'none';
+  if(wSec) wSec.style.display = 'none';
+
+  if (type === 'daily') {
+    if(dBtn) dBtn.classList.add('active');
+    if(dSec) dSec.style.display = 'block';
+    if(mainTitle) mainTitle.innerText = 'Daily Lottery';
+    document.getElementById('ruleTicketPriceText').innerText = lotteryConfig.daily.ticketPrice + ' USDT';
+    document.getElementById('ruleMaxTicketsText').innerText = lotteryConfig.daily.maxTickets;
+  } else {
+    if(wBtn) wBtn.classList.add('active');
+    if(wSec) wSec.style.display = 'block';
+    if(mainTitle) mainTitle.innerText = 'Weekly Lottery';
+    document.getElementById('ruleTicketPriceText').innerText = lotteryConfig.weekly.ticketPrice + ' USDT';
+    document.getElementById('ruleMaxTicketsText').innerText = lotteryConfig.weekly.maxTickets;
+  }
+  updateLotteryUI();
+}
+
+function setLotteryPayMethod(type, method) {
+  lotteryPayMethods[type] = method;
+  var inAppBtn = document.getElementById(type + 'PayInAppBtn');
+
+  if(inAppBtn) inAppBtn.classList.remove('active');
+
+  if (method === 'inapp' && inAppBtn) inAppBtn.classList.add('active');
+}
+
+function changeLotteryTicketQty(type, change) {
+  var current = lotteryTicketQuantities[type] || 1;
+  var max = lotteryConfig[type].maxTickets;
+  current += change;
+  if (current < 1) current = 1;
+  if (current > max) current = max;
+  lotteryTicketQuantities[type] = current;
+  updateLotteryUI();
+}
+
+function setLotteryQuickQty(type, qty, btnEl) {
+  var max = lotteryConfig[type].maxTickets;
+  if (qty === 'MAX') {
+    lotteryTicketQuantities[type] = max;
+  } else {
+    lotteryTicketQuantities[type] = parseInt(qty);
+  }
+
+  var parentGrid = btnEl ? btnEl.parentElement : null;
+  if (parentGrid) {
+    parentGrid.querySelectorAll('.quick-qty-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btnEl) btnEl.classList.add('active');
+  }
+  updateLotteryUI();
+}
+
+function updateLotteryUI() {
+  var dQty = lotteryTicketQuantities.daily || 1;
+  var wQty = lotteryTicketQuantities.weekly || 1;
+
+  var dQtyEl = document.getElementById('dailyTicketQtyVal');
+  var wQtyEl = document.getElementById('weeklyTicketQtyVal');
+  if(dQtyEl) dQtyEl.innerText = dQty;
+  if(wQtyEl) wQtyEl.innerText = wQty;
+
+  var dCost = (dQty * lotteryConfig.daily.ticketPrice).toFixed(2);
+  var wCost = (wQty * lotteryConfig.weekly.ticketPrice).toFixed(2);
+
+  var dBuyBtn = document.getElementById('dailyBuyBtn');
+  var wBuyBtn = document.getElementById('weeklyBuyBtn');
+  if(dBuyBtn) dBuyBtn.innerText = 'Buy for ' + dCost + ' USDT';
+  if(wBuyBtn) wBuyBtn.innerText = 'Buy for ' + wCost + ' USDT';
+
+  var dUserTix = userLotteryTickets.daily || 0;
+  var wUserTix = userLotteryTickets.weekly || 0;
+
+  var dCountEl = document.getElementById('dailyMyTicketsCount');
+  var wCountEl = document.getElementById('weeklyMyTicketsCount');
+  if(dCountEl) dCountEl.innerText = dUserTix;
+  if(wCountEl) wCountEl.innerText = wUserTix;
+
+  var dMaxEl = document.getElementById('dailyMaxTicketsDisp');
+  var dMaxEl2 = document.getElementById('dailyMaxTicketsDisp2');
+  var wMaxEl = document.getElementById('weeklyMaxTicketsDisp');
+  var wMaxEl2 = document.getElementById('weeklyMaxTicketsDisp2');
+
+  if(dMaxEl) dMaxEl.innerText = lotteryConfig.daily.maxTickets;
+  if(dMaxEl2) dMaxEl2.innerText = lotteryConfig.daily.maxTickets;
+  if(wMaxEl) wMaxEl.innerText = lotteryConfig.weekly.maxTickets;
+  if(wMaxEl2) wMaxEl2.innerText = lotteryConfig.weekly.maxTickets;
+
+  var dPriceEl = document.getElementById('dailyTicketPriceDisp');
+  var wPriceEl = document.getElementById('weeklyTicketPriceDisp');
+  if(dPriceEl) dPriceEl.innerText = lotteryConfig.daily.ticketPrice;
+  if(wPriceEl) wPriceEl.innerText = lotteryConfig.weekly.ticketPrice;
+
+  var dPoolEl = document.getElementById('dailyPrizePoolVal');
+  var wPoolEl = document.getElementById('weeklyPrizePoolVal');
+  if(dPoolEl) dPoolEl.innerText = lotteryConfig.daily.poolVal.toFixed(2);
+  if(wPoolEl) wPoolEl.innerText = lotteryConfig.weekly.poolVal.toFixed(2);
+
+  var dWinnersEl = document.getElementById('dailyWinnersText');
+  var wWinnersEl = document.getElementById('weeklyWinnersText');
+  if(dWinnersEl) dWinnersEl.innerText = lotteryConfig.daily.winners + " Winners";
+  if(wWinnersEl) wWinnersEl.innerText = lotteryConfig.weekly.winners + " Winners";
+
+  var dFill = document.getElementById('dailyTicketsProgFill');
+  var wFill = document.getElementById('weeklyTicketsProgFill');
+  if(dFill) dFill.style.width = Math.min(100, (dUserTix / lotteryConfig.daily.maxTickets) * 100) + '%';
+  if(wFill) wFill.style.width = Math.min(100, (wUserTix / lotteryConfig.weekly.maxTickets) * 100) + '%';
+}
+
+function updateLotteryCountdowns() {
+  var now = new Date();
+  
+  // Daily reset (00:00 UTC)
+  var nextDaily = new Date();
+  nextDaily.setUTCHours(24, 0, 0, 0);
+  var diffD = Math.max(0, Math.floor((nextDaily - now) / 1000));
+  var dHours = String(Math.floor(diffD / 3600)).padStart(2, '0');
+  var dMins = String(Math.floor((diffD % 3600) / 60)).padStart(2, '0');
+  var dSecs = String(diffD % 60).padStart(2, '0');
+  var dTimerEl = document.getElementById('dailyDrawCountdown');
+  if(dTimerEl) dTimerEl.innerText = dHours + ":" + dMins + ":" + dSecs;
+
+  // Weekly reset (Next Sunday 00:00 UTC)
+  var nextWeekly = new Date();
+  var dayOfWeek = nextWeekly.getUTCDay();
+  var daysUntilSunday = (7 - dayOfWeek) % 7;
+  if (daysUntilSunday === 0) daysUntilSunday = 7;
+  nextWeekly.setUTCDate(nextWeekly.getUTCDate() + daysUntilSunday);
+  nextWeekly.setUTCHours(0, 0, 0, 0);
+
+  var diffW = Math.max(0, Math.floor((nextWeekly - now) / 1000));
+  var wDays = Math.floor(diffW / (24 * 3600));
+  var wHours = String(Math.floor((diffW % (24 * 3600)) / 3600)).padStart(2, '0');
+  var wMins = String(Math.floor((diffW % 3600) / 60)).padStart(2, '0');
+  var wSecs = String(diffW % 60).padStart(2, '0');
+  var wTimerEl = document.getElementById('weeklyDrawCountdown');
+  if(wTimerEl) wTimerEl.innerText = wDays + " Days " + wHours + ":" + wMins + ":" + wSecs;
+}
+
+function buyLotteryTickets(type) {
+  if (!lotteryConfig[type].status) {
+    showToast("Yeh lottery abhi active nahi hai!", "error");
+    return;
+  }
+
+  var qty = lotteryTicketQuantities[type] || 1;
+  var price = lotteryConfig[type].ticketPrice;
+  var totalCost = qty * price;
+  var payMethod = lotteryPayMethods[type];
+
+  if (payMethod === 'inapp') {
+    if (usdtBalance < totalCost) {
+      showToast("Insufficient USDT Balance! Exchanged Coin or Deposit USDT.", "error");
+      return;
+    }
+    usdtBalance -= totalCost;
+  }
+
+  userLotteryTickets[type] = (userLotteryTickets[type] || 0) + qty;
+  lotteryConfig[type].poolVal += (totalCost * 0.80);
+
+  if (window.db) {
+    db.ref('adminSettings/lottery/' + type + '/poolVal').set(lotteryConfig[type].poolVal);
+  }
+
+  saveToFirebase();
+  renderUIValues();
+  updateLotteryUI();
+
+  showToast("🎟️ " + qty + " " + (type === 'daily' ? 'Daily' : 'Weekly') + " Lottery Tickets bought successfully!", "success");
+}
+
+function setStakingCurrency(curr) {
+  selectedStakingCurrency = curr;
+
+  var cCard = document.getElementById('stakeCardCoin');
+  var uCard = document.getElementById('stakeCardUSDT');
+  var gCard = document.getElementById('stakeCardGram');
+
+  if(cCard) cCard.classList.remove('active');
+  if(uCard) uCard.classList.remove('active');
+  if(gCard) gCard.classList.remove('active');
+
+  if (curr === 'Coin' && cCard) cCard.classList.add('active');
+  if (curr === 'USDT' && uCard) uCard.classList.add('active');
+  if (curr === 'Gram' && gCard) gCard.classList.add('active');
+
+  var calcCurrLabel = document.getElementById('calcCurrencyLabel');
+  if(calcCurrLabel) calcCurrLabel.innerText = curr;
+  calculateStakeRewards();
+}
+
+function switchWalletCard(cardName) {
+  document.querySelectorAll('.wallet-subcard-content').forEach(function(el) { el.classList.remove('active'); });
+  var wCW = document.getElementById('wCardWithdraw'); if(wCW) wCW.classList.remove('active');
+  var wCD = document.getElementById('wCardDeposit'); if(wCD) wCD.classList.remove('active');
+  var wCC = document.getElementById('wCardConvert'); if(wCC) wCC.classList.remove('active');
+
+  if(cardName === 'withdraw') {
+    var wCWIn = document.getElementById('wContentWithdraw'); if(wCWIn) wCWIn.classList.add('active');
+    if(wCW) wCW.classList.add('active');
+  } else if(cardName === 'deposit') {
+    var wCDIn = document.getElementById('wContentDeposit'); if(wCDIn) wCDIn.classList.add('active');
+    if(wCD) wCD.classList.add('active');
+  } else if(cardName === 'convert') {
+    var wCCIn = document.getElementById('wContentConvert'); if(wCCIn) wCCIn.classList.add('active');
+    if(wCC) wCC.classList.add('active');
+  }
+}
+
+function setWithdrawSubMethod(subMethod) {
+  currentWithdrawSubMethod = subMethod;
+  var fPay = document.getElementById('wSubMethodFaucetpay');
+  var gPay = document.getElementById('wSubMethodGram');
+  if(fPay) fPay.style.borderColor = 'var(--border)';
+  if(gPay) gPay.style.borderColor = 'var(--border)';
+
+  if(subMethod === 'faucetpay' && fPay) {
+    fPay.style.borderColor = 'var(--accent)';
+  } else if(gPay) {
+    gPay.style.borderColor = 'var(--yellow)';
+  }
+  toggleWithdrawFields();
+}
+
+function switchTaskCategory(catName, btnEl) {
+  document.querySelectorAll('.task-category-content').forEach(function(el) { el.style.display = 'none'; });
+  document.querySelectorAll('.task-cat-btn').forEach(function(el) { el.classList.remove('active'); });
+
+  if(catName === 'ads') {
+    var tCA = document.getElementById('taskCat-ads'); if(tCA) tCA.style.display = 'block';
+    initBannerSlider();
+  } else if(catName === 'task') {
+    var tCT = document.getElementById('taskCat-task'); if(tCT) tCT.style.display = 'block';
+  } else if(catName === 'official') {
+    var tCO = document.getElementById('taskCat-official'); if(tCO) tCO.style.display = 'block';
+  } else if(catName === 'create') {
+    var tCC = document.getElementById('taskCat-create'); if(tCC) tCC.style.display = 'block';
+    switchCreateSubTab('promote');
+  }
+  if(btnEl) btnEl.classList.add('active');
+}
+
+function switchCreateSubTab(subName) {
+  var cPV = document.getElementById('createPromoteView'); if(cPV) cPV.style.display = 'none';
+  var cMV = document.getElementById('createMyTasksView'); if(cMV) cMV.style.display = 'none';
+
+  var cSTP = document.getElementById('createSubTab-promote'); if(cSTP) cSTP.classList.remove('active');
+  var cSTM = document.getElementById('createSubTab-my'); if(cSTM) cSTM.classList.remove('active');
+
+  if(subName === 'promote') {
+    if(cPV) cPV.style.display = 'block';
+    if(cSTP) cSTP.classList.add('active');
+    updateCostCalculation();
+  } else if(subName === 'my') {
+    if(cMV) cMV.style.display = 'block';
+    if(cSTM) cSTM.classList.add('active');
+    loadMyPublishedTasks();
+  }
+}
+
+function toggleAddon(addonName) {
+  if(addonName === 'verified') {
+    addonVerifiedActive = !addonVerifiedActive;
+    var card = document.getElementById('addonVerifiedCard');
+    var check = document.getElementById('addonVerifiedCheck');
+    if(addonVerifiedActive) {
+      if(card) { card.style.background = 'rgba(34, 197, 94, 0.1)'; card.style.borderColor = 'var(--accent)'; }
+      if(check) check.innerText = '🟢';
+    } else {
+      if(card) { card.style.background = '#0f172a'; card.style.borderColor = 'var(--border)'; }
+      if(check) check.innerText = '⚪';
+    }
+  } else if(addonName === 'banner') {
+    addonBannerActive = !addonBannerActive;
+    var card2 = document.getElementById('addonBannerCard');
+    var check2 = document.getElementById('addonBannerCheck');
+    if(addonBannerActive) {
+      if(card2) { card2.style.background = 'rgba(10, 132, 193, 0.1)'; card2.style.borderColor = '#0a84c1'; }
+      if(check2) check2.innerText = '🔵';
+    } else {
+      if(card2) { card2.style.background = '#0f172a'; card2.style.borderColor = 'var(--border)'; }
+      if(check2) check2.innerText = '⚪';
+    }
+  }
+  updateCostCalculation();
+}
+
+function setCampaignObj(objType) {
+  selectedCampaignObj = objType;
+  var btnChan = document.getElementById('objChanBtn');
+  var btnApp = document.getElementById('objAppBtn');
+  var btnBot = document.getElementById('objBotBtn');
+
+  if(btnChan) { btnChan.style.background = '#1e293b'; btnChan.style.color = 'var(--text-muted)'; }
+  if(btnApp) { btnApp.style.background = '#1e293b'; btnApp.style.color = 'var(--text-muted)'; }
+  if(btnBot) { btnBot.style.background = '#1e293b'; btnBot.style.color = 'var(--text-muted)'; }
+
+  var infoBox = document.getElementById('campaignObjectiveInfoBox');
+  var objBoxHeader = document.getElementById('objBoxHeader');
+  var objBoxTitle = document.getElementById('objBoxTitle');
+  var objBoxDesc = document.getElementById('objBoxDesc');
+  var objBoxActionArea = document.getElementById('objBoxActionArea');
+  var inputLabelText = document.getElementById('inputLabelText');
+  var customTaskTitleInput = document.getElementById('customTaskTitle');
+  var extraFieldsGroup = document.getElementById('extraCampaignFieldsGroup');
+  var addonVerifiedDesc = document.getElementById('addonVerifiedDesc');
+  var campTitleDisp = document.getElementById('campaignTitleDisplay');
+
+  if(objType === 'Channel') {
+    if(btnChan) { btnChan.style.background = '#0a84c1'; btnChan.style.color = '#fff'; }
+    if(campTitleDisp) campTitleDisp.innerText = "Grow Your Channel Subscribers";
+    if(infoBox) infoBox.style.display = 'block';
+    if(objBoxHeader) objBoxHeader.style.display = 'flex';
+    if(objBoxActionArea) objBoxActionArea.style.display = 'flex';
+    if(objBoxTitle) objBoxTitle.innerText = "Channel Verification: Add Bot";
+    if(objBoxDesc) objBoxDesc.innerText = "Add our bot as an admin to your channel/group for automatic verification.";
+    if(inputLabelText) inputLabelText.innerText = "Telegram Channel or Link";
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@channel or https://t.me/channel";
+    if(extraFieldsGroup) extraFieldsGroup.style.display = 'none';
+    if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Subscription verification via bot (8h retention)";
+
+  } else if(objType === 'Mini App') {
+    if(btnApp) { btnApp.style.background = '#0a84c1'; btnApp.style.color = '#fff'; }
+    if(campTitleDisp) campTitleDisp.innerText = "Grow Your Mini App Users";
+    if(infoBox) infoBox.style.display = 'block';
+    if(objBoxHeader) objBoxHeader.style.display = 'none';
+    if(objBoxActionArea) objBoxActionArea.style.display = 'none';
+    if(objBoxDesc) objBoxDesc.innerHTML = "<b style='color: var(--yellow); font-size:13px;'>⚡ Proof of Activity (20s)</b><br><span style='color: #94a3b8;'>Performers will launch your Mini App and spend at least 20 seconds inside (Proof of Activity) to verify and claim their reward.</span>";
+    if(inputLabelText) inputLabelText.innerText = "Telegram Mini App Link (with Ref/Start)";
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://t.me/game_bot?start=ref123";
+    if(extraFieldsGroup) extraFieldsGroup.style.display = 'block';
+    if(addonVerifiedDesc) addonVerifiedDesc.innerText = "20-second Proof-of-Activity hold to prevent instant drop-offs";
+
+  } else if(objType === 'Bot (MAU)') {
+    if(btnBot) { btnBot.style.background = '#0a84c1'; btnBot.style.color = '#fff'; }
+    if(campTitleDisp) campTitleDisp.innerText = "Grow Your Bot MAU";
+    if(infoBox) infoBox.style.display = 'none';
+    if(inputLabelText) inputLabelText.innerText = "Telegram Bot Username or Link (no params)";
+    if(customTaskTitleInput) customTaskTitleInput.placeholder = "@my_bot, t.me/my_bot";
+    if(extraFieldsGroup) extraFieldsGroup.style.display = 'block';
+    if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Bot interaction verification & retention hold";
+  }
+}
+
+function handleCampaignImageUpload(input) {
+  if(input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      uploadedCampaignImageBase64 = e.target.result;
+      showToast("✅ Image attached successfully!", "success");
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function setClickPackage(clicks, btnEl) {
+  selectedClickCount = clicks;
+  var pkg = clickPackagesData.find(function(p) { return p.clicks === clicks; });
+  if (pkg) { selectedCoinCost = pkg.coin; }
+  document.querySelectorAll('.click-option-btn').forEach(function(b) { b.classList.remove('active'); });
+  if(btnEl) btnEl.classList.add('active');
+  updateCostCalculation();
+}
+
+function setPaymentMethod(method) {
+  selectedPaymentMethod = method;
+  var payUsdtBtn = document.getElementById('payUsdt');
+  var payCoinBtn = document.getElementById('payCoin');
+  var payGramBtn = document.getElementById('payGram');
+
+  if(payUsdtBtn) payUsdtBtn.classList.remove('active');
+  if(payCoinBtn) payCoinBtn.classList.remove('active');
+  if(payGramBtn) payGramBtn.classList.remove('active');
+
+  if(method === 'USDT' && payUsdtBtn) payUsdtBtn.classList.add('active');
+  if(method === 'Coin' && payCoinBtn) payCoinBtn.classList.add('active');
+  if(method === 'Gram' && payGramBtn) payGramBtn.classList.add('active');
+
+  updateCostCalculation();
+}
+
+function updateCostCalculation() {
+  var baseCost = selectedCoinCost;
+  var extraCost = 0;
+  if(addonVerifiedActive) extraCost += (selectedClickCount * (0.10 / 100) * (1 / coinUsdtValue));
+  if(addonBannerActive) extraCost += (selectedClickCount * (0.15 / 100) * (1 / coinUsdtValue));
+  
+  var totalCoinCost = baseCost + extraCost;
+
+  clickPackagesData.forEach(function(pkg) {
+    var el = document.getElementById('clickBox-' + pkg.clicks);
+    if (el) {
+      var pkgExtra = 0;
+      if(addonVerifiedActive) pkgExtra += (pkg.clicks * (0.10 / 100) * (1 / coinUsdtValue));
+      if(addonBannerActive) pkgExtra += (pkg.clicks * (0.15 / 100) * (1 / coinUsdtValue));
+      var pkgTotal = pkg.coin + pkgExtra;
+
+      if (selectedPaymentMethod === 'Coin') {
+        el.innerText = pkgTotal.toFixed(1) + " 🪙";
+        el.style.color = "var(--yellow)";
+      } else if (selectedPaymentMethod === 'USDT') {
+        var usdtVal = pkgTotal * coinUsdtValue;
+        el.innerText = "$" + usdtVal.toFixed(2) + " 💵";
+        el.style.color = "var(--accent)";
+      } else if (selectedPaymentMethod === 'Gram') {
+        var usdtVal = pkgTotal * coinUsdtValue;
+        var gramVal = usdtVal / liveTonPrice;
+        el.innerText = gramVal.toFixed(2) + " 💎";
+        el.style.color = "var(--ton-blue)";
+      }
+    }
+  });
+
+  var usdtCost = totalCoinCost * coinUsdtValue;
+  var gramCost = (usdtCost / liveTonPrice).toFixed(4);
+
+  var costBox = document.getElementById('costCalcBox');
+  if(!costBox) return;
+
+  if(selectedPaymentMethod === 'USDT') {
+    costBox.innerHTML = 'Cost: <strong>' + usdtCost.toFixed(4) + ' USDT</strong> (' + selectedClickCount + ' Clicks)';
+  } else if(selectedPaymentMethod === 'Coin') {
+    costBox.innerHTML = 'Cost: <strong>' + totalCoinCost.toFixed(1) + ' Coins</strong> (~' + usdtCost.toFixed(4) + ' USDT) (' + selectedClickCount + ' Clicks)';
+  } else if(selectedPaymentMethod === 'Gram') {
+    costBox.innerHTML = 'Cost: <strong>' + gramCost + ' Gram</strong> (~' + usdtCost.toFixed(4) + ' USDT) (' + selectedClickCount + ' Clicks)';
+  }
+}
+
+function publishCampaign() {
+  var targetLinkInput = (document.getElementById('customTaskTitle').value || '').trim();
+  var titleInputText = (document.getElementById('campaignTitleInputText').value || '').trim();
+  var descInputText = (document.getElementById('campaignDescInputText').value || '').trim();
+
+  if(!targetLinkInput) {
+    showToast("Kripya target link ya username enter karein.", "error");
+    return;
+  }
+
+  var finalTitle = (selectedCampaignObj !== 'Channel' && titleInputText) ? titleInputText : targetLinkInput;
+
+  var baseCost = selectedCoinCost;
+  var extraCost = 0;
+  if(addonVerifiedActive) extraCost += (selectedClickCount * (0.10 / 100) * (1 / coinUsdtValue));
+  if(addonBannerActive) extraCost += (selectedClickCount * (0.15 / 100) * (1 / coinUsdtValue));
+  var totalCoinCost = baseCost + extraCost;
+
+  var usdtCost = totalCoinCost * coinUsdtValue;
+  var coinCost = totalCoinCost;
+  var gramCost = parseFloat((usdtCost / liveTonPrice).toFixed(4));
+
+  if(selectedPaymentMethod === 'USDT') {
+    if(usdtBalance < usdtCost) { showToast("Insufficient USDT balance in main wallet!", "error"); return; }
+    usdtBalance -= usdtCost;
+  } else if(selectedPaymentMethod === 'Coin') {
+    if(balance < coinCost) { showToast("Insufficient Coin balance in main wallet!", "error"); return; }
+    balance -= coinCost;
+  } else if(selectedPaymentMethod === 'Gram') {
+    if(tonBalance < gramCost) { showToast("Insufficient Gram balance in main wallet!", "error"); return; }
+    tonBalance -= gramCost;
+  }
+
+  saveToFirebase();
+  renderUIValues();
+
+  var newCampaignObj = {
+    title: finalTitle,
+    link: targetLinkInput,
+    description: descInputText,
+    objective: selectedCampaignObj,
+    plan: selectedClickCount + " clicks =" + coinCost.toFixed(1) + " Coins",
+    totalClicks: selectedClickCount,
+    clicksDone: 0,
+    clicksRemaining: selectedClickCount,
+    verifiedAddon: addonVerifiedActive,
+    bannerAddon: addonBannerActive,
+    image: uploadedCampaignImageBase64 || "",
+    status: 'Active',
+    userId: userId,
+    date: new Date().toLocaleString()
+  };
+
+  if (window.db) db.ref('customTasks').push(newCampaignObj);
+
+  if(document.getElementById('customTaskTitle')) document.getElementById('customTaskTitle').value = '';
+  if(document.getElementById('campaignTitleInputText')) document.getElementById('campaignTitleInputText').value = '';
+  if(document.getElementById('campaignDescInputText')) document.getElementById('campaignDescInputText').value = '';
+  uploadedCampaignImageBase64 = "";
+
+  showToast("✅ Campaign published successfully! Cost deducted from wallet.", "success");
+  switchCreateSubTab('my');
+}
+
+function toggleMiningBoxes() {
+  var section = document.getElementById('miningBoxesSection');
+  var arrow = document.getElementById('miningArrow');
+  if(!section || !arrow) return;
+  if (section.classList.contains('show')) {
+    section.classList.remove('show');
+    arrow.innerText = '▼';
+  } else {
+    section.classList.add('show');
+    arrow.innerText = '▲';
+  }
+}
+
+function showAdLoadingScreen(subText) {
+  var loader = document.getElementById('adLoadingScreen');
+  var subEl = document.getElementById('adLoadingSubText');
+  if (subEl && subText) subEl.innerText = subText;
+  if (loader) loader.classList.add('active');
+}
+function hideAdLoadingScreen() {
+  var loader = document.getElementById('adLoadingScreen');
+  if (loader) loader.classList.remove('active');
+}
+
+function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
+  try {
+    if (typeof window.showMxAd === 'function') {
+      window.showMxAd({
+        mxid: "MX-EBECD8D1",
+        onSuccess: onSuccessCallback,
+        onError: onErrorCallback,
+        onDismiss: onErrorCallback
+      });
+    } else if (window.MonetixAds && typeof window.MonetixAds.show === 'function') {
+      window.MonetixAds.show().then(onSuccessCallback).catch(onErrorCallback);
+    } else if (typeof window.showRewardAd === 'function') {
+      window.showRewardAd().then(onSuccessCallback).catch(onErrorCallback);
+    } else if (typeof window.monetixShow === 'function') {
+      window.monetixShow(onSuccessCallback, onErrorCallback);
+    } else {
+      onErrorCallback();
+    }
+  } catch(err) {
+    console.error("Monetix Execution Error:", err);
+    onErrorCallback();
+  }
+}
+
+function watchMonetagAd() {
+  var limitElementId = 'taskMonetagLimit';
+  var btn = document.getElementById('taskMonetagBtn');
+  var maxLimit = maxLimits.monetag;
+  var reward = rewards.monetag;
+  var timerSec = adTimers.monetag;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for Monetag!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen("LOADING MONETAG VIDEO...");
+
+  setTimeout(function() {
+    if (typeof window.show_11989490 === 'function') {
+      window.show_11989490().then(function() {
+        hideAdLoadingScreen();
+        finishAdWatchSuccess(limitElementId, btn, reward);
+        startTaskCountdownTimer(btn, timerSec);
+      }).catch(function() {
+        hideAdLoadingScreen();
+        showToast("Monetag ad failed to load.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      });
+    } else {
+      hideAdLoadingScreen();
+      showToast("Monetag SDK not ready.", "error");
+      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+    }
+  }, 1500);
+}
+
+function watchGigapubAd() {
+  var limitElementId = 'taskGigapubLimit';
+  var btn = document.getElementById('taskGigapubBtn');
+  var maxLimit = maxLimits.gigapub;
+  var reward = rewards.gigapub;
+  var timerSec = adTimers.gigapub;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for Gigapub!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen("LOADING GIGAPUB VIDEO...");
+
+  setTimeout(function() {
+    try {
+      var triggerGiga = window.showGiga || (window.Gigapub && window.Gigapub.show) || window.show_gigapub || (window.gigapub && window.gigapub.show);
+      if (typeof triggerGiga === 'function') {
+        triggerGiga().then(function() {
+          hideAdLoadingScreen();
+          finishAdWatchSuccess(limitElementId, btn, reward);
+          startTaskCountdownTimer(btn, timerSec);
+        }).catch(function() {
+          hideAdLoadingScreen();
+          showToast("Gigapub ad failed to load.", "error");
+          if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+        });
+      } else {
+        hideAdLoadingScreen();
+        showToast("Gigapub SDK not ready.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      }
+    } catch(err) {
+      hideAdLoadingScreen();
+      showToast("Gigapub error occurred.", "error");
+      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+    }
+  }, 1500);
+}
+
+function watchAdsBitvexAd() {
+  var limitElementId = 'taskAdsbitvexLimit';
+  var btn = document.getElementById('taskAdsbitvexBtn');
+  var maxLimit = maxLimits.adsbitvex || 50;
+  var reward = rewards.adsbitvex || 0.05;
+  var timerSec = adTimers.adsbitvex || 60;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for AdsBitvex!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen("LOADING ADSBITVEX REWARDED VIDEO...");
+
+  setTimeout(function() {
+    try {
+      if (typeof window.showadsbitvex === 'function') {
+        window.showadsbitvex()
+          .then(function() {
+            hideAdLoadingScreen();
+            finishAdWatchSuccess(limitElementId, btn, reward);
+            startTaskCountdownTimer(btn, timerSec);
+          })
+          .catch(function(err) {
+            hideAdLoadingScreen();
+            console.error("AdsBitvex Show Error:", err);
+            showToast("AdsBitvex ad currently unavailable.", "error");
+            if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+          });
+      } else {
+        hideAdLoadingScreen();
+        showToast("AdsBitvex SDK is loading, please try again in a moment.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      }
+    } catch(err) {
+      hideAdLoadingScreen();
+      console.error("AdsBitvex Execution Exception:", err);
+      showToast("AdsBitvex ad error occurred.", "error");
+      if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+    }
+  }, 1000);
+}
+
+function watchMonetixAd() {
+  var limitElementId = 'taskMonetixLimit';
+  var btn = document.getElementById('taskMonetixBtn');
+  var maxLimit = maxLimits.monetix;
+  var reward = rewards.monetix;
+  var timerSec = adTimers.monetix;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for Monetix!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen("LOADING MONETIX VIDEO...");
+
+  triggerMonetixDirectAd(
+    function() {
+      hideAdLoadingScreen();
+      if (typeof window.showadsbitvex_init === 'function') {
+        window.showadsbitvex_init().catch(function(e){});
+      }
+      finishAdWatchSuccess(limitElementId, btn, reward);
+      startTaskCountdownTimer(btn, timerSec);
+    },
+    function() {
+      showAdLoadingScreen("MONETIX UNAVAILABLE, LOADING ADSBITVEX BANNER...");
+      if (typeof window.showadsbitvex_init === 'function') {
+        window.showadsbitvex_init()
+          .then(function() {
+            hideAdLoadingScreen();
+            finishAdWatchSuccess(limitElementId, btn, reward);
+            startTaskCountdownTimer(btn, timerSec);
+          })
+          .catch(function(err) {
+            hideAdLoadingScreen();
+            showToast("Ads currently unavailable.", "error");
+            if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+          });
+      } else {
+        hideAdLoadingScreen();
+        showToast("Ads currently unavailable.", "error");
+        if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
+      }
+    }
+  );
+}
+
+function watchAdsterraAd() {
+  var limitElementId = 'taskAdsterraLimit';
+  var btn = document.getElementById('taskAdsterraBtn');
+  var maxLimit = maxLimits.adsterra || 50;
+  var reward = rewards.adsterra || 0.05;
+  var timerSec = adTimers.adsterra || 60;
+
+  var watched = adWatchedCounts[limitElementId] || 0;
+  if (watched >= maxLimit) {
+    showToast("Daily ad limit reached for Adsterra!", "error");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  showAdLoadingScreen("LOADING ADSTERRA SMARTLINK...");
+
+  setTimeout(function() {
+    hideAdLoadingScreen();
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+      window.Telegram.WebApp.openLink(ADSTERRA_LINK);
+    } else {
+      window.open(ADSTERRA_LINK, '_blank');
+    }
+    finishAdWatchSuccess(limitElementId, btn, reward);
+    startTaskCountdownTimer(btn, timerSec);
+  }, 1500);
+}
+
+function startTaskCountdownTimer(btn, durationSec) {
+  if (!btn) return;
+  btn.disabled = true;
+  var countdown = durationSec || 60;
+  btn.innerText = "Wait (" + countdown + "s)";
+
+  var timerInterval = setInterval(function() {
+    countdown--;
+    btn.innerText = "Wait (" + countdown + "s)";
+    if (countdown <= 0) {
+      clearInterval(timerInterval);
+      btn.innerText = "▶ Watch";
+      btn.disabled = false;
+    }
+  }, 1000);
+}
+
+function finishAdWatchSuccess(limitElementId, btn, rewardPerAd) {
+  addEarningsWithReferral(rewardPerAd);
+  adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
+  saveToFirebase();
+  renderUIValues();
+  showToast("Claim Successful! +" + rewardPerAd + " Coin added automatically!", "success");
+}
+
+function claimDailyBonus() {
+  var now = Date.now();
+  if (now - lastCheckin < 86400000 && lastCheckin !== 0) {
+    showToast("Daily Bonus already claimed today!", "error");
+    return;
+  }
+
+  var runClaimAction = function() {
+    lastCheckin = now;
+    addEarningsWithReferral(currentDailyBonus);
+    saveToFirebase();
+    renderUIValues();
+    showToast("Claim Successful! +" + currentDailyBonus.toFixed(2) + " Coins added!", "success");
+  };
+
+  showAdLoadingScreen("LOADING DAILY BONUS AD...");
+  setTimeout(function() {
+    if (typeof window.show_11989490 === 'function') {
+      window.show_11989490().then(function() {
+        hideAdLoadingScreen();
+        runClaimAction();
+      }).catch(function() {
+        hideAdLoadingScreen();
+        runClaimAction();
+      });
+    } else {
+      hideAdLoadingScreen();
+      runClaimAction();
+    }
+  }, 1500);
+}
+
+function calculateStakeRewards() {
+  var amount = parseFloat(document.getElementById('stakeCalcInput').value) || 0;
+  var planVal = (document.getElementById('stakeCalcPlan').value || "0|4").split('|');
+  var days = parseInt(planVal[0]);
+  var apy = parseFloat(planVal[1]);
+
+  var totalRev = (amount * (apy / 100) * (days === 0 ? 1 : days / 365));
+  var dailyRev = days > 0 ? totalRev / days : totalRev / 365;
+
+  var unitLabel = selectedStakingCurrency === 'Coin' ? 'Coin' : (selectedStakingCurrency === 'USDT' ? 'USDT' : 'Gram');
+
+  if(document.getElementById('previewDaily')) document.getElementById('previewDaily').innerText = dailyRev.toFixed(4) + unitLabel;
+  if(document.getElementById('previewTotal')) document.getElementById('previewTotal').innerText = totalRev.toFixed(4) + unitLabel;
+}
+
+function stake(planName, days, apy) {
+  var currency = selectedStakingCurrency;
+  var unitLabel = currency === 'Coin' ? 'Coins' : (currency === 'USDT' ? 'USDT' : 'Gram');
+  var amountInput = prompt("Enter " + currency + " amount to stake in " + planName + " (" + apy + "% APY):", "10");
+  var stakeAmount = parseFloat(amountInput);
+
+  if (!stakeAmount || isNaN(stakeAmount) || stakeAmount <= 0) {
+    showToast("Please enter a valid amount.", "error");
+    return;
+  }
+
+  if (currency === 'Coin') {
+    if (balance < stakeAmount) { showToast("Insufficient coin balance!", "error"); return; }
+    balance -= stakeAmount;
+  } else if (currency === 'USDT') {
+    if (usdtBalance < stakeAmount) { showToast("Insufficient USDT balance!", "error"); return; }
+    usdtBalance -= stakeAmount;
+  } else if (currency === 'Gram') {
+    if (tonBalance < stakeAmount) { showToast("Insufficient Gram balance!", "error"); return; }
+    tonBalance -= stakeAmount;
+  }
+
+  var totalPeriodRev = (stakeAmount * (apy / 100) * (days === 0 ? 1 : days / 365));
+  var dailyRevAmt = days > 0 ? totalPeriodRev / days : totalPeriodRev / 365;
+
+  var newStakeObj = {
+    id: Date.now(),
+    currency: currency,
+    planName: planName,
+    amount: stakeAmount,
+    apy: apy,
+    days: days,
+    dailyReward: dailyRevAmt,
+    lastClaimTime: Date.now(),
+    date: new Date().toLocaleDateString()
+  };
+
+  activeStakes.push(newStakeObj);
+  saveToFirebase();
+  renderUIValues();
+  renderStakingList();
+
+  showToast("✅ Successfully staked " + stakeAmount + " " + unitLabel + " in " + planName + "!", "success");
+}
+
+function processStakingDailyTransfer() {
+  if (!activeStakes || activeStakes.length === 0) return;
+  var currentTime = Date.now();
+  var updated = false;
+
+  activeStakes.forEach(function(stakeObj) {
+    var oneDayMs = 24 * 60 * 60 * 1000;
+    if (currentTime - stakeObj.lastClaimTime >= oneDayMs) {
+      var daysPassed = Math.floor((currentTime - stakeObj.lastClaimTime) / oneDayMs);
+      var rewardToAdd = stakeObj.dailyReward * daysPassed;
+      if (rewardToAdd > 0) {
+        if (stakeObj.currency === 'Coin') balance += rewardToAdd;
+        else if (stakeObj.currency === 'USDT') usdtBalance += rewardToAdd;
+        else if (stakeObj.currency === 'Gram') tonBalance += rewardToAdd;
+
+        stakeObj.lastClaimTime += (daysPassed * oneDayMs);
+        updated = true;
+      }
+    }
+  });
+
+  if (updated) {
+    saveToFirebase();
+    renderUIValues();
+    renderStakingList();
+  }
+}
+setInterval(processStakingDailyTransfer, 30000);
+
+function renderStakingList() {
+  var listContainer = document.getElementById('activeStakingList');
+  if (!listContainer) return;
+  if (!activeStakes || activeStakes.length === 0) {
+    listContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No active staking plans found.</div>';
+    return;
+  }
+
+  var html = '';
+  activeStakes.forEach(function(stakeObj) {
+    var curr = stakeObj.currency || 'Coin';
+    var dailyShow = stakeObj.dailyReward ? stakeObj.dailyReward.toFixed(4) : "0.0000";
+    var symbolIcon = curr === 'Coin' ? '🪙' : (curr === 'USDT' ? '💵' : '💎');
+
+    html += '<div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 12px;"><div class="flex-between"><strong style="color: var(--accent);">' + stakeObj.planName + ' (' + curr + ')</strong><span style="color: var(--yellow);">' + symbolIcon + ' Total Stake: ' + stakeObj.amount.toFixed(2) + curr + '</span></div><div style="margin-top: 4px; color: var(--accent);">☀ Daily Reward: <strong>+' + dailyShow + curr + '/day</strong> (Auto-transferred)</div><div class="flex-between" style="margin-top: 4px; color: var(--text-muted);"><span>APY: ' + stakeObj.apy + '% | Date: ' + stakeObj.date + '</span><button onclick="unstake(' + stakeObj.id + ')" style="background: #ef4444; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Unstake</button></div></div>';
+  });
+  listContainer.innerHTML = html;
+}
+
+function unstake(stakeId) {
+  var index = activeStakes.findIndex(function(s) { return s.id === stakeId; });
+  if (index !== -1) {
+    var stakeObj = activeStakes[index];
+    var refundedAmount = stakeObj.amount;
+    var curr = stakeObj.currency || 'Coin';
+
+    if (curr === 'Coin') balance += refundedAmount;
+    else if (curr === 'USDT') usdtBalance += refundedAmount;
+    else if (curr === 'Gram') tonBalance += refundedAmount;
+
+    activeStakes.splice(index, 1);
+    saveToFirebase();
+    renderUIValues();
+    renderStakingList();
+    showToast("🔓 Successfully unstaked and returned " + refundedAmount.toFixed(2) + curr + ".", "success");
+  }
+}
+
+var rocketStates = [
+  { status: 'ads', adsWatched: 0, timeLeft: 0, accumulated: 0.00, timerInstance: null },
+  { status: 'ads', adsWatched: 0, timeLeft: 0, accumulated: 0.00, timerInstance: null }
+];
+
+function handleRocketAction(index, rocketName, adType) {
+  var state = rocketStates[index];
+  var btn = document.getElementById('rocketBtn-' + index);
+  var maxLimitNeeded = (index === 0) ? novaRequiredAds : cosmicRequiredAds;
+  var cooldownSec = (index === 0) ? novaTimerSec : cosmicTimerSec;
+
+  if (state.status === 'ads') {
+    if(btn) btn.disabled = true;
+
+    if (index === 1 || adType === 'Gigapub') {
+      showAdLoadingScreen("LOADING GIGAPUB VIDEO...");
+      setTimeout(function() {
+        try {
+          var triggerGiga = window.showGiga || (window.Gigapub && window.Gigapub.show) || window.show_gigapub;
+          if (typeof triggerGiga === 'function') {
+            triggerGiga().then(function() {
+              hideAdLoadingScreen();
+              progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+            }).catch(function() {
+              hideAdLoadingScreen();
+              showToast("Gigapub ad failed to load.", "error");
+              if (btn) btn.disabled = false;
+            });
+          } else {
+            hideAdLoadingScreen();
+            showToast("Gigapub SDK not ready.", "error");
+            if (btn) btn.disabled = false;
+          }
+        } catch(err) {
+          hideAdLoadingScreen();
+          showToast("Gigapub error occurred.", "error");
+          if (btn) btn.disabled = false;
+        }
+      }, 1500);
+      return;
+    }
+
+    showAdLoadingScreen("LOADING MONETAG VIDEO...");
+    setTimeout(function() {
+      var adPromise = (typeof window.show_11989490 === 'function') ? window.show_11989490() : Promise.resolve();
+
+      adPromise.then(function() {
+        hideAdLoadingScreen();
+        progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+      }).catch(function() {
+        progressRocketAdWatch(index, rocketName, maxLimitNeeded);
+      });
+    }, 1500);
+
+    var countdown = cooldownSec;
+    if(btn) btn.innerText = "Wait (" + countdown + "s)";
+    var tInterval = setInterval(function() {
+      countdown--;
+      if(btn) btn.innerText = "Wait (" + countdown + "s)";
+      if (countdown <= 0) {
+        clearInterval(tInterval);
+        if (state.status === 'ads' && btn) {
+          btn.innerText = "Watch Ad (" + state.adsWatched + "/" + maxLimitNeeded + ")";
+          btn.disabled = false;
+        }
+      }
+    }, 1000);
+
+  } else if (state.status === 'mining') {
+    claimLiveMiningEarnings(index, rocketName);
+  } else if (state.status === 'claim') {
+    claimRocketReward(index, rocketName, maxLimitNeeded);
+  }
+}
+
+function progressRocketAdWatch(index, rocketName, maxLimitNeeded) {
+  var state = rocketStates[index];
+  state.adsWatched++;
+  var limitDisplayEl = document.getElementById(['rocket1Limit', 'rocket2Limit'][index]);
+  if (limitDisplayEl) limitDisplayEl.innerText = state.adsWatched + " / " + maxLimitNeeded;
+
+  var statusEl = document.getElementById('rocketStatus-' + index);
+  showToast("Claim Successful! Ad watched for " + rocketName + " (" + state.adsWatched + "/" + maxLimitNeeded + ")", "success");
+
+  if (state.adsWatched >= maxLimitNeeded) {
+    state.status = 'mining';
+    state.timeLeft = miningDurationSeconds;
+    state.accumulated = 0.00;
+
+    var hoursTotal = Math.floor(miningDurationSeconds / 3600);
+    if(statusEl) statusEl.innerHTML = "⏳ Timer: " + hoursTotal + "h 0m 0s";
+    var btn = document.getElementById('rocketBtn-' + index);
+    if(btn) {
+      btn.innerText = "Claim 0.00 Coin";
+      btn.disabled = false;
+    }
+
+    runRocketTimer(index, rocketName, maxLimitNeeded);
+  }
+}
+
+function runRocketTimer(index, rocketName, maxLimitNeeded) {
+  var state = rocketStates[index];
+  var btn = document.getElementById('rocketBtn-' + index);
+  var statusEl = document.getElementById('rocketStatus-' + index);
+  var accumEl = document.getElementById('rocketAccumulated-' + index);
+  var progFill = document.getElementById('rocketProg-' + index);
+
+  var coinPerSecond = miningRewardCoins / miningDurationSeconds;
+
+  if (state.timerInstance) clearInterval(state.timerInstance);
+
+  state.timerInstance = setInterval(function() {
+    if (state.timeLeft > 0) {
+      state.timeLeft--;
+      state.accumulated += coinPerSecond;
+    }
+
+    var elapsed = miningDurationSeconds - state.timeLeft;
+    var percent = Math.min(100, (elapsed / miningDurationSeconds) * 100);
+    if(progFill) progFill.style.width = percent + "%";
+
+    var hours = Math.floor(state.timeLeft / 3600);
+    var minutes = Math.floor((state.timeLeft % 3600) / 60);
+    var seconds = state.timeLeft % 60;
+
+    if(statusEl) statusEl.innerHTML = state.timeLeft > 0 ? "⏳ Timer: " + hours + "h " + minutes + "m " + seconds + "s" : "🎉 Mining Finished!";
+    if(accumEl) accumEl.innerHTML = "🪙 " + state.accumulated.toFixed(4) + " Coin";
+
+    if (state.status === 'mining' && btn) {
+      btn.innerText = "Claim " + state.accumulated.toFixed(4) + " Coin";
+    }
+
+    if (state.timeLeft <= 0 && state.status === 'mining') {
+      state.status = 'claim';
+      state.accumulated = miningRewardCoins;
+      if(accumEl) accumEl.innerHTML = "🪙 " + state.accumulated.toFixed(4) + " Coin";
+      if(btn) {
+        btn.innerText = "🎁 Claim Final Coin";
+        btn.style.background = "#eab308";
+        btn.style.color = "#000";
+      }
+    }
+  }, 1000);
+}
+
+function claimLiveMiningEarnings(index, rocketName) {
+  var state = rocketStates[index];
+  if (state.accumulated <= 0.0001) {
+    showToast("Abhi tak kuch bhi coin accumulate nahi hua hai!", "error");
+    return;
+  }
+
+  var claimAmount = state.accumulated;
+  addEarningsWithReferral(claimAmount);
+  state.accumulated = 0.00;
+  var accumEl = document.getElementById('rocketAccumulated-' + index);
+  if(accumEl) accumEl.innerHTML = "🪙 0.00 Coin";
+  showToast("Claim Successful! +" + claimAmount.toFixed(4) + " Coins claimed from " + rocketName + "!", "success");
+}
+
+function claimRocketReward(index, rocketName, maxLimitNeeded) {
+  var state = rocketStates[index];
+  var finalClaim = state.accumulated > 0 ? state.accumulated : miningRewardCoins;
+  addEarningsWithReferral(finalClaim);
+
+  var btn = document.getElementById('rocketBtn-' + index);
+  var statusEl = document.getElementById('rocketStatus-' + index);
+  var accumEl = document.getElementById('rocketAccumulated-' + index);
+  var progFill = document.getElementById('rocketProg-' + index);
+
+  state.status = 'ads';
+  state.adsWatched = 0;
+  state.accumulated = 0.00;
+  if(progFill) progFill.style.width = "0%";
+  var limEl = document.getElementById(['rocket1Limit', 'rocket2Limit'][index]);
+  if(limEl) limEl.innerText = "0 / " + maxLimitNeeded;
+
+  if(statusEl) statusEl.innerHTML = "Watch Ads to Start";
+  if(accumEl) accumEl.innerHTML = "🪙 0.00 Coin";
+  if(btn) {
+    btn.innerText = "Watch Ad (0/" + maxLimitNeeded + ")";
+    btn.style.background = "#22c55e";
+    btn.style.color = "#fff";
+  }
+
+  showToast("Claim Successful! Mining cycle complete for " + rocketName + ".", "success");
+}
+
+function selectConvertMain(curr) {
+  convertMainSource = curr;
+  
+  var cCoin = document.getElementById('cMainCoin');
+  var cUSDT = document.getElementById('cMainUSDT');
+  var cGram = document.getElementById('cMainGram');
+
+  if(cCoin) cCoin.classList.remove('active');
+  if(cUSDT) cUSDT.classList.remove('active');
+  if(cGram) cGram.classList.remove('active');
+
+  if(curr === 'Coin' && cCoin) cCoin.classList.add('active');
+  if(curr === 'USDT' && cUSDT) cUSDT.classList.add('active');
+  if(curr === 'Gram' && cGram) cGram.classList.add('active');
+
+  var targetGrid = document.getElementById('convertTargetGrid');
+  if(!targetGrid) return;
+
+  if(curr === 'Coin') {
+    convertTargetCurrency = 'USDT';
+    targetGrid.innerHTML = 
+      '<div class="convert-sky-card active" id="cTargetUSDT" onclick="selectConvertTarget(\'USDT\')">💵 USDT</div>' +
+      '<div class="convert-sky-card" id="cTargetGram" onclick="selectConvertTarget(\'Gram\')">💎 Gram</div>';
+  } else if(curr === 'USDT') {
+    convertTargetCurrency = 'Coin';
+    targetGrid.innerHTML = 
+      '<div class="convert-sky-card active" id="cTargetCoin" onclick="selectConvertTarget(\'Coin\')">🪙 Coin</div>' +
+      '<div class="convert-sky-card" id="cTargetGram" onclick="selectConvertTarget(\'Gram\')">💎 Gram</div>';
+  } else if(curr === 'Gram') {
+    convertTargetCurrency = 'Coin';
+    targetGrid.innerHTML = 
+      '<div class="convert-sky-card active" id="cTargetCoin" onclick="selectConvertTarget(\'Coin\')">🪙 Coin</div>' +
+      '<div class="convert-sky-card" id="cTargetUSDT" onclick="selectConvertTarget(\'USDT\')">💵 USDT</div>';
+  }
+
+  updateConvertSourceBalanceDisplay();
+  calculateExchange();
+}
+
+function selectConvertTarget(targetCurr) {
+  convertTargetCurrency = targetCurr;
+  var targetGrid = document.getElementById('convertTargetGrid');
+  if(targetGrid) {
+    var cards = targetGrid.querySelectorAll('.convert-sky-card');
+    cards.forEach(function(card) {
+      card.classList.remove('active');
+      if(card.innerText.indexOf(targetCurr) !== -1) {
+        card.classList.add('active');
+      }
+    });
+  }
+  calculateExchange();
+}
+
+function updateConvertSourceBalanceDisplay() {
+  var disp = document.getElementById('convertSourceBalanceDisplay');
+  if(!disp) return;
+  if(convertMainSource === 'Coin') {
+    disp.innerText = balance.toFixed(2) + " Coin";
+  } else if(convertMainSource === 'USDT') {
+    disp.innerText = usdtBalance.toFixed(4) + " USDT";
+  } else if(convertMainSource === 'Gram') {
+    disp.innerText = tonBalance.toFixed(4) + " Gram";
+  }
+}
+
+function calculateExchange() {
+  var amt = parseFloat(document.getElementById('exchangeAmount').value) || 0;
+  var prevEl = document.getElementById('previewExchange');
+  if(!prevEl) return;
+
+  if (amt <= 0) {
+    prevEl.innerText = "0.00 " + convertTargetCurrency;
+    return;
+  }
+
+  var result = 0;
+
+  if (convertMainSource === 'Coin') {
+    var usdtVal = amt * coinUsdtValue;
+    if (convertTargetCurrency === 'USDT') {
+      result = usdtVal;
+      prevEl.innerText = result.toFixed(4) + " USDT";
+    } else if (convertTargetCurrency === 'Gram') {
+      result = usdtVal / liveTonPrice;
+      prevEl.innerText = result.toFixed(4) + " Gram";
+    }
+  } else if (convertMainSource === 'USDT') {
+    if (convertTargetCurrency === 'Coin') {
+      result = amt / coinUsdtValue;
+      prevEl.innerText = result.toFixed(2) + " Coin";
+    } else if (convertTargetCurrency === 'Gram') {
+      result = amt / liveTonPrice;
+      prevEl.innerText = result.toFixed(4) + " Gram";
+    }
+  } else if (convertMainSource === 'Gram') {
+    var usdtVal = amt * liveTonPrice;
+    if (convertTargetCurrency === 'Coin') {
+      result = usdtVal / coinUsdtValue;
+      prevEl.innerText = result.toFixed(2) + " Coin";
+    } else if (convertTargetCurrency === 'USDT') {
+      result = usdtVal;
+      prevEl.innerText = result.toFixed(4) + " USDT";
+    }
+  }
+}
+
+function exchangeCoins() {
+  var amt = parseFloat(document.getElementById('exchangeAmount').value) || 0;
+
+  if (amt <= 0 || isNaN(amt)) {
+    showToast("Kripya valid amount enter karein.", "error");
+    return;
+  }
+
+  if (convertMainSource === 'Coin' && balance < amt) {
+    showToast("Aapke paas sufficient Coin balance nahi hai!", "error");
+    return;
+  }
+  if (convertMainSource === 'USDT' && usdtBalance < amt) {
+    showToast("Aapke paas sufficient USDT balance nahi hai!", "error");
+    return;
+  }
+  if (convertMainSource === 'Gram' && tonBalance < amt) {
+    showToast("Aapke paas sufficient Gram balance nahi hai!", "error");
+    return;
+  }
+
+  if (convertMainSource === 'Coin') balance -= amt;
+  else if (convertMainSource === 'USDT') usdtBalance -= amt;
+  else if (convertMainSource === 'Gram') tonBalance -= amt;
+
+  if (convertMainSource === 'Coin') {
+    var usdtVal = amt * coinUsdtValue;
+    if (convertTargetCurrency === 'USDT') {
+      usdtBalance += usdtVal;
+      showToast("Exchanged " + amt + " Coins for " + usdtVal.toFixed(4) + " USDT!", "success");
+    } else if (convertTargetCurrency === 'Gram') {
+      var gramVal = usdtVal / liveTonPrice;
+      tonBalance += gramVal;
+      showToast("Exchanged " + amt + " Coins for " + gramVal.toFixed(4) + " Gram!", "success");
+    }
+  } else if (convertMainSource === 'USDT') {
+    if (convertTargetCurrency === 'Coin') {
+      var coinVal = amt / coinUsdtValue;
+      balance += coinVal;
+      showToast("Exchanged " + amt + " USDT for " + coinVal.toFixed(2) + " Coins!", "success");
+    } else if (convertTargetCurrency === 'Gram') {
+      var gramVal = amt / liveTonPrice;
+      tonBalance += gramVal;
+      showToast("Exchanged " + amt + " USDT for " + gramVal.toFixed(4) + " Gram!", "success");
+    }
+  } else if (convertMainSource === 'Gram') {
+    var usdtVal = amt * liveTonPrice;
+    if (convertTargetCurrency === 'Coin') {
+      var coinVal = usdtVal / coinUsdtValue;
+      balance += coinVal;
+      showToast("Exchanged " + amt + " Gram for " + coinVal.toFixed(2) + " Coins!", "success");
+    } else if (convertTargetCurrency === 'USDT') {
+      usdtBalance += usdtVal;
+      showToast("Exchanged " + amt + " Gram for " + usdtVal.toFixed(4) + " USDT!", "success");
+    }
+  }
+
+  var exInp = document.getElementById('exchangeAmount'); if(exInp) exInp.value = '';
+  saveToFirebase();
+  renderUIValues();
+  calculateExchange();
+}
+
+function toggleWithdrawFields() {
+  var destLabel = document.getElementById('addressLabel');
+  var minLbl = document.getElementById('withdrawMinLabel');
+  var destInput = document.getElementById('withdrawDestination');
+  var availVal = 0;
+
+  if (currentWithdrawSubMethod === 'faucetpay') {
+    if(destLabel) destLabel.innerText = "FaucetPay Email ID:";
+    if(destInput) { destInput.placeholder = "Enter FaucetPay email address"; destInput.value = ""; }
+    if(minLbl) minLbl.innerText = "Min " + minWithdrawalAmt + " USDT";
+    availVal = usdtBalance;
+  } else {
+    if(destLabel) destLabel.innerText = "Gram Destination Address:";
+    if(destInput) { destInput.placeholder = "Enter Gram Address / Tag"; destInput.value = ""; }
+    if(minLbl) minLbl.innerText = "Min " + minTonWithdrawalAmt + " Gram";
+    availVal = tonBalance;
+  }
+  var availEl = document.getElementById('availableWithdrawBalance');
+  if(availEl) availEl.innerText = "Available: " + availVal.toFixed(4);
+  calculateWithdrawFee();
+}
+
+function setMaxWithdraw() {
+  var availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
+  var wInp = document.getElementById('withdrawAmount');
+  if(wInp) wInp.value = availVal > 0 ? availVal : "0";
+  calculateWithdrawFee();
+}
+
+function calculateWithdrawFee() {
+  var amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+  var fee = amt * 0.05;
+  var receive = amt - fee;
+  if (receive < 0) receive = 0;
+  var feePrev = document.getElementById('withdrawFeePreview');
+  if(feePrev) feePrev.innerText = "Fee (5%): " + fee.toFixed(4) + " | You will receive: " + receive.toFixed(4);
+}
+
+function requestWithdrawal() {
+  var amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+  var destination = (document.getElementById('withdrawDestination').value || '').trim();
+  var minLimit = currentWithdrawSubMethod === 'faucetpay' ? minWithdrawalAmt : minTonWithdrawalAmt;
+
+  if (amt < minLimit) {
+    showToast("Minimum withdrawal amount is " + minLimit + " " + (currentWithdrawSubMethod === 'faucetpay' ? 'USDT' : 'Gram') + ".", "error");
+    return;
+  }
+
+  var availVal = (currentWithdrawSubMethod === 'gram') ? tonBalance : usdtBalance;
+  if (amt > availVal) {
+    showToast("Insufficient balance for this withdrawal!", "error");
+    return;
+  }
+
+  if (!destination || destination.length < 3) {
+    showToast("Kripya valid destination address ya email enter karein.", "error");
+    return;
+  }
+
+  var fee = amt * 0.05;
+  var netReceive = parseFloat((amt - fee).toFixed(4));
+
+  if (currentWithdrawSubMethod === 'gram') {
+    tonBalance -= amt;
+  } else {
+    usdtBalance -= amt;
+  }
+
+  if (currentWithdrawSubMethod === 'faucetpay') {
+    var newWithdrawal = {
+      id: Date.now(),
+      userName: displayName,
+      userId: userId,
+      method: 'FAUCETPAY',
+      amount: netReceive,
+      requestedAmount: amt,
+      fee: fee,
+      received: netReceive,
+      destination: destination,
+      status: 'SUCCESS (Approved)',
+      date: new Date().toLocaleString()
+    };
+
+    if (window.db) db.ref('withdrawals/' + userId).push(newWithdrawal);
+
+    fetch('/api/bot', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: destination,
+        amount: netReceive.toFixed(4),
+        currency: 'USDT',
+        userId: userId,
+        displayName: displayName
+      })
+    }).then(function(res) {
+      return res.json();
+    }).then(function(data) {
+      if(data && data.success) {
+        showToast("✅ FaucetPay instant payout successful & sent to wallet!", "success");
+      } else {
+        showToast("❌ Payout Error: " + (data.message || "Failed"), "error");
+      }
+    }).catch(function(e) {
+      console.error("API Error:", e);
+      showToast("❌ Network error during payout processing.", "error");
+    });
+  } else if (currentWithdrawSubMethod === 'gram') {
+    showToast("⌛ Submitting Gram Withdrawal Request...", "success");
+
+    var newWithdrawalGram = {
+      id: Date.now(),
+      userName: displayName,
+      userId: userId,
+      method: 'Gram',
+      amount: netReceive,
+      requestedAmount: amt,
+      fee: fee,
+      received: netReceive,
+      destination: destination,
+      status: 'PENDING',
+      date: new Date().toLocaleString()
+    };
+    if (window.db) db.ref('withdrawals/' + userId).push(newWithdrawalGram);
+
+    fetch('/api/withdraw/ton', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: userId,
+        userName: displayName,
+        amount: netReceive,
+        requestedAmount: amt,
+        fee: fee,
+        destination: destination,
+        method: 'Gram'
+      })
+    }).then(function(res) {
+      return res.json();
+    }).then(function(data) {
+      showToast("✅ Gram Withdrawal Request submitted successfully!", "success");
+    }).catch(function(e) {
+      console.error("TON Withdraw Error:", e);
+      showToast("✅ Request logged locally & pending admin approval.", "error");
+    });
+  }
+
+  saveToFirebase();
+  renderUIValues();
+  loadTransactionHistory();
+
+  if(document.getElementById('withdrawAmount')) document.getElementById('withdrawAmount').value = '';
+  if(document.getElementById('withdrawDestination')) document.getElementById('withdrawDestination').value = '';
+}
+
+function loadTransactionHistory() {
+  var historyContainer = document.getElementById('transactionHistoryList');
+  if (!historyContainer || !window.db) return;
+
+  db.ref('withdrawals/' + userId).on('value', function(withdrawSnap) {
+    var allTransactions = [];
+
+    if (withdrawSnap.exists()) {
+      var wData = withdrawSnap.val();
+      Object.values(wData).forEach(function(item) {
+        allTransactions.push({
+          type: 'Withdrawal',
+          method: item.method || 'Payout',
+          amount: item.received || item.amount || 0,
+          status: item.status || 'PENDING',
+          date: item.date || ''
+        });
+      });
+    }
+
+    db.ref('deposits/' + userId).once('value', function(depositSnap) {
+      if (depositSnap.exists()) {
+        var dData = depositSnap.val();
+        Object.values(dData).forEach(function(item) {
+          allTransactions.push({
+            type: 'Deposit',
+            method: item.method || 'Deposit',
+            amount: item.amount || 0,
+            status: item.status || 'SUCCESS',
+            date: item.date || ''
+          });
+        });
+      }
+
+      if (allTransactions.length === 0) {
+        historyContainer.innerHTML = "No recent transactions yet.";
+        return;
+      }
+
+      var html = '';
+      allTransactions.reverse().forEach(function(item) {
+        var isDeposit = item.type === 'Deposit';
+        var badgeColor = isDeposit ? 'var(--accent)' : 'var(--yellow)';
+        var sign = isDeposit ? '+' : '-';
+
+        html += '<div style="background: #1e293b; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;"><div><b style="color: ' + badgeColor + ';">' + item.type + ' (' + item.method + '): ' + sign + parseFloat(item.amount).toFixed(4) + '</b><div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">' + item.date + '</div></div><span style="color: ' + badgeColor + '; font-weight: bold; font-size: 11px;">' + item.status + '</span></div>';
+      });
+      historyContainer.innerHTML = html;
+    });
+  });
+}
+
+function copyRef() {
+  var refLink = "https://t.me/GramFarmingBot?start=ref_" + userId;
+  navigator.clipboard.writeText(refLink);
+  showToast("✅ Referral link copied to clipboard!", "success");
+}
+
+function shareRef() {
+  var refLink = "https://t.me/GramFarmingBot?start=ref_" + userId;
+  var shareText = "Join Gram Farming Bot and earn free crypto & coins! 🚀\n" + refLink;
+  if (tg && tg.openTelegramLink) {
+    tg.openTelegramLink("https://t.me/share/url?url=" + encodeURIComponent(refLink) + "&text=" + encodeURIComponent(shareText));
+  } else {
+    window.open("https://t.me/share/url?url=" + encodeURIComponent(refLink) + "&text=" + encodeURIComponent(shareText), '_blank');
+  }
+}
+
+function claimRefRewards() {
+  if (refReward < 1.00) {
+    showToast("Minimum claim limit for referral rewards is 1 Coin.", "error");
+    return;
+  }
+  var claimable = refReward;
+  refReward = 0.00;
+  balance += claimable;
+  saveToFirebase();
+  renderUIValues();
+  showToast("Claim Successful! +" + claimable.toFixed(2) + " Coins claimed from referrals!", "success");
+}
+
+function openTaskVerificationModal(title, link, handleName, taskKey, rewardVal) {
+  if (completedTasksSet.includes(taskKey)) {
+    showToast("Aapne ye task pehle hi complete kar liya hai! ✅", "success");
+    return;
+  }
+
+  currentSelectedTaskTitle = title;
+  currentSelectedTaskLink = link;
+  currentSelectedTaskKey = taskKey;
+  currentSelectedRewardVal = parseFloat(rewardVal) || 0.08;
+  modalState = "initial";
+
+  if (modalTimerInterval) clearInterval(modalTimerInterval);
+
+  var handleDisp = document.getElementById('modalHandleDisplay');
+  var titleDisp = document.getElementById('modalTitleDisplay');
+  var badgeDisp = document.getElementById('modalRewardBadge');
+  var btn = document.getElementById('modalActionBtn');
+  var timerDisp = document.getElementById('modalTimerDisplay');
+
+  if (handleDisp) handleDisp.innerText = handleName || "@GramFarmingOfficial";
+  if (titleDisp) titleDisp.innerText = title;
+  if (badgeDisp) badgeDisp.innerText = "+ " + currentSelectedRewardVal.toFixed(2) + " Coin";
+  if (timerDisp) timerDisp.innerText = "20s";
+
+  if (btn) {
+    btn.innerText = "Join Channel >";
+    btn.style.background = "#0098ea";
+    btn.disabled = false;
+  }
+
+  var modal = document.getElementById('taskVerifyModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeTaskModal(event) {
+  var modal = document.getElementById('taskVerifyModal');
+  if (modal) modal.classList.remove('active');
+  if (modalTimerInterval) clearInterval(modalTimerInterval);
+  modalState = "initial";
+}
+
+function handleModalButtonClick() {
+  var btn = document.getElementById('modalActionBtn');
+  var timerDisp = document.getElementById('modalTimerDisplay');
+
+  if (modalState === "initial") {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+      window.Telegram.WebApp.openTelegramLink(currentSelectedTaskLink);
+    } else {
+      window.open(currentSelectedTaskLink, '_blank');
+    }
+
+    modalState = "timer";
+    var countdown = 20;
+    if (btn) {
+      btn.innerText = "Join Channel. (" + countdown + "s)";
+      btn.disabled = true;
+      btn.style.background = "#334155";
+    }
+
+    modalTimerInterval = setInterval(function() {
+      countdown--;
+      if (timerDisp) timerDisp.innerText = countdown + "s";
+      if (btn) btn.innerText = "Join Channel. (" + countdown + "s)";
+
+      if (countdown <= 0) {
+        clearInterval(modalTimerInterval);
+        modalState = "verify";
+        if (btn) {
+          btn.innerText = "CHECK / VERIFY";
+          btn.style.background = "#22c55e";
+          btn.disabled = false;
+        }
+      }
+    }, 1000);
+
+  } else if (modalState === "verify") {
+    closeTaskModal();
+    claimTaskReward(currentSelectedRewardVal, currentSelectedTaskKey);
+  }
+}
+
+function claimTaskReward(reward, taskKey) {
+  if (taskKey && !completedTasksSet.includes(taskKey)) {
+    completedTasksSet.push(taskKey);
+    localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
+
+    if (window.db) {
+      db.ref('completedTasks/' + userId + '/' + taskKey).set({
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        reward: reward
+      });
+
+      if (!taskKey.startsWith('official_')) {
+        db.ref('customTasks/' + taskKey).transaction(function(task) {
+          if (task) {
+            task.clicksDone = (task.clicksDone || 0) + 1;
+            if (task.clicksRemaining !== undefined) {
+              task.clicksRemaining = Math.max(0, task.clicksRemaining - 1);
+            }
+          }
+          return task;
+        });
+      }
+    }
+
+    addEarningsWithReferral(reward);
+    showToast("🎉 Verification Successful! +" + reward + " Coins added to balance!", "success");
+
+    updateOfficialButtonsState();
+    renderCustomTasksFromFirebase();
+  }
+}
+
+function renderCustomTasksFromFirebase() {
+  if (!window.db) return;
+  db.ref('customTasks').on('value', function(snapshot) {
+    var listEl = document.getElementById('dynamicTasksList');
+    var noticeEl = document.getElementById('emptyTasksNotice');
+
+    bannerTasksList = [
+      {
+        key: 'default_partner_1',
+        title: 'Gram Farming Official',
+        description: 'Join official news and updates channel',
+        link: 'https://t.me/GramFarming_Official',
+        objective: 'Channel',
+        image: 'https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png'
+      }
+    ];
+
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      var html = '';
+      var visibleTaskCount = 0;
+
+      Object.entries(data).forEach(function(entry) {
+        var key = entry[0];
+        var task = entry[1];
+
+        var isCompleted = completedTasksSet.includes(key);
+        if (isCompleted) return;
+
+        var totalClicks = task.totalClicks || 100;
+        var clicksDone = task.clicksDone || 0;
+        var clicksLeft = task.clicksRemaining !== undefined ? task.clicksRemaining : (totalClicks - clicksDone);
+
+        if (clicksLeft <= 0) return;
+
+        if (task.bannerAddon === true) {
+          bannerTasksList.push({
+            key: key,
+            title: task.title,
+            description: task.description || "Complete task & claim reward!",
+            link: task.link,
+            objective: task.objective || "Channel",
+            image: task.image || ""
+          });
+        }
+
+        visibleTaskCount++;
+
+        var imgHtml = task.image 
+          ? '<img src="' + task.image + '" style="width:44px; height:44px; border-radius:50%; object-fit:cover; margin-right:12px;" />' 
+          : '<div style="width:44px; height:44px; border-radius:50%; background:#0a84c1; display:flex; align-items:center; justify-content:center; font-size:20px; margin-right:12px;">🚀</div>';
+
+        var safeTitle = task.title.replace(/'/g, "\\'");
+        var safeLink = task.link.replace(/'/g, "\\'");
+        var isVerified = task.verifiedAddon || false;
+
+        var btnText = "Join 👥";
+        var btnBg = "#10b981";
+
+        var verifiedBadgeHtml = isVerified 
+          ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
+          : '';
+
+        html += '<div class="card flex-between" style="background:#111827; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
+          '<div style="display:flex; align-items:center; flex:1; overflow:hidden;">' + 
+            imgHtml + 
+            '<div style="overflow:hidden;">' +
+              '<div style="display:flex; align-items:center;">' +
+                '<b style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; color:#fff;">' + task.title + '</b>' +
+                verifiedBadgeHtml +
+              '</div>' +
+              '<div style="margin-top:2px; font-size:12px; font-weight:bold; color:var(--accent);">' +
+                '+0.05 🪙' +
+              '</div>' +
+              '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">' +
+                '🕒 ' + Math.max(0, clicksLeft) + ' clicks left' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
+          'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
+        '</div>';
+      });
+
+      if (visibleTaskCount === 0) {
+        if(listEl) listEl.innerHTML = "";
+        if (noticeEl) noticeEl.style.display = 'block';
+      } else {
+        if (noticeEl) noticeEl.style.display = 'none';
+        if(listEl) listEl.innerHTML = html;
+      }
+    }
+
+    initBannerSlider();
+  });
+}
+
+function initBannerSlider() {
+  var wrapper = document.getElementById('featuredBannerWrapper');
+  if (!wrapper) return;
+
+  var adsTabContent = document.getElementById('taskCat-ads');
+  if (!adsTabContent || adsTabContent.style.display === 'none') {
+    wrapper.style.display = 'none';
+    if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
+    return;
+  }
+
+  if (bannerTasksList.length === 0) {
+    bannerTasksList = [
+      {
+        key: 'default_partner_1',
+        title: 'Gram Farming Official',
+        description: 'Join official news and updates channel',
+        link: 'https://t.me/GramFarming_Official',
+        objective: 'Channel',
+        image: 'https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png'
+      }
+    ];
+  }
+
+  wrapper.style.display = 'block';
+  if (currentBannerIndex >= bannerTasksList.length) {
+    currentBannerIndex = 0;
+  }
+
+  renderCurrentBannerTask();
+
+  if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
+  bannerIntervalTimer = setInterval(function() {
+    if (bannerTasksList.length > 1) {
+      currentBannerIndex = (currentBannerIndex + 1) % bannerTasksList.length;
+      renderCurrentBannerTask();
+    }
+  }, 5000);
+}
+
+function renderCurrentBannerTask() {
+  if (bannerTasksList.length === 0) return;
+  var task = bannerTasksList[currentBannerIndex];
+
+  var boxContent = document.getElementById('featuredCardBoxContent');
+  var dotsContainer = document.getElementById('featuredDotsContainer');
+  if (!boxContent || !dotsContainer) return;
+
+  var imgHtml = task.image 
+    ? '<img src="' + task.image + '" alt="Logo" />' 
+    : '<div style="width:100%; height:100%; background:#9333ea; display:flex; align-items:center; justify-content:center; font-size:22px;">⚡</div>';
+
+  var safeTitle = task.title.replace(/'/g, "\\'");
+  var safeLink = task.link.replace(/'/g, "\\'");
+
+  var actionBtnText = "Join 👥";
+  if (task.objective === "Mini App" || task.objective === "Bot (MAU)") {
+    actionBtnText = "Play ▶";
+  }
+
+  boxContent.innerHTML = 
+    '<div class="featured-card-content">' +
+      '<div class="featured-card-info">' +
+        '<div class="featured-card-icon">' + imgHtml + '</div>' +
+        '<div>' +
+          '<b style="font-size:16px; color:#fff; display:block; margin-bottom:2px;">' + task.title + '</b>' +
+          '<div style="font-size:12px; color:#00ffa3; font-weight:600; margin-bottom:4px;">+0.05 🪙</div>' +
+        '</div>' +
+      '</div>' +
+      '<span style="background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px; display:inline-flex; align-items:center; gap:4px;">🛡️ 8h Check</span>' +
+    '</div>' +
+    '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05)">' + actionBtnText + '</button>';
+
+  var dotsHtml = '';
+  if (bannerTasksList.length > 1) {
+    for (var i = 0; i < bannerTasksList.length; i++) {
+      var activeClass = (i === currentBannerIndex) ? ' active' : '';
+      dotsHtml += '<div class="featured-dot' + activeClass + '"></div>';
+    }
+  } else {
+    dotsHtml = '<div class="featured-dot active"></div>';
+  }
+  dotsContainer.innerHTML = dotsHtml;
+}
+
+function loadMyPublishedTasks() {
+  var myContainer = document.getElementById('myPublishedTasksList');
+  if(!myContainer || !window.db) return;
+  db.ref('customTasks').on('value', function(snapshot) {
+    if (!snapshot.exists()) {
+      myContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published campaigns found.</div>';
+      return;
+    }
+    var data = snapshot.val();
+    var html = '';
+    var foundAny = false;
+
+    Object.entries(data).forEach(function(entry) {
+      var task = entry[1];
+      if (task.userId === userId) {
+        foundAny = true;
+        var done = task.clicksDone || 0;
+        var total = task.totalClicks || 100;
+        var remaining = task.clicksRemaining !== undefined ? task.clicksRemaining : (total - done);
+        
+        var statusText = (remaining <= 0) ? 'Done' : 'Active';
+        var statusColor = (remaining <= 0) ? 'var(--accent)' : '#0a84c1';
+        
+        var imgHtml = task.image ? '<img src="' + task.image + '" style="width:30px; height:30px; border-radius:6px; object-fit:cover; margin-right:6px;" />' : '';
+
+        html += '<div class="card" style="background:#111827; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(10, 132, 193, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0f172a; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
+      }
+    });
+    myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi kiya hai.</div>';
+  });
 }
 </script>
 </body>
