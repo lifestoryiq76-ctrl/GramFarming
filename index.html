@@ -233,7 +233,7 @@ display: inline-block;
 input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
 input:focus, select:focus { border-color: var(--accent); }
 
-/* LEADERBOARD & CONTEST STYLING WITH BHAIRAVALI WATERMARK */
+/* LEADERBOARD WATERMARK */
 .ranking-watermark-container {
   position: relative;
   overflow: hidden;
@@ -253,16 +253,6 @@ input:focus, select:focus { border-color: var(--accent); }
   letter-spacing: 8px;
 }
 
-.contest-tabs-container {
-  display: flex; background: #111a30; padding: 6px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 16px; gap: 6px; position: relative; z-index: 2;
-}
-.contest-tab-item {
-  flex: 1; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; background: transparent; border: 1px solid transparent; white-space: nowrap;
-}
-.contest-tab-item.active {
-  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4); border-color: rgba(255, 255, 255, 0.15);
-}
-
 .contest-banner-card {
   background: linear-gradient(135deg, #17223b 0%, #0d1528 100%); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 20px; padding: 18px; margin-bottom: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); position: relative; z-index: 2;
 }
@@ -276,24 +266,25 @@ input:focus, select:focus { border-color: var(--accent); }
 .contest-info-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 .contest-info-value { font-size: 18px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
 
-/* PODIUM TOP 3 STYLING - MATCHING EXACT IMAGES 9427/9428/9429 WITH SPACING */
-.podium-wrapper { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 14px; margin-bottom: 24px; align-items: flex-end; position: relative; z-index: 2; }
-.podium-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
-.podium-user-header { margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; }
-.podium-avatar-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; background: #1e293b; border: 2px solid var(--border); margin-bottom: 6px; }
+/* PODIUM TOP 3 VERTICAL CARDS STYLING */
+.podium-wrapper { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; position: relative; z-index: 2; }
+.podium-item-vertical { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #182b48 0%, #101c30 100%); border: 1.5px solid rgba(14, 165, 233, 0.35); border-radius: 16px; padding: 14px 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+.podium-item-vertical.rank-1 { background: linear-gradient(135deg, #23395d 0%, #152742 100%); border-color: rgba(234, 179, 8, 0.6); }
+
+.podium-user-info-left { display: flex; align-items: center; gap: 12px; }
+.podium-avatar-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; background: #1e293b; border: 2px solid var(--border); flex-shrink: 0; }
 .podium-avatar-circle.gold { border-color: #facc15; box-shadow: 0 0 15px rgba(250, 204, 21, 0.4); }
 .podium-avatar-circle.silver { border-color: #94a3b8; }
 .podium-avatar-circle.bronze { border-color: #d97706; }
 
-.rank-tag-badge { position: absolute; bottom: -6px; background: #eab308; color: #000; font-size: 10px; font-weight: 900; padding: 1px 6px; border-radius: 10px; }
-.podium-name { font-size: 12px; font-weight: bold; color: #fff; margin-top: 2px; width: 95px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.podium-score { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.rank-tag-badge { position: absolute; bottom: -4px; right: -4px; background: #eab308; color: #000; font-size: 9px; font-weight: 900; padding: 1px 5px; border-radius: 8px; }
+.podium-name { font-size: 13px; font-weight: bold; color: #fff; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.podium-score { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-.podium-prize-card { width: 100%; background: linear-gradient(135deg, #182b48 0%, #101c30 100%); border: 1.5px solid rgba(14, 165, 233, 0.35); border-radius: 16px; padding: 18px 8px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
-.podium-item.rank-1 .podium-prize-card { background: linear-gradient(135deg, #1b3154 0%, #122138 100%); border-color: rgba(234, 179, 8, 0.5); padding: 26px 8px; }
-
-.podium-prize-title { font-size: 10px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; margin-bottom: 6px; }
-.podium-prize-val { font-size: 15px; font-weight: 800; color: #22c55e; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.podium-prize-right { text-align: right; }
+.podium-prize-title { font-size: 9px; font-weight: 800; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 2px; text-transform: uppercase; }
+.podium-prize-val { font-size: 14px; font-weight: 800; color: #22c55e; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+.podium-item-vertical.rank-1 .podium-prize-val { color: #facc15; }
 
 .user-status-bar {
   background: linear-gradient(135deg, #162238 0%, #0e1728 100%); border: 1px solid rgba(14, 165, 233, 0.4); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; z-index: 2;
@@ -302,7 +293,6 @@ input:focus, select:focus { border-color: var(--accent); }
 .leaderboard-table-card { background: #111827; border: 1px solid var(--border); border-radius: 16px; padding: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; z-index: 2; }
 .leaderboard-row { display: flex; align-items: center; justify-content: space-between; background: #182232; border: 1px solid #28374d; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; transition: transform 0.2s; }
 .leaderboard-row:hover { transform: scale(1.01); }
-.badge-prize { background: rgba(34, 197, 94, 0.15); color: var(--accent); border: 1px solid rgba(34, 197, 94, 0.3); font-weight: 800; font-size: 12px; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
 
 .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .mining-box { background: #111827; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
@@ -1038,20 +1028,14 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
-<!-- RANKING PAGE WITH BHAIRAVALI WATERMARK & LIVE STATUS -->
+<!-- RANKING PAGE WITH BHAIRAVALI WATERMARK & LIVE STATUS (REMOVED REFS TAB) -->
 <div id="ranking" class="tab-content ranking-watermark-container">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
     <h3 style="margin: 0; font-size: 20px;">LEADERBOARD</h3>
     <span class="live-badge" style="font-size: 11px; padding: 3px 8px;">LIVE</span>
   </div>
 
-  <!-- Contest Header Tabs -->
-  <div class="contest-tabs-container">
-    <div class="contest-tab-item active" id="contestTabAdsBtn" onclick="switchContestTab('ads')">📺 Ads $10</div>
-    <div class="contest-tab-item" id="contestTabRefBtn" onclick="switchContestTab('referrals')">👥 Refs $5</div>
-  </div>
-
-  <!-- SECTION 1: ADS CONTEST & LEADERBOARD -->
+  <!-- SECTION: ADS CONTEST & LEADERBOARD (VERTICAL TOP 3 CARDS) -->
   <div id="contestAdsSection">
     <div class="contest-banner-card">
       <div class="contest-banner-header">
@@ -1073,56 +1057,63 @@ Cost: <strong>35 Coins</strong>
       </div>
     </div>
 
-    <!-- PODIUM TOP 3 (Ads) - MATCHING IMAGE 9427/9428/9429 WITH SPACING -->
+    <!-- VERTICAL PODIUM TOP 3 CARDS -->
     <div class="podium-wrapper">
-      <!-- #2 SILVER -->
-      <div class="podium-item">
-        <div class="podium-user-header">
+      
+      <!-- #1 GOLD VERTICAL CARD -->
+      <div class="podium-item-vertical rank-1">
+        <div class="podium-user-info-left">
+          <div class="podium-avatar-circle gold">
+            <span style="font-size: 18px;">👑</span>
+            <span class="rank-tag-badge">#1</span>
+          </div>
+          <div>
+            <div class="podium-name" style="color:#facc15;">Kelvin Carter</div>
+            <div class="podium-score" id="podiumScoreAds1">0 Points</div>
+          </div>
+        </div>
+        <div class="podium-prize-right">
+          <div class="podium-prize-title">PRIZE</div>
+          <div class="podium-prize-val">+0.70 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
+        </div>
+      </div>
+
+      <!-- #2 SILVER VERTICAL CARD -->
+      <div class="podium-item-vertical">
+        <div class="podium-user-info-left">
           <div class="podium-avatar-circle silver">
-            <span>RR</span>
+            <span style="font-size:13px; font-weight:bold; color:#fff;">RR</span>
             <span class="rank-tag-badge" style="background:#94a3b8;">#2</span>
           </div>
-          <div class="podium-name">Rezki Rezki</div>
-          <div class="podium-score" id="podiumScoreAds2">0 Points</div>
+          <div>
+            <div class="podium-name">Rezki Rezki</div>
+            <div class="podium-score" id="podiumScoreAds2">0 Points</div>
+          </div>
         </div>
-        <div class="podium-prize-card">
+        <div class="podium-prize-right">
           <div class="podium-prize-title">PRIZE</div>
           <div class="podium-prize-val">+0.55 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
         </div>
       </div>
 
-      <!-- #1 GOLD -->
-      <div class="podium-item rank-1">
-        <div class="podium-user-header">
-          <div style="font-size: 16px; margin-bottom: -4px;">👑</div>
-          <div class="podium-avatar-circle gold">
-            <span style="font-size: 18px;">👤</span>
-            <span class="rank-tag-badge">#1</span>
-          </div>
-          <div class="podium-name" style="color:#facc15;">Kelvin Carter</div>
-          <div class="podium-score" id="podiumScoreAds1">0 Points</div>
-        </div>
-        <div class="podium-prize-card">
-          <div class="podium-prize-title">PRIZE</div>
-          <div class="podium-prize-val" style="font-size: 15px; color:#facc15;">+0.70 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:16px; height:16px;" /></div>
-        </div>
-      </div>
-
-      <!-- #3 BRONZE -->
-      <div class="podium-item">
-        <div class="podium-user-header">
+      <!-- #3 BRONZE VERTICAL CARD -->
+      <div class="podium-item-vertical">
+        <div class="podium-user-info-left">
           <div class="podium-avatar-circle bronze">
-            <span>GJ</span>
+            <span style="font-size:11px; font-weight:bold; color:#fff;">GJ</span>
             <span class="rank-tag-badge" style="background:#d97706; color:#fff;">#3</span>
           </div>
-          <div class="podium-name">GODWILL *TAPX...</div>
-          <div class="podium-score" id="podiumScoreAds3">0 Points</div>
+          <div>
+            <div class="podium-name">GODWILL *TAPX...</div>
+            <div class="podium-score" id="podiumScoreAds3">0 Points</div>
+          </div>
         </div>
-        <div class="podium-prize-card">
+        <div class="podium-prize-right">
           <div class="podium-prize-title">PRIZE</div>
           <div class="podium-prize-val">+0.45 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
         </div>
       </div>
+
     </div>
 
     <!-- Current User Status Bar -->
@@ -1145,102 +1136,6 @@ Cost: <strong>35 Coins</strong>
       </div>
       <div id="adsLeaderboardList">
         <!-- Dynamic live data #4 to #50 -->
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 2: REFERRALS CONTEST & LEADERBOARD -->
-  <div id="contestRefsSection" style="display: none;">
-    <div class="contest-banner-card" style="border-color: rgba(236, 72, 153, 0.3);">
-      <div class="contest-banner-header">
-        <div class="contest-banner-icon" style="background: rgba(236, 72, 153, 0.15); border-color: rgba(236, 72, 153, 0.4);">👥</div>
-        <div>
-          <div class="contest-banner-title">Referrals Contest</div>
-          <div class="contest-banner-desc">Invite friends to watch ads and win guaranteed rewards from the prize pool!</div>
-        </div>
-      </div>
-      <div class="contest-info-grid">
-        <div class="contest-info-box">
-          <div class="contest-info-label">✨ PRIZE POOL</div>
-          <div class="contest-info-value">5 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:20px; height:20px; vertical-align:middle;" /></div>
-        </div>
-        <div class="contest-info-box">
-          <div class="contest-info-label">🕒 CONTEST ENDS IN:</div>
-          <div class="contest-info-value" style="font-size: 15px; color: #ec4899;"><span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display:inline-block;"></span> <span id="refsTimerCountdown">7d 00h 00m</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PODIUM TOP 3 (Referrals) -->
-    <div class="podium-wrapper">
-      <!-- #2 SILVER -->
-      <div class="podium-item">
-        <div class="podium-user-header">
-          <div class="podium-avatar-circle silver">
-            <span>#2</span>
-          </div>
-          <div class="podium-name">Player #2</div>
-          <div class="podium-score" id="podiumScoreRef2">0 Invites</div>
-        </div>
-        <div class="podium-prize-card">
-          <div class="podium-prize-title">PRIZE</div>
-          <div class="podium-prize-val">+0.40 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
-        </div>
-      </div>
-
-      <!-- #1 GOLD -->
-      <div class="podium-item rank-1">
-        <div class="podium-user-header">
-          <div style="font-size: 16px; margin-bottom: -4px;">👑</div>
-          <div class="podium-avatar-circle gold">
-            <span>👑</span>
-            <span class="rank-tag-badge">#1</span>
-          </div>
-          <div class="podium-name" style="color:#facc15;">Durov</div>
-          <div class="podium-score" id="podiumScoreRef1">1 Invites</div>
-        </div>
-        <div class="podium-prize-card">
-          <div class="podium-prize-title">PRIZE</div>
-          <div class="podium-prize-val" style="font-size: 15px; color:#facc15;">+0.70 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:16px; height:16px;" /></div>
-        </div>
-      </div>
-
-      <!-- #3 BRONZE -->
-      <div class="podium-item">
-        <div class="podium-user-header">
-          <div class="podium-avatar-circle bronze">
-            <span>#3</span>
-          </div>
-          <div class="podium-name">Player #3</div>
-          <div class="podium-score" id="podiumScoreRef3">0 Invites</div>
-        </div>
-        <div class="podium-prize-card">
-          <div class="podium-prize-title">PRIZE</div>
-          <div class="podium-prize-val">+0.25 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Current User Status Bar (Refs) -->
-    <div class="user-status-bar">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <div style="width: 38px; height: 38px; background: #d946ef; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;" id="currentUserInitialsRefs">LS</div>
-        <div>
-          <div style="font-size: 14px; font-weight: bold; color: #fff;"><span id="currentUserNameDisplayRefs">life Storyiq76</span> <span style="background: #0284c7; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">YOU</span></div>
-          <div style="font-size: 11px; color: var(--text-muted);" id="currentUserInvitesRefs">0 Invites</div>
-        </div>
-      </div>
-      <div style="font-weight: 800; color: var(--accent); font-size: 14px; display: flex; align-items: center; gap: 4px;" id="currentUserPrizeRefs">+0.00 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
-    </div>
-
-    <!-- Global Leaderboard #4 to #30 (Referrers) -->
-    <div class="leaderboard-table-card">
-      <div class="flex-between" style="margin-bottom: 12px;">
-        <span style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Rank PLAYER</span>
-        <span style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">INVITES PRIZE</span>
-      </div>
-      <div id="refsLeaderboardList">
-        <!-- Dynamic live data #4 to #30 -->
       </div>
     </div>
   </div>
@@ -1965,9 +1860,9 @@ function initAppListeners() {
     renderCustomTasksFromFirebase();
   });
 
-  // Listen to all users for live Leaderboard ranking #4 to #50 (Ads) and #4 to #30 (Refs)
+  // Listen to all users for live Leaderboard ranking #4 to #50 (Ads)
   db.ref('users').on('value', function(snapshot) {
-    updateLiveLeaderboards(snapshot.val());
+    updateLiveLeaderboard(snapshot.val());
   });
 
   trackUserLoginAndIp();
@@ -2137,15 +2032,11 @@ function trackUserLoginAndIp() {
       }
     });
 
-    // Calculate total ad views as ad points (1 ad = 1 point)
-    var totalAdViews = 0;
-    if (userData && userData.adWatchedCounts) {
-      totalAdViews = (userData.adWatchedCounts.taskMonetagLimit || 0) +
-                     (userData.adWatchedCounts.taskGigapubLimit || 0) +
-                     (userData.adWatchedCounts.taskMonetixLimit || 0) +
-                     (userData.adWatchedCounts.taskAdsterraLimit || 0) +
-                     (userData.adWatchedCounts.taskAdsbitvexLimit || 0);
-    }
+    var totalAdViews = (adWatchedCounts.taskMonetagLimit || 0) +
+                   (adWatchedCounts.taskGigapubLimit || 0) +
+                   (adWatchedCounts.taskMonetixLimit || 0) +
+                   (adWatchedCounts.taskAdsterraLimit || 0) +
+                   (adWatchedCounts.taskAdsbitvexLimit || 0);
     var invitePoints = (totalInvited || 0) * 150;
 
     userRef.update({
@@ -2348,7 +2239,6 @@ function initContestTimersAndLeaderboard() {
     var diff = endTime - now;
 
     if (diff <= 0) {
-      // Timer ended -> Distribute prize pool automatically to winner wallets
       distributeContestPrizesAutomatic();
       endTime = Date.now() + sevenDaysMs;
       localStorage.setItem(contestKey, endTime);
@@ -2362,9 +2252,7 @@ function initContestTimersAndLeaderboard() {
 
     var timeStr = days + "d " + String(hours).padStart(2, '0') + "h " + String(mins).padStart(2, '0') + "m";
     var adsCountdownEl = document.getElementById('adsTimerCountdown');
-    var refsCountdownEl = document.getElementById('refsTimerCountdown');
     if (adsCountdownEl) adsCountdownEl.innerText = timeStr;
-    if (refsCountdownEl) refsCountdownEl.innerText = timeStr;
   }
 
   updateContestTimers();
@@ -2372,63 +2260,33 @@ function initContestTimersAndLeaderboard() {
 }
 
 function distributeContestPrizesAutomatic() {
-  // Logic to credit automatic prize to winner user's wallet when 7-day contest timer ends
   if (window.db) {
     db.ref('users/' + userId).once('value', function(snapshot) {
       if (snapshot.exists()) {
-        // e.g., if user ranked #1 in ads or referrals, credit USDT/Coins to wallet automatically
         showToast("🏆 Weekly Contest Ended! Prize pool amounts automatically distributed to winner wallets.", "success");
       }
     });
   }
 }
 
-function switchContestTab(tabName) {
-  var adsBtn = document.getElementById('contestTabAdsBtn');
-  var refBtn = document.getElementById('contestTabRefBtn');
-
-  var adsSec = document.getElementById('contestAdsSection');
-  var refSec = document.getElementById('contestRefsSection');
-
-  if(adsBtn) adsBtn.classList.remove('active');
-  if(refBtn) refBtn.classList.remove('active');
-
-  if(adsSec) adsSec.style.display = 'none';
-  if(refSec) refSec.style.display = 'none';
-
-  if (tabName === 'ads') {
-    if(adsBtn) adsBtn.classList.add('active');
-    if(adsSec) adsSec.style.display = 'block';
-  } else if (tabName === 'referrals') {
-    if(refBtn) refBtn.classList.add('active');
-    if(refSec) refSec.style.display = 'block';
-  }
-}
-
-// LIVE DATA LEADERBOARD: Ads (#4 to #50) and Referrals (#4 to #30) with 30 points = 0.01 USDT logic conversion
-function updateLiveLeaderboards(usersData) {
+// LIVE DATA LEADERBOARD: Ads (#4 to #50) with 30 points = 0.01 USDT logic conversion
+function updateLiveLeaderboard(usersData) {
   if (!usersData) return;
 
   var adsUsers = [];
-  var refUsers = [];
 
   Object.entries(usersData).forEach(function(entry) {
     var uId = entry[0];
     var uVal = entry[1];
     var uName = uVal.name || "Player_" + uId.substring(0,4);
     var adPoints = uVal.adPoints !== undefined ? uVal.adPoints : 0; // 1 Ad = 1 Point
-    var inviteCount = uVal.totalInvited !== undefined ? uVal.totalInvited : 0;
-    var invitePoints = inviteCount * 150; // 1 Invite = 150 Points
 
     adsUsers.push({ id: uId, name: uName, points: adPoints });
-    refUsers.push({ id: uId, name: uName, invites: inviteCount, points: invitePoints });
   });
 
   // Sort descending by points
   adsUsers.sort(function(a, b) { return b.points - a.points; });
-  refUsers.sort(function(a, b) { return b.points - a.points; });
 
-  // --- ADS LEADERBOARD RENDERING (#4 to #50) ---
   var adsListEl = document.getElementById('adsLeaderboardList');
   if (adsListEl) {
     var adsHtml = '';
@@ -2444,7 +2302,6 @@ function updateLiveLeaderboards(usersData) {
       }
 
       if (rankNum >= 4 && rankNum <= 50) {
-        // Logic: 30 points = 0.01 USDT value calculation for display
         var usdtValueCalc = (u.points / 30) * 0.01;
         var initials = u.name.substring(0, 2).toUpperCase();
         var isYou = u.id === userId;
@@ -2469,64 +2326,12 @@ function updateLiveLeaderboards(usersData) {
     }
     adsListEl.innerHTML = adsHtml;
 
-    // Update user status bar for ads
     var cPointsAds = document.getElementById('currentUserPointsAds');
     if (cPointsAds) cPointsAds.innerText = currentUserAdsPoints + " Points";
     var cPrizeAds = document.getElementById('currentUserPrizeAds');
     if (cPrizeAds) {
       var myUsdtVal = (currentUserAdsPoints / 30) * 0.01;
       cPrizeAds.innerHTML = "+" + myUsdtVal.toFixed(3) + ' <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" />';
-    }
-  }
-
-  // --- REFERRALS LEADERBOARD RENDERING (#4 to #30) ---
-  var refsListEl = document.getElementById('refsLeaderboardList');
-  if (refsListEl) {
-    var refsHtml = '';
-    var currentUserRefRank = '-';
-    var currentUserInvites = 0;
-
-    for (var j = 0; j < refUsers.length; j++) {
-      var rUser = refUsers[j];
-      var rRankNum = j + 1;
-      if (rUser.id === userId) {
-        currentUserRefRank = "#" + rRankNum;
-        currentUserInvites = rUser.invites;
-      }
-
-      if (rRankNum >= 4 && rRankNum <= 30) {
-        var rUsdtValueCalc = (rUser.points / 30) * 0.01;
-        var rInitials = rUser.name.substring(0, 2).toUpperCase();
-        var isRYou = rUser.id === userId;
-        var rYouBadge = isRYou ? ' <span style="background: #0284c7; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px;">YOU</span>' : '';
-
-        refsHtml += '<div class="leaderboard-row">' +
-          '<div style="display: flex; align-items: center; gap: 10px;">' +
-            '<span style="font-weight: 900; color: #ec4899; width: 28px;">#' + rRankNum + '</span>' +
-            '<div style="width: 34px; height: 34px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; border: 1px solid var(--border);">' + rInitials + '</div>' +
-            '<div style="font-size: 13px; font-weight: bold; color: #fff; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + rUser.name + rYouBadge + '</div>' +
-          '</div>' +
-          '<div style="text-align: right;">' +
-            '<div style="font-size: 12px; font-weight: bold; color: var(--text-muted);">' + rUser.invites + ' Invites</div>' +
-            '<div style="font-size: 12px; font-weight: bold; color: var(--accent);">+' + rUsdtValueCalc.toFixed(3) + ' <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:12px; height:12px; vertical-align:middle;" /></div>' +
-          '</div>' +
-        '</div>';
-      }
-    }
-
-    if (refsHtml === '') {
-      refsHtml = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:15px;">No referrers ranked #4 to #30 yet. Invite friends to rank up!</div>';
-    }
-    refsListEl.innerHTML = refsHtml;
-
-    // Update user status bar for referrals
-    var cInvitesRef = document.getElementById('currentUserInvitesRefs');
-    if (cInvitesRef) cInvitesRef.innerText = currentUserInvites + " Invites";
-    var cPrizeRefs = document.getElementById('currentUserPrizeRefs');
-    if (cPrizeRefs) {
-      var myRefPoints = currentUserInvites * 150;
-      var myRefUsdtVal = (myRefPoints / 30) * 0.01;
-      cPrizeRefs.innerHTML = "+" + myRefUsdtVal.toFixed(3) + ' <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" />';
     }
   }
 }
