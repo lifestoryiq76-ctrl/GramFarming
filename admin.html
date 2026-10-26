@@ -73,7 +73,33 @@
         <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
     </div>
 
-    <!-- 2. LOTTERY CONTROL (NEW SECTION FOR DAILY & WEEKLY SWITCH & PARAMETERS) -->
+    <!-- 2. LEADERBOARD CONTROL PANEL (NEW) -->
+    <div class="card" style="border: 1px solid #10b981;">
+        <h2 style="color: #10b981;">🏆 Ads Arena Leaderboard Control Panel</h2>
+        <div class="net-box">
+            <h3>📊 Ads Arena Prize Pool & Settings</h3>
+            <div class="grid-3">
+                <div>
+                    <label>Leaderboard Status:</label>
+                    <select id="leaderboardStatus">
+                        <option value="true">🟢 ENABLED (ON)</option>
+                        <option value="false">🔴 DISABLED (OFF)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Prize Pool (USDT):</label>
+                    <input type="number" id="leaderboardPrizePool" step="0.001" value="10.000">
+                </div>
+                <div>
+                    <label>Contest Duration (Days):</label>
+                    <input type="number" id="leaderboardDuration" step="1" value="7">
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn-blue" style="margin-top: 10px; background-color: #10b981;" onclick="saveSettings('leaderboard')">💾 Save Leaderboard Settings</button>
+    </div>
+
+    <!-- 3. LOTTERY CONTROL PANEL (DAILY & WEEKLY) -->
     <div class="card" style="border: 1px solid #0a84c1;">
         <h2 style="color: #0a84c1;">🎟️ Lottery Control Panel (Daily & Weekly)</h2>
         
@@ -142,7 +168,7 @@
         <button type="button" class="btn-blue" style="margin-top: 12px;" onclick="saveSettings('lottery')">💾 Save Lottery Settings</button>
     </div>
 
-    <!-- 3. Rocket Space Mining Parameters Control -->
+    <!-- 4. Rocket Space Mining Parameters Control -->
     <div class="card">
         <h2>🚀 Space Rocket Mining Control</h2>
         
@@ -193,7 +219,7 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 4. Task Ads Networks Control (Updated with all 5 Networks) -->
+    <!-- 5. Task Ads Networks Control -->
     <div class="card">
         <h2>📺 Task Ads Watch Networks Setup</h2>
         
@@ -290,7 +316,7 @@
         <button type="button" onclick="saveSettings('adsNetworks')">💾 Save All Ad Networks Setup</button>
     </div>
 
-    <!-- 5. Staking APY Control -->
+    <!-- 6. Staking APY Control -->
     <div class="card" style="border: 1px solid var(--yellow);">
         <h2 style="color: var(--yellow);">💎 Staking Plans APY Control</h2>
         <div class="grid-4">
@@ -330,7 +356,7 @@
         <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
     </div>
 
-    <!-- 6. User Campaign Click Rates Control -->
+    <!-- 7. User Campaign Click Rates Control -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚙️ User Campaign Publish Rates (Clicks Pricing)</h2>
         <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">Yahan se aap sabhi click packages (100 se 5000) ke Coin cost/rates change kar sakte hain.</p>
@@ -384,7 +410,7 @@
         <button type="button" style="margin-top: 12px;" onclick="saveSettings('clickRates')">💾 Save Click Rates</button>
     </div>
 
-    <!-- 7. Add Custom Task -->
+    <!-- 8. Add Custom Task -->
     <div class="card">
         <h2>📋 Add New Custom Task (Telegram / YouTube / Ads)</h2>
         <div class="grid-2">
@@ -420,7 +446,7 @@
         </div>
     </div>
 
-    <!-- 🔄 8. ONLY PARTNER & TASK RESET CONTROLLER -->
+    <!-- 🔄 9. ONLY PARTNER & TASK RESET CONTROLLER -->
     <div class="card" style="border: 1px solid #f59e0b;">
         <h2 style="color: #f59e0b;">🔄 Partner & Task Reset Manager (Only 'Partner' & 'Task' Tabs)</h2>
         <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">
@@ -441,30 +467,38 @@
         </div>
     </div>
 
-    <!-- 9. User Balance Manual Manager -->
+    <!-- 10. User Balance Manual Manager (Updated with Coin, USDT, Gram) -->
     <div class="card" style="border: 1px solid var(--accent);">
-        <h2>⚡ User Balance Modifier</h2>
-        <div class="grid-3">
+        <h2>⚡ User Balance Modifier (Coin / USDT / Gram)</h2>
+        <div class="grid-4">
             <div>
                 <label>Target Telegram User ID:</label>
                 <input type="text" id="targetUserId" placeholder="User ID">
             </div>
             <div>
-                <label>Select Action Type:</label>
-                <select id="actionType">
-                    <option value="add">➕ To Add Coins</option>
-                    <option value="deduct">➖ To Deduct Coins</option>
+                <label>Select Balance Currency:</label>
+                <select id="targetCurrency">
+                    <option value="balance">🪙 Coin Balance</option>
+                    <option value="usdtBalance">💵 USDT Balance</option>
+                    <option value="gramBalance">🌱 Gram Balance</option>
                 </select>
             </div>
             <div>
-                <label>Coin Amount:</label>
-                <input type="number" id="targetAmount" step="0.01" placeholder="e.g. 10">
+                <label>Select Action Type:</label>
+                <select id="actionType">
+                    <option value="add">➕ To Add</option>
+                    <option value="deduct">➖ To Deduct</option>
+                </select>
+            </div>
+            <div>
+                <label>Amount:</label>
+                <input type="number" id="targetAmount" step="0.001" placeholder="e.g. 10">
             </div>
         </div>
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 10A. FaucetPay Withdrawal Requests -->
+    <!-- 11A. FaucetPay Withdrawal Requests -->
     <div class="card">
         <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
@@ -486,7 +520,7 @@
         </div>
     </div>
 
-    <!-- 10B. TON Withdrawal Requests -->
+    <!-- 11B. TON Withdrawal Requests -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests (Manual)</h2>
         <button type="button" onclick="approveAllTonWithdrawals()" style="background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 12px; width: 100%;">
@@ -511,7 +545,7 @@
         </div>
     </div>
 
-    <!-- 11. Registered Users List -->
+    <!-- 12. Registered Users List -->
     <div class="card">
         <h2>👥 Registered Users, IP Address & Security Management</h2>
         <div class="table-container">
@@ -578,6 +612,11 @@
                     document.getElementById('refBonus').value = data.general.refPercent ?? 20;
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? data.general.minWithdrawal ?? 0.01;
                     document.getElementById('minTon').value = data.general.minTon ?? data.general.minTonWithdrawal ?? 0.01;
+                }
+                if(data.leaderboard) {
+                    document.getElementById('leaderboardStatus').value = String(data.leaderboard.status ?? true);
+                    document.getElementById('leaderboardPrizePool').value = data.leaderboard.prizePool ?? 10.00;
+                    document.getElementById('leaderboardDuration').value = data.leaderboard.durationDays ?? 7;
                 }
                 if(data.lottery) {
                     if(data.lottery.daily) {
@@ -830,7 +869,6 @@
         });
     });
 
-    // 🔄 FUNCTIONS TO RESET ONLY 'PARTNER' & 'TASK' TO 'JOIN'
     window.resetSingleUserTasks = function() {
         let uId = document.getElementById('resetSingleUserId').value.trim();
         if (!uId) {
@@ -881,6 +919,13 @@
                     'adminSettings/general/minTonWithdrawal': minT
                 };
                 update(ref(db), data).then(() => alert('General Settings Saved Successfully!'));
+            } else if (type === 'leaderboard') {
+                let leaderboardData = {
+                    'adminSettings/leaderboard/status': document.getElementById('leaderboardStatus').value === 'true',
+                    'adminSettings/leaderboard/prizePool': parseFloat(document.getElementById('leaderboardPrizePool').value) || 10.00,
+                    'adminSettings/leaderboard/durationDays': parseInt(document.getElementById('leaderboardDuration').value) || 7
+                };
+                update(ref(db), leaderboardData).then(() => alert('✅ Leaderboard Settings Saved Successfully!'));
             } else if (type === 'lottery') {
                 let lotteryData = {
                     'adminSettings/lottery/daily/status': document.getElementById('dailyLotteryStatus').value === 'true',
@@ -1145,24 +1190,29 @@
 
     window.modifyUserBalance = function() {
         let uId = document.getElementById('targetUserId').value.trim();
+        let currencyKey = document.getElementById('targetCurrency').value; // 'balance', 'usdtBalance', 'gramBalance'
         let action = document.getElementById('actionType').value;
         let amt = parseFloat(document.getElementById('targetAmount').value);
         
         if(!uId || isNaN(amt) || amt <= 0) { 
-            alert("Kripya valid User ID aur Coin Amount enter karein."); 
+            alert("Kripya valid User ID aur Amount enter karein."); 
             return; 
         }
 
         get(ref(db, 'users/' + uId)).then((snapshot) => {
             if(snapshot.exists()) {
-                let currentBal = snapshot.val().balance || 0;
+                let userData = snapshot.val();
+                let currentBal = userData[currencyKey] || 0;
                 let finalAmount = action === 'add' ? amt : -amt;
                 let newBal = currentBal + finalAmount;
                 
                 if (newBal < 0) newBal = 0;
 
-                update(ref(db, 'users/' + uId), { balance: newBal }).then(() => {
-                    alert(`Balance successfully updated! New Balance: ${newBal.toFixed(2)}`);
+                let updateObj = {};
+                updateObj[currencyKey] = newBal;
+
+                update(ref(db, 'users/' + uId), updateObj).then(() => {
+                    alert(`Balance successfully updated! New Balance: ${newBal.toFixed(4)}`);
                     location.reload();
                 });
             } else { 
