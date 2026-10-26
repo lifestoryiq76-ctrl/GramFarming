@@ -238,7 +238,7 @@ input:focus, select:focus { border-color: var(--accent); }
   display: flex; background: #111a30; padding: 6px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 16px; gap: 6px;
 }
 .contest-tab-item {
-  flex: 1; padding: 10px 8px; text-align: center; font-size: 12px; font-weight: 700; color: var(--text-muted); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; background: transparent; border: 1px solid transparent; white-space: nowrap;
+  flex: 1; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; background: transparent; border: 1px solid transparent; white-space: nowrap;
 }
 .contest-tab-item.active {
   background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4); border-color: rgba(255, 255, 255, 0.15);
@@ -257,14 +257,24 @@ input:focus, select:focus { border-color: var(--accent); }
 .contest-info-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 .contest-info-value { font-size: 18px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
 
-/* PODIUM TOP 3 STYLING */
-.podium-container { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 8px; margin-bottom: 16px; align-items: flex-end; }
-.podium-box { background: #182236; border: 1px solid #283750; border-radius: 16px; padding: 14px 8px; text-align: center; position: relative; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
-.podium-box.rank-1 { background: linear-gradient(180deg, rgba(234, 179, 8, 0.15) 0%, #182236 100%); border-color: rgba(234, 179, 8, 0.5); transform: translateY(-8px); }
-.podium-avatar { width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 6px auto; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--border); background: #1e293b; position: relative; }
-.podium-avatar.gold { border-color: #eab308; box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
-.podium-avatar.silver { border-color: #94a3b8; }
-.podium-avatar.bronze { border-color: #b45309; }
+/* PODIUM TOP 3 STYLING - UPDATED TO MATCH USER IMAGE */
+.podium-wrapper { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 10px; margin-bottom: 20px; align-items: flex-end; }
+.podium-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.podium-user-header { margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; }
+.podium-avatar-circle { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; background: #1e293b; border: 2px solid var(--border); margin-bottom: 6px; }
+.podium-avatar-circle.gold { border-color: #facc15; box-shadow: 0 0 15px rgba(250, 204, 21, 0.4); }
+.podium-avatar-circle.silver { border-color: #94a3b8; }
+.podium-avatar-circle.bronze { border-color: #d97706; }
+
+.rank-tag-badge { position: absolute; bottom: -6px; background: #eab308; color: #000; font-size: 10px; font-weight: 900; padding: 1px 6px; border-radius: 10px; }
+.podium-name { font-size: 12px; font-weight: bold; color: #fff; margin-top: 2px; width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.podium-score { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+.podium-prize-card { width: 100%; background: linear-gradient(180deg, #18253d 0%, #0d1628 100%); border: 1.5px solid #283a58; border-radius: 16px; padding: 18px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+.podium-item.rank-1 .podium-prize-card { background: linear-gradient(180deg, rgba(234, 179, 8, 0.15) 0%, #152035 100%); border-color: rgba(234, 179, 8, 0.5); padding: 26px 6px; }
+
+.podium-prize-title { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 4px; }
+.podium-prize-val { font-size: 13px; font-weight: 800; color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 4px; }
 
 .user-status-bar {
   background: linear-gradient(135deg, #162238 0%, #0e1728 100%); border: 1px solid rgba(14, 165, 233, 0.4); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
@@ -1015,11 +1025,10 @@ Cost: <strong>35 Coins</strong>
     <h3 style="margin: 0; font-size: 20px;">🏆 Leaderboard Arena</h3>
   </div>
 
-  <!-- Contest Header Tabs -->
+  <!-- Contest Header Tabs (Only Ads $10 & Refs $5) -->
   <div class="contest-tabs-container">
     <div class="contest-tab-item active" id="contestTabAdsBtn" onclick="switchContestTab('ads')">📺 Ads $10</div>
     <div class="contest-tab-item" id="contestTabRefBtn" onclick="switchContestTab('referrals')">👥 Refs $5</div>
-    <div class="contest-tab-item" id="contestTabAmbaBtn" onclick="switchContestTab('amba')">🏆 Amba $5</div>
   </div>
 
   <!-- SECTION 1: ADS CONTEST & LEADERBOARD -->
@@ -1034,7 +1043,7 @@ Cost: <strong>35 Coins</strong>
       </div>
       <div class="contest-info-grid">
         <div class="contest-info-box">
-          <div class="contest-info-label">✨ PRIZE POOL</div>
+          <div class="contest-info-label">✨ WEEKLY PRIZE POOL</div>
           <div class="contest-info-value">10 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" alt="USDT" style="width:20px; height:20px; vertical-align:middle;" /></div>
         </div>
         <div class="contest-info-box">
@@ -1044,26 +1053,55 @@ Cost: <strong>35 Coins</strong>
       </div>
     </div>
 
-    <!-- PODIUM TOP 3 (Ads) -->
-    <div class="podium-container">
-      <div class="podium-box">
-        <div class="podium-avatar silver">🥈</div>
-        <div style="font-size: 12px; font-weight: bold; color: #fff;">Сергей Tower</div>
-        <div style="font-size: 11px; color: var(--text-muted);">2,711 Points</div>
-        <div style="margin-top: 8px; font-size: 12px; font-weight: bold; color: var(--accent);">+1.00 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
+    <!-- PODIUM TOP 3 (Ads) - UPDATED STRUCTURE MATCHING IMAGE -->
+    <div class="podium-wrapper">
+      <!-- #2 SILVER -->
+      <div class="podium-item">
+        <div class="podium-user-header">
+          <div class="podium-avatar-circle silver">
+            <span>RR</span>
+            <span class="rank-tag-badge" style="background:#94a3b8;">#2</span>
+          </div>
+          <div class="podium-name">Rezki Rezki</div>
+          <div class="podium-score">238 Points</div>
+        </div>
+        <div class="podium-prize-card">
+          <div class="podium-prize-title">PRIZE</div>
+          <div class="podium-prize-val">+1.00 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
+        </div>
       </div>
-      <div class="podium-box rank-1">
-        <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 18px;">👑</div>
-        <div class="podium-avatar gold">👑</div>
-        <div style="font-size: 13px; font-weight: bold; color: #facc15;">Валентин</div>
-        <div style="font-size: 11px; color: var(--text-muted);">2,732 Points</div>
-        <div style="margin-top: 8px; font-size: 13px; font-weight: 800; color: var(--yellow);">+1.40 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
+
+      <!-- #1 GOLD -->
+      <div class="podium-item rank-1">
+        <div class="podium-user-header">
+          <div style="font-size: 16px; margin-bottom: -4px;">👑</div>
+          <div class="podium-avatar-circle gold">
+            <span style="font-size: 18px;">👤</span>
+            <span class="rank-tag-badge">#1</span>
+          </div>
+          <div class="podium-name" style="color:#facc15;">Kelvin Carter</div>
+          <div class="podium-score">276 Points</div>
+        </div>
+        <div class="podium-prize-card">
+          <div class="podium-prize-title">PRIZE</div>
+          <div class="podium-prize-val" style="font-size: 15px; color:#facc15;">+1.40 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:16px; height:16px;" /></div>
+        </div>
       </div>
-      <div class="podium-box">
-        <div class="podium-avatar bronze">🥉</div>
-        <div style="font-size: 12px; font-weight: bold; color: #fff;">Taslima Akter</div>
-        <div style="font-size: 11px; color: var(--text-muted);">2,545 Points</div>
-        <div style="margin-top: 8px; font-size: 12px; font-weight: bold; color: var(--accent);">+0.80 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
+
+      <!-- #3 BRONZE -->
+      <div class="podium-item">
+        <div class="podium-user-header">
+          <div class="podium-avatar-circle bronze">
+            <span>GJ</span>
+            <span class="rank-tag-badge" style="background:#d97706; color:#fff;">#3</span>
+          </div>
+          <div class="podium-name">GODWILL *TAPX...</div>
+          <div class="podium-score">226 Points</div>
+        </div>
+        <div class="podium-prize-card">
+          <div class="podium-prize-title">PRIZE</div>
+          <div class="podium-prize-val">+0.80 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
+        </div>
       </div>
     </div>
 
@@ -1086,7 +1124,7 @@ Cost: <strong>35 Coins</strong>
         <span style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">POINTS / PRIZE</span>
       </div>
       <div id="adsLeaderboardList">
-        <!-- Dynamically generated #1 to #50 rows -->
+        <!-- Dynamic loading when users join -->
       </div>
     </div>
   </div>
@@ -1103,7 +1141,7 @@ Cost: <strong>35 Coins</strong>
       </div>
       <div class="contest-info-grid">
         <div class="contest-info-box">
-          <div class="contest-info-label">✨ PRIZE POOL</div>
+          <div class="contest-info-label">✨ WEEKLY PRIZE POOL</div>
           <div class="contest-info-value">5 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:20px; height:20px; vertical-align:middle;" /></div>
         </div>
         <div class="contest-info-box">
@@ -1113,24 +1151,53 @@ Cost: <strong>35 Coins</strong>
       </div>
     </div>
 
-    <!-- PODIUM TOP 3 (Referrers) matching image 9411.png -->
-    <div class="podium-container">
-      <div class="podium-box">
-        <div style="font-size: 12px; color: var(--text-muted); font-weight: bold; margin-bottom: 22px;">#2</div>
-        <div style="font-size: 12px; font-weight: bold; color: var(--text-muted);">PRIZE</div>
-        <div style="font-size: 12px; font-weight: bold; color: var(--accent); margin-top: 4px;">+0.40 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:12px; height:12px; vertical-align:middle;" /></div>
+    <!-- PODIUM TOP 3 (Referrals) -->
+    <div class="podium-wrapper">
+      <!-- #2 SILVER -->
+      <div class="podium-item">
+        <div class="podium-user-header">
+          <div class="podium-avatar-circle silver">
+            <span>#2</span>
+          </div>
+          <div class="podium-name">Player #2</div>
+          <div class="podium-score">0 Invites</div>
+        </div>
+        <div class="podium-prize-card">
+          <div class="podium-prize-title">PRIZE</div>
+          <div class="podium-prize-val">+0.40 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
+        </div>
       </div>
-      <div class="podium-box rank-1">
-        <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 18px;">👑</div>
-        <div class="podium-avatar gold">👑</div>
-        <div style="font-size: 13px; font-weight: bold; color: #facc15;">Durov</div>
-        <div style="font-size: 11px; color: var(--text-muted);">1 Invites</div>
-        <div style="margin-top: 8px; font-size: 12px; font-weight: bold; color: var(--yellow);">PRIZE<br>+0.70 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
+
+      <!-- #1 GOLD -->
+      <div class="podium-item rank-1">
+        <div class="podium-user-header">
+          <div style="font-size: 16px; margin-bottom: -4px;">👑</div>
+          <div class="podium-avatar-circle gold">
+            <span>👑</span>
+            <span class="rank-tag-badge">#1</span>
+          </div>
+          <div class="podium-name" style="color:#facc15;">Durov</div>
+          <div class="podium-score">1 Invites</div>
+        </div>
+        <div class="podium-prize-card">
+          <div class="podium-prize-title">PRIZE</div>
+          <div class="podium-prize-val" style="font-size: 15px; color:#facc15;">+0.70 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:16px; height:16px;" /></div>
+        </div>
       </div>
-      <div class="podium-box">
-        <div style="font-size: 12px; color: var(--text-muted); font-weight: bold; margin-bottom: 22px;">#3</div>
-        <div style="font-size: 12px; font-weight: bold; color: var(--text-muted);">PRIZE</div>
-        <div style="font-size: 12px; font-weight: bold; color: var(--accent); margin-top: 4px;">+0.25 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:12px; height:12px; vertical-align:middle;" /></div>
+
+      <!-- #3 BRONZE -->
+      <div class="podium-item">
+        <div class="podium-user-header">
+          <div class="podium-avatar-circle bronze">
+            <span>#3</span>
+          </div>
+          <div class="podium-name">Player #3</div>
+          <div class="podium-score">0 Invites</div>
+        </div>
+        <div class="podium-prize-card">
+          <div class="podium-prize-title">PRIZE</div>
+          <div class="podium-prize-val">+0.25 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px;" /></div>
+        </div>
       </div>
     </div>
 
@@ -1153,64 +1220,7 @@ Cost: <strong>35 Coins</strong>
         <span style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">INVITES / PRIZE</span>
       </div>
       <div id="refsLeaderboardList">
-        <!-- Dynamically generated #1 to #50 rows -->
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 3: AMBA CONTEST & LEADERBOARD -->
-  <div id="contestAmbaSection" style="display: none;">
-    <div class="contest-banner-card" style="border-color: rgba(168, 85, 247, 0.3);">
-      <div class="contest-banner-header">
-        <div class="contest-banner-icon" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4);">🏆</div>
-        <div>
-          <div class="contest-banner-title">Ambassador Contest</div>
-          <div class="contest-banner-desc">Top community builders and active partners compete for the weekly ambassador pool!</div>
-        </div>
-      </div>
-      <div class="contest-info-grid">
-        <div class="contest-info-box">
-          <div class="contest-info-label">✨ PRIZE POOL</div>
-          <div class="contest-info-value">5 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:20px; height:20px; vertical-align:middle;" /></div>
-        </div>
-        <div class="contest-info-box">
-          <div class="contest-info-label">🕒 CONTEST ENDS IN:</div>
-          <div class="contest-info-value" style="font-size: 15px; color: #a855f7;"><span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display:inline-block;"></span> <span>4d 10h 15m</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PODIUM TOP 3 (Amba) -->
-    <div class="podium-container">
-      <div class="podium-box">
-        <div class="podium-avatar silver">🥈</div>
-        <div style="font-size: 12px; font-weight: bold; color: #fff;">AlphaNode</div>
-        <div style="font-size: 11px; color: var(--text-muted);">450 Points</div>
-        <div style="margin-top: 8px; font-size: 12px; font-weight: bold; color: var(--accent);">+0.50 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
-      </div>
-      <div class="podium-box rank-1">
-        <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 18px;">👑</div>
-        <div class="podium-avatar gold">👑</div>
-        <div style="font-size: 13px; font-weight: bold; color: #facc15;">SuperAmba</div>
-        <div style="font-size: 11px; color: var(--text-muted);">620 Points</div>
-        <div style="margin-top: 8px; font-size: 13px; font-weight: 800; color: var(--yellow);">+0.80 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
-      </div>
-      <div class="podium-box">
-        <div class="podium-avatar bronze">🥉</div>
-        <div style="font-size: 12px; font-weight: bold; color: #fff;">CryptoKing</div>
-        <div style="font-size: 11px; color: var(--text-muted);">380 Points</div>
-        <div style="margin-top: 8px; font-size: 12px; font-weight: bold; color: var(--accent);">+0.30 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
-      </div>
-    </div>
-
-    <!-- Global Leaderboard #1 to #50 (Amba) -->
-    <div class="leaderboard-table-card">
-      <div class="flex-between" style="margin-bottom: 12px;">
-        <span style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">RANK PLAYER</span>
-        <span style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">POINTS / PRIZE</span>
-      </div>
-      <div id="ambaLeaderboardList">
-        <!-- Dynamically generated #1 to #50 rows -->
+        <!-- Dynamic loading when users join -->
       </div>
     </div>
   </div>
@@ -1609,7 +1619,7 @@ var totalInvited = 0;
 var savedTonAddress = "";
 var activeStakes = [];
 var lastCheckin = 0;
-var usdtIconHtml = '<img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" />';[span_10](start_span)[span_10](end_span)
+var usdtIconHtml = '<img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" />';
 
 var coinUsdtValue = 0.01;
 var currentDailyBonus = 0.01;
@@ -2274,19 +2284,15 @@ function switchTab(tabId) {
 function switchContestTab(tabName) {
   var adsBtn = document.getElementById('contestTabAdsBtn');
   var refBtn = document.getElementById('contestTabRefBtn');
-  var ambaBtn = document.getElementById('contestTabAmbaBtn');
 
   var adsSec = document.getElementById('contestAdsSection');
   var refSec = document.getElementById('contestRefsSection');
-  var ambaSec = document.getElementById('contestAmbaSection');
 
   if(adsBtn) adsBtn.classList.remove('active');
   if(refBtn) refBtn.classList.remove('active');
-  if(ambaBtn) ambaBtn.classList.remove('active');
 
   if(adsSec) adsSec.style.display = 'none';
   if(refSec) refSec.style.display = 'none';
-  if(ambaSec) ambaSec.style.display = 'none';
 
   if (tabName === 'ads') {
     if(adsBtn) adsBtn.classList.add('active');
@@ -2294,88 +2300,19 @@ function switchContestTab(tabName) {
   } else if (tabName === 'referrals') {
     if(refBtn) refBtn.classList.add('active');
     if(refSec) refSec.style.display = 'block';
-  } else if (tabName === 'amba') {
-    if(ambaBtn) ambaBtn.classList.add('active');
-    if(ambaSec) ambaSec.style.display = 'block';
   }
 }
 
-// Generate #4 to #50 Leaderboard Rows automatically for Ads, Referrals & Ambassador
+// Format structure ready for dynamic population when real users join
 function generateLeaderboardLists() {
-  // 1. Ads List (#4 to #50)
   var adsListEl = document.getElementById('adsLeaderboardList');
   if (adsListEl) {
-    var adsHtml = '';
-    var sampleAdsNames = ["Vera 🐍", "Asgardian", "Rezki Rezki", "C Ccc", "Igor PIRATE 💰☠️", "Данил", "حسنم 👑", "Александр", "Erol Yıldırım 👁️", "Rakib Ahmed", "Денис 🕶️", "Светлана", "Сергей", "Djalgas", "Света", "محمود عباسی", "paηda нeяeеееееее 👁️", "Kelvin Carter", "Angelica Tovar", "Meme Moi", "Ируся Tower 🏰 #TotalHash", "GHAZALE 🐾", "Sharif Uddin", "Виктор Литвиченко", "SHAYAN Noshyan"];
-    for (var i = 4; i <= 50; i++) {
-      var name = sampleAdsNames[(i - 4) % sampleAdsNames.length] + (i > 25 ? ' #' + i : '');
-      var points = 2600 - (i * 35);
-      var prize = (1.5 / (i * 0.4)).toFixed(2);
-      adsHtml += '<div class="leaderboard-row">' +
-        '<div style="display: flex; align-items: center; gap: 12px;">' +
-          '<span style="font-size: 14px; font-weight: 800; color: var(--text-muted); width: 26px;">#' + i + '</span>' +
-          '<div>' +
-            '<div style="font-size: 13px; font-weight: bold; color: #fff;">' + name + '</div>' +
-            '<div style="font-size: 11px; color: var(--text-muted);">' + points + ' views</div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="text-align: right;">' +
-          '<div style="font-size: 13px; font-weight: bold; color: #fff;">' + points + '</div>' +
-          '<span class="badge-prize">+' + prize + ' ' + usdtIconHtml + '</span>' +
-        '</div>' +
-      '</div>';[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)
-    }
-    adsListEl.innerHTML = adsHtml;
+    adsListEl.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:15px;">Waiting for players to join contest...</div>';
   }
 
-  // 2. Referrers List (#1 to #50) matching image 9411.png style
   var refsListEl = document.getElementById('refsLeaderboardList');
   if (refsListEl) {
-    var refsHtml = '';
-    var sampleRefNames = ["Durov", "CryptoKing", "TopInviter", "TelegramMaster", "TonHolder", "BotFather", "AirdropHunter", "Web3Ninja", "StarLeader", "NetworkPro"];
-    for (var j = 1; j <= 50; j++) {
-      var rName = j === 1 ? "Durov" : (sampleRefNames[(j - 1) % sampleRefNames.length] + (j > 10 ? ' ' + j : ''));
-      var invites = Math.max(0, 15 - j);
-      var rPrize = (2.0 / (j * 0.5 + 0.5)).toFixed(2);
-      refsHtml += '<div class="leaderboard-row" ' + (j === 1 ? 'style="border-color: rgba(236, 72, 153, 0.4);"' : '') + '>' +
-        '<div style="display: flex; align-items: center; gap: 12px;">' +
-          '<span style="font-size: 14px; font-weight: 800; color: ' + (j === 1 ? '#ec4899' : 'var(--text-muted)') + '; width: 26px;">#' + j + '</span>' +
-          '<div>' +
-            '<div style="font-size: 13px; font-weight: bold; color: #fff;">' + (j === 1 ? '👑 ' : '') + rName + '</div>' +
-            '<div style="font-size: 11px; color: var(--text-muted);">' + invites + ' invites</div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="text-align: right;">' +
-          '<div style="font-size: 13px; font-weight: bold; color: #fff;">' + invites + '</div>' +
-          '<span class="badge-prize" style="background: rgba(236, 72, 153, 0.15); color: #ec4899; border-color: rgba(236, 72, 153, 0.3);">+' + rPrize + ' ' + usdtIconHtml + '</span>' +
-        '</div>' +
-      '</div>';[span_14](start_span)[span_14](end_span)[span_15](start_span)[span_15](end_span)
-    }
-    refsListEl.innerHTML = refsHtml;
-  }
-
-  // 3. Ambassador List (#1 to #50)
-  var ambaListEl = document.getElementById('ambaLeaderboardList');
-  if (ambaListEl) {
-    var ambaHtml = '';
-    for (var k = 1; k <= 50; k++) {
-      var aPoints = 700 - (k * 10);
-      var aPrize = (1.2 / (k * 0.5)).toFixed(2);
-      ambaHtml += '<div class="leaderboard-row">' +
-        '<div style="display: flex; align-items: center; gap: 12px;">' +
-          '<span style="font-size: 14px; font-weight: 800; color: var(--text-muted); width: 26px;">#' + k + '</span>' +
-          '<div>' +
-            '<div style="font-size: 13px; font-weight: bold; color: #fff;">Ambassador #' + k + '</div>' +
-            '<div style="font-size: 11px; color: var(--text-muted);">' + aPoints + ' pts</div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="text-align: right;">' +
-          '<div style="font-size: 13px; font-weight: bold; color: #fff;">' + aPoints + '</div>' +
-          '<span class="badge-prize" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.3);">+' + aPrize + ' ' + usdtIconHtml + '</span>' +
-        '</div>' +
-      '</div>';[span_16](start_span)[span_16](end_span)
-    }
-    ambaListEl.innerHTML = ambaHtml;
+    refsListEl.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:15px;">Waiting for referrals to join contest...</div>';
   }
 }
 
