@@ -604,15 +604,24 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 
 <div class="header">
-<div style="display: flex; align-items: center; gap: 8px;">
-<h3 style="margin:0; color: var(--accent);">🌱 Gram Farming</h3>
-<span class="live-badge">🔴 LIVE</span>
+<div style="display: flex; align-items: center; gap: 10px;">
+  <!-- BADA USER LOGO / AVATAR -->
+  <div id="userHeaderAvatar" style="width: 44px; height: 44px; border-radius: 50%; background: #0098ea; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 16px; overflow: hidden; border: 2px solid var(--accent); flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+    👤
+  </div>
+  <div>
+    <h3 style="margin:0; color: var(--accent); font-size: 16px;" id="headerUserName">🌱 Gram Farming</h3>
+    <span style="font-size: 11px; color: var(--text-muted);" id="headerUserSubtitle">Online Player</span>
+  </div>
 </div>
+<div style="display: flex; align-items: center; gap: 8px;">
+<span class="live-badge">🔴 LIVE</span>
 <select id="langSelect" onchange="changeLanguage(this.value)" style="width: auto; padding: 6px 12px;">
 <option value="en">🇬🇧 EN</option>
 <option value="ru">🇷🇺 RU</option>
 <option value="hi" selected>🇮🇳 HI</option>
 </select>
+</div>
 </div>
 
 <!-- HOME PAGE -->
@@ -1595,11 +1604,32 @@ var tg = window.Telegram ? window.Telegram.WebApp : null;
 
 var displayName = "👑 My Account";
 var userId = "12345";
+var userPhotoUrl = "";
+
 if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
   var user = tg.initDataUnsafe.user;
   var fullName = ((user.first_name || '') + ' ' + (user.last_name || '')).trim();
   displayName = fullName || "User_" + user.id;
   userId = String(user.id);
+  if (user.photo_url) {
+    userPhotoUrl = user.photo_url;
+  }
+}
+
+/* HEADER USER LOGO / AVATAR UPDATE */
+function updateHeaderUserAvatar() {
+  var avatarContainer = document.getElementById('userHeaderAvatar');
+  var nameHeader = document.getElementById('headerUserName');
+  if (nameHeader) nameHeader.innerText = displayName;
+
+  if (avatarContainer) {
+    if (userPhotoUrl) {
+      avatarContainer.innerHTML = '<img src="' + userPhotoUrl + '" alt="User Avatar" style="width: 100%; height: 100%; object-fit: cover;" />';
+    } else {
+      var initials = displayName.substring(0, 2).toUpperCase();
+      avatarContainer.innerText = initials;
+    }
+  }
 }
 
 var completedTasksSet = [];
@@ -1630,6 +1660,8 @@ function updateOfficialButtonsState() {
 }
 
 function initAppListeners() {
+  updateHeaderUserAvatar();
+
   if (!window.db) return;
 
   db.ref('completedTasks/' + userId).on('value', function(snapshot) {
