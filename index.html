@@ -1035,6 +1035,7 @@ Cost: <strong>35 Coins</strong>
       </div>
     </div>
 
+    <!-- UPDATED PODIUM SECTION WITH CUSTOM RANK IMAGES -->
     <div class="podium-wrapper" id="podiumTop3Wrapper"></div>
 
     <div class="user-status-bar">
@@ -2208,30 +2209,48 @@ function updateLiveLeaderboard(usersData) {
     var u2 = adsUsers[1] || { name: 'No Player', points: 0 };
     var u3 = adsUsers[2] || { name: 'No Player', points: 0 };
 
-    var initials1 = u1.name.substring(0, 2).toUpperCase();
-    var initials2 = u2.name.substring(0, 2).toUpperCase();
-    var initials3 = u3.name.substring(0, 2).toUpperCase();
+    var usdt1 = ((u1.points / 30) * 0.01).toFixed(2);
+    var usdt2 = ((u2.points / 30) * 0.01).toFixed(2);
+    var usdt3 = ((u3.points / 30) * 0.01).toFixed(2);
 
     podiumWrapper.innerHTML = `
-      <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(148, 163, 184, 0.4); border-radius: 16px; padding: 14px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 130px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
-        <div style="font-size: 10px; font-weight: 800; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase;">#2 RANK</div>
-        <div style="width: 32px; height: 32px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; border: 1px solid #64748b;">${initials2}</div>
-        <div style="font-size: 12px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u2.name}</div>
-        <div style="font-size: 11px; font-weight: 700; color: #38bdf8;">${u2.points} Points</div>
+      <!-- 2ND RANK CARD -->
+      <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(148, 163, 184, 0.4); border-radius: 16px; padding: 12px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
+        <div>
+          <img src="https://www.image2url.com/r2/default/images/1793069333171-01a10175-0a39-469d-881c-3efca3add29c.png" alt="2nd Rank Logo" style="width: 32px; height: 32px; object-fit: contain; margin-bottom: 2px;" />
+          <div style="font-size: 11px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u2.name}</div>
+          <div style="font-size: 10px; font-weight: 700; color: #38bdf8;">${u2.points} Point</div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(51, 65, 85, 0.8); border-radius: 10px; padding: 6px; width: 100%; box-sizing: border-box;">
+          <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Prize</div>
+          <div style="font-size: 11px; font-weight: 800; color: #22c55e;">${usdt2} USDT</div>
+        </div>
       </div>
 
-      <div style="flex: 1.1; background: linear-gradient(135deg, #23395d 0%, #152742 100%); border: 1.5px solid rgba(234, 179, 8, 0.7); border-radius: 16px; padding: 16px 6px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.5); min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; transform: translateY(-8px);">
-        <div style="font-size: 10px; font-weight: 800; color: #eab308; letter-spacing: 0.5px; text-transform: uppercase;">👑 #1 RANK</div>
-        <div style="width: 38px; height: 38px; background: #ca8a04; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #000; border: 1.5px solid #facc15;">${initials1}</div>
-        <div style="font-size: 13px; font-weight: bold; color: #fff; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u1.name}</div>
-        <div style="font-size: 12px; font-weight: 700; color: #facc15;">${u1.points} Points</div>
+      <!-- 1ST RANK CARD -->
+      <div style="flex: 1.1; background: linear-gradient(135deg, #23395d 0%, #152742 100%); border: 1.5px solid rgba(234, 179, 8, 0.7); border-radius: 16px; padding: 14px 6px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.5); min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; transform: translateY(-8px);">
+        <div>
+          <img src="https://www.image2url.com/r2/default/images/1793069067607-9ce81b07-d05b-4a8a-b4c9-97f71d08595a.png" alt="1st Rank Logo" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 2px;" />
+          <div style="font-size: 12px; font-weight: bold; color: #fff; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u1.name}</div>
+          <div style="font-size: 11px; font-weight: 700; color: #facc15;">${u1.points} Point</div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 10px; padding: 6px; width: 100%; box-sizing: border-box;">
+          <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Prize</div>
+          <div style="font-size: 12px; font-weight: 800; color: #22c55e;">${usdt1} USDT</div>
+        </div>
       </div>
 
-      <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(217, 119, 6, 0.4); border-radius: 16px; padding: 14px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 130px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
-        <div style="font-size: 10px; font-weight: 800; color: #d97706; letter-spacing: 0.5px; text-transform: uppercase;">#3 RANK</div>
-        <div style="width: 32px; height: 32px; background: #78350f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; border: 1px solid #b45309;">${initials3}</div>
-        <div style="font-size: 12px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u3.name}</div>
-        <div style="font-size: 11px; font-weight: 700; color: #fbbf24;">${u3.points} Points</div>
+      <!-- 3RD RANK CARD -->
+      <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(217, 119, 6, 0.4); border-radius: 16px; padding: 12px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
+        <div>
+          <img src="https://www.image2url.com/r2/default/images/1793069525596-647d8813-8469-437c-a2d2-32f2a59d29ee.png" alt="3rd Rank Logo" style="width: 32px; height: 32px; object-fit: contain; margin-bottom: 2px;" />
+          <div style="font-size: 11px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u3.name}</div>
+          <div style="font-size: 10px; font-weight: 700; color: #fbbf24;">${u3.points} Point</div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(51, 65, 85, 0.8); border-radius: 10px; padding: 6px; width: 100%; box-sizing: border-box;">
+          <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Prize</div>
+          <div style="font-size: 11px; font-weight: 800; color: #22c55e;">${usdt3} USDT</div>
+        </div>
       </div>
     `;
   }
