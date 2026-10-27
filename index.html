@@ -1049,7 +1049,7 @@ Cost: <strong>35 Coins</strong>
 
     <div class="user-status-bar">
       <div style="display: flex; align-items: center; gap: 12px;">
-        <div style="width: 38px; height: 38px; background: #0098ea; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;" id="currentUserInitialsAds">LS</div>
+        <div style="width: 38px; height: 38px; background: #0098ea; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; overflow: hidden;" id="currentUserInitialsAds">LS</div>
         <div>
           <div style="font-size: 14px; font-weight: bold; color: #fff;"><span id="currentUserNameDisplayAds">life Storyiq76</span> <span style="background: #0284c7; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">YOU</span></div>
           <div style="font-size: 11px; color: var(--text-muted);" id="currentUserPointsAds">0 Points</div>
@@ -2226,10 +2226,11 @@ function updateLiveLeaderboard(usersData) {
     var uId = entry[0];
     var uVal = entry[1];
     var uName = uVal.name || "Player_" + uId.substring(0,4);
+    var uPhoto = uVal.photoUrl || uVal.photo || ""; // Function 1: User image/logo support
     var adPoints = uVal.adPoints !== undefined ? uVal.adPoints : 0; 
 
     if (adPoints > 0) {
-      adsUsers.push({ id: uId, name: uName, points: adPoints });
+      adsUsers.push({ id: uId, name: uName, photo: uPhoto, points: adPoints });
     }
   });
 
@@ -2237,21 +2238,30 @@ function updateLiveLeaderboard(usersData) {
 
   var podiumWrapper = document.getElementById('podiumTop3Wrapper');
   if (podiumWrapper) {
-    var u1 = adsUsers[0] || { name: 'No Player', points: 0 };
-    var u2 = adsUsers[1] || { name: 'No Player', points: 0 };
-    var u3 = adsUsers[2] || { name: 'No Player', points: 0 };
+    var u1 = adsUsers[0] || { name: 'No Player', photo: '', points: 0 };
+    var u2 = adsUsers[1] || { name: 'No Player', photo: '', points: 0 };
+    var u3 = adsUsers[2] || { name: 'No Player', photo: '', points: 0 };
 
+    // Function 2 & 3: Dynamic Points & Prize calculation based on ads watched / pool
     var usdt1 = ((u1.points / 30) * 0.01).toFixed(2);
     var usdt2 = ((u2.points / 30) * 0.01).toFixed(2);
     var usdt3 = ((u3.points / 30) * 0.01).toFixed(2);
 
+    // Function 1: Check if user image/logo exists, if not show fallback avatar/initials
+    var avatar1 = u1.photo ? '<img src="' + u1.photo + '" style="width:36px; height:36px; border-radius:50%; object-fit:cover; margin-bottom:2px;" />' : '<div style="width:36px; height:36px; border-radius:50%; background:#eab308; color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px; margin-bottom:2px;">' + u1.name.substring(0,2).toUpperCase() + '</div>';
+    var avatar2 = u2.photo ? '<img src="' + u2.photo + '" style="width:32px; height:32px; border-radius:50%; object-fit:cover; margin-bottom:2px;" />' : '<div style="width:32px; height:32px; border-radius:50%; background:#94a3b8; color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:11px; margin-bottom:2px;">' + u2.name.substring(0,2).toUpperCase() + '</div>';
+    var avatar3 = u3.photo ? '<img src="' + u3.photo + '" style="width:32px; height:32px; border-radius:50%; object-fit:cover; margin-bottom:2px;" />' : '<div style="width:32px; height:32px; border-radius:50%; background:#d97706; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:11px; margin-bottom:2px;">' + u3.name.substring(0,2).toUpperCase() + '</div>';
+
     podiumWrapper.innerHTML = `
       <!-- 2ND RANK CARD -->
       <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(148, 163, 184, 0.4); border-radius: 16px; padding: 12px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
-        <div>
-          <img src="https://www.image2url.com/r2/default/images/1793069333171-01a10175-0a39-469d-881c-3efca3add29c.png" alt="2nd Rank Logo" style="width: 32px; height: 32px; object-fit: contain; margin-bottom: 2px;" />
-          <div style="font-size: 11px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u2.name}</div>
-          <div style="font-size: 10px; font-weight: 700; color: #38bdf8;">${u2.points} Point</div>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative;">
+            ${avatar2}
+            <img src="https://www.image2url.com/r2/default/images/1793069333171-01a10175-0a39-469d-881c-3efca3add29c.png" alt="2nd Rank Logo" style="position:absolute; bottom:-4px; right:-6px; width:18px; height:18px; object-fit:contain;" />
+          </div>
+          <div style="font-size: 11px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top:4px;">${u2.name}</div>
+          <div style="font-size: 10px; font-weight: 700; color: #38bdf8;">${u2.points} Points</div>
         </div>
         <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(51, 65, 85, 0.8); border-radius: 10px; padding: 6px; width: 100%; box-sizing: border-box;">
           <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Prize</div>
@@ -2261,10 +2271,13 @@ function updateLiveLeaderboard(usersData) {
 
       <!-- 1ST RANK CARD -->
       <div style="flex: 1.1; background: linear-gradient(135deg, #23395d 0%, #152742 100%); border: 1.5px solid rgba(234, 179, 8, 0.7); border-radius: 16px; padding: 14px 6px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.5); min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; transform: translateY(-8px);">
-        <div>
-          <img src="https://www.image2url.com/r2/default/images/1793069067607-9ce81b07-d05b-4a8a-b4c9-97f71d08595a.png" alt="1st Rank Logo" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 2px;" />
-          <div style="font-size: 12px; font-weight: bold; color: #fff; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u1.name}</div>
-          <div style="font-size: 11px; font-weight: 700; color: #facc15;">${u1.points} Point</div>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative;">
+            ${avatar1}
+            <img src="https://www.image2url.com/r2/default/images/1793069067607-9ce81b07-d05b-4a8a-b4c9-97f71d08595a.png" alt="1st Rank Logo" style="position:absolute; bottom:-4px; right:-6px; width:20px; height:20px; object-fit:contain;" />
+          </div>
+          <div style="font-size: 12px; font-weight: bold; color: #fff; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top:4px;">${u1.name}</div>
+          <div style="font-size: 11px; font-weight: 700; color: #facc15;">${u1.points} Points</div>
         </div>
         <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 10px; padding: 6px; width: 100%; box-sizing: border-box;">
           <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Prize</div>
@@ -2274,10 +2287,13 @@ function updateLiveLeaderboard(usersData) {
 
       <!-- 3RD RANK CARD -->
       <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(217, 119, 6, 0.4); border-radius: 16px; padding: 12px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
-        <div>
-          <img src="https://www.image2url.com/r2/default/images/1793069525596-647d8813-8469-437c-a2d2-32f2a59d29ee.png" alt="3rd Rank Logo" style="width: 32px; height: 32px; object-fit: contain; margin-bottom: 2px;" />
-          <div style="font-size: 11px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u3.name}</div>
-          <div style="font-size: 10px; font-weight: 700; color: #fbbf24;">${u3.points} Point</div>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative;">
+            ${avatar3}
+            <img src="https://www.image2url.com/r2/default/images/1793069525596-647d8813-8469-437c-a2d2-32f2a59d29ee.png" alt="3rd Rank Logo" style="position:absolute; bottom:-4px; right:-6px; width:18px; height:18px; object-fit:contain;" />
+          </div>
+          <div style="font-size: 11px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top:4px;">${u3.name}</div>
+          <div style="font-size: 10px; font-weight: 700; color: #fbbf24;">${u3.points} Points</div>
         </div>
         <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(51, 65, 85, 0.8); border-radius: 10px; padding: 6px; width: 100%; box-sizing: border-box;">
           <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Prize</div>
@@ -2303,14 +2319,16 @@ function updateLiveLeaderboard(usersData) {
 
       if (rankNum >= 4 && rankNum <= 50) {
         var usdtValueCalc = (u.points / 30) * 0.01;
-        var initials = u.name.substring(0, 2).toUpperCase();
+        // Function 1: Fallback avatar if photo missing
+        var userAvatarHtml = u.photo ? '<img src="' + u.photo + '" style="width:34px; height:34px; border-radius:50%; object-fit:cover;" />' : '<div style="width: 34px; height: 34px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; border: 1px solid var(--border);">' + u.name.substring(0, 2).toUpperCase() + '</div>';
+        
         var isYou = u.id === userId;
         var youBadge = isYou ? ' <span style="background: #0284c7; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px;">YOU</span>' : '';
 
         adsHtml += '<div class="leaderboard-row">' +
           '<div style="display: flex; align-items: center; gap: 10px;">' +
             '<span style="font-weight: 900; color: var(--yellow); width: 28px;">#' + rankNum + '</span>' +
-            '<div style="width: 34px; height: 34px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; border: 1px solid var(--border);">' + initials + '</div>' +
+            userAvatarHtml +
             '<div style="font-size: 13px; font-weight: bold; color: #fff; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + u.name + youBadge + '</div>' +
           '</div>' +
           '<div style="text-align: right;">' +
