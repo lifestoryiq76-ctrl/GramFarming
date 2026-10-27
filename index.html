@@ -1035,7 +1035,7 @@ Cost: <strong>35 Coins</strong>
       <div class="contest-info-grid">
         <div class="contest-info-box">
           <div class="contest-info-label">✨ PRIZE POOL</div>
-          <div class="contest-info-value"><span id="displayPrizePool">10</span> <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" alt="USDT" style="width:20px; height:20px; vertical-align:middle;" /></div>
+          <div class="contest-info-value"><span id="displayPrizePool">10</span> <span style="display:inline-block; font-size:16px;">💵</span></div>
         </div>
         <div class="contest-info-box">
           <div class="contest-info-label">🕒 CONTEST ENDS IN:</div>
@@ -1044,7 +1044,7 @@ Cost: <strong>35 Coins</strong>
       </div>
     </div>
 
-    <!-- UPDATED PODIUM SECTION WITH CUSTOM RANK IMAGES -->
+    <!-- PODIUM SECTION -->
     <div class="podium-wrapper" id="podiumTop3Wrapper"></div>
 
     <div class="user-status-bar">
@@ -1055,7 +1055,7 @@ Cost: <strong>35 Coins</strong>
           <div style="font-size: 11px; color: var(--text-muted);" id="currentUserPointsAds">0 Points</div>
         </div>
       </div>
-      <div style="font-weight: 800; color: var(--accent); font-size: 14px; display: flex; align-items: center; gap: 4px;" id="currentUserPrizeAds">+0.00 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
+      <div style="font-weight: 800; color: var(--accent); font-size: 14px; display: flex; align-items: center; gap: 4px;" id="currentUserPrizeAds">+0.00 💵</div>
     </div>
 
     <div class="leaderboard-table-card">
@@ -1461,7 +1461,6 @@ var totalInvited = 0;
 var savedTonAddress = "";
 var activeStakes = [];
 var lastCheckin = 0;
-var usdtIconHtml = '<img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" />';
 
 var coinUsdtValue = 0.01;
 var currentDailyBonus = 0.01;
@@ -1616,7 +1615,6 @@ if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
   }
 }
 
-/* HEADER USER LOGO / AVATAR UPDATE */
 function updateHeaderUserAvatar() {
   var avatarContainer = document.getElementById('userHeaderAvatar');
   var nameHeader = document.getElementById('headerUserName');
@@ -1705,7 +1703,6 @@ function initAppListeners() {
     toggleWithdrawFields();
   });
 
-  /* ---- ADMIN SETTINGS REAL-TIME SYNC LISTENERS ---- */
   db.ref('adminSettings/general').on('value', function(snapshot) {
     if (snapshot.exists()) {
       var data = snapshot.val();
@@ -2226,7 +2223,7 @@ function updateLiveLeaderboard(usersData) {
     var uId = entry[0];
     var uVal = entry[1];
     var uName = uVal.name || "Player_" + uId.substring(0,4);
-    var uPhoto = uVal.photoUrl || uVal.photo || ""; // Function 1: User image/logo support
+    var uPhoto = uVal.photoUrl || uVal.photo || "";
     var adPoints = uVal.adPoints !== undefined ? uVal.adPoints : 0; 
 
     if (adPoints > 0) {
@@ -2242,12 +2239,10 @@ function updateLiveLeaderboard(usersData) {
     var u2 = adsUsers[1] || { name: 'No Player', photo: '', points: 0 };
     var u3 = adsUsers[2] || { name: 'No Player', photo: '', points: 0 };
 
-    // Function 2 & 3: Dynamic Points & Prize calculation based on ads watched / pool
     var usdt1 = ((u1.points / 30) * 0.01).toFixed(2);
     var usdt2 = ((u2.points / 30) * 0.01).toFixed(2);
     var usdt3 = ((u3.points / 30) * 0.01).toFixed(2);
 
-    // Function 1: Check if user image/logo exists, if not show fallback avatar/initials
     var avatar1 = u1.photo ? '<img src="' + u1.photo + '" style="width:36px; height:36px; border-radius:50%; object-fit:cover; margin-bottom:2px;" />' : '<div style="width:36px; height:36px; border-radius:50%; background:#eab308; color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px; margin-bottom:2px;">' + u1.name.substring(0,2).toUpperCase() + '</div>';
     var avatar2 = u2.photo ? '<img src="' + u2.photo + '" style="width:32px; height:32px; border-radius:50%; object-fit:cover; margin-bottom:2px;" />' : '<div style="width:32px; height:32px; border-radius:50%; background:#94a3b8; color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:11px; margin-bottom:2px;">' + u2.name.substring(0,2).toUpperCase() + '</div>';
     var avatar3 = u3.photo ? '<img src="' + u3.photo + '" style="width:32px; height:32px; border-radius:50%; object-fit:cover; margin-bottom:2px;" />' : '<div style="width:32px; height:32px; border-radius:50%; background:#d97706; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:11px; margin-bottom:2px;">' + u3.name.substring(0,2).toUpperCase() + '</div>';
@@ -2258,7 +2253,6 @@ function updateLiveLeaderboard(usersData) {
         <div style="display:flex; flex-direction:column; align-items:center;">
           <div style="position:relative;">
             ${avatar2}
-            <img src="https://www.image2url.com/r2/default/images/1793069333171-01a10175-0a39-469d-881c-3efca3add29c.png" alt="2nd Rank Logo" style="position:absolute; bottom:-4px; right:-6px; width:18px; height:18px; object-fit:contain;" />
           </div>
           <div style="font-size: 11px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top:4px;">${u2.name}</div>
           <div style="font-size: 10px; font-weight: 700; color: #38bdf8;">${u2.points} Points</div>
@@ -2274,7 +2268,6 @@ function updateLiveLeaderboard(usersData) {
         <div style="display:flex; flex-direction:column; align-items:center;">
           <div style="position:relative;">
             ${avatar1}
-            <img src="https://www.image2url.com/r2/default/images/1793069067607-9ce81b07-d05b-4a8a-b4c9-97f71d08595a.png" alt="1st Rank Logo" style="position:absolute; bottom:-4px; right:-6px; width:20px; height:20px; object-fit:contain;" />
           </div>
           <div style="font-size: 12px; font-weight: bold; color: #fff; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top:4px;">${u1.name}</div>
           <div style="font-size: 11px; font-weight: 700; color: #facc15;">${u1.points} Points</div>
@@ -2290,7 +2283,6 @@ function updateLiveLeaderboard(usersData) {
         <div style="display:flex; flex-direction:column; align-items:center;">
           <div style="position:relative;">
             ${avatar3}
-            <img src="https://www.image2url.com/r2/default/images/1793069525596-647d8813-8469-437c-a2d2-32f2a59d29ee.png" alt="3rd Rank Logo" style="position:absolute; bottom:-4px; right:-6px; width:18px; height:18px; object-fit:contain;" />
           </div>
           <div style="font-size: 11px; font-weight: bold; color: #fff; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top:4px;">${u3.name}</div>
           <div style="font-size: 10px; font-weight: 700; color: #fbbf24;">${u3.points} Points</div>
@@ -2319,7 +2311,6 @@ function updateLiveLeaderboard(usersData) {
 
       if (rankNum >= 4 && rankNum <= 50) {
         var usdtValueCalc = (u.points / 30) * 0.01;
-        // Function 1: Fallback avatar if photo missing
         var userAvatarHtml = u.photo ? '<img src="' + u.photo + '" style="width:34px; height:34px; border-radius:50%; object-fit:cover;" />' : '<div style="width: 34px; height: 34px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; border: 1px solid var(--border);">' + u.name.substring(0, 2).toUpperCase() + '</div>';
         
         var isYou = u.id === userId;
@@ -2333,7 +2324,7 @@ function updateLiveLeaderboard(usersData) {
           '</div>' +
           '<div style="text-align: right;">' +
             '<div style="font-size: 12px; font-weight: bold; color: var(--text-muted);">' + u.points + ' Points</div>' +
-            '<div style="font-size: 12px; font-weight: bold; color: var(--accent);">+' + usdtValueCalc.toFixed(3) + ' <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:12px; height:12px; vertical-align:middle;" /></div>' +
+            '<div style="font-size: 12px; font-weight: bold; color: var(--accent);">+' + usdtValueCalc.toFixed(3) + ' 💵</div>' +
           '</div>' +
         '</div>';
       }
@@ -2349,7 +2340,7 @@ function updateLiveLeaderboard(usersData) {
     var cPrizeAds = document.getElementById('currentUserPrizeAds');
     if (cPrizeAds) {
       var myUsdtVal = (currentUserAdsPoints / 30) * 0.01;
-      cPrizeAds.innerHTML = "+" + myUsdtVal.toFixed(3) + ' <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" />';
+      cPrizeAds.innerHTML = "+" + myUsdtVal.toFixed(3) + ' 💵';
     }
   }
 }
