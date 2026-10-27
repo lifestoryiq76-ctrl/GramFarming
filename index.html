@@ -1487,6 +1487,10 @@ function check530AmRestartAndStaking() {
     processStakingDailyTransfer();
     adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
     localStorage.setItem('last_530_reset_date', todayStr);
+    
+    // Clear user local storage cache to wipe old persistent data on daily reset
+    localStorage.removeItem(CACHE_KEY);
+
     saveToFirebase();
 
     showToast("🔄 Mini App successfully restarted at 5:30 AM!", "success");
@@ -2158,7 +2162,6 @@ function setCampaignObj(objType) {
   var addonVerifiedPrice = document.getElementById('addonVerifiedPrice');
   var addonBannerPriceText = document.getElementById('addonBannerPriceText');
 
-  // Auto change Verified Actions to +$0.05/100 and Home Ads Screen to +$0.07/100 on selection
   if (addonVerifiedPrice) addonVerifiedPrice.innerText = "+$0.05 / 100";
   if (addonBannerPriceText) addonBannerPriceText.innerText = "+$0.07 / 100";
 
