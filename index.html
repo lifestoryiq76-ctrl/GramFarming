@@ -3638,16 +3638,15 @@ function initBannerSlider() {
 
   if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
   bannerIntervalTimer = setInterval(function() {
-    if (bannerTasksList.length > 1) {
-      currentBannerIndex = (currentBannerIndex + 1) % bannerTasksList.length;
-      renderCurrentBannerTask();
-    }
+    currentBannerIndex = (currentBannerIndex + 1) % Math.max(bannerTasksList.length, 6);
+    renderCurrentBannerTask();
   }, 5000);
 }
 
 function renderCurrentBannerTask() {
-  if (bannerTasksList.length === 0) return;
-  var task = bannerTasksList[currentBannerIndex];
+  var effectiveTasksLength = bannerTasksList.length;
+  var displayIndex = currentBannerIndex % effectiveTasksLength;
+  var task = bannerTasksList[displayIndex];
 
   var boxContent = document.getElementById('featuredCardBoxContent');
   var dotsContainer = document.getElementById('featuredDotsContainer');
@@ -3679,13 +3678,10 @@ function renderCurrentBannerTask() {
     '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05)">' + actionBtnText + '</button>';
 
   var dotsHtml = '';
-  if (bannerTasksList.length > 1) {
-    for (var i = 0; i < bannerTasksList.length; i++) {
-      var activeClass = (i === currentBannerIndex) ? ' active' : '';
-      dotsHtml += '<div class="featured-dot' + activeClass + '"></div>';
-    }
-  } else {
-    dotsHtml = '<div class="featured-dot active"></div>';
+  var totalDots = Math.max(6, bannerTasksList.length);
+  for (var i = 0; i < totalDots; i++) {
+    var activeClass = (i === (currentBannerIndex % totalDots)) ? ' active' : '';
+    dotsHtml += '<div class="featured-dot' + activeClass + '"></div>';
   }
   dotsContainer.innerHTML = dotsHtml;
 }
