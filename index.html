@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
@@ -266,7 +266,6 @@ input:focus, select:focus { border-color: var(--accent); }
 .contest-info-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 .contest-info-value { font-size: 18px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
 
-/* PODIUM TOP 3 HORIZONTAL CARDS STYLING */
 .podium-wrapper { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin-bottom: 20px; position: relative; z-index: 2; }
 
 .user-status-bar {
@@ -456,7 +455,6 @@ input:focus, select:focus { border-color: var(--accent); }
     background: #0a84c1;
 }
 
-/* FEATURED PARTNER BANNER STYLES */
 .featured-banner-wrapper {
     background: linear-gradient(135deg, #1b2845 0%, #0f172a 100%);
     border: 1px solid rgba(168, 85, 247, 0.3);
@@ -702,10 +700,8 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="task-cat-btn" onclick="switchTaskCategory('create', this)" style="background: #eab308; color: #000;">+ Create Task</button>
 </div>
 
-<!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
 
-<!-- FEATURED PARTNER BANNER SLIDER -->
 <div class="featured-banner-wrapper" id="featuredBannerWrapper">
   <div class="featured-top-row">
     <div class="featured-title-badge">
@@ -1011,14 +1007,13 @@ Cost: <strong>35 Coins</strong>
 
 </div>
 
-<!-- RANKING PAGE WITH BHAIRAVALI WATERMARK & LIVE STATUS -->
+<!-- RANKING PAGE -->
 <div id="ranking" class="tab-content ranking-watermark-container">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
     <h3 style="margin: 0; font-size: 20px;">LEADERBOARD</h3>
     <span class="live-badge" style="font-size: 11px; padding: 3px 8px;">LIVE</span>
   </div>
 
-  <!-- SECTION: ADS CONTEST & LEADERBOARD (HORIZONTAL TOP 3 CARDS) -->
   <div id="contestAdsSection">
     <div class="contest-banner-card">
       <div class="contest-banner-header">
@@ -1031,7 +1026,7 @@ Cost: <strong>35 Coins</strong>
       <div class="contest-info-grid">
         <div class="contest-info-box">
           <div class="contest-info-label">✨ PRIZE POOL</div>
-          <div class="contest-info-value">10 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" alt="USDT" style="width:20px; height:20px; vertical-align:middle;" /></div>
+          <div class="contest-info-value"><span id="displayPrizePool">10</span> <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" alt="USDT" style="width:20px; height:20px; vertical-align:middle;" /></div>
         </div>
         <div class="contest-info-box">
           <div class="contest-info-label">🕒 CONTEST ENDS IN:</div>
@@ -1040,12 +1035,8 @@ Cost: <strong>35 Coins</strong>
       </div>
     </div>
 
-    <!-- HORIZONTAL PODIUM TOP 3 CARDS -->
-    <div class="podium-wrapper" id="podiumTop3Wrapper">
-      <!-- Dynamic Top 3 Podium Cards rendered by JavaScript -->
-    </div>
+    <div class="podium-wrapper" id="podiumTop3Wrapper"></div>
 
-    <!-- Current User Status Bar -->
     <div class="user-status-bar">
       <div style="display: flex; align-items: center; gap: 12px;">
         <div style="width: 38px; height: 38px; background: #0098ea; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;" id="currentUserInitialsAds">LS</div>
@@ -1057,15 +1048,12 @@ Cost: <strong>35 Coins</strong>
       <div style="font-weight: 800; color: var(--accent); font-size: 14px; display: flex; align-items: center; gap: 4px;" id="currentUserPrizeAds">+0.00 <img src="https://www.image2url.com/r2/default/images/1792938963220-ef77b9c2-682b-4009-a1b3-473ea76dbba0.png" style="width:14px; height:14px; vertical-align:middle;" /></div>
     </div>
 
-    <!-- Global Leaderboard #4 to #50 (Ads) -->
     <div class="leaderboard-table-card">
       <div class="flex-between" style="margin-bottom: 12px;">
         <span style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Rank PLAYER</span>
         <span style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">POINTS PRIZE</span>
       </div>
-      <div id="adsLeaderboardList">
-        <!-- Dynamic live data #4 to #50 -->
-      </div>
+      <div id="adsLeaderboardList"></div>
     </div>
   </div>
 </div>
@@ -1684,6 +1672,7 @@ function initAppListeners() {
     toggleWithdrawFields();
   });
 
+  /* ---- ADMIN SETTINGS REAL-TIME SYNC LISTENERS ---- */
   db.ref('adminSettings/general').on('value', function(snapshot) {
     if (snapshot.exists()) {
       var data = snapshot.val();
@@ -1704,6 +1693,16 @@ function initAppListeners() {
       calculateExchange();
       toggleWithdrawFields();
       updateCostCalculation();
+    }
+  });
+
+  db.ref('adminSettings/leaderboard').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      if (data.prizePool !== undefined) {
+        var poolEl = document.getElementById('displayPrizePool');
+        if (poolEl) poolEl.innerText = data.prizePool;
+      }
     }
   });
 
@@ -1789,7 +1788,6 @@ function initAppListeners() {
     renderCustomTasksFromFirebase();
   });
 
-  // Listen to all users for live Leaderboard ranking with points > 0 filter
   db.ref('users').on('value', function(snapshot) {
     updateLiveLeaderboard(snapshot.val());
   });
@@ -2150,7 +2148,6 @@ function switchTab(tabId) {
   }
 }
 
-/* --- CONTEST TIMERS (7 DAYS) & AUTOMATIC WALLET DISTRIBUTION LOGIC --- */
 function initContestTimersAndLeaderboard() {
   var contestKey = 'gram_farming_contest_end_time';
   var endTime = localStorage.getItem(contestKey);
@@ -2168,7 +2165,6 @@ function initContestTimersAndLeaderboard() {
     var diff = endTime - now;
 
     if (diff <= 0) {
-      distributeContestPrizesAutomatic();
       endTime = Date.now() + sevenDaysMs;
       localStorage.setItem(contestKey, endTime);
       diff = sevenDaysMs;
@@ -2188,17 +2184,6 @@ function initContestTimersAndLeaderboard() {
   setInterval(updateContestTimers, 1000);
 }
 
-function distributeContestPrizesAutomatic() {
-  if (window.db) {
-    db.ref('users/' + userId).once('value', function(snapshot) {
-      if (snapshot.exists()) {
-        showToast("🏆 Weekly Contest Ended! Prize pool amounts automatically distributed to winner wallets.", "success");
-      }
-    });
-  }
-}
-
-// LIVE DATA LEADERBOARD: Ads with points > 0 filter applied
 function updateLiveLeaderboard(usersData) {
   if (!usersData) return;
 
@@ -2210,16 +2195,13 @@ function updateLiveLeaderboard(usersData) {
     var uName = uVal.name || "Player_" + uId.substring(0,4);
     var adPoints = uVal.adPoints !== undefined ? uVal.adPoints : 0; 
 
-    // Filter: Only users with points > 0 will show up
     if (adPoints > 0) {
       adsUsers.push({ id: uId, name: uName, points: adPoints });
     }
   });
 
-  // Sort descending by points
   adsUsers.sort(function(a, b) { return b.points - a.points; });
 
-  // Update Top 3 Podium Cards
   var podiumWrapper = document.getElementById('podiumTop3Wrapper');
   if (podiumWrapper) {
     var u1 = adsUsers[0] || { name: 'No Player', points: 0 };
@@ -2231,7 +2213,6 @@ function updateLiveLeaderboard(usersData) {
     var initials3 = u3.name.substring(0, 2).toUpperCase();
 
     podiumWrapper.innerHTML = `
-      <!-- #2 SILVER CARD (LEFT) -->
       <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(148, 163, 184, 0.4); border-radius: 16px; padding: 14px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 130px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
         <div style="font-size: 10px; font-weight: 800; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase;">#2 RANK</div>
         <div style="width: 32px; height: 32px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; border: 1px solid #64748b;">${initials2}</div>
@@ -2239,7 +2220,6 @@ function updateLiveLeaderboard(usersData) {
         <div style="font-size: 11px; font-weight: 700; color: #38bdf8;">${u2.points} Points</div>
       </div>
 
-      <!-- #1 GOLD CARD (CENTER - HIGHER) -->
       <div style="flex: 1.1; background: linear-gradient(135deg, #23395d 0%, #152742 100%); border: 1.5px solid rgba(234, 179, 8, 0.7); border-radius: 16px; padding: 16px 6px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.5); min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; transform: translateY(-8px);">
         <div style="font-size: 10px; font-weight: 800; color: #eab308; letter-spacing: 0.5px; text-transform: uppercase;">👑 #1 RANK</div>
         <div style="width: 38px; height: 38px; background: #ca8a04; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #000; border: 1.5px solid #facc15;">${initials1}</div>
@@ -2247,7 +2227,6 @@ function updateLiveLeaderboard(usersData) {
         <div style="font-size: 12px; font-weight: 700; color: #facc15;">${u1.points} Points</div>
       </div>
 
-      <!-- #3 BRONZE CARD (RIGHT) -->
       <div style="flex: 1; background: linear-gradient(135deg, #1b2845 0%, #101828 100%); border: 1.5px solid rgba(217, 119, 6, 0.4); border-radius: 16px; padding: 14px 6px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height: 130px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
         <div style="font-size: 10px; font-weight: 800; color: #d97706; letter-spacing: 0.5px; text-transform: uppercase;">#3 RANK</div>
         <div style="width: 32px; height: 32px; background: #78350f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; border: 1px solid #b45309;">${initials3}</div>
@@ -2779,7 +2758,6 @@ function watchAdsBitvexAd() {
           })
           .catch(function(err) {
             hideAdLoadingScreen();
-            console.error("AdsBitvex Show Error:", err);
             showToast("AdsBitvex ad currently unavailable.", "error");
             if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
           });
@@ -2790,7 +2768,6 @@ function watchAdsBitvexAd() {
       }
     } catch(err) {
       hideAdLoadingScreen();
-      console.error("AdsBitvex Execution Exception:", err);
       showToast("AdsBitvex ad error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
