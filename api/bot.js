@@ -58,13 +58,11 @@ bot.start(async (ctx) => {
     const userId = String(ctx.from.id);
     const firstName = ctx.from.first_name || 'User';
 
-    // Save/Update user info in Firebase DB
     await updateFirebaseData(`users/${userId}`, {
         name: "👑 " + firstName + (ctx.from.username ? ' (@' + ctx.from.username + ')' : ''),
         telegramChatId: ctx.chat.id
     });
 
-    // Welcome Message (Exact Spanish Layout)
     const welcomeMessage = 
 `👋 Hola ${firstName}@ 🌏🌕
 Bienvenido/a a Gram Farming
@@ -103,7 +101,6 @@ async function sendDailyCheckinReminder(chatId, userId) {
             }
         }
 
-        // Exact format as requested
         const reminderMessage = 
 `📅 Daily Check-in Reminder
 
@@ -127,22 +124,27 @@ Open the app and check in before the day ends to keep your streak.`;
     }
 }
 
-// Manual Test Command for Daily Reminder (/reminder)
 bot.command('reminder', async (ctx) => {
     await sendDailyCheckinReminder(ctx.chat.id, String(ctx.from.id));
 });
 
 /* =========================================================
-   3. AUTOMATIC DAILY BROADCAST TIMER (5:30 AM - Single Message)
+   3. AUTOMATIC DAILY BROADCAST (Strict Single-Run Protection)
    ========================================================= */
-let lastBroadcastDate = '';
-
 async function triggerDailyCheckinBroadcast() {
-    const todayStr = new Date().toDateString();
-    if (lastBroadcastDate === todayStr) return; // Prevent duplicate execution on the same day
+    const todayDateStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    
+    // Check Firebase to ensure broadcast hasn't run today across any server instance
+    const lastRunDate = await getFirebaseData('systemStatus/lastDailyBroadcast');
+    if (lastRunDate === todayDateStr) {
+        console.log("⚠️ Daily broadcast already executed today. Skipping.");
+        return;
+    }
 
-    lastBroadcastDate = todayStr;
-    console.log("📢 Triggering Daily Check-in Broadcast at 5:30 AM...");
+    // Lock it immediately in Firebase
+    await updateFirebaseData('systemStatus', { lastDailyBroadcast: todayDateStr });
+
+    console.log("📢 Triggering Daily Check-in Broadcast to all users at 5:30 AM...");
     const usersData = await getFirebaseData('users');
     if (usersData) {
         for (let uId in usersData) {
@@ -157,6 +159,7 @@ async function triggerDailyCheckinBroadcast() {
 // Timer checking every minute for 05:30 AM (Subah 5:30 baje)
 setInterval(() => {
     const now = new Date();
+    // India time (UTC+5:30) handle karne ke liye ya standard local time check
     if (now.getHours() === 5 && now.getMinutes() === 30) {
         triggerDailyCheckinBroadcast();
     }
@@ -227,8 +230,25 @@ async function broadcastNewTaskToAllUsers(taskData) {
     }
 }
 
-// Poll Firebase every 15 seconds for new task publishing
 setInterval(checkNewTasksAndBroadcast, 15000);
+
+
+/* =========================================================
+   5. BOT DESCRIPTION UPDATER (Total Users Count)
+   ========================================================= */
+async function updateBotDescriptionWithTotalUsers() {
+    try {
+        const usersData = await getFirebaseData('users');
+        let totalUsersCount = usersData ? Object.keys(usersData).length : 0;
+        
+        const descriptionText = `Gram Farming Bot\n👥 Total Users: ${totalUsersCount.toLocaleString()} users\n🚀 Earn crypto and complete tasks!`;
+        await bot.telegram.setMyDescription(descriptionText);
+    } catch (err) {
+        console.error("❌ Failed to update bot description:", err.message);
+    }
+}
+
+setInterval(updateBotDescriptionWithTotalUsers, 3600000);
 
 
 // Helper Function: Send Payout Proof to Telegram Channel
@@ -264,7 +284,6 @@ async function sendPayoutNotification(withdrawalData) {
       parse_mode: 'HTML',
       ...keyboard
     });
-    console.log("✅ Channel Notification Sent Successfully!");
     return true;
   } catch (error) {
     console.error('❌ Failed to post payout proof to channel:', error.description || error.message);
@@ -272,7 +291,7 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// Automatic FaucetPay Merchant API Integration (Payouts / Withdrawals)
+// Automatic FaucetPay Merchant API Integration
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName } = req.body;
 
@@ -335,7 +354,6 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
-// Manual TON Withdrawal Endpoint
 app.post('/api/withdraw/ton', async (req, res) => {
   const { walletAddress, amount, currency, userId, displayName } = req.body;
 
@@ -370,7 +388,6 @@ app.post('/api/withdraw/ton', async (req, res) => {
   }
 });
 
-// Admin Commands for TON Manual & Multi-send
 bot.command('single_ton', async (ctx) => {
   try {
     const data = await getFirebaseData('withdrawals');
@@ -494,7 +511,6 @@ bot.command('approve_all_ton', async (ctx) => {
   }
 });
 
-// Payout Polling Logic (For Admin Panel Manual Approvals)
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals'];
   
@@ -543,23 +559,19 @@ async function checkAndSendPayouts() {
   }
 }
 
-// Webhook & Endpoint Handling
 app.post('/api/bot', async (req, res) => {
     try {
         const { action, amount, currency, userId } = req.body || {};
 
-        // 1. DEPOSIT LINK GENERATION (FaucetPay Merchant API)
         if (action === 'create_deposit') {
             const depositUrl = `https://faucetpay.io/merchant/webpay?merchant_username=${FAUCETPAY_MERCHANT_USERNAME}&item_name=Gram+Farming+Deposit&currency1=${currency || 'USDT'}&amount1=${amount}&custom=${userId}`;
             return res.status(200).json({ success: true, url: depositUrl });
         }
 
-        // 2. FAUCETPAY PAYOUT (WITHDRAWAL)
         if (req.body && req.body.email && req.body.amount) {
             return await handleFaucetPayPayout(req, res);
         }
 
-        // 3. TELEGRAM BOT WEBHOOK UPDATES
         if (req.body && (req.body.update_id || req.body.message || req.body.callback_query)) {
             await bot.handleUpdate(req.body);
         }
