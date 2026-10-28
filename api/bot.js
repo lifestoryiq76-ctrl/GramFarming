@@ -88,15 +88,13 @@ se convierten en criptomoneda real
 });
 
 /* =========================================================
-   2. DYNAMIC DAILY CHECK-IN REMINDER FUNCTION
+   2. DYNAMIC DAILY CHECK-IN REMINDER FUNCTION (5:30 AM)
    ========================================================= */
 async function sendDailyCheckinReminder(chatId, userId) {
     try {
-        // Live Daily Bonus Value from Firebase
         const generalData = await getFirebaseData('adminSettings/general');
-        const dynamicDailyReward = (generalData && generalData.dailyBonus) ? parseFloat(generalData.dailyBonus) : 0.01;
+        const dynamicDailyReward = (generalData && generalData.dailyBonus) ? parseFloat(generalData.dailyBonus) : 0.10;
 
-        // User's Dynamic Streak Counter from Firebase
         let currentStreak = 0;
         if (userId) {
             const userData = await getFirebaseData(`users/${userId}`);
@@ -105,7 +103,7 @@ async function sendDailyCheckinReminder(chatId, userId) {
             }
         }
 
-        // Dynamic Message Layout
+        // Exact format as requested
         const reminderMessage = 
 `📅 Daily Check-in Reminder
 
@@ -135,7 +133,7 @@ bot.command('reminder', async (ctx) => {
 });
 
 /* =========================================================
-   3. AUTOMATIC DAILY BROADCAST TIMER (5:30 AM)
+   3. AUTOMATIC DAILY BROADCAST TIMER (5:30 AM - Single Message)
    ========================================================= */
 let lastBroadcastDate = '';
 
@@ -144,7 +142,7 @@ async function triggerDailyCheckinBroadcast() {
     if (lastBroadcastDate === todayStr) return; // Prevent duplicate execution on the same day
 
     lastBroadcastDate = todayStr;
-    console.log("📢 Triggering Daily Check-in Broadcast to users at 5:30 AM...");
+    console.log("📢 Triggering Daily Check-in Broadcast at 5:30 AM...");
     const usersData = await getFirebaseData('users');
     if (usersData) {
         for (let uId in usersData) {
@@ -156,7 +154,7 @@ async function triggerDailyCheckinBroadcast() {
     }
 }
 
-// Timer checking every minute for 05:30 AM
+// Timer checking every minute for 05:30 AM (Subah 5:30 baje)
 setInterval(() => {
     const now = new Date();
     if (now.getHours() === 5 && now.getMinutes() === 30) {
@@ -179,13 +177,11 @@ async function checkNewTasksAndBroadcast() {
         const currentTaskIds = Object.keys(tasksData);
 
         if (!isInitializedTasks) {
-            // First run: store existing tasks without broadcasting old ones
             currentTaskIds.forEach(id => knownTaskIds.add(id));
             isInitializedTasks = true;
             return;
         }
 
-        // Check for any newly added tasks
         for (let taskId of currentTaskIds) {
             if (!knownTaskIds.has(taskId)) {
                 knownTaskIds.add(taskId);
@@ -206,13 +202,12 @@ async function broadcastNewTaskToAllUsers(taskData) {
         const usersData = await getFirebaseData('users');
         if (!usersData) return;
 
-        const messageText = `🚀 <b>New Task Available!</b>\n\n` +
-                            `📌 <b>Title:</b> ${taskData.title}\n` +
-                            `🎁 <b>Reward:</b> +0.05 🪙\n\n` +
-                            `Task complete karne ke liye Gram Farming Mini App open karein!`;
+        const messageText = `📢 <b>New Paid Task Available!</b>\n\n` +
+                            `A new paid task is available: <b>${taskData.title}</b>!\n` +
+                            `Complete it now to earn <b>+0.05 Coin</b>!`;
 
         const keyboard = Markup.inlineKeyboard([
-            [Markup.button.webApp('⚡ Open Mini App & Complete', MINI_APP_URL)]
+            [Markup.button.webApp('🎯 View Tasks', MINI_APP_URL)]
         ]);
 
         for (let uId in usersData) {
@@ -223,18 +218,16 @@ async function broadcastNewTaskToAllUsers(taskData) {
                         parse_mode: 'HTML',
                         ...keyboard
                     });
-                } catch (e) {
-                    // Ignore individual user send failures (e.g. blocked bot)
-                }
+                } catch (e) {}
             }
         }
-        console.log("✅ New Task broadcasted to all users successfully!");
+        console.log("✅ New Task broadcasted successfully to all users!");
     } catch (err) {
         console.error('❌ Failed to broadcast new task:', err.message);
     }
 }
 
-// Poll Firebase for new tasks every 15 seconds
+// Poll Firebase every 15 seconds for new task publishing
 setInterval(checkNewTasksAndBroadcast, 15000);
 
 
