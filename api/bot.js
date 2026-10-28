@@ -1,4 +1,4 @@
- const express = require('express');
+const express = require('express');
 const path = require('path');
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
@@ -158,7 +158,7 @@ setInterval(() => {
     }
 }, 60000);
 
-// Helper Function: Send Payout Proof to Telegram Channel
+// Helper Function: Send Payout Proof to Telegram Channel (Fixed Currency Issue)
 async function sendPayoutNotification(withdrawalData) {
   try {
     const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination } = withdrawalData || {};
@@ -174,10 +174,16 @@ async function sendPayoutNotification(withdrawalData) {
     const finalAmount = amount || tonAmount || '0.00';
     const finalMethod = method || 'TON Wallet';
 
+    // Fix: Automatically set USDT for FaucetPay if currency is missing/blank
+    let finalCurrency = currency;
+    if (!finalCurrency) {
+        finalCurrency = (finalMethod === 'FAUCETPAY') ? 'USDT' : 'Gram';
+    }
+
     const message = `💸 <b>Payout Success</b> 💸\n\n` +
                     `🗣️ <b>User:</b> ${finalName}\n` +
                     `💳 <b>Method:</b> ${finalMethod}\n` +
-                    `💸 <b>Amount:</b> <b>${finalAmount} ${currency || 'Gram'}</b>\n` +
+                    `💸 <b>Amount:</b> <b>${finalAmount} ${finalCurrency}</b>\n` +
                     `📍 <b>Destination:</b> <code>${destination || 'N/A'}</code>\n` +
                     `📅 <b>Date:</b> ${formattedDate}\n` +
                     `✅ <b>Status:</b> SUCCESS (Approved)`;
