@@ -1116,10 +1116,10 @@ No active staking plans found.
 <span>🔗</span> <span data-i18n="inviteEarn">Invite & Earn</span>
 </div>
 <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;"><span id="refPercentText">Get 20%</span> bonus from all 🪙 earned by your invited friends.</p>
-<!-- Added explicit fake accounts ban warning matching image requirements -->
+<!-- Updated ban warning text without admin panel mention -->
 <div style="display: flex; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 10px; border-radius: 8px; margin-bottom: 12px; color: #ef4444; font-size: 11px; font-weight: bold;">
 <span>🛡️</span>
-<span>Fake accounts are banned automatically. Users will be blocked from admin panel via IP analysis.</span>
+<span>Fake accounts are banned automatically. Users will be blocked via IP analysis.</span>
 </div>
 <div style="display:flex; gap:8px;">
 <button class="btn" style="background:#233b6a; flex:1;" onclick="copyRef()" data-i18n="copyLinkBtn">Copy Link</button>
@@ -1455,7 +1455,6 @@ var adTimers = { monetag: 60, gigapub: 60, monetix: 60, adsterra: 60, adsbitvex:
 
 var adWatchedCounts = { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 };
 
-// Robust 5:30 AM ad reset handler
 var lastAdsResetDate = localStorage.getItem('last_ads_reset_date');
 var todayDateStr = new Date().toDateString();
 var nowInit = new Date();
@@ -1495,7 +1494,6 @@ function openTelegramBotLink() {
   }
 }
 
-// Fixed 5:30 AM automatic ads and staking refresher
 function check530AmRestartAndStaking() {
   var now = new Date();
   var lastResetStored = localStorage.getItem('last_530_reset_date');
@@ -1595,7 +1593,7 @@ function initAppListeners() {
     var data = snapshot.val();
     if (data) {
       if (data.isBlocked === true) {
-        document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d1b38; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #14254a; padding: 30px; border-radius: 16px; border: 1px solid #233b6a; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Fake accounts & activity detected. Aapka account admin dwara block kar diya gaya hai!</p></div></div>';
+        document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d1b38; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #14254a; padding: 30px; border-radius: 16px; border: 1px solid #233b6a; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Fake accounts & activity detected. Aapka account block kar diya gaya hai!</p></div></div>';
         return;
       }
       balance = data.balance || 0.00;
@@ -1888,7 +1886,7 @@ function trackUserLoginAndIp() {
       if (snapshot.exists()) {
         var userData = snapshot.val();
         if (userData.isBlocked === true) {
-          document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d1b38; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #14254a; padding: 30px; border-radius: 16px; border: 1px solid #233b6a; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Aapka account admin dwara block kar diya gaya hai!</p></div></div>';
+          document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d1b38; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #14254a; padding: 30px; border-radius: 16px; border: 1px solid #233b6a; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Aapka account block kar diya gaya hai!</p></div></div>';
         }
       }
     });
@@ -3340,7 +3338,7 @@ function requestWithdrawal() {
       showToast("✅ Gram Withdrawal Request submitted successfully!", "success");
     }).catch(function(e) {
       console.error("TON Withdraw Error:", e);
-      showToast("✅ Request logged locally & pending admin approval.", "error");
+      showToast("✅ Request logged locally & pending approval.", "error");
     });
   }
 
