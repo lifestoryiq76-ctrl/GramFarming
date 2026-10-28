@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const path = require('path');
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
@@ -58,11 +58,13 @@ bot.start(async (ctx) => {
     const userId = String(ctx.from.id);
     const firstName = ctx.from.first_name || 'User';
 
+    // Save/Update user info in Firebase DB
     await updateFirebaseData(`users/${userId}`, {
         name: "👑 " + firstName + (ctx.from.username ? ' (@' + ctx.from.username + ')' : ''),
         telegramChatId: ctx.chat.id
     });
 
+    // Welcome Message (Exact Spanish Layout)
     const welcomeMessage = 
 `👋 Hola ${firstName}@ 🌏🌕
 Bienvenido/a a Gram Farming
@@ -86,13 +88,15 @@ se convierten en criptomoneda real
 });
 
 /* =========================================================
-   2. DYNAMIC DAILY CHECK-IN REMINDER FUNCTION (5:30 AM)
+   2. DYNAMIC DAILY CHECK-IN REMINDER FUNCTION
    ========================================================= */
 async function sendDailyCheckinReminder(chatId, userId) {
     try {
+        // Live Daily Bonus Value from Firebase
         const generalData = await getFirebaseData('adminSettings/general');
-        const dynamicDailyReward = (generalData && generalData.dailyBonus) ? parseFloat(generalData.dailyBonus) : 0.10;
+        const dynamicDailyReward = (generalData && generalData.dailyBonus) ? parseFloat(generalData.dailyBonus) : 0.01;
 
+        // User's Dynamic Streak Counter from Firebase
         let currentStreak = 0;
         if (userId) {
             const userData = await getFirebaseData(`users/${userId}`);
@@ -101,6 +105,7 @@ async function sendDailyCheckinReminder(chatId, userId) {
             }
         }
 
+        // Dynamic Message Layout
         const reminderMessage = 
 `📅 Daily Check-in Reminder
 
@@ -124,27 +129,16 @@ Open the app and check in before the day ends to keep your streak.`;
     }
 }
 
+// Manual Test Command for Daily Reminder (/reminder)
 bot.command('reminder', async (ctx) => {
     await sendDailyCheckinReminder(ctx.chat.id, String(ctx.from.id));
 });
 
 /* =========================================================
-   3. AUTOMATIC DAILY BROADCAST (Strict Database Atomic Lock)
+   3. AUTOMATIC DAILY BROADCAST TIMER (9:30 AM)
    ========================================================= */
 async function triggerDailyCheckinBroadcast() {
-    const todayDateStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-    
-    // Firebase se check karein ki aaj broadcast ho chuka hai ya nahi
-    const systemStatus = await getFirebaseData('systemStatus');
-    if (systemStatus && systemStatus.lastDailyBroadcast === todayDateStr) {
-        console.log("⚠️ Daily broadcast already executed today. Skipping.");
-        return;
-    }
-
-    // Turant Firebase me lock set karein taaki doosra instance run na kar sake
-    await updateFirebaseData('systemStatus', { lastDailyBroadcast: todayDateStr });
-
-    console.log("📢 Triggering Daily Check-in Broadcast at 5:30 AM...");
+    console.log("📢 Triggering Daily Check-in Broadcast to users...");
     const usersData = await getFirebaseData('users');
     if (usersData) {
         for (let uId in usersData) {
@@ -156,114 +150,20 @@ async function triggerDailyCheckinBroadcast() {
     }
 }
 
+// Timer checking every minute for 09:30 AM
 setInterval(() => {
     const now = new Date();
-    if (now.getHours() === 5 && now.getMinutes() === 30) {
+    if (now.getHours() === 9 && now.getMinutes() === 30) {
         triggerDailyCheckinBroadcast();
     }
 }, 60000);
 
-
-/* =========================================================
-   4. LIVE NEW TASK PUBLISH BROADCAST TO ALL USERS
-   ========================================================= */
-let knownTaskIds = new Set();
-let isInitializedTasks = false;
-
-async function checkNewTasksAndBroadcast() {
-    try {
-        const tasksData = await getFirebaseData('customTasks');
-        if (!tasksData) return;
-
-        const currentTaskIds = Object.keys(tasksData);
-
-        if (!isInitializedTasks) {
-            currentTaskIds.forEach(id => knownTaskIds.add(id));
-            isInitializedTasks = true;
-            return;
-        }
-
-        for (let taskId of currentTaskIds) {
-            if (!knownTaskIds.has(taskId)) {
-                knownTaskIds.add(taskId);
-                const newTask = tasksData[taskId];
-                if (newTask) {
-                    await broadcastNewTaskToAllUsers(newTask);
-                }
-            }
-        }
-    } catch (err) {
-        console.error("Error checking new tasks:", err.message);
-    }
-}
-
-async function broadcastNewTaskToAllUsers(taskData) {
-    try {
-        const usersData = await getFirebaseData('users');
-        if (!usersData) return;
-
-        const messageText = `📢 <b>New Paid Task Available!</b>\n\n` +
-                            `A new paid task is available: <b>${taskData.title}</b>!\n` +
-                            `Complete it now to earn <b>+0.05 Coin</b>!`;
-
-        const keyboard = Markup.inlineKeyboard([
-            [Markup.button.webApp('🎯 View Tasks', MINI_APP_URL)]
-        ]);
-
-        for (let uId in usersData) {
-            const user = usersData[uId];
-            if (user && user.telegramChatId) {
-                try {
-                    await bot.telegram.sendMessage(user.telegramChatId, messageText, {
-                        parse_mode: 'HTML',
-                        ...keyboard
-                    });
-                } catch (e) {}
-            }
-        }
-    } catch (err) {
-        console.error('❌ Failed to broadcast new task:', err.message);
-    }
-}
-
-setInterval(checkNewTasksAndBroadcast, 15000);
-
-
-/* =========================================================
-   5. BOT DESCRIPTION UPDATER (Total Users Count)
-   ========================================================= */
-async function updateBotDescriptionWithTotalUsers() {
-    try {
-        const usersData = await getFirebaseData('users');
-        let totalUsersCount = usersData ? Object.keys(usersData).length : 0;
-        
-        const descriptionText = `Gram Farming Bot\n👥 Total Users: ${totalUsersCount.toLocaleString()} users\n🚀 Earn crypto and complete tasks!`;
-        await bot.telegram.setMyDescription(descriptionText);
-    } catch (err) {
-        console.error("❌ Failed to update bot description:", err.message);
-    }
-}
-
-setInterval(updateBotDescriptionWithTotalUsers, 3600000);
-
-
-/* =========================================================
-   6. PAYOUT NOTIFICATION (Strict Atomic Database Lock)
-   ========================================================= */
-async function sendPayoutNotification(withdrawalData, dbPath) {
+// Helper Function: Send Payout Proof to Telegram Channel
+async function sendPayoutNotification(withdrawalData) {
   try {
-    // 1. Firebase se fresh data fetch karke check karein ki pehle se posted toh nahi hai
-    const currentItem = await getFirebaseData(dbPath);
-    if (!currentItem || currentItem.postedToChannel) {
-        return false; // Agar pehle hi post ho chuka hai toh turant rok do
-    }
-
-    // 2. Pehle hi database me postedToChannel: true mark kar do (Race Condition Lock)
-    await updateFirebaseData(dbPath, { postedToChannel: true });
-
-    const { userId, userName, name, amount, currency, method, txUrl, destination } = currentItem || withdrawalData || {};
+    const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination } = withdrawalData || {};
     
-    const formattedDate = new Date().toLocaleDateString('en-US', {
+    const formattedDate = date || new Date().toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
@@ -271,7 +171,7 @@ async function sendPayoutNotification(withdrawalData, dbPath) {
     });
 
     const finalName = userName || name || (userId ? `User_${String(userId).slice(0, 4)}***` : 'Member');
-    const finalAmount = amount || '0.00';
+    const finalAmount = amount || tonAmount || '0.00';
     const finalMethod = method || 'TON Wallet';
 
     const message = `💸 <b>Payout Success</b> 💸\n\n` +
@@ -291,7 +191,6 @@ async function sendPayoutNotification(withdrawalData, dbPath) {
       parse_mode: 'HTML',
       ...keyboard
     });
-    
     console.log("✅ Channel Notification Sent Successfully!");
     return true;
   } catch (error) {
@@ -300,7 +199,7 @@ async function sendPayoutNotification(withdrawalData, dbPath) {
   }
 }
 
-// Automatic FaucetPay Merchant API Integration
+// Automatic FaucetPay Merchant API Integration (Payouts / Withdrawals)
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName } = req.body;
 
@@ -336,15 +235,12 @@ async function handleFaucetPayPayout(req, res) {
         method: 'FAUCETPAY',
         destination: email,
         status: 'SUCCESS (Approved)',
-        postedToChannel: false,
         date: new Date().toLocaleString()
       };
 
       const reqKey = `fp_${Date.now()}`;
-      const dbPath = `withdrawals/${userId}/${reqKey}`;
-      
-      await updateFirebaseData(dbPath, payoutData);
-      await sendPayoutNotification(payoutData, dbPath);
+      await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, { ...payoutData, postedToChannel: true });
+      await sendPayoutNotification(payoutData);
 
       return res.status(200).json({
         success: true,
@@ -366,6 +262,7 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
+// Manual TON Withdrawal Endpoint
 app.post('/api/withdraw/ton', async (req, res) => {
   const { walletAddress, amount, currency, userId, displayName } = req.body;
 
@@ -400,6 +297,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
   }
 });
 
+// Admin Commands for TON Manual & Multi-send
 bot.command('single_ton', async (ctx) => {
   try {
     const data = await getFirebaseData('withdrawals');
@@ -474,13 +372,14 @@ bot.command('approve_ton', async (ctx) => {
 
     for (let uId in allData) {
       if (allData[uId][reqId]) {
-        const dbPath = `withdrawals/${uId}/${reqId}`;
         const item = allData[uId][reqId];
         item.status = 'SUCCESS (Approved)';
-        
-        await updateFirebaseData(dbPath, item);
-        await sendPayoutNotification(item, dbPath);
+        await updateFirebaseData(`withdrawals/${uId}/${reqId}`, item);
 
+        const posted = await sendPayoutNotification(item);
+        if (posted) {
+          await updateFirebaseData(`withdrawals/${uId}/${reqId}`, { postedToChannel: true });
+        }
         found = true;
         ctx.reply(`✅ Request ${reqId} Approved aur Payout Channel par Post kar diya gaya!`);
         break;
@@ -504,11 +403,13 @@ bot.command('approve_all_ton', async (ctx) => {
       for (let key in userWithdrawals) {
         const item = userWithdrawals[key];
         if (item && item.status === 'PENDING') {
-          const dbPath = `withdrawals/${uId}/${key}`;
           item.status = 'SUCCESS (Approved)';
-          
-          await updateFirebaseData(dbPath, item);
-          await sendPayoutNotification(item, dbPath);
+          await updateFirebaseData(`withdrawals/${uId}/${key}`, item);
+
+          const posted = await sendPayoutNotification(item);
+          if (posted) {
+            await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
+          }
           approvedCount++;
         }
       }
@@ -520,7 +421,7 @@ bot.command('approve_all_ton', async (ctx) => {
   }
 });
 
-// Payout Polling Logic (Protected via dbPath check)
+// Payout Polling Logic (For Admin Panel Manual Approvals)
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals'];
   
@@ -531,8 +432,7 @@ async function checkAndSendPayouts() {
 
       const processWithdrawalItem = async (itemKey, data, currentPath) => {
         if (!data || typeof data !== 'object') return;
-        if (data.postedToChannel) return;
-
+        
         const statusText = String(data.status || '').toLowerCase();
         const isApproved = statusText.includes('approved') || 
                            statusText.includes('success') || 
@@ -541,8 +441,11 @@ async function checkAndSendPayouts() {
                            statusText.includes('sent') ||
                            statusText.includes('done');
 
-        if (isApproved) {
-          await sendPayoutNotification(data, `${currentPath}/${itemKey}`);
+        if (isApproved && !data.postedToChannel) {
+          const success = await sendPayoutNotification(data);
+          if (success) {
+            await updateFirebaseData(`${currentPath}/${itemKey}`, { postedToChannel: true });
+          }
         }
       };
 
@@ -567,19 +470,23 @@ async function checkAndSendPayouts() {
   }
 }
 
+// Webhook & Endpoint Handling
 app.post('/api/bot', async (req, res) => {
     try {
         const { action, amount, currency, userId } = req.body || {};
 
+        // 1. DEPOSIT LINK GENERATION (FaucetPay Merchant API)
         if (action === 'create_deposit') {
             const depositUrl = `https://faucetpay.io/merchant/webpay?merchant_username=${FAUCETPAY_MERCHANT_USERNAME}&item_name=Gram+Farming+Deposit&currency1=${currency || 'USDT'}&amount1=${amount}&custom=${userId}`;
             return res.status(200).json({ success: true, url: depositUrl });
         }
 
+        // 2. FAUCETPAY PAYOUT (WITHDRAWAL)
         if (req.body && req.body.email && req.body.amount) {
             return await handleFaucetPayPayout(req, res);
         }
 
+        // 3. TELEGRAM BOT WEBHOOK UPDATES
         if (req.body && (req.body.update_id || req.body.message || req.body.callback_query)) {
             await bot.handleUpdate(req.body);
         }
