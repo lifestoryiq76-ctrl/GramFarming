@@ -135,10 +135,16 @@ bot.command('reminder', async (ctx) => {
 });
 
 /* =========================================================
-   3. AUTOMATIC DAILY BROADCAST TIMER (9:30 AM)
+   3. AUTOMATIC DAILY BROADCAST TIMER (5:30 AM)
    ========================================================= */
+let lastBroadcastDate = '';
+
 async function triggerDailyCheckinBroadcast() {
-    console.log("📢 Triggering Daily Check-in Broadcast to users...");
+    const todayStr = new Date().toDateString();
+    if (lastBroadcastDate === todayStr) return; // Prevent duplicate execution on the same day
+
+    lastBroadcastDate = todayStr;
+    console.log("📢 Triggering Daily Check-in Broadcast to users at 5:30 AM...");
     const usersData = await getFirebaseData('users');
     if (usersData) {
         for (let uId in usersData) {
@@ -150,13 +156,87 @@ async function triggerDailyCheckinBroadcast() {
     }
 }
 
-// Timer checking every minute for 09:30 AM
+// Timer checking every minute for 05:30 AM
 setInterval(() => {
     const now = new Date();
-    if (now.getHours() === 9 && now.getMinutes() === 30) {
+    if (now.getHours() === 5 && now.getMinutes() === 30) {
         triggerDailyCheckinBroadcast();
     }
 }, 60000);
+
+
+/* =========================================================
+   4. LIVE NEW TASK PUBLISH BROADCAST TO ALL USERS
+   ========================================================= */
+let knownTaskIds = new Set();
+let isInitializedTasks = false;
+
+async function checkNewTasksAndBroadcast() {
+    try {
+        const tasksData = await getFirebaseData('customTasks');
+        if (!tasksData) return;
+
+        const currentTaskIds = Object.keys(tasksData);
+
+        if (!isInitializedTasks) {
+            // First run: store existing tasks without broadcasting old ones
+            currentTaskIds.forEach(id => knownTaskIds.add(id));
+            isInitializedTasks = true;
+            return;
+        }
+
+        // Check for any newly added tasks
+        for (let taskId of currentTaskIds) {
+            if (!knownTaskIds.has(taskId)) {
+                knownTaskIds.add(taskId);
+                const newTask = tasksData[taskId];
+                if (newTask) {
+                    await broadcastNewTaskToAllUsers(newTask);
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Error checking new tasks:", err.message);
+    }
+}
+
+async function broadcastNewTaskToAllUsers(taskData) {
+    try {
+        console.log("📢 Broadcasting new task to all users:", taskData.title);
+        const usersData = await getFirebaseData('users');
+        if (!usersData) return;
+
+        const messageText = `🚀 <b>New Task Available!</b>\n\n` +
+                            `📌 <b>Title:</b> ${taskData.title}\n` +
+                            `🎁 <b>Reward:</b> +0.05 🪙\n\n` +
+                            `Task complete karne ke liye Gram Farming Mini App open karein!`;
+
+        const keyboard = Markup.inlineKeyboard([
+            [Markup.button.webApp('⚡ Open Mini App & Complete', MINI_APP_URL)]
+        ]);
+
+        for (let uId in usersData) {
+            const user = usersData[uId];
+            if (user && user.telegramChatId) {
+                try {
+                    await bot.telegram.sendMessage(user.telegramChatId, messageText, {
+                        parse_mode: 'HTML',
+                        ...keyboard
+                    });
+                } catch (e) {
+                    // Ignore individual user send failures (e.g. blocked bot)
+                }
+            }
+        }
+        console.log("✅ New Task broadcasted to all users successfully!");
+    } catch (err) {
+        console.error('❌ Failed to broadcast new task:', err.message);
+    }
+}
+
+// Poll Firebase for new tasks every 15 seconds
+setInterval(checkNewTasksAndBroadcast, 15000);
+
 
 // Helper Function: Send Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
