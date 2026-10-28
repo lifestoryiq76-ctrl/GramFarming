@@ -54,37 +54,20 @@
 --sky-blue: #0ea5e9;
 }
 
-/* Pani ki bund / Bubble expanding ripple effect animation (No up-down motion) */
-@keyframes waterBubbleRipple {
-    0% {
-        background-size: 100% 100%, 100% 100%;
-        opacity: 0.95;
-    }
-    50% {
-        background-size: 140% 140%, 120% 120%;
-        opacity: 1;
-    }
-    100% {
-        background-size: 100% 100%, 100% 100%;
-        opacity: 0.95;
-    }
-}
-
+/* Stable background matching the screenshot theme perfectly */
 body { 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    /* Stable 3D Water Droplet / Bubble Expanding Background */
-    background-color: #070e1e;
+    background-color: #0b1730;
     background-image: 
-        radial-gradient(circle at 50% 25%, rgba(30, 64, 175, 0.85) 0%, transparent 60%),
-        radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.45) 0%, #070e1e 75%);
+        radial-gradient(circle at 50% 20%, rgba(20, 50, 100, 0.6) 0%, transparent 60%),
+        radial-gradient(circle at 50% 80%, rgba(10, 25, 55, 0.9) 0%, #0b1730 100%);
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center center;
-    animation: waterBubbleRipple 8s ease-in-out infinite;
     color: var(--text-main); 
     margin: 0; 
     padding: 12px; 
-    padding-bottom: 90px; 
+    padding-bottom: 100px; 
 }
 
 .app-splash-screen {
@@ -93,7 +76,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(circle at center, #1e40af 0%, #070e1e 100%);
+  background: radial-gradient(circle at center, #14254a 0%, #0b1730 100%);
   z-index: 9999999;
   display: flex;
   flex-direction: column;
@@ -218,20 +201,21 @@ display: inline-block;
 .btn-join { background: #10b981; color: #fff; border-radius: 10px; font-weight: bold; padding: 8px 18px; border: none; cursor: pointer; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 
+/* Clean & Matching Bottom Navigation Bar */
 .nav-bar { 
     position: fixed; 
     bottom: 0; 
     left: 0; 
     right: 0; 
-    background: rgba(15, 40, 82, 0.95); 
+    background: #0d1933; 
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex; 
     justify-content: space-around; 
-    padding: 8px 4px 12px 4px; 
-    border-top: 1px solid rgba(35, 59, 106, 0.8); 
+    padding: 8px 4px 14px 4px; 
+    border-top: 1px solid rgba(35, 59, 106, 0.9); 
     z-index: 1000; 
-    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8);
 }
 .nav-item { 
     color: var(--text-muted); 
@@ -253,19 +237,19 @@ display: inline-block;
 .nav-emoji { font-size: 18px; transition: transform 0.3s ease; }
 .nav-item.active { 
     color: var(--accent); 
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.2);
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.25);
 }
 .nav-item.active .nav-emoji { transform: translateY(-2px) scale(1.15); }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0d1b38; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
+input, select { width: 100%; padding: 10px; margin-top: 6px; background: #0b1730; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.2s; }
 input:focus, select:focus { border-color: var(--accent); }
 
 .mining-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-.mining-box { background: #0d1b38; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+.mining-box { background: #0b1730; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
 .rocket-icon { font-size: 32px; margin: 5px 0; }
 .rocket-progress-bar { width: 100%; background: #233b6a; height: 6px; border-radius: 3px; margin: 8px 0; overflow: hidden; }
 .rocket-progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s ease; }
@@ -274,7 +258,7 @@ input:focus, select:focus { border-color: var(--accent); }
 #miningBoxesSection.show { display: block; }
 
 .ad-task-card { background: var(--card-bg); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-.ad-icon-box { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #0d1b38; border: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
+.ad-icon-box { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #0b1730; border: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
 .ad-icon-box svg { width: 100%; height: 100%; }
 .ad-icon-box img { width: 100%; height: 100%; object-fit: cover; }
 .progress-line-bg { width: 100%; background: #233b6a; height: 5px; border-radius: 3px; margin-top: 10px; overflow: hidden; }
@@ -282,36 +266,36 @@ input:focus, select:focus { border-color: var(--accent); }
 
 .task-category-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
 .task-category-bar::-webkit-scrollbar { display: none; }
-.task-cat-btn { background: #0d1b38; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+.task-cat-btn { background: #0b1730; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
 .task-cat-btn.active { background: #eab308; color: #000; border-color: #eab308; box-shadow: 0 0 12px rgba(234, 179, 8, 0.4); }
 
 .task-subtab-bar { display: flex; gap: 10px; margin-bottom: 12px; }
-.task-subtab-btn { background: #0d1b38; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
+.task-subtab-btn { background: #0b1730; border: 1px solid var(--border); color: var(--text-muted); flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
 .task-subtab-btn.active { background: #233b6a; color: var(--text-main); border-color: var(--accent); }
 
 .click-btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; margin-bottom: 12px; }
-.click-option-btn { background: #0d1b38; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 2px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 12px; transition: 0.2s; }
+.click-option-btn { background: #0b1730; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 2px; text-align: center; cursor: pointer; color: var(--text-main); font-weight: bold; font-size: 12px; transition: 0.2s; }
 .click-option-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
 .pay-method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-.pay-method-card { background: #0d1b38; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); transition: all 0.25s ease-in-out; }
+.pay-method-card { background: #0b1730; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); transition: all 0.25s ease-in-out; }
 .pay-method-card.active { border: 2px solid #0ea5e9 !important; background: #0ea5e9 !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.6) !important; transform: translateY(-2px); }
 
 .wallet-subcard-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.wallet-subcard { background: #0d1b38; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+.wallet-subcard { background: #0b1730; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
 .wallet-subcard.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.08); }
 .wallet-subcard-content { display: none; margin-top: 10px; }
 .wallet-subcard-content.active { display: block; }
 
-.convert-sky-card { background: #0d1b38; border: 1.5px solid var(--sky-blue); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); transition: all 0.25s ease-in-out; }
+.convert-sky-card { background: #0b1730; border: 1.5px solid var(--sky-blue); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); transition: all 0.25s ease-in-out; }
 .convert-sky-card.active { border: 2px solid var(--sky-blue) !important; background: var(--sky-blue) !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.6) !important; transform: translateY(-2px); }
 
 .stake-currency-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; position: relative; z-index: 50; }
-.stake-currency-card { background: #0d1b38; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; user-select: none; }
+.stake-currency-card { background: #0b1730; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 6px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; user-select: none; }
 .stake-currency-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.15); color: var(--accent); }
 
 .gram-connect-btn { background: var(--ton-blue); color: #fff; width: 100%; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
-.gram-pay-info { background: #0d1b38; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
+.gram-pay-info { background: #0b1730; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; font-size: 13px; line-height: 1.6; }
 
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -322,7 +306,7 @@ input:focus, select:focus { border-color: var(--accent); }
 }
 .modal-overlay.active { display: flex; }
 .modal-sheet {
-    background: linear-gradient(180deg, #14254a 0%, #0d1b38 100%);
+    background: linear-gradient(180deg, #14254a 0%, #0b1730 100%);
     border: 1px solid rgba(14, 165, 233, 0.3);
     border-top-left-radius: 28px;
     border-top-right-radius: 28px;
@@ -360,7 +344,7 @@ input:focus, select:focus { border-color: var(--accent); }
 .ad-loading-screen {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: #070e1e;
+    background: #0b1730;
     z-index: 999999;
     display: none;
     flex-direction: column;
@@ -445,7 +429,7 @@ input:focus, select:focus { border-color: var(--accent); }
 
 /* FEATURED PARTNER BANNER STYLES */
 .featured-banner-wrapper {
-    background: linear-gradient(135deg, #193264 0%, #0d1b38 100%);
+    background: linear-gradient(135deg, #193264 0%, #0b1730 100%);
     border: 1px solid rgba(168, 85, 247, 0.3);
     border-radius: 16px;
     padding: 14px;
@@ -508,7 +492,7 @@ input:focus, select:focus { border-color: var(--accent); }
     gap: 2px;
 }
 .featured-card-box {
-    background: rgba(13, 27, 56, 0.7);
+    background: rgba(11, 23, 48, 0.75);
     border: 1px solid rgba(35, 59, 106, 0.8);
     border-radius: 14px;
     padding: 14px;
@@ -619,7 +603,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 </div>
 
-<div class="flex-between" style="background:#0d1b38; padding:10px; border-radius:10px; border: 1px solid var(--border); margin-top: 12px;">
+<div class="flex-between" style="background:#0b1730; padding:10px; border-radius:10px; border: 1px solid var(--border); margin-top: 12px;">
 <button class="btn" onclick="switchTab('tasks')" style="margin-right: 6px; background: var(--accent);" data-i18n="earnBtn">⚡ Earn</button>
 <button class="btn" onclick="switchTab('wallet')" style="margin-left: 6px; background: #0ea5e9;" data-i18n="withdrawNavBtn">🪙 Withdraw</button>
 </div>
@@ -841,7 +825,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 
 <div id="taskCat-task" class="task-category-content" style="display:none;">
-<div class="card" style="text-align: center; padding: 25px 15px; background: #0d1b38;" id="emptyTasksNotice">
+<div class="card" style="text-align: center; padding: 25px 15px; background: #0b1730;" id="emptyTasksNotice">
 <div style="font-size: 36px; margin-bottom: 8px;">☁️⚡</div>
 <h4 style="margin: 0 0 6px 0; color: var(--text-main);">No new tasks available</h4>
 <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Check back soon or create your own task in Create Task tab.</p>
@@ -886,7 +870,7 @@ input:focus, select:focus { border-color: var(--accent); }
 </div>
 
 <div id="createPromoteView">
-<div class="card" style="background:#0d1b38; border: 1px solid var(--accent); padding: 16px;">
+<div class="card" style="background:#0b1730; border: 1px solid var(--accent); padding: 16px;">
 <div class="flex-between" style="margin-bottom: 10px;">
 <h4 style="margin:0; color: var(--accent);" id="campaignTitleDisplay">Grow Your Mini App Users</h4>
 </div>
@@ -900,7 +884,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <button class="btn" style="flex:1; background: #14254a; color: var(--text-muted); font-size: 12px; padding: 8px;" id="objOtherBtn" onclick="setCampaignObj('Other Link')">🔗 Other Link</button>
 </div>
 
-<div style="background: #0d1b38; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+<div style="background: #0b1730; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
 <div style="font-size: 13px; font-weight: bold; margin-bottom: 2px;">Recommended Add-ons</div>
 <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Boost your campaign reach and conversion</div>
 
@@ -915,7 +899,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <span style="background: rgba(34, 197, 94, 0.2); color: var(--accent); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;" id="addonVerifiedPrice">+$0.05 / 100</span>
 </div>
 
-<div id="addonBannerCard" onclick="toggleAddon('banner')" style="background: #0d1b38; border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+<div id="addonBannerCard" onclick="toggleAddon('banner')" style="background: #0b1730; border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
 <div style="display: flex; align-items: flex-start; gap: 8px;">
 <span id="addonBannerCheck" style="font-size: 16px; color: var(--text-muted);">⚪</span>
 <div>
@@ -968,7 +952,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <div class="click-option-btn" onclick="setClickPackage(5000, this)">5000<br><small id="clickBox-5000" style="color:var(--yellow); font-weight:normal;">1100 🪙</small></div>
 </div>
 
-<div style="background: #0d1b38; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;" id="costCalcBox">
+<div style="background: #0b1730; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 12px;" id="costCalcBox">
 Cost: <strong>35 Coins</strong>
 </div>
 
@@ -987,7 +971,7 @@ Cost: <strong>35 Coins</strong>
 </div>
 
 <div id="createMyTasksView" style="display:none;">
-<div class="card" style="text-align: center; padding: 25px 15px; background: #0d1b38;">
+<div class="card" style="text-align: center; padding: 25px 15px; background: #0b1730;">
 <h4 style="margin: 0 0 6px 0; color: var(--accent);">Your Published Campaigns</h4>
 <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 12px 0;">Live tracking of clicks, completions, and status.</p>
 </div>
@@ -1010,7 +994,7 @@ Cost: <strong>35 Coins</strong>
 <div class="stake-currency-card" id="stakeCardGram" onclick="setStakingCurrency('Gram')">💎 Gram</div>
 </div>
 
-<div class="card" style="background:#0d1b38; border:1px solid var(--accent);">
+<div class="card" style="background:#0b1730; border:1px solid var(--accent);">
 <h4 style="margin:0 0 8px 0; color: var(--accent);" data-i18n="stakingCalc">🧮 Staking Calculator & Preview</h4>
 <label style="font-size:13px; color:var(--text-muted);">Enter Staking <span id="calcCurrencyLabel">Coin</span>:</label>
 <input type="number" id="stakeCalcInput" placeholder="e.g. 100" oninput="calculateStakeRewards()">
@@ -1027,7 +1011,7 @@ Cost: <strong>35 Coins</strong>
 <option value="365|20">Fixed (365 Days - 20% APY)</option>
 </select>
 
-<div style="margin-top:10px; padding:10px; background:#0d1b38; border-radius:8px; font-size:13px; border:1px solid var(--border);">
+<div style="margin-top:10px; padding:10px; background:#0b1730; border-radius:8px; font-size:13px; border:1px solid var(--border);">
 <div>☀ <span data-i18n="dailyReward">Daily Reward</span>: <strong id="previewDaily" style="color:var(--accent);">0.00 Coin</strong></div>
 <div>🌟 <span data-i18n="totalPeriodReward">Total Period Reward</span>: <strong id="previewTotal" style="color:var(--yellow);">0.00 Coin</strong></div>
 </div>
@@ -1084,7 +1068,7 @@ Cost: <strong>35 Coins</strong>
 </div>
 
 <h4 style="color: var(--accent); margin-top: 20px; margin-bottom: 8px;">📋 Active Staking Investments</h4>
-<div id="activeStakingList" class="card" style="background: #0d1b38; border: 1px solid var(--border);">
+<div id="activeStakingList" class="card" style="background: #0b1730; border: 1px solid var(--border);">
 <div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">
 No active staking plans found.
 </div>
@@ -1130,7 +1114,7 @@ No active staking plans found.
 <div id="wallet" class="tab-content">
 <h3 data-i18n="walletExchange" style="margin-bottom: 12px;">💼 Wallet & Exchange</h3>
 
-<div class="card" style="background:#0d1b38; padding:14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+<div class="card" style="background:#0b1730; padding:14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
 <div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent); font-size: 15px;">0.0590</strong></div>
 <div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent); font-size: 15px;">5.0500 USDT</strong></div>
 <div style="font-size:13px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT (Real-time)</div>
@@ -1158,10 +1142,10 @@ No active staking plans found.
 </div>
 
 <div class="grid-cards" style="margin-bottom: 10px;">
-<div class="card" style="text-align:center; margin:0; padding:10px; background:#0d1b38; border-color:var(--accent); cursor:pointer;" onclick="setWithdrawSubMethod('faucetpay')" id="wSubMethodFaucetpay">
+<div class="card" style="text-align:center; margin:0; padding:10px; background:#0b1730; border-color:var(--accent); cursor:pointer;" onclick="setWithdrawSubMethod('faucetpay')" id="wSubMethodFaucetpay">
 <b style="font-size:12px; color:var(--accent);">1. Faucetpay</b>
 </div>
-<div class="card" style="text-align:center; margin:0; padding:10px; background:#0d1b38; border-color:var(--border); cursor:pointer;" onclick="setWithdrawSubMethod('gram')" id="wSubMethodGram">
+<div class="card" style="text-align:center; margin:0; padding:10px; background:#0b1730; border-color:var(--border); cursor:pointer;" onclick="setWithdrawSubMethod('gram')" id="wSubMethodGram">
 <b style="font-size:12px; color:var(--yellow);">2. Gram</b>
 </div>
 </div>
@@ -1248,7 +1232,7 @@ Balance: <span id="convertSourceBalanceDisplay">0.00 Coin</span>
 <button class="btn" style="margin-top:10px; width:100%; background:var(--sky-blue); color:#fff;" onclick="exchangeCoins()" data-i18n="exchangeNowBtn">Exchange Now</button>
 </div>
 
-<div class="card" style="background: #0d1b38; border: 1px solid var(--border);">
+<div class="card" style="background: #0b1730; border: 1px solid var(--border);">
 <div class="flex-between" style="margin-bottom: 8px;">
 <h4 style="margin:0; color: var(--text-main); font-size: 14px; letter-spacing: 0.5px;">TRANSACTION HISTORY</h4>
 <span style="cursor:pointer; font-size: 16px;" onclick="loadTransactionHistory()" title="Refresh History">🔄</span>
@@ -1878,7 +1862,7 @@ function trackUserLoginAndIp() {
       if (snapshot.exists()) {
         var userData = snapshot.val();
         if (userData.isBlocked === true) {
-          document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d1b38; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #14254a; padding: 30px; border-radius: 16px; border: 1px solid #233b6a; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Aapka account admin dwara block kar diya gaya hai!</p></div></div>';
+          document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0b1730; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #14254a; padding: 30px; border-radius: 16px; border: 1px solid #233b6a; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Aapka account admin dwara block kar diya gaya hai!</p></div></div>';
         }
       }
     });
@@ -2149,7 +2133,7 @@ function toggleAddon(addonName) {
       if(card) { card.style.background = 'rgba(34, 197, 94, 0.1)'; card.style.borderColor = 'var(--accent)'; }
       if(check) check.innerText = '🟢';
     } else {
-      if(card) { card.style.background = '#0d1b38'; card.style.borderColor = 'var(--border)'; }
+      if(card) { card.style.background = '#0b1730'; card.style.borderColor = 'var(--border)'; }
       if(check) check.innerText = '⚪';
     }
   } else if(addonName === 'banner') {
@@ -2160,7 +2144,7 @@ function toggleAddon(addonName) {
       if(card2) { card2.style.background = 'rgba(14, 165, 233, 0.1)'; card2.style.borderColor = '#0ea5e9'; }
       if(check2) check2.innerText = '🔵';
     } else {
-      if(card2) { card2.style.background = '#0d1b38'; card2.style.borderColor = 'var(--border)'; }
+      if(card2) { card2.style.background = '#0b1730'; card2.style.borderColor = 'var(--border)'; }
       if(check2) check2.innerText = '⚪';
     }
   }
@@ -3601,7 +3585,7 @@ function renderCustomTasksFromFirebase() {
           ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
           : '';
 
-        html += '<div class="card flex-between" style="background:#0d1b38; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
+        html += '<div class="card flex-between" style="background:#0b1730; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
           '<div style="display:flex; align-items:center; flex:1; overflow:hidden;">' + 
             imgHtml + 
             '<div style="overflow:hidden;">' +
@@ -3741,7 +3725,7 @@ function loadMyPublishedTasks() {
         
         var imgHtml = task.image ? '<img src="' + task.image + '" style="width:30px; height:30px; border-radius:6px; object-fit:cover; margin-right:6px;" />' : '';
 
-        html += '<div class="card" style="background:#0d1b38; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(14, 165, 233, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0d1b38; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
+        html += '<div class="card" style="background:#0b1730; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(14, 165, 233, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0b1730; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
       }
     });
     myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi kiya hai.</div>';
