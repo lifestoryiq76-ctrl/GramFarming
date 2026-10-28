@@ -129,16 +129,19 @@ bot.command('reminder', async (ctx) => {
 });
 
 /* =========================================================
-   3. AUTOMATIC DAILY BROADCAST (Strict Single-Run Protection)
+   3. AUTOMATIC DAILY BROADCAST (Strict Database Atomic Lock)
    ========================================================= */
 async function triggerDailyCheckinBroadcast() {
-    const todayDateStr = new Date().toISOString().split('T')[0];
+    const todayDateStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
     
-    const lastRunDate = await getFirebaseData('systemStatus/lastDailyBroadcast');
-    if (lastRunDate === todayDateStr) {
+    // Firebase se check karein ki aaj broadcast ho chuka hai ya nahi
+    const systemStatus = await getFirebaseData('systemStatus');
+    if (systemStatus && systemStatus.lastDailyBroadcast === todayDateStr) {
+        console.log("⚠️ Daily broadcast already executed today. Skipping.");
         return;
     }
 
+    // Turant Firebase me lock set karein taaki doosra instance run na kar sake
     await updateFirebaseData('systemStatus', { lastDailyBroadcast: todayDateStr });
 
     console.log("📢 Triggering Daily Check-in Broadcast at 5:30 AM...");
@@ -245,18 +248,22 @@ setInterval(updateBotDescriptionWithTotalUsers, 3600000);
 
 
 /* =========================================================
-   6. PAYOUT NOTIFICATION (Protected against duplicates)
+   6. PAYOUT NOTIFICATION (Strict Atomic Database Lock)
    ========================================================= */
-async function sendPayoutNotification(withdrawalData) {
+async function sendPayoutNotification(withdrawalData, dbPath) {
   try {
-    const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination, postedToChannel } = withdrawalData || {};
-    
-    // Agar pehle hi channel par post ho chuka hai toh dubara na bhejein
-    if (postedToChannel) {
-        return false;
+    // 1. Firebase se fresh data fetch karke check karein ki pehle se posted toh nahi hai
+    const currentItem = await getFirebaseData(dbPath);
+    if (!currentItem || currentItem.postedToChannel) {
+        return false; // Agar pehle hi post ho chuka hai toh turant rok do
     }
 
-    const formattedDate = date || new Date().toLocaleDateString('en-US', {
+    // 2. Pehle hi database me postedToChannel: true mark kar do (Race Condition Lock)
+    await updateFirebaseData(dbPath, { postedToChannel: true });
+
+    const { userId, userName, name, amount, currency, method, txUrl, destination } = currentItem || withdrawalData || {};
+    
+    const formattedDate = new Date().toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
@@ -264,7 +271,7 @@ async function sendPayoutNotification(withdrawalData) {
     });
 
     const finalName = userName || name || (userId ? `User_${String(userId).slice(0, 4)}***` : 'Member');
-    const finalAmount = amount || tonAmount || '0.00';
+    const finalAmount = amount || '0.00';
     const finalMethod = method || 'TON Wallet';
 
     const message = `💸 <b>Payout Success</b> 💸\n\n` +
@@ -284,6 +291,7 @@ async function sendPayoutNotification(withdrawalData) {
       parse_mode: 'HTML',
       ...keyboard
     });
+    
     console.log("✅ Channel Notification Sent Successfully!");
     return true;
   } catch (error) {
@@ -333,15 +341,10 @@ async function handleFaucetPayPayout(req, res) {
       };
 
       const reqKey = `fp_${Date.now()}`;
+      const dbPath = `withdrawals/${userId}/${reqKey}`;
       
-      // Pehle Firebase me save karein with postedToChannel: false
-      await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
-
-      // Channel par notification bhejein aur turant true mark karein
-      const success = await sendPayoutNotification(payoutData);
-      if (success) {
-          await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, { postedToChannel: true });
-      }
+      await updateFirebaseData(dbPath, payoutData);
+      await sendPayoutNotification(payoutData, dbPath);
 
       return res.status(200).json({
         success: true,
@@ -471,18 +474,13 @@ bot.command('approve_ton', async (ctx) => {
 
     for (let uId in allData) {
       if (allData[uId][reqId]) {
+        const dbPath = `withdrawals/${uId}/${reqId}`;
         const item = allData[uId][reqId];
         item.status = 'SUCCESS (Approved)';
         
-        // Pehle hi check kar lein ki postedToChannel true toh nahi
-        if (!item.postedToChannel) {
-            const posted = await sendPayoutNotification(item);
-            if (posted) {
-              item.postedToChannel = true;
-            }
-        }
+        await updateFirebaseData(dbPath, item);
+        await sendPayoutNotification(item, dbPath);
 
-        await updateFirebaseData(`withdrawals/${uId}/${reqId}`, item);
         found = true;
         ctx.reply(`✅ Request ${reqId} Approved aur Payout Channel par Post kar diya gaya!`);
         break;
@@ -506,16 +504,11 @@ bot.command('approve_all_ton', async (ctx) => {
       for (let key in userWithdrawals) {
         const item = userWithdrawals[key];
         if (item && item.status === 'PENDING') {
+          const dbPath = `withdrawals/${uId}/${key}`;
           item.status = 'SUCCESS (Approved)';
           
-          if (!item.postedToChannel) {
-              const posted = await sendPayoutNotification(item);
-              if (posted) {
-                item.postedToChannel = true;
-              }
-          }
-
-          await updateFirebaseData(`withdrawals/${uId}/${key}`, item);
+          await updateFirebaseData(dbPath, item);
+          await sendPayoutNotification(item, dbPath);
           approvedCount++;
         }
       }
@@ -527,7 +520,7 @@ bot.command('approve_all_ton', async (ctx) => {
   }
 });
 
-// Payout Polling Logic (Protected with postedToChannel check)
+// Payout Polling Logic (Protected via dbPath check)
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals'];
   
@@ -538,8 +531,6 @@ async function checkAndSendPayouts() {
 
       const processWithdrawalItem = async (itemKey, data, currentPath) => {
         if (!data || typeof data !== 'object') return;
-        
-        // Agar pehle se postedToChannel true hai toh skip karein
         if (data.postedToChannel) return;
 
         const statusText = String(data.status || '').toLowerCase();
@@ -551,13 +542,7 @@ async function checkAndSendPayouts() {
                            statusText.includes('done');
 
         if (isApproved) {
-          // Turant Firebase me postedToChannel true set karein taaki duplicate call na ho
-          await updateFirebaseData(`${currentPath}/${itemKey}`, { postedToChannel: true });
-          
-          const success = await sendPayoutNotification(data);
-          if (!success) {
-            // Agar kisi wajah se fail hua toh wapas false kar sakte hain ya rehne dein
-          }
+          await sendPayoutNotification(data, `${currentPath}/${itemKey}`);
         }
       };
 
