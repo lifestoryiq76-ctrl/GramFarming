@@ -132,19 +132,16 @@ bot.command('reminder', async (ctx) => {
    3. AUTOMATIC DAILY BROADCAST (Strict Single-Run Protection)
    ========================================================= */
 async function triggerDailyCheckinBroadcast() {
-    const todayDateStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const todayDateStr = new Date().toISOString().split('T')[0];
     
-    // Check Firebase to ensure broadcast hasn't run today across any server instance
     const lastRunDate = await getFirebaseData('systemStatus/lastDailyBroadcast');
     if (lastRunDate === todayDateStr) {
-        console.log("⚠️ Daily broadcast already executed today. Skipping.");
         return;
     }
 
-    // Lock it immediately in Firebase
     await updateFirebaseData('systemStatus', { lastDailyBroadcast: todayDateStr });
 
-    console.log("📢 Triggering Daily Check-in Broadcast to all users at 5:30 AM...");
+    console.log("📢 Triggering Daily Check-in Broadcast at 5:30 AM...");
     const usersData = await getFirebaseData('users');
     if (usersData) {
         for (let uId in usersData) {
@@ -156,10 +153,8 @@ async function triggerDailyCheckinBroadcast() {
     }
 }
 
-// Timer checking every minute for 05:30 AM (Subah 5:30 baje)
 setInterval(() => {
     const now = new Date();
-    // India time (UTC+5:30) handle karne ke liye ya standard local time check
     if (now.getHours() === 5 && now.getMinutes() === 30) {
         triggerDailyCheckinBroadcast();
     }
@@ -201,7 +196,6 @@ async function checkNewTasksAndBroadcast() {
 
 async function broadcastNewTaskToAllUsers(taskData) {
     try {
-        console.log("📢 Broadcasting new task to all users:", taskData.title);
         const usersData = await getFirebaseData('users');
         if (!usersData) return;
 
@@ -224,7 +218,6 @@ async function broadcastNewTaskToAllUsers(taskData) {
                 } catch (e) {}
             }
         }
-        console.log("✅ New Task broadcasted successfully to all users!");
     } catch (err) {
         console.error('❌ Failed to broadcast new task:', err.message);
     }
@@ -251,11 +244,18 @@ async function updateBotDescriptionWithTotalUsers() {
 setInterval(updateBotDescriptionWithTotalUsers, 3600000);
 
 
-// Helper Function: Send Payout Proof to Telegram Channel
+/* =========================================================
+   6. PAYOUT NOTIFICATION (Protected against duplicates)
+   ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
-    const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination } = withdrawalData || {};
+    const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination, postedToChannel } = withdrawalData || {};
     
+    // Agar pehle hi channel par post ho chuka hai toh dubara na bhejein
+    if (postedToChannel) {
+        return false;
+    }
+
     const formattedDate = date || new Date().toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
@@ -284,6 +284,7 @@ async function sendPayoutNotification(withdrawalData) {
       parse_mode: 'HTML',
       ...keyboard
     });
+    console.log("✅ Channel Notification Sent Successfully!");
     return true;
   } catch (error) {
     console.error('❌ Failed to post payout proof to channel:', error.description || error.message);
@@ -327,12 +328,20 @@ async function handleFaucetPayPayout(req, res) {
         method: 'FAUCETPAY',
         destination: email,
         status: 'SUCCESS (Approved)',
+        postedToChannel: false,
         date: new Date().toLocaleString()
       };
 
       const reqKey = `fp_${Date.now()}`;
-      await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, { ...payoutData, postedToChannel: true });
-      await sendPayoutNotification(payoutData);
+      
+      // Pehle Firebase me save karein with postedToChannel: false
+      await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
+
+      // Channel par notification bhejein aur turant true mark karein
+      const success = await sendPayoutNotification(payoutData);
+      if (success) {
+          await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, { postedToChannel: true });
+      }
 
       return res.status(200).json({
         success: true,
@@ -464,12 +473,16 @@ bot.command('approve_ton', async (ctx) => {
       if (allData[uId][reqId]) {
         const item = allData[uId][reqId];
         item.status = 'SUCCESS (Approved)';
-        await updateFirebaseData(`withdrawals/${uId}/${reqId}`, item);
-
-        const posted = await sendPayoutNotification(item);
-        if (posted) {
-          await updateFirebaseData(`withdrawals/${uId}/${reqId}`, { postedToChannel: true });
+        
+        // Pehle hi check kar lein ki postedToChannel true toh nahi
+        if (!item.postedToChannel) {
+            const posted = await sendPayoutNotification(item);
+            if (posted) {
+              item.postedToChannel = true;
+            }
         }
+
+        await updateFirebaseData(`withdrawals/${uId}/${reqId}`, item);
         found = true;
         ctx.reply(`✅ Request ${reqId} Approved aur Payout Channel par Post kar diya gaya!`);
         break;
@@ -494,12 +507,15 @@ bot.command('approve_all_ton', async (ctx) => {
         const item = userWithdrawals[key];
         if (item && item.status === 'PENDING') {
           item.status = 'SUCCESS (Approved)';
-          await updateFirebaseData(`withdrawals/${uId}/${key}`, item);
-
-          const posted = await sendPayoutNotification(item);
-          if (posted) {
-            await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
+          
+          if (!item.postedToChannel) {
+              const posted = await sendPayoutNotification(item);
+              if (posted) {
+                item.postedToChannel = true;
+              }
           }
+
+          await updateFirebaseData(`withdrawals/${uId}/${key}`, item);
           approvedCount++;
         }
       }
@@ -511,6 +527,7 @@ bot.command('approve_all_ton', async (ctx) => {
   }
 });
 
+// Payout Polling Logic (Protected with postedToChannel check)
 async function checkAndSendPayouts() {
   const pathsToCheck = ['withdrawals'];
   
@@ -522,6 +539,9 @@ async function checkAndSendPayouts() {
       const processWithdrawalItem = async (itemKey, data, currentPath) => {
         if (!data || typeof data !== 'object') return;
         
+        // Agar pehle se postedToChannel true hai toh skip karein
+        if (data.postedToChannel) return;
+
         const statusText = String(data.status || '').toLowerCase();
         const isApproved = statusText.includes('approved') || 
                            statusText.includes('success') || 
@@ -530,10 +550,13 @@ async function checkAndSendPayouts() {
                            statusText.includes('sent') ||
                            statusText.includes('done');
 
-        if (isApproved && !data.postedToChannel) {
+        if (isApproved) {
+          // Turant Firebase me postedToChannel true set karein taaki duplicate call na ho
+          await updateFirebaseData(`${currentPath}/${itemKey}`, { postedToChannel: true });
+          
           const success = await sendPayoutNotification(data);
-          if (success) {
-            await updateFirebaseData(`${currentPath}/${itemKey}`, { postedToChannel: true });
+          if (!success) {
+            // Agar kisi wajah se fail hua toh wapas false kar sakte hain ya rehne dein
           }
         }
       };
