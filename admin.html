@@ -73,33 +73,7 @@
         <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
     </div>
 
-    <!-- 2. LEADERBOARD CONTROL PANEL -->
-    <div class="card" style="border: 1px solid #10b981;">
-        <h2 style="color: #10b981;">🏆 Ads Arena Leaderboard Control Panel</h2>
-        <div class="net-box">
-            <h3>📊 Ads Arena Prize Pool & Settings</h3>
-            <div class="grid-3">
-                <div>
-                    <label>Leaderboard Status:</label>
-                    <select id="leaderboardStatus">
-                        <option value="true">🟢 ENABLED (ON)</option>
-                        <option value="false">🔴 DISABLED (OFF)</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Prize Pool (USDT):</label>
-                    <input type="number" id="leaderboardPrizePool" step="0.001" value="10.000">
-                </div>
-                <div>
-                    <label>Contest Duration (Days):</label>
-                    <input type="number" id="leaderboardDuration" step="1" value="7">
-                </div>
-            </div>
-        </div>
-        <button type="button" class="btn-blue" style="margin-top: 10px; background-color: #10b981;" onclick="saveSettings('leaderboard')">💾 Save Leaderboard Settings</button>
-    </div>
-
-    <!-- 3. Rocket Space Mining Parameters Control -->
+    <!-- 2. Rocket Space Mining Parameters Control -->
     <div class="card">
         <h2>🚀 Space Rocket Mining Control</h2>
         
@@ -150,7 +124,7 @@
         <button type="button" onclick="saveSettings('mining')">💾 Save Rocket Mining Parameters</button>
     </div>
 
-    <!-- 4. Task Ads Networks Control -->
+    <!-- 3. Task Ads Networks Control -->
     <div class="card">
         <h2>📺 Task Ads Watch Networks Setup</h2>
         
@@ -247,7 +221,7 @@
         <button type="button" onclick="saveSettings('adsNetworks')">💾 Save All Ad Networks Setup</button>
     </div>
 
-    <!-- 5. Staking APY Control -->
+    <!-- 4. Staking APY Control -->
     <div class="card" style="border: 1px solid var(--yellow);">
         <h2 style="color: var(--yellow);">💎 Staking Plans APY Control</h2>
         <div class="grid-4">
@@ -287,7 +261,7 @@
         <button type="button" class="btn-blue" style="margin-top: 10px;" onclick="saveSettings('staking')">💾 Save Staking APY Rates</button>
     </div>
 
-    <!-- 6. User Campaign Click Rates Control -->
+    <!-- 5. User Campaign Click Rates Control -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚙️ User Campaign Publish Rates (Clicks Pricing)</h2>
         <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">Yahan se aap sabhi click packages (100 se 5000) ke Coin cost/rates change kar sakte hain.</p>
@@ -341,7 +315,7 @@
         <button type="button" style="margin-top: 12px;" onclick="saveSettings('clickRates')">💾 Save Click Rates</button>
     </div>
 
-    <!-- 7. Add Custom Task -->
+    <!-- 6. Add Custom Task -->
     <div class="card">
         <h2>📋 Add New Custom Task (Telegram / YouTube / Ads)</h2>
         <div class="grid-2">
@@ -377,7 +351,7 @@
         </div>
     </div>
 
-    <!-- 🔄 8. ONLY PARTNER & TASK RESET CONTROLLER -->
+    <!-- 🔄 7. ONLY PARTNER & TASK RESET CONTROLLER -->
     <div class="card" style="border: 1px solid #f59e0b;">
         <h2 style="color: #f59e0b;">🔄 Partner & Task Reset Manager (Only 'Partner' & 'Task' Tabs)</h2>
         <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">
@@ -398,7 +372,7 @@
         </div>
     </div>
 
-    <!-- 9. User Balance Manual Manager -->
+    <!-- 8. User Balance Manual Manager -->
     <div class="card" style="border: 1px solid var(--accent);">
         <h2>⚡ User Balance Modifier (Coin / USDT / Gram)</h2>
         <div class="grid-4">
@@ -429,7 +403,7 @@
         <button type="button" class="btn-blue" onclick="modifyUserBalance()">🔄 Update User Balance</button>
     </div>
 
-    <!-- 10A. FaucetPay Withdrawal Requests -->
+    <!-- 9A. FaucetPay Withdrawal Requests -->
     <div class="card">
         <h2>💳 FaucetPay Withdrawal Requests</h2>
         <div class="table-container">
@@ -451,7 +425,7 @@
         </div>
     </div>
 
-    <!-- 10B. TON Withdrawal Requests -->
+    <!-- 9B. TON Withdrawal Requests -->
     <div class="card">
         <h2>💎 TON Withdrawal Requests (Manual)</h2>
         <button type="button" onclick="approveAllTonWithdrawals()" style="background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 12px; width: 100%;">
@@ -476,7 +450,7 @@
         </div>
     </div>
 
-    <!-- 11. Registered Users List -->
+    <!-- 10. Registered Users List -->
     <div class="card">
         <h2>👥 Registered Users, IP Address & Security Management</h2>
         <div class="table-container">
@@ -543,11 +517,6 @@
                     document.getElementById('refBonus').value = data.general.refPercent ?? 20;
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? data.general.minWithdrawal ?? 0.01;
                     document.getElementById('minTon').value = data.general.minTon ?? data.general.minTonWithdrawal ?? 0.01;
-                }
-                if(data.leaderboard) {
-                    document.getElementById('leaderboardStatus').value = String(data.leaderboard.status ?? true);
-                    document.getElementById('leaderboardPrizePool').value = data.leaderboard.prizePool ?? 10.00;
-                    document.getElementById('leaderboardDuration').value = data.leaderboard.durationDays ?? 7;
                 }
                 if(data.clickRates) {
                     document.getElementById('rateCoin100').value = data.clickRates.coin100 ?? 35;
@@ -834,13 +803,6 @@
                     'adminSettings/general/minTonWithdrawal': minT
                 };
                 update(ref(db), data).then(() => alert('General Settings Saved Successfully!'));
-            } else if (type === 'leaderboard') {
-                let leaderboardData = {
-                    'adminSettings/leaderboard/status': document.getElementById('leaderboardStatus').value === 'true',
-                    'adminSettings/leaderboard/prizePool': parseFloat(document.getElementById('leaderboardPrizePool').value) || 10.00,
-                    'adminSettings/leaderboard/durationDays': parseInt(document.getElementById('leaderboardDuration').value) || 7
-                };
-                update(ref(db), leaderboardData).then(() => alert('✅ Leaderboard Settings Saved Successfully!'));
             } else if (type === 'clickRates') {
                 let ratesData = {
                     'adminSettings/clickRates/coin100': parseFloat(document.getElementById('rateCoin100').value) || 35,
