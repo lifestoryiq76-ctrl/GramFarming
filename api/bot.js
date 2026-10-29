@@ -7,9 +7,6 @@ const cron = require('node-cron');
 const app = express();
 app.use(express.json());
 
-// Server Boot Timestamp
-const SERVER_START_TIME = Date.now();
-
 // Serve static files from root directory
 app.use(express.static(path.join(__dirname, '..')));
 
@@ -293,7 +290,6 @@ async function checkAndSendPayouts() {
                            statusText.includes('paid');
 
         if (isApproved && !item.postedToChannel) {
-          // Allow instant posting for newly approved items without restricting by SERVER_START_TIME
           const success = await sendPayoutNotification(item);
           if (success) {
             await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
@@ -350,7 +346,6 @@ async function handleFaucetPayPayout(req, res) {
     });
 
     if (faucetPayResponse.data && faucetPayResponse.data.status === 200) {
-      const currentTime = Date.now();
       const payoutData = {
         userId: userId,
         userName: displayName,
@@ -361,11 +356,10 @@ async function handleFaucetPayPayout(req, res) {
         status: 'SUCCESS (Approved)',
         processed: true,
         postedToChannel: true,
-        rawTimestamp: currentTime,
         date: new Date().toLocaleString()
       };
 
-      const reqKey = requestId || `fp_${currentTime}_${Math.floor(Math.random() * 1000)}`;
+      const reqKey = requestId || `fp_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
       await sendPayoutNotification(payoutData);
 
@@ -397,8 +391,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
   }
 
   try {
-    const currentTime = Date.now();
-    const reqKey = requestId || `ton_${currentTime}_${Math.floor(Math.random() * 1000)}`;
+    const reqKey = requestId || `ton_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
     const withdrawalData = {
       id: reqKey,
@@ -410,7 +403,6 @@ app.post('/api/withdraw/ton', async (req, res) => {
       destination: walletAddress,
       status: 'PENDING',
       postedToChannel: false,
-      rawTimestamp: currentTime,
       date: new Date().toLocaleString()
     };
 
