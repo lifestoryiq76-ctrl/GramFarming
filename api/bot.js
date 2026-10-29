@@ -224,7 +224,7 @@ app.post('/api/tasks/publish', async (req, res) => {
 });
 
 /* =========================================================
-   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (UNLIMITED WITHDRAWALS)
+   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (STRICT LOCK)
    ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
@@ -302,6 +302,9 @@ async function checkAndSendPayouts() {
   }
 }
 
+// Memory cache to prevent simultaneous duplicate requests within 5 seconds
+const recentRequests = new Set();
+
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName, requestId } = req.body;
 
@@ -309,7 +312,24 @@ async function handleFaucetPayPayout(req, res) {
     return res.status(400).json({ success: false, message: "Email and amount are required." });
   }
 
+  // Prevent double hit within 5 seconds using unique combination key
+  const hitKey = `${userId}_${amount}_${email}`;
+  if (recentRequests.has(hitKey)) {
+    return res.status(400).json({ success: false, message: "Request is already being processed. Please wait." });
+  }
+
+  recentRequests.add(hitKey);
+  setTimeout(() => recentRequests.delete(hitKey), 5000); // clear after 5 seconds
+
   try {
+    // Check if this specific requestId was already processed in Firebase
+    if (requestId) {
+      const existingReq = await getFirebaseData(`withdrawals/${userId}/${requestId}`);
+      if (existingReq && existingReq.processed) {
+        return res.status(400).json({ success: false, message: "This withdrawal has already been processed." });
+      }
+    }
+
     const numericAmount = parseFloat(amount);
     const satoshiAmount = Math.round(numericAmount * 100000000);
 
@@ -342,8 +362,7 @@ async function handleFaucetPayPayout(req, res) {
         date: new Date().toLocaleString()
       };
 
-      // Har withdrawal ke liye ek bilkul naya unique key banega taaki koi clash na ho
-      const reqKey = requestId || `fp_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const reqKey = requestId || `fp_${Date.now()}`;
       await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
       await sendPayoutNotification(payoutData);
 
@@ -375,7 +394,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
   }
 
   try {
-    const reqKey = requestId || `ton_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const reqKey = requestId || `ton_${Date.now()}`;
 
     const withdrawalData = {
       id: reqKey,
@@ -530,7 +549,7 @@ app.post('/api/bot', async (req, res) => {
         const { action, amount, currency, userId } = req.body || {};
 
         if (action === 'create_deposit') {
-            const depositUrl = `https://faucetpay.io/merchant/webpay?merchant_username=${FAUCETPAY_MERCHANT_USERNAME}&item_name=Gram+Farming+Deposit&currency1=${currency || 'USDT'}&amount1=${amount}&custom=${userId}`;
+            const depositUrl = `https://faucetpay.io/merchant/webpay?merchant_username=${FAUCETPAY_MERCHANT_USERNAME}&item_name=Gram+Farming+Deposit&currency1=${currency || 'USDT'}` + `&amount1=${amount}&custom=${userId}`;
             return res.status(200).json({ success: true, url: depositUrl });
         }
 
