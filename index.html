@@ -523,8 +523,8 @@ input:focus, select:focus { border-color: var(--accent); }
     gap: 12px;
 }
 .featured-card-icon {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 12px;
     background: #000;
     overflow: hidden;
@@ -856,7 +856,7 @@ input:focus, select:focus { border-color: var(--accent); }
         <span class="badge-gold" style="margin-top:6px;">🪙 +0.08 Coin</span>
       </div>
     </div>
-    <button class="btn-join" id="officialBtn_news" onclick="openTaskVerificationModal('Gram Farming Official', 'https://t.me/GramFarming_Official', '@GramFarmingOfficial', 'official_news_chan', 0.08)">
+    <button class="btn-join" id="officialBtn_news" onclick="openTaskVerificationModal('Gram Farming Official', 'https://t.me/GramFarming_Official', '@GramFarmingOfficial', 'official_news_chan', 0.08, 'Join')">
       Join 👥
     </button>
   </div>
@@ -870,7 +870,7 @@ input:focus, select:focus { border-color: var(--accent); }
         <span class="badge-gold" style="margin-top:6px;">🪙 +0.08 Coin</span>
       </div>
     </div>
-    <button class="btn-join" id="officialBtn_payout" onclick="openTaskVerificationModal('Gram Farming Payout', 'https://t.me/GramFarming_Payout', '@GramFarmingPayout', 'official_payout_chan', 0.08)">
+    <button class="btn-join" id="officialBtn_payout" onclick="openTaskVerificationModal('Gram Farming Payout', 'https://t.me/GramFarming_Payout', '@GramFarmingPayout', 'official_payout_chan', 0.08, 'Join')">
       Join 👥
     </button>
   </div>
@@ -927,11 +927,21 @@ input:focus, select:focus { border-color: var(--accent); }
 <label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;" id="inputLabelText">Telegram Channel or Link</label>
 <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
 <input type="text" id="customTaskTitle" placeholder="@channel or https://t.me/channel" style="margin-top: 0; flex: 1;">
-<label style="background: #14254a; border: 1.5px solid var(--border); border-radius: 8px; width: 44px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;" title="Upload Image">
-<span style="font-size: 18px;">🖼️</span>
-<input type="file" id="campaignImageInput" accept="image/*" style="display: none;" onchange="handleCampaignImageUpload(this)">
+<label style="background: #14254a; border: 1.5px solid var(--border); border-radius: 8px; width: 44px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; overflow: hidden;" title="Upload Logo Image">
+  <span id="campaignImagePreviewContainer" style="font-size: 18px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">🖼️</span>
+  <input type="file" id="campaignImageInput" accept="image/*" style="display: none;" onchange="handleCampaignImageUpload(this)">
 </label>
 </div>
+
+<!-- NEW: Button Text Option for User Custom URL Button -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Button Text (Wabsite / Action Button Name)</label>
+<select id="campaignButtonTextOption" style="margin-top: 0; margin-bottom: 12px;">
+  <option value="Join">Join 👥</option>
+  <option value="Launch Bot">Launch Bot 🚀</option>
+  <option value="Visit">Visit 🌐</option>
+  <option value="Open">Open 🔗</option>
+  <option value="Play">Play ▶</option>
+</select>
 
 <div id="campaignObjectiveInfoBox" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 12px; border-radius: 10px; margin-bottom: 12px;">
 <div class="flex-between" id="objBoxHeader">
@@ -1116,7 +1126,6 @@ No active staking plans found.
 <span>🔗</span> <span data-i18n="inviteEarn">Invite & Earn</span>
 </div>
 <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px 0;"><span id="refPercentText">Get 20%</span> bonus from all 🪙 earned by your invited friends.</p>
-<!-- Updated ban warning text without admin panel mention -->
 <div style="display: flex; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 10px; border-radius: 8px; margin-bottom: 12px; color: #ef4444; font-size: 11px; font-weight: bold;">
 <span>🛡️</span>
 <span>Fake accounts are banned automatically. Users will be blocked via IP analysis.</span>
@@ -1283,7 +1292,7 @@ No recent transactions yet.
     <div class="info-box-card">
       <div style="font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px;">Subscribe & Stay in Channel</div>
       <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
-        Join the channel and stay subscribed. Click '<span style="color:#0ea5e9;">Join Channel &gt;</span>' below to open Telegram and join.
+        Join the channel and stay subscribed. Click '<span style="color:#0ea5e9;" id="modalInstructionActionText">Join</span>' below to open the link.
       </div>
     </div>
 
@@ -1292,12 +1301,12 @@ No recent transactions yet.
         <span>⏱️</span> Proof of Activity · <span id="modalTimerDisplay">20s</span>
       </div>
       <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
-        Open the join Channel, stay for at least 15 seconds, then return and tap CHECK when the full 20 seconds is verified.
+        Open the link, stay for at least 15 seconds, then return and tap CHECK when the full 20 seconds is verified.
       </div>
     </div>
 
     <button onclick="handleModalButtonClick()" id="modalActionBtn" class="btn" style="width: 100%; background: #0098ea; color: #ffffff; padding: 14px; border-radius: 25px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 152, 234, 0.4);">
-      Join Channel &gt;
+      Join >
     </button>
   </div>
 </div>
@@ -2199,6 +2208,7 @@ function setCampaignObj(objType) {
   var campTitleDisp = document.getElementById('campaignTitleDisplay');
   var addonVerifiedPrice = document.getElementById('addonVerifiedPrice');
   var addonBannerPriceText = document.getElementById('addonBannerPriceText');
+  var btnTextOption = document.getElementById('campaignButtonTextOption');
 
   if (addonVerifiedPrice) addonVerifiedPrice.innerText = "+$0.05 / 100";
   if (addonBannerPriceText) addonBannerPriceText.innerText = "+$0.07 / 100";
@@ -2215,6 +2225,7 @@ function setCampaignObj(objType) {
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "@channel or https://t.me/channel";
     if(extraFieldsGroup) extraFieldsGroup.style.display = 'none';
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Subscription verification via bot (8h retention)";
+    if(btnTextOption) btnTextOption.value = "Join";
 
   } else if(objType === 'Mini App') {
     if(btnApp) { btnApp.style.background = '#0ea5e9'; btnApp.style.color = '#fff'; }
@@ -2227,6 +2238,7 @@ function setCampaignObj(objType) {
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://t.me/game_bot?start=ref123";
     if(extraFieldsGroup) extraFieldsGroup.style.display = 'block';
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "20-second Proof-of-Activity hold to prevent instant drop-offs";
+    if(btnTextOption) btnTextOption.value = "Play";
 
   } else if(objType === 'Bot (MAU)') {
     if(btnBot) { btnBot.style.background = '#0ea5e9'; btnBot.style.color = '#fff'; }
@@ -2236,6 +2248,7 @@ function setCampaignObj(objType) {
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "@my_bot, t.me/my_bot";
     if(extraFieldsGroup) extraFieldsGroup.style.display = 'block';
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Bot interaction verification & retention hold";
+    if(btnTextOption) btnTextOption.value = "Launch Bot";
 
   } else if(objType === 'Website') {
     if(btnWeb) { btnWeb.style.background = '#0ea5e9'; btnWeb.style.color = '#fff'; }
@@ -2245,6 +2258,7 @@ function setCampaignObj(objType) {
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://yourwebsite.com";
     if(extraFieldsGroup) extraFieldsGroup.style.display = 'block';
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Website visit retention & engagement check";
+    if(btnTextOption) btnTextOption.value = "Visit";
 
   } else if(objType === 'Other Link') {
     if(btnOther) { btnOther.style.background = '#0ea5e9'; btnOther.style.color = '#fff'; }
@@ -2254,6 +2268,7 @@ function setCampaignObj(objType) {
     if(customTaskTitleInput) customTaskTitleInput.placeholder = "https://socialmedia.com/post/123";
     if(extraFieldsGroup) extraFieldsGroup.style.display = 'block';
     if(addonVerifiedDesc) addonVerifiedDesc.innerText = "Task completion verification via browser click";
+    if(btnTextOption) btnTextOption.value = "Open";
   }
   updateCostCalculation();
 }
@@ -2263,7 +2278,11 @@ function handleCampaignImageUpload(input) {
     var reader = new FileReader();
     reader.onload = function(e) {
       uploadedCampaignImageBase64 = e.target.result;
-      showToast("✅ Image attached successfully!", "success");
+      var previewBox = document.getElementById('campaignImagePreviewContainer');
+      if(previewBox) {
+        previewBox.innerHTML = '<img src="' + uploadedCampaignImageBase64 + '" style="width:100%; height:100%; object-fit:cover; border-radius:8px;" />';
+      }
+      showToast("✅ Logo Image attached successfully!", "success");
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -2346,6 +2365,7 @@ function publishCampaign() {
   var targetLinkInput = (document.getElementById('customTaskTitle').value || '').trim();
   var titleInputText = (document.getElementById('campaignTitleInputText').value || '').trim();
   var descInputText = (document.getElementById('campaignDescInputText').value || '').trim();
+  var customButtonText = document.getElementById('campaignButtonTextOption').value || 'Join';
 
   if(!targetLinkInput) {
     showToast("Kripya target link ya username enter karein.", "error");
@@ -2383,6 +2403,7 @@ function publishCampaign() {
     link: targetLinkInput,
     description: descInputText,
     objective: selectedCampaignObj,
+    buttonText: customButtonText,
     plan: selectedClickCount + " clicks =" + coinCost.toFixed(1) + " Coins",
     totalClicks: selectedClickCount,
     clicksDone: 0,
@@ -2401,6 +2422,8 @@ function publishCampaign() {
   if(document.getElementById('campaignTitleInputText')) document.getElementById('campaignTitleInputText').value = '';
   if(document.getElementById('campaignDescInputText')) document.getElementById('campaignDescInputText').value = '';
   uploadedCampaignImageBase64 = "";
+  var previewBox = document.getElementById('campaignImagePreviewContainer');
+  if(previewBox) previewBox.innerHTML = '🖼️';
 
   showToast("✅ Campaign published successfully! Cost deducted from wallet.", "success");
   switchCreateSubTab('my');
@@ -2655,7 +2678,8 @@ function watchAdsterraAd() {
 function startTaskCountdownTimer(btn, durationSec) {
   if (!btn) return;
   btn.disabled = true;
-  var countdown = durationSec || 60;
+  // LIVE TASK 4 SEC REQUIREMENT (adjusted from 5 sec)
+  var countdown = (durationSec === 5) ? 4 : (durationSec || 60);
   btn.innerText = "Wait (" + countdown + "s)";
 
   var timerInterval = setInterval(function() {
@@ -3431,7 +3455,7 @@ function claimRefRewards() {
   showToast("Claim Successful! +" + claimable.toFixed(2) + " Coins claimed from referrals!", "success");
 }
 
-function openTaskVerificationModal(title, link, handleName, taskKey, rewardVal) {
+function openTaskVerificationModal(title, link, handleName, taskKey, rewardVal, btnLabel) {
   if (completedTasksSet.includes(taskKey)) {
     showToast("Aapne ye task pehle hi complete kar liya hai! ✅", "success");
     return;
@@ -3450,14 +3474,18 @@ function openTaskVerificationModal(title, link, handleName, taskKey, rewardVal) 
   var badgeDisp = document.getElementById('modalRewardBadge');
   var btn = document.getElementById('modalActionBtn');
   var timerDisp = document.getElementById('modalTimerDisplay');
+  var instructionTextEl = document.getElementById('modalInstructionActionText');
+
+  var displayLabel = btnLabel || "Join";
 
   if (handleDisp) handleDisp.innerText = handleName || "@GramFarmingOfficial";
   if (titleDisp) titleDisp.innerText = title;
   if (badgeDisp) badgeDisp.innerText = "+ " + currentSelectedRewardVal.toFixed(2) + " Coin";
   if (timerDisp) timerDisp.innerText = "20s";
+  if (instructionTextEl) instructionTextEl.innerText = displayLabel;
 
   if (btn) {
-    btn.innerText = "Join Channel >";
+    btn.innerText = displayLabel + " >";
     btn.style.background = "#0098ea";
     btn.disabled = false;
   }
@@ -3485,9 +3513,9 @@ function handleModalButtonClick() {
     }
 
     modalState = "timer";
-    var countdown = 20;
+    var countdown = 20; // VERIFY 20 SEC REQUIREMENT
     if (btn) {
-      btn.innerText = "Join Channel. (" + countdown + "s)";
+      btn.innerText = "Wait (" + countdown + "s)";
       btn.disabled = true;
       btn.style.background = "#233b6a";
     }
@@ -3495,7 +3523,7 @@ function handleModalButtonClick() {
     modalTimerInterval = setInterval(function() {
       countdown--;
       if (timerDisp) timerDisp.innerText = countdown + "s";
-      if (btn) btn.innerText = "Join Channel. (" + countdown + "s)";
+      if (btn) btn.innerText = "Wait (" + countdown + "s)";
 
       if (countdown <= 0) {
         clearInterval(modalTimerInterval);
@@ -3559,6 +3587,7 @@ function renderCustomTasksFromFirebase() {
         description: 'Join official news and updates channel',
         link: 'https://t.me/GramFarming_Official',
         objective: 'Channel',
+        buttonText: 'Join',
         image: 'https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png'
       }
     ];
@@ -3588,21 +3617,24 @@ function renderCustomTasksFromFirebase() {
             description: task.description || "Complete task & claim reward!",
             link: task.link,
             objective: task.objective || "Channel",
+            buttonText: task.buttonText || "Join",
             image: task.image || ""
           });
         }
 
         visibleTaskCount++;
 
+        // FULL LOGO IMAGE FIX WITH OBJECT-FIT COVER
         var imgHtml = task.image 
-          ? '<img src="' + task.image + '" style="width:44px; height:44px; border-radius:50%; object-fit:cover; margin-right:12px;" />' 
-          : '<div style="width:44px; height:44px; border-radius:50%; background:#0ea5e9; display:flex; align-items:center; justify-content:center; font-size:20px; margin-right:12px;">🚀</div>';
+          ? '<img src="' + task.image + '" style="width:48px; height:48px; border-radius:12px; object-fit:cover; margin-right:12px; flex-shrink:0; border:1px solid rgba(255,255,255,0.1);" />' 
+          : '<div style="width:48px; height:48px; border-radius:12px; background:#0ea5e9; display:flex; align-items:center; justify-content:center; font-size:22px; margin-right:12px; flex-shrink:0;">🚀</div>';
 
         var safeTitle = task.title.replace(/'/g, "\\'");
         var safeLink = task.link.replace(/'/g, "\\'");
         var isVerified = task.verifiedAddon || false;
 
-        var btnText = "Join 👥";
+        var customBtnText = task.buttonText || "Join";
+        var btnDisplayLabel = customBtnText + (customBtnText === 'Join' ? ' 👥' : (customBtnText === 'Launch Bot' ? ' 🚀' : (customBtnText === 'Visit' ? ' 🌐' : ' ▶')));
         var btnBg = "#10b981";
 
         var verifiedBadgeHtml = isVerified 
@@ -3626,7 +3658,7 @@ function renderCustomTasksFromFirebase() {
             '</div>' +
           '</div>' +
           '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
-          'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05)">' + btnText + '</button>' +
+          'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05, \'' + customBtnText + '\')">' + btnDisplayLabel + '</button>' +
         '</div>';
       });
 
@@ -3662,6 +3694,7 @@ function initBannerSlider() {
         description: 'Join official news and updates channel',
         link: 'https://t.me/GramFarming_Official',
         objective: 'Channel',
+        buttonText: 'Join',
         image: 'https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png'
       }
     ];
@@ -3690,17 +3723,15 @@ function renderCurrentBannerTask() {
   var dotsContainer = document.getElementById('featuredDotsContainer');
   if (!boxContent || !dotsContainer) return;
 
+  // FULL LOGO IMAGE FIX WITH OBJECT-FIT COVER
   var imgHtml = task.image 
-    ? '<img src="' + task.image + '" alt="Logo" />' 
+    ? '<img src="' + task.image + '" alt="Logo" style="width:100%; height:100%; object-fit:cover;" />' 
     : '<div style="width:100%; height:100%; background:#9333ea; display:flex; align-items:center; justify-content:center; font-size:22px;">⚡</div>';
 
   var safeTitle = task.title.replace(/'/g, "\\'");
   var safeLink = task.link.replace(/'/g, "\\'");
-
-  var actionBtnText = "Join 👥";
-  if (task.objective === "Mini App" || task.objective === "Bot (MAU)") {
-    actionBtnText = "Play ▶";
-  }
+  var customBtnText = task.buttonText || "Join";
+  var actionBtnLabel = customBtnText + (customBtnText === 'Join' ? ' 👥' : (customBtnText === 'Launch Bot' ? ' 🚀' : (customBtnText === 'Visit' ? ' 🌐' : ' ▶')));
 
   boxContent.innerHTML = 
     '<div class="featured-card-content">' +
@@ -3713,7 +3744,7 @@ function renderCurrentBannerTask() {
       '</div>' +
       '<span style="background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px; display:inline-flex; align-items:center; gap:4px;">🛡️ 8h Check</span>' +
     '</div>' +
-    '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05)">' + actionBtnText + '</button>';
+    '<button class="featured-play-btn" onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + task.key + '\', 0.05, \'' + customBtnText + '\')">' + actionBtnLabel + '</button>';
 
   var dotsHtml = '';
   var totalDots = Math.max(6, bannerTasksList.length);
@@ -3747,9 +3778,10 @@ function loadMyPublishedTasks() {
         var statusText = (remaining <= 0) ? 'Done' : 'Active';
         var statusColor = (remaining <= 0) ? 'var(--accent)' : '#0ea5e9';
         
-        var imgHtml = task.image ? '<img src="' + task.image + '" style="width:30px; height:30px; border-radius:6px; object-fit:cover; margin-right:6px;" />' : '';
+        // FULL LOGO IMAGE FIX WITH OBJECT-FIT COVER
+        var imgHtml = task.image ? '<img src="' + task.image + '" style="width:36px; height:36px; border-radius:8px; object-fit:cover; margin-right:8px; flex-shrink:0;" />' : '';
 
-        html += '<div class="card" style="background:#0d1b38; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(14, 165, 233, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Plan selected: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0d1b38; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
+        html += '<div class="card" style="background:#0d1b38; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(14, 165, 233, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Button: <strong>' + (task.buttonText || 'Join') + '</strong> | Plan: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0d1b38; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
       }
     });
     myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi kiya hai.</div>';
