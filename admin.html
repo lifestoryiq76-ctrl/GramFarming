@@ -45,9 +45,17 @@
 <div class="container">
     <h1>🌱 Gram Farming Ultimate Admin Panel <span class="badge-live">MASTER CONTROL</span></h1>
     
-    <!-- 1. General & Economic Settings & Logo -->
+    <!-- 🖼️ BRAND LOGO URL MANAGER (TOP PLACEMENT) -->
+    <div class="card" style="border: 1px solid var(--yellow);">
+        <h2 style="color: var(--yellow);">🖼️ App & Brand Logo Manager</h2>
+        <label>App / Channel Logo Image URL:</label>
+        <input type="text" id="appLogoUrl" placeholder="https://example.com/logo.png">
+        <button type="button" class="btn-blue" style="margin-top: 5px;" onclick="saveLogoUrl()">💾 Save Logo URL</button>
+    </div>
+
+    <!-- 1. General & Economic Settings -->
     <div class="card">
-        <h2>🌐 General, Economic Settings & Logo Control</h2>
+        <h2>🌐 General & Economic Settings (Withdrawal Limits Fixed)</h2>
         <div class="grid-2">
             <div>
                 <label>Coin USDT Value ($):</label>
@@ -69,12 +77,8 @@
                 <label>Min. TON Withdrawal (TON):</label>
                 <input type="number" id="minTon" step="0.001">
             </div>
-            <div>
-                <label>App/Brand Logo Image URL:</label>
-                <input type="text" id="appLogoUrl" placeholder="https://.../logo.png">
-            </div>
         </div>
-        <button type="button" onclick="saveSettings('general')">💾 Save General Settings & Logo</button>
+        <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
     </div>
 
     <!-- 2. Rocket Space Mining Parameters Control -->
@@ -758,6 +762,13 @@
         });
     });
 
+    window.saveLogoUrl = function() {
+        let logoUrl = document.getElementById('appLogoUrl').value.trim();
+        update(ref(db, 'adminSettings/general'), { logoUrl: logoUrl }).then(() => {
+            alert('✅ Logo URL Saved Successfully!');
+        }).catch(err => alert("Error: " + err.message));
+    };
+
     window.resetSingleUserTasks = function() {
         let uId = document.getElementById('resetSingleUserId').value.trim();
         if (!uId) {
@@ -797,7 +808,6 @@
             if (type === 'general') {
                 let minF = parseFloat(document.getElementById('minFaucetPay').value) || 0.01;
                 let minT = parseFloat(document.getElementById('minTon').value) || 0.01;
-                let logoUrl = document.getElementById('appLogoUrl').value.trim();
                 
                 let data = {
                     'adminSettings/general/coinUsdtValue': parseFloat(document.getElementById('coinUsdtValue').value) || 0,
@@ -806,22 +816,9 @@
                     'adminSettings/general/minFaucetPay': minF,
                     'adminSettings/general/minWithdrawal': minF,
                     'adminSettings/general/minTon': minT,
-                    'adminSettings/general/minTonWithdrawal': minT,
-                    'adminSettings/general/logoUrl': logoUrl
+                    'adminSettings/general/minTonWithdrawal': minT
                 };
-                update(ref(db), data).then(() => alert('General Settings & Logo Saved Successfully!'));
-            } else if (type === 'clickRates') {
-                let ratesData = {
-                    'adminSettings/clickRates/coin100': parseFloat(document.getElementById('rateCoin100').value) || 35,
-                    'adminSettings/clickRates/coin250': parseFloat(document.getElementById('rateCoin250').value) || 87.5,
-                    'adminSettings/clickRates/coin500': parseFloat(document.getElementById('rateCoin500').value) || 175,
-                    'adminSettings/clickRates/coin1000': parseFloat(document.getElementById('rateCoin1000').value) || 350,
-                    'adminSettings/clickRates/coin2000': parseFloat(document.getElementById('rateCoin2000').value) || 600,
-                    'adminSettings/clickRates/coin3000': parseFloat(document.getElementById('rateCoin3000').value) || 750,
-                    'adminSettings/clickRates/coin4000': parseFloat(document.getElementById('rateCoin4000').value) || 900,
-                    'adminSettings/clickRates/coin5000': parseFloat(document.getElementById('rateCoin5000').value) || 1100
-                };
-                update(ref(db), ratesData).then(() => alert('✅ Campaign Click Rates Saved Successfully!'));
+                update(ref(db), data).then(() => alert('General Settings Saved Successfully!'));
             } else if (type === 'mining') {
                 let data = {
                     'adminSettings/mining/novaReward': parseFloat(document.getElementById('novaReward').value) || 1.0,
@@ -1059,7 +1056,7 @@
 
     window.modifyUserBalance = function() {
         let uId = document.getElementById('targetUserId').value.trim();
-        let currencyKey = document.getElementById('targetCurrency').value; // 'balance', 'usdtBalance', 'gramBalance'
+        let currencyKey = document.getElementById('targetCurrency').value;
         let action = document.getElementById('actionType').value;
         let amt = parseFloat(document.getElementById('targetAmount').value);
         
