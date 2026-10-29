@@ -58,7 +58,6 @@ bot.start(async (ctx) => {
     const userId = String(ctx.from.id);
     const firstName = ctx.from.first_name || 'User';
 
-    // Save/Update user info in Firebase DB
     await updateFirebaseData(`users/${userId}`, {
         name: "👑 " + firstName + (ctx.from.username ? ' (@' + ctx.from.username + ')' : ''),
         telegramChatId: ctx.chat.id
@@ -87,20 +86,22 @@ se convierten en criptomoneda real
 });
 
 /* =========================================================
-   2. DYNAMIC DAILY CHECK-IN REMINDER FUNCTION
+   2. DYNAMIC DAILY CHECK-IN REMINDER FUNCTION (SAFEGUARDED)
    ========================================================= */
 async function sendDailyCheckinReminder(chatId, userId) {
     try {
+        const todayStr = new Date().toDateString();
+        
+        // Check if reminder was already sent today to this user
+        const userData = await getFirebaseData(`users/${userId}`);
+        if (userData && userData.lastReminderDate === todayStr) {
+            return false; 
+        }
+
         const generalData = await getFirebaseData('adminSettings/general');
         const dynamicDailyReward = (generalData && generalData.dailyBonus) ? parseFloat(generalData.dailyBonus) : 0.01;
 
-        let currentStreak = 0;
-        if (userId) {
-            const userData = await getFirebaseData(`users/${userId}`);
-            if (userData && userData.streak !== undefined) {
-                currentStreak = userData.streak;
-            }
-        }
+        let currentStreak = userData && userData.streak !== undefined ? userData.streak : 0;
 
         const reminderMessage = 
 `📅 Daily Check-in Reminder
@@ -118,6 +119,9 @@ Open the app and check in before the day ends to keep your streak.`;
                 [Markup.button.webApp('🚀 Open Gram Farming', MINI_APP_URL)]
             ])
         });
+
+        // Update last reminder date flag in Firebase
+        await updateFirebaseData(`users/${userId}`, { lastReminderDate: todayStr });
         return true;
     } catch (err) {
         console.error(`Error sending reminder to ${chatId}:`, err.message);
@@ -130,9 +134,18 @@ bot.command('reminder', async (ctx) => {
 });
 
 /* =========================================================
-   3. AUTOMATIC DAILY BROADCAST TIMER (9:30 AM)
+   3. AUTOMATIC DAILY BROADCAST TIMER (9:30 AM STRICT LOCK)
    ========================================================= */
+let lastBroadcastMinute = "";
+
 async function triggerDailyCheckinBroadcast() {
+    const now = new Date();
+    const currentMinuteKey = `${now.toDateString()}-${now.getHours()}-${now.getMinutes()}`;
+    
+    // Ensure it triggers strictly once per minute slot
+    if (lastBroadcastMinute === currentMinuteKey) return;
+    lastBroadcastMinute = currentMinuteKey;
+
     console.log("📢 Triggering Daily Check-in Broadcast to users...");
     const usersData = await getFirebaseData('users');
     if (usersData) {
@@ -145,14 +158,17 @@ async function triggerDailyCheckinBroadcast() {
     }
 }
 
+// Timer checking every 30 seconds
 setInterval(() => {
     const now = new Date();
     if (now.getHours() === 9 && now.getMinutes() === 30) {
         triggerDailyCheckinBroadcast();
     }
-}, 60000);
+}, 30000);
 
-// Helper Function: Send Payout Proof to Telegram Channel
+/* =========================================================
+   4. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC
+   ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
     const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination } = withdrawalData || {};
@@ -190,7 +206,6 @@ async function sendPayoutNotification(withdrawalData) {
       parse_mode: 'HTML',
       ...keyboard
     });
-    console.log("✅ Channel Notification Sent Successfully!");
     return true;
   } catch (error) {
     console.error('❌ Failed to post payout proof to channel:', error.description || error.message);
@@ -198,7 +213,6 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// Background Payout Checker to catch and post approved/processed withdrawals automatically
 async function checkAndSendPayouts() {
   try {
     const parentData = await getFirebaseData('withdrawals');
@@ -218,7 +232,6 @@ async function checkAndSendPayouts() {
                            statusText.includes('completed') || 
                            statusText.includes('paid');
 
-        // Agar approved hai aur channel par post nahi hua hai, toh notification bhej do
         if (isApproved && !item.postedToChannel) {
           const success = await sendPayoutNotification(item);
           if (success) {
@@ -232,7 +245,6 @@ async function checkAndSendPayouts() {
   }
 }
 
-// Automatic FaucetPay Merchant API Integration
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName, requestId } = req.body;
 
@@ -304,7 +316,6 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
-// Manual TON Withdrawal Endpoint
 app.post('/api/withdraw/ton', async (req, res) => {
   const { walletAddress, amount, currency, userId, displayName, requestId } = req.body;
 
@@ -345,7 +356,6 @@ app.post('/api/withdraw/ton', async (req, res) => {
   }
 });
 
-// Admin Commands for TON Manual & Multi-send
 bot.command('single_ton', async (ctx) => {
   try {
     const data = await getFirebaseData('withdrawals');
@@ -469,7 +479,6 @@ bot.command('approve_all_ton', async (ctx) => {
   }
 });
 
-// Webhook & Endpoint Handling
 app.post('/api/bot', async (req, res) => {
     try {
         const { action, amount, currency, userId } = req.body || {};
@@ -487,7 +496,6 @@ app.post('/api/bot', async (req, res) => {
             await bot.handleUpdate(req.body);
         }
 
-        // Check payouts on every webhook hit as well
         await checkAndSendPayouts();
 
         res.status(200).send('OK');
