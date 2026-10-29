@@ -83,6 +83,11 @@ body {
     margin: 0; 
     padding: 12px; 
     padding-bottom: 90px; 
+    /* Text Selection & Copy Disable Feature */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .app-splash-screen {
@@ -933,8 +938,8 @@ input:focus, select:focus { border-color: var(--accent); }
 </label>
 </div>
 
-<!-- NEW: Button Text Option for User Custom URL Button -->
-<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Button Text (Wabsite / Action Button Name)</label>
+<!-- Button Text Option for User Custom URL Button -->
+<label style="font-size: 12px; color: var(--text-muted); display:block; margin-bottom: 4px;">Button Text (Action Button Name)</label>
 <select id="campaignButtonTextOption" style="margin-top: 0; margin-bottom: 12px;">
   <option value="Join">Join 👥</option>
   <option value="Launch Bot">Launch Bot 🚀</option>
@@ -1338,6 +1343,14 @@ No recent transactions yet.
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
 <script>
+// Prevent Copy & Context Menu Events Globally
+document.addEventListener('copy', function(e) {
+    e.preventDefault();
+});
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
 (function() {
   var fillEl = document.getElementById('splashProgressFill');
   var textEl = document.getElementById('splashPercentText');
@@ -2678,7 +2691,6 @@ function watchAdsterraAd() {
 function startTaskCountdownTimer(btn, durationSec) {
   if (!btn) return;
   btn.disabled = true;
-  // LIVE TASK 4 SEC REQUIREMENT (adjusted from 5 sec)
   var countdown = (durationSec === 5) ? 4 : (durationSec || 60);
   btn.innerText = "Wait (" + countdown + "s)";
 
@@ -3624,7 +3636,6 @@ function renderCustomTasksFromFirebase() {
 
         visibleTaskCount++;
 
-        // FULL LOGO IMAGE FIX WITH OBJECT-FIT COVER
         var imgHtml = task.image 
           ? '<img src="' + task.image + '" style="width:48px; height:48px; border-radius:12px; object-fit:cover; margin-right:12px; flex-shrink:0; border:1px solid rgba(255,255,255,0.1);" />' 
           : '<div style="width:48px; height:48px; border-radius:12px; background:#0ea5e9; display:flex; align-items:center; justify-content:center; font-size:22px; margin-right:12px; flex-shrink:0;">🚀</div>';
@@ -3723,7 +3734,6 @@ function renderCurrentBannerTask() {
   var dotsContainer = document.getElementById('featuredDotsContainer');
   if (!boxContent || !dotsContainer) return;
 
-  // FULL LOGO IMAGE FIX WITH OBJECT-FIT COVER
   var imgHtml = task.image 
     ? '<img src="' + task.image + '" alt="Logo" style="width:100%; height:100%; object-fit:cover;" />' 
     : '<div style="width:100%; height:100%; background:#9333ea; display:flex; align-items:center; justify-content:center; font-size:22px;">⚡</div>';
@@ -3778,7 +3788,6 @@ function loadMyPublishedTasks() {
         var statusText = (remaining <= 0) ? 'Done' : 'Active';
         var statusColor = (remaining <= 0) ? 'var(--accent)' : '#0ea5e9';
         
-        // FULL LOGO IMAGE FIX WITH OBJECT-FIT COVER
         var imgHtml = task.image ? '<img src="' + task.image + '" style="width:36px; height:36px; border-radius:8px; object-fit:cover; margin-right:8px; flex-shrink:0;" />' : '';
 
         html += '<div class="card" style="background:#0d1b38; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(14, 165, 233, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Button: <strong>' + (task.buttonText || 'Join') + '</strong> | Plan: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0d1b38; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
