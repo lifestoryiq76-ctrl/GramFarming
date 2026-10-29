@@ -92,11 +92,9 @@ se convierten en criptomoneda real
    ========================================================= */
 async function sendDailyCheckinReminder(chatId, userId) {
     try {
-        // Live Daily Bonus Value from Firebase
         const generalData = await getFirebaseData('adminSettings/general');
         const dynamicDailyReward = (generalData && generalData.dailyBonus) ? parseFloat(generalData.dailyBonus) : 0.01;
 
-        // User's Dynamic Streak Counter from Firebase
         let currentStreak = 0;
         if (userId) {
             const userData = await getFirebaseData(`users/${userId}`);
@@ -105,7 +103,6 @@ async function sendDailyCheckinReminder(chatId, userId) {
             }
         }
 
-        // Dynamic Message Layout
         const reminderMessage = 
 `📅 Daily Check-in Reminder
 
@@ -129,7 +126,6 @@ Open the app and check in before the day ends to keep your streak.`;
     }
 }
 
-// Manual Test Command for Daily Reminder (/reminder)
 bot.command('reminder', async (ctx) => {
     await sendDailyCheckinReminder(ctx.chat.id, String(ctx.from.id));
 });
@@ -150,7 +146,6 @@ async function triggerDailyCheckinBroadcast() {
     }
 }
 
-// Timer checking every minute for 09:30 AM
 setInterval(() => {
     const now = new Date();
     if (now.getHours() === 9 && now.getMinutes() === 30) {
@@ -174,7 +169,6 @@ async function sendPayoutNotification(withdrawalData) {
     const finalAmount = amount || tonAmount || '0.00';
     const finalMethod = method || 'TON Wallet';
 
-    // Fix: Automatically set USDT for FaucetPay if currency is missing/blank
     let finalCurrency = currency;
     if (!finalCurrency) {
         finalCurrency = (finalMethod === 'FAUCETPAY') ? 'USDT' : 'Gram';
@@ -205,15 +199,23 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// Automatic FaucetPay Merchant API Integration (Payouts / Withdrawals)
+// Automatic FaucetPay Merchant API Integration with Strict Anti-Duplicate Lock
 async function handleFaucetPayPayout(req, res) {
-  const { email, amount, currency, userId, displayName } = req.body;
+  const { email, amount, currency, userId, displayName, requestId } = req.body;
 
   if (!email || !amount) {
     return res.status(400).json({ success: false, message: "Email and amount are required." });
   }
 
   try {
+    // Check if this specific request ID has already been processed to prevent duplicates
+    if (requestId) {
+      const existingReq = await getFirebaseData(`withdrawals/${userId}/${requestId}`);
+      if (existingReq && existingReq.processed) {
+        return res.status(400).json({ success: false, message: "This withdrawal has already been processed." });
+      }
+    }
+
     const numericAmount = parseFloat(amount);
     const satoshiAmount = Math.round(numericAmount * 100000000);
 
@@ -241,11 +243,15 @@ async function handleFaucetPayPayout(req, res) {
         method: 'FAUCETPAY',
         destination: email,
         status: 'SUCCESS (Approved)',
+        processed: true,
+        postedToChannel: true,
         date: new Date().toLocaleString()
       };
 
-      const reqKey = `fp_${Date.now()}`;
-      await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, { ...payoutData, postedToChannel: true });
+      const reqKey = requestId || `fp_${Date.now()}`;
+      
+      // Save directly with processed status to prevent double execution
+      await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
       await sendPayoutNotification(payoutData);
 
       return res.status(200).json({
@@ -268,16 +274,23 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
-// Manual TON Withdrawal Endpoint
+// Manual TON Withdrawal Endpoint with Anti-Duplicate Check
 app.post('/api/withdraw/ton', async (req, res) => {
-  const { walletAddress, amount, currency, userId, displayName } = req.body;
+  const { walletAddress, amount, currency, userId, displayName, requestId } = req.body;
 
   if (!walletAddress || !amount) {
     return res.status(400).json({ success: false, message: "Wallet address and amount are required." });
   }
 
   try {
-    const reqKey = `ton_${Date.now()}`;
+    const reqKey = requestId || `ton_${Date.now()}`;
+    
+    // Verify if already exists
+    const existing = await getFirebaseData(`withdrawals/${userId}/${reqKey}`);
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Withdrawal request already exists." });
+    }
+
     const withdrawalData = {
       id: reqKey,
       userId: userId || 'Unknown',
@@ -379,13 +392,15 @@ bot.command('approve_ton', async (ctx) => {
     for (let uId in allData) {
       if (allData[uId][reqId]) {
         const item = allData[uId][reqId];
+        if (item.postedToChannel) {
+          return ctx.reply("⚠️ Yeh request pehle hi approved aur channel par post ho chuki hai.");
+        }
+
         item.status = 'SUCCESS (Approved)';
+        item.postedToChannel = true;
         await updateFirebaseData(`withdrawals/${uId}/${reqId}`, item);
 
-        const posted = await sendPayoutNotification(item);
-        if (posted) {
-          await updateFirebaseData(`withdrawals/${uId}/${reqId}`, { postedToChannel: true });
-        }
+        await sendPayoutNotification(item);
         found = true;
         ctx.reply(`✅ Request ${reqId} Approved aur Payout Channel par Post kar diya gaya!`);
         break;
@@ -408,14 +423,12 @@ bot.command('approve_all_ton', async (ctx) => {
       const userWithdrawals = data[uId];
       for (let key in userWithdrawals) {
         const item = userWithdrawals[key];
-        if (item && item.status === 'PENDING') {
+        if (item && item.status === 'PENDING' && !item.postedToChannel) {
           item.status = 'SUCCESS (Approved)';
+          item.postedToChannel = true;
           await updateFirebaseData(`withdrawals/${uId}/${key}`, item);
 
-          const posted = await sendPayoutNotification(item);
-          if (posted) {
-            await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
-          }
+          await sendPayoutNotification(item);
           approvedCount++;
         }
       }
@@ -427,77 +440,24 @@ bot.command('approve_all_ton', async (ctx) => {
   }
 });
 
-// Payout Polling Logic (For Admin Panel Manual Approvals)
-async function checkAndSendPayouts() {
-  const pathsToCheck = ['withdrawals'];
-  
-  for (let dbPath of pathsToCheck) {
-    try {
-      const parentData = await getFirebaseData(dbPath);
-      if (!parentData) continue;
-
-      const processWithdrawalItem = async (itemKey, data, currentPath) => {
-        if (!data || typeof data !== 'object') return;
-        
-        const statusText = String(data.status || '').toLowerCase();
-        const isApproved = statusText.includes('approved') || 
-                           statusText.includes('success') || 
-                           statusText.includes('completed') || 
-                           statusText.includes('paid') || 
-                           statusText.includes('sent') ||
-                           statusText.includes('done');
-
-        if (isApproved && !data.postedToChannel) {
-          const success = await sendPayoutNotification(data);
-          if (success) {
-            await updateFirebaseData(`${currentPath}/${itemKey}`, { postedToChannel: true });
-          }
-        }
-      };
-
-      for (let key in parentData) {
-        let entry = parentData[key];
-        if (!entry) continue;
-
-        if (entry.status || entry.amount || entry.tonAmount) {
-          await processWithdrawalItem(key, entry, dbPath);
-        } else {
-          for (let subKey in entry) {
-            let subEntry = entry[subKey];
-            if (subEntry && typeof subEntry === 'object') {
-              await processWithdrawalItem(subKey, subEntry, `${dbPath}/${key}`);
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.error(`Error in ${dbPath}:`, err.message);
-    }
-  }
-}
-
 // Webhook & Endpoint Handling
 app.post('/api/bot', async (req, res) => {
     try {
         const { action, amount, currency, userId } = req.body || {};
 
-        // 1. DEPOSIT LINK GENERATION (FaucetPay Merchant API)
         if (action === 'create_deposit') {
             const depositUrl = `https://faucetpay.io/merchant/webpay?merchant_username=${FAUCETPAY_MERCHANT_USERNAME}&item_name=Gram+Farming+Deposit&currency1=${currency || 'USDT'}&amount1=${amount}&custom=${userId}`;
             return res.status(200).json({ success: true, url: depositUrl });
         }
 
-        // 2. FAUCETPAY PAYOUT (WITHDRAWAL)
         if (req.body && req.body.email && req.body.amount) {
             return await handleFaucetPayPayout(req, res);
         }
 
-        // 3. TELEGRAM BOT WEBHOOK UPDATES
         if (req.body && (req.body.update_id || req.body.message || req.body.callback_query)) {
             await bot.handleUpdate(req.body);
         }
 
-        await checkAndSendPayouts();
         res.status(200).send('OK');
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
@@ -508,8 +468,7 @@ app.get('/api/bot', async (req, res) => {
     try {
         const webhookUrl = `https://${req.headers.host}/api/bot`;
         await bot.telegram.setWebhook(webhookUrl);
-        await checkAndSendPayouts();
-        res.status(200).send(`✅ Bot Active, Webhook Set & Payouts Checked Successfully!`);
+        res.status(200).send(`✅ Bot Active & Webhook Set Successfully!`);
     } catch (err) {
         res.status(200).send(`⚠️ Handled: ${err.message}`);
     }
