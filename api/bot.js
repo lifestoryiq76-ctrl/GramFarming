@@ -227,7 +227,7 @@ app.post('/api/tasks/publish', async (req, res) => {
 });
 
 /* =========================================================
-   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (FOOLPROOF BOOT LOCK)
+   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC
    ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
@@ -293,8 +293,6 @@ async function checkAndSendPayouts() {
                            statusText.includes('paid');
 
         if (isApproved && !item.postedToChannel) {
-          // STRICT RULE: Only process withdrawals created AFTER this server started up!
-          // Purane saare records jo Firebase mein pehle se hain, unhe chupchap posted mark kar do.
           if (item.rawTimestamp && item.rawTimestamp >= SERVER_START_TIME) {
             const success = await sendPayoutNotification(item);
             if (success) {
@@ -320,14 +318,13 @@ async function handleFaucetPayPayout(req, res) {
     return res.status(400).json({ success: false, message: "Email and amount are required." });
   }
 
-  // Prevent double hit within 5 seconds using unique combination key
   const hitKey = `${userId}_${amount}_${email}`;
   if (recentRequests.has(hitKey)) {
     return res.status(400).json({ success: false, message: "Duplicate request prevented." });
   }
 
   recentRequests.add(hitKey);
-  setTimeout(() => recentRequests.delete(hitKey), 5000); // clear after 5 seconds
+  setTimeout(() => recentRequests.delete(hitKey), 5000);
 
   try {
     if (requestId) {
