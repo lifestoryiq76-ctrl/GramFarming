@@ -224,7 +224,7 @@ app.post('/api/tasks/publish', async (req, res) => {
 });
 
 /* =========================================================
-   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (STRICT LOCK)
+   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (5-SEC ANTI-SPAM LOCK)
    ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
@@ -290,8 +290,15 @@ async function checkAndSendPayouts() {
                            statusText.includes('paid');
 
         if (isApproved && !item.postedToChannel) {
-          const success = await sendPayoutNotification(item);
-          if (success) {
+          const itemTime = item.rawTimestamp || new Date(item.date).getTime();
+          const isRecent = !isNaN(itemTime) && (Date.now() - itemTime < 600000); // 10 minutes window
+
+          if (isRecent) {
+            const success = await sendPayoutNotification(item);
+            if (success) {
+              await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
+            }
+          } else {
             await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
           }
         }
@@ -302,7 +309,6 @@ async function checkAndSendPayouts() {
   }
 }
 
-// Memory cache to prevent simultaneous duplicate requests within 5 seconds
 const recentRequests = new Set();
 
 async function handleFaucetPayPayout(req, res) {
@@ -315,14 +321,13 @@ async function handleFaucetPayPayout(req, res) {
   // Prevent double hit within 5 seconds using unique combination key
   const hitKey = `${userId}_${amount}_${email}`;
   if (recentRequests.has(hitKey)) {
-    return res.status(400).json({ success: false, message: "Request is already being processed. Please wait." });
+    return res.status(400).json({ success: false, message: "Duplicate request prevented." });
   }
 
   recentRequests.add(hitKey);
   setTimeout(() => recentRequests.delete(hitKey), 5000); // clear after 5 seconds
 
   try {
-    // Check if this specific requestId was already processed in Firebase
     if (requestId) {
       const existingReq = await getFirebaseData(`withdrawals/${userId}/${requestId}`);
       if (existingReq && existingReq.processed) {
@@ -359,10 +364,11 @@ async function handleFaucetPayPayout(req, res) {
         status: 'SUCCESS (Approved)',
         processed: true,
         postedToChannel: true,
+        rawTimestamp: Date.now(),
         date: new Date().toLocaleString()
       };
 
-      const reqKey = requestId || `fp_${Date.now()}`;
+      const reqKey = requestId || `fp_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
       await sendPayoutNotification(payoutData);
 
@@ -394,7 +400,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
   }
 
   try {
-    const reqKey = requestId || `ton_${Date.now()}`;
+    const reqKey = requestId || `ton_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
     const withdrawalData = {
       id: reqKey,
@@ -406,6 +412,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
       destination: walletAddress,
       status: 'PENDING',
       postedToChannel: false,
+      rawTimestamp: Date.now(),
       date: new Date().toLocaleString()
     };
 
@@ -549,7 +556,7 @@ app.post('/api/bot', async (req, res) => {
         const { action, amount, currency, userId } = req.body || {};
 
         if (action === 'create_deposit') {
-            const depositUrl = `https://faucetpay.io/merchant/webpay?merchant_username=${FAUCETPAY_MERCHANT_USERNAME}&item_name=Gram+Farming+Deposit&currency1=${currency || 'USDT'}` + `&amount1=${amount}&custom=${userId}`;
+            const depositUrl = `https://faucetpay.io/merchant/webpay?merchant_username=${FAUCETPAY_MERCHANT_USERNAME}&item_name=Gram+Farming+Deposit&currency1=${currency || 'USDT'}&amount1=${amount}&custom=${userId}`;
             return res.status(200).json({ success: true, url: depositUrl });
         }
 
