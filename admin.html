@@ -45,12 +45,12 @@
 <div class="container">
     <h1>🌱 Gram Farming Ultimate Admin Panel <span class="badge-live">MASTER CONTROL</span></h1>
     
-    <!-- 🖼️ BRAND LOGO URL MANAGER (TOP PLACEMENT) -->
+    <!-- 🖼️ BRAND LOGO IMAGE UPLOAD MANAGER -->
     <div class="card" style="border: 1px solid var(--yellow);">
-        <h2 style="color: var(--yellow);">🖼️ App & Brand Logo Manager</h2>
-        <label>App / Channel Logo Image URL:</label>
-        <input type="text" id="appLogoUrl" placeholder="https://example.com/logo.png">
-        <button type="button" class="btn-blue" style="margin-top: 5px;" onclick="saveLogoUrl()">💾 Save Logo URL</button>
+        <h2 style="color: var(--yellow);">🖼️ App & Brand Logo Manager (Image Upload Box)</h2>
+        <label>Upload App / Brand Logo Image:</label>
+        <input type="file" id="appLogoFile" accept="image/*">
+        <button type="button" class="btn-blue" style="margin-top: 5px;" onclick="uploadAndSaveLogo()">💾 Upload & Save Logo</button>
     </div>
 
     <!-- 1. General & Economic Settings -->
@@ -323,22 +323,31 @@
         <button type="button" style="margin-top: 12px;" onclick="saveSettings('clickRates')">💾 Save Click Rates</button>
     </div>
 
-    <!-- 6. Add Custom Task -->
+    <!-- 6. Add Custom Task with Location & Website Link Option -->
     <div class="card">
-        <h2>📋 Add New Custom Task (Telegram / YouTube / Ads)</h2>
+        <h2>📋 Add New Custom Task / Official Link</h2>
         <div class="grid-2">
             <div>
                 <label>Task Title:</label>
-                <input type="text" id="taskTitle" placeholder="e.g. Join Channel">
+                <input type="text" id="taskTitle" placeholder="e.g. Join Channel / Our Website">
             </div>
             <div>
                 <label>Reward Per Task (Coins):</label>
                 <input type="number" id="taskReward" step="0.01" placeholder="e.g. 5.00">
             </div>
         </div>
-        <div>
-            <label>Task Link / Ad URL:</label>
-            <input type="text" id="taskLink" placeholder="https://t.me/...">
+        <div class="grid-2">
+            <div>
+                <label>Website Link / URL:</label>
+                <input type="text" id="taskLink" placeholder="https://t.me/... or https://...">
+            </div>
+            <div>
+                <label>Show Location Option:</label>
+                <select id="taskLocation">
+                    <option value="task">Task Section</option>
+                    <option value="official">Official Section</option>
+                </select>
+            </div>
         </div>
         <button type="button" class="btn-blue" onclick="addNewTask()">➕ Create & Publish Task</button>
 
@@ -347,7 +356,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Title & Link</th>
+                        <th>Title, Link & Location</th>
                         <th>Reward (Coins)</th>
                         <th>Action</th>
                     </tr>
@@ -525,7 +534,6 @@
                     document.getElementById('refBonus').value = data.general.refPercent ?? 20;
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? data.general.minWithdrawal ?? 0.01;
                     document.getElementById('minTon').value = data.general.minTon ?? data.general.minTonWithdrawal ?? 0.01;
-                    document.getElementById('appLogoUrl').value = data.general.logoUrl ?? '';
                 }
                 if(data.clickRates) {
                     document.getElementById('rateCoin100').value = data.clickRates.coin100 ?? 35;
@@ -593,9 +601,10 @@
                     let tId = childSnap.key;
                     let task = childSnap.val();
                     let rewardVal = task.reward || 5.00;
+                    let locText = task.location === 'official' ? 'Official Section' : 'Task Section';
 
                     adminTaskTable.innerHTML += `<tr>
-                        <td><b>${task.title || 'Task'}</b><br><small style="color:var(--text-muted);">${task.link || ''}</small></td>
+                        <td><b>${task.title || 'Task'}</b><br><small style="color:var(--text-muted);">${task.link || ''}</small><br><span class="badge badge-success">${locText}</span></td>
                         <td><b style="color:var(--yellow);">${rewardVal} Coins</b></td>
                         <td>
                             <button class="btn-delete" onclick="deleteCustomTask('${tId}')">🗑️ Delete</button>
@@ -762,11 +771,20 @@
         });
     });
 
-    window.saveLogoUrl = function() {
-        let logoUrl = document.getElementById('appLogoUrl').value.trim();
-        update(ref(db, 'adminSettings/general'), { logoUrl: logoUrl }).then(() => {
-            alert('✅ Logo URL Saved Successfully!');
-        }).catch(err => alert("Error: " + err.message));
+    window.uploadAndSaveLogo = function() {
+        const fileInput = document.getElementById('appLogoFile');
+        if (fileInput.files && fileInput.files[0]) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let base64Image = e.target.result;
+                update(ref(db, 'adminSettings/general'), { logoUrl: base64Image }).then(() => {
+                    alert('✅ Logo Image Successfully Uploaded & Saved!');
+                }).catch(err => alert("Error: " + err.message));
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            alert('Kripya pehle ek image file select karein.');
+        }
     };
 
     window.resetSingleUserTasks = function() {
@@ -877,9 +895,10 @@
         let title = document.getElementById('taskTitle').value.trim();
         let reward = parseFloat(document.getElementById('taskReward').value);
         let link = document.getElementById('taskLink').value.trim();
+        let location = document.getElementById('taskLocation').value; // 'task' or 'official'
 
         if(!title || isNaN(reward) || !link) { 
-            alert('Kripya Task Title, Reward aur Link sahi se bharein.'); 
+            alert('Kripya Task Title, Reward aur Website Link sahi se bharein.'); 
             return; 
         }
 
@@ -887,6 +906,7 @@
             title: title, 
             reward: reward, 
             link: link, 
+            location: location,
             status: 'Active',
             date: new Date().toLocaleString()
         }).then(() => {
