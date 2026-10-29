@@ -7,6 +7,9 @@ const cron = require('node-cron');
 const app = express();
 app.use(express.json());
 
+// Server Boot Timestamp (Sare purane records ko ignore karne ke liye)
+const SERVER_START_TIME = Date.now();
+
 // Serve static files from root directory
 app.use(express.static(path.join(__dirname, '..')));
 
@@ -224,7 +227,7 @@ app.post('/api/tasks/publish', async (req, res) => {
 });
 
 /* =========================================================
-   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (5-SEC ANTI-SPAM LOCK)
+   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (FOOLPROOF BOOT LOCK)
    ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
@@ -290,10 +293,9 @@ async function checkAndSendPayouts() {
                            statusText.includes('paid');
 
         if (isApproved && !item.postedToChannel) {
-          const itemTime = item.rawTimestamp || new Date(item.date).getTime();
-          const isRecent = !isNaN(itemTime) && (Date.now() - itemTime < 600000); // 10 minutes window
-
-          if (isRecent) {
+          // STRICT RULE: Only process withdrawals created AFTER this server started up!
+          // Purane saare records jo Firebase mein pehle se hain, unhe chupchap posted mark kar do.
+          if (item.rawTimestamp && item.rawTimestamp >= SERVER_START_TIME) {
             const success = await sendPayoutNotification(item);
             if (success) {
               await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
@@ -354,6 +356,7 @@ async function handleFaucetPayPayout(req, res) {
     });
 
     if (faucetPayResponse.data && faucetPayResponse.data.status === 200) {
+      const currentTime = Date.now();
       const payoutData = {
         userId: userId,
         userName: displayName,
@@ -364,11 +367,11 @@ async function handleFaucetPayPayout(req, res) {
         status: 'SUCCESS (Approved)',
         processed: true,
         postedToChannel: true,
-        rawTimestamp: Date.now(),
+        rawTimestamp: currentTime,
         date: new Date().toLocaleString()
       };
 
-      const reqKey = requestId || `fp_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const reqKey = requestId || `fp_${currentTime}_${Math.floor(Math.random() * 1000)}`;
       await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
       await sendPayoutNotification(payoutData);
 
@@ -400,7 +403,8 @@ app.post('/api/withdraw/ton', async (req, res) => {
   }
 
   try {
-    const reqKey = requestId || `ton_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const currentTime = Date.now();
+    const reqKey = requestId || `ton_${currentTime}_${Math.floor(Math.random() * 1000)}`;
 
     const withdrawalData = {
       id: reqKey,
@@ -412,7 +416,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
       destination: walletAddress,
       status: 'PENDING',
       postedToChannel: false,
-      rawTimestamp: Date.now(),
+      rawTimestamp: currentTime,
       date: new Date().toLocaleString()
     };
 
