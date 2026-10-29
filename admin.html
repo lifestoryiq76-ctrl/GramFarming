@@ -45,9 +45,9 @@
 <div class="container">
     <h1>🌱 Gram Farming Ultimate Admin Panel <span class="badge-live">MASTER CONTROL</span></h1>
     
-    <!-- 1. General & Economic Settings -->
+    <!-- 1. General & Economic Settings & Logo -->
     <div class="card">
-        <h2>🌐 General & Economic Settings (Withdrawal Limits Fixed)</h2>
+        <h2>🌐 General, Economic Settings & Logo Control</h2>
         <div class="grid-2">
             <div>
                 <label>Coin USDT Value ($):</label>
@@ -69,8 +69,12 @@
                 <label>Min. TON Withdrawal (TON):</label>
                 <input type="number" id="minTon" step="0.001">
             </div>
+            <div>
+                <label>App/Brand Logo Image URL:</label>
+                <input type="text" id="appLogoUrl" placeholder="https://.../logo.png">
+            </div>
         </div>
-        <button type="button" onclick="saveSettings('general')">💾 Save General Settings</button>
+        <button type="button" onclick="saveSettings('general')">💾 Save General Settings & Logo</button>
     </div>
 
     <!-- 2. Rocket Space Mining Parameters Control -->
@@ -517,6 +521,7 @@
                     document.getElementById('refBonus').value = data.general.refPercent ?? 20;
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? data.general.minWithdrawal ?? 0.01;
                     document.getElementById('minTon').value = data.general.minTon ?? data.general.minTonWithdrawal ?? 0.01;
+                    document.getElementById('appLogoUrl').value = data.general.logoUrl ?? '';
                 }
                 if(data.clickRates) {
                     document.getElementById('rateCoin100').value = data.clickRates.coin100 ?? 35;
@@ -792,6 +797,7 @@
             if (type === 'general') {
                 let minF = parseFloat(document.getElementById('minFaucetPay').value) || 0.01;
                 let minT = parseFloat(document.getElementById('minTon').value) || 0.01;
+                let logoUrl = document.getElementById('appLogoUrl').value.trim();
                 
                 let data = {
                     'adminSettings/general/coinUsdtValue': parseFloat(document.getElementById('coinUsdtValue').value) || 0,
@@ -800,9 +806,10 @@
                     'adminSettings/general/minFaucetPay': minF,
                     'adminSettings/general/minWithdrawal': minF,
                     'adminSettings/general/minTon': minT,
-                    'adminSettings/general/minTonWithdrawal': minT
+                    'adminSettings/general/minTonWithdrawal': minT,
+                    'adminSettings/general/logoUrl': logoUrl
                 };
-                update(ref(db), data).then(() => alert('General Settings Saved Successfully!'));
+                update(ref(db), data).then(() => alert('General Settings & Logo Saved Successfully!'));
             } else if (type === 'clickRates') {
                 let ratesData = {
                     'adminSettings/clickRates/coin100': parseFloat(document.getElementById('rateCoin100').value) || 35,
