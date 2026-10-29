@@ -45,12 +45,29 @@
 <div class="container">
     <h1>🌱 Gram Farming Ultimate Admin Panel <span class="badge-live">MASTER CONTROL</span></h1>
     
-    <!-- 🖼️ BRAND LOGO IMAGE UPLOAD MANAGER -->
+    <!-- 🖼️ BRAND LOGO IMAGE UPLOAD & WEBSITE LINK MANAGER -->
     <div class="card" style="border: 1px solid var(--yellow);">
-        <h2 style="color: var(--yellow);">🖼️ App & Brand Logo Manager (Image Upload Box)</h2>
-        <label>Upload App / Brand Logo Image:</label>
-        <input type="file" id="appLogoFile" accept="image/*">
-        <button type="button" class="btn-blue" style="margin-top: 5px;" onclick="uploadAndSaveLogo()">💾 Upload & Save Logo</button>
+        <h2 style="color: var(--yellow);">🖼️ App Logo & Website Link Manager</h2>
+        
+        <div class="grid-2">
+            <div>
+                <label>Upload App / Brand Logo Image:</label>
+                <input type="file" id="appLogoFile" accept="image/*" onchange="previewSelectedImage(event)">
+            </div>
+            <div>
+                <label>Target Website Link (Jahan Logo dikhega):</label>
+                <input type="text" id="targetWebsiteLink" placeholder="https://gramfarming.blogspot.com">
+            </div>
+        </div>
+
+        <div style="margin-top: 10px; text-align: center;">
+            <label>Selected Logo Preview:</label>
+            <div id="imagePreviewContainer" style="margin-top: 8px; min-height: 50px; display: flex; justify-align: center; align-items: center;">
+                <span style="color: var(--text-muted); font-size: 12px;">Koyi image select nahi ki gayi hai</span>
+            </div>
+        </div>
+
+        <button type="button" class="btn-blue" style="margin-top: 15px;" onclick="uploadAndSaveLogoWithWeb()">💾 Save Logo & Website Link</button>
     </div>
 
     <!-- 1. General & Economic Settings -->
@@ -506,6 +523,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    let currentSelectedLogoBase64 = "";
+
     function formatTimeAgo(timestamp) {
         if (!timestamp) return 'N/A';
         let ts = Number(timestamp);
@@ -522,6 +541,19 @@
         return `${days} days ago`;
     }
 
+    window.previewSelectedImage = function(event) {
+        const file = event.target.files[0];
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                currentSelectedLogoBase64 = e.target.result;
+                previewContainer.innerHTML = `<img src="${currentSelectedLogoBase64}" alt="Preview" style="max-height: 60px; border-radius: 6px; border: 1px solid var(--border);"> <span style="margin-left: 10px; font-size:12px; color:var(--accent);">✅ Image Loaded: ${file.name}</span>`;
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     window.addEventListener('DOMContentLoaded', () => {
         remove(ref(db, 'adminSettings/announcement')).catch(() => {});
 
@@ -534,6 +566,13 @@
                     document.getElementById('refBonus').value = data.general.refPercent ?? 20;
                     document.getElementById('minFaucetPay').value = data.general.minFaucetPay ?? data.general.minWithdrawal ?? 0.01;
                     document.getElementById('minTon').value = data.general.minTon ?? data.general.minTonWithdrawal ?? 0.01;
+                    if(data.general.targetWebsite) {
+                        document.getElementById('targetWebsiteLink').value = data.general.targetWebsite;
+                    }
+                    if(data.general.logoUrl) {
+                        currentSelectedLogoBase64 = data.general.logoUrl;
+                        document.getElementById('imagePreviewContainer').innerHTML = `<img src="${currentSelectedLogoBase64}" alt="Current Logo" style="max-height: 60px; border-radius: 6px; border: 1px solid var(--border);"> <span style="margin-left: 10px; font-size:12px; color:var(--accent);">✅ Saved Logo Active</span>`;
+                    }
                 }
                 if(data.clickRates) {
                     document.getElementById('rateCoin100').value = data.clickRates.coin100 ?? 35;
@@ -771,20 +810,20 @@
         });
     });
 
-    window.uploadAndSaveLogo = function() {
-        const fileInput = document.getElementById('appLogoFile');
-        if (fileInput.files && fileInput.files[0]) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let base64Image = e.target.result;
-                update(ref(db, 'adminSettings/general'), { logoUrl: base64Image }).then(() => {
-                    alert('✅ Logo Image Successfully Uploaded & Saved!');
-                }).catch(err => alert("Error: " + err.message));
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        } else {
-            alert('Kripya pehle ek image file select karein.');
+    window.uploadAndSaveLogoWithWeb = function() {
+        let websiteLink = document.getElementById('targetWebsiteLink').value.trim();
+
+        if (!currentSelectedLogoBase64) {
+            alert('Kripya pehle logo image select karein.');
+            return;
         }
+
+        update(ref(db, 'adminSettings/general'), { 
+            logoUrl: currentSelectedLogoBase64,
+            targetWebsite: websiteLink 
+        }).then(() => {
+            alert('✅ Logo & Website Link Successfully Saved!');
+        }).catch(err => alert("Error: " + err.message));
     };
 
     window.resetSingleUserTasks = function() {
@@ -895,7 +934,7 @@
         let title = document.getElementById('taskTitle').value.trim();
         let reward = parseFloat(document.getElementById('taskReward').value);
         let link = document.getElementById('taskLink').value.trim();
-        let location = document.getElementById('taskLocation').value; // 'task' or 'official'
+        let location = document.getElementById('taskLocation').value;
 
         if(!title || isNaN(reward) || !link) { 
             alert('Kripya Task Title, Reward aur Website Link sahi se bharein.'); 
