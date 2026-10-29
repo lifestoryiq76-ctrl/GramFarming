@@ -694,7 +694,7 @@ input:focus, select:focus { border-color: var(--accent); }
 <!-- ADS CATEGORY CONTENT -->
 <div id="taskCat-ads" class="task-category-content">
 
-<!-- FEATURED PARTNER BANNER SLIDER -->
+<!-- FEATURED PARTNER BANNER SLIDER (Updated with 4-second full card rotation) -->
 <div class="featured-banner-wrapper" id="featuredBannerWrapper">
   <div class="featured-top-row">
     <div class="featured-title-badge">
@@ -989,7 +989,7 @@ Cost: <strong>35 Coins</strong>
 </div>
 
 <div class="pay-method-grid">
-<div class="pay-method-card" id="payUsdt" onclick="setPaymentMethod('USDT')">💵 USDT</div>
+<div class="pay-method-card" id="payUsdt" onclick="setPaymentMethod('USDT')"><img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;" />USDT</div>
 <div class="pay-method-card active" id="payCoin" onclick="setPaymentMethod('Coin')">🪙 Coin</div>
 <div class="pay-method-card" id="payGram" onclick="setPaymentMethod('Gram')">💎 Gram</div>
 </div>
@@ -1018,7 +1018,7 @@ Cost: <strong>35 Coins</strong>
 
 <div class="stake-currency-grid">
 <div class="stake-currency-card active" id="stakeCardCoin" onclick="setStakingCurrency('Coin')">🪙 Coin</div>
-<div class="stake-currency-card" id="stakeCardUSDT" onclick="setStakingCurrency('USDT')">💵 USDT</div>
+<div class="stake-currency-card" id="stakeCardUSDT" onclick="setStakingCurrency('USDT')"><img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 3px;" />USDT</div>
 <div class="stake-currency-card" id="stakeCardGram" onclick="setStakingCurrency('Gram')">💎 Gram</div>
 </div>
 
@@ -1148,7 +1148,7 @@ No active staking plans found.
 
 <div class="card" style="background:#0d1b38; padding:14px; border-radius:12px; margin-bottom:14px; font-size:14px; border:1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
 <div style="margin-bottom: 8px;">💎 TON / Gram Balance: <strong id="tonBalance" style="color:var(--accent); font-size: 15px;">0.0590</strong></div>
-<div style="margin-bottom: 8px;">💵 USDT Balance: <strong id="usdtBalance" style="color:var(--accent); font-size: 15px;">5.0500 USDT</strong></div>
+<div style="margin-bottom: 8px;"><img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;" />USDT Balance: <strong id="usdtBalance" style="color:var(--accent); font-size: 15px;">5.0500 USDT</strong></div>
 <div style="font-size:13px; color:var(--text-muted);" id="liveRateStatus">📡 Live TON Rate: $1.35 USDT (Real-time)</div>
 </div>
 
@@ -1158,7 +1158,7 @@ No active staking plans found.
 <b style="font-size: 13px; color: var(--accent);">Withdraw</b>
 </div>
 <div class="wallet-subcard" id="wCardDeposit" onclick="switchWalletCard('deposit')">
-<div style="font-size: 20px;">💵</div>
+<div style="font-size: 20px;"><img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 18px; height: 18px; vertical-align: middle;" /></div>
 <b style="font-size: 13px; color: var(--yellow);">Deposit</b>
 </div>
 </div>
@@ -1182,11 +1182,11 @@ No active staking plans found.
 </div>
 </div>
 
-<label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (USDT/Gram):</label>
+<label style="margin-top:8px; display:block;" id="withdrawAmountLabel">Amount (<img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 11px; height: 11px; vertical-align: middle;" />USDT/Gram):</label>
 <input type="number" id="withdrawAmount" placeholder="Enter Amount" step="0.0001" oninput="calculateWithdrawFee()">
 
 <div class="flex-between" style="margin-top:6px; font-size:12px; color:var(--yellow);">
-<span id="withdrawMinLabel">Min 0.01 USDT</span>
+<span id="withdrawMinLabel">Min 0.01 <img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 11px; height: 11px; vertical-align: middle;" />USDT</span>
 <div>
 <span id="availableWithdrawBalance" style="color:var(--text-muted); margin-right:8px;">Available: 0.0000</span>
 <button onclick="setMaxWithdraw()" style="background:none; border:none; color:var(--accent); font-weight:bold; cursor:pointer;">MAX</button>
@@ -1206,7 +1206,7 @@ Fee (5%): 0.00 | You will receive: 0.00
 <!-- DEPOSIT SECTION -->
 <div id="wContentDeposit" class="wallet-subcard-content card" style="border: 1px solid var(--sky-blue); box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15);">
 <div class="flex-between" style="margin-bottom: 8px;">
-<h4 style="margin:0; color: var(--sky-blue);">💵 Deposit Funds (Gram)</h4>
+<h4 style="margin:0; color: var(--sky-blue);"><img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 4px;" />Deposit Funds (Gram)</h4>
 </div>
 
 <div id="gramDepositSection">
@@ -1218,7 +1218,7 @@ Enter the amount in USD, then pay the equivalent in TON from your connected wall
 <span id="tonIconBtn">💎</span> <span id="tonWalletBtnText">Connect Wallet</span>
 </button>
 
-<label style="margin-top:12px; display:block; font-size:12px; color:var(--text-muted);">Amount in USD / USDT:</label>
+<label style="margin-top:12px; display:block; font-size:12px; color:var(--text-muted);">Amount in USD / <img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 11px; height: 11px; vertical-align: middle;" />USDT:</label>
 <input type="number" id="gramDepositUsdInput" placeholder="Enter USD Amount" step="0.01" oninput="calculateGramPayAmount()">
 
 <div class="gram-pay-info">
@@ -1249,7 +1249,7 @@ Balance: <span id="convertSourceBalanceDisplay">0.00 Coin</span>
 <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block;">STEP 1: SELECT SOURCE CURRENCY</label>
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
 <div class="convert-sky-card active" id="cMainCoin" onclick="selectConvertMain('Coin')">🪙 Coin</div>
-<div class="convert-sky-card" id="cMainUSDT" onclick="selectConvertMain('USDT')">💵 USDT</div>
+<div class="convert-sky-card" id="cMainUSDT" onclick="selectConvertMain('USDT')"><img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 3px;" />USDT</div>
 <div class="convert-sky-card" id="cMainGram" onclick="selectConvertMain('Gram')">💎 Gram</div>
 </div>
 
@@ -3082,7 +3082,7 @@ function selectConvertMain(curr) {
   if(curr === 'Coin') {
     convertTargetCurrency = 'USDT';
     targetGrid.innerHTML = 
-      '<div class="convert-sky-card active" id="cTargetUSDT" onclick="selectConvertTarget(\'USDT\')">💵 USDT</div>' +
+      '<div class="convert-sky-card active" id="cTargetUSDT" onclick="selectConvertTarget(\'USDT\')"><img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 3px;" />USDT</div>' +
       '<div class="convert-sky-card" id="cTargetGram" onclick="selectConvertTarget(\'Gram\')">💎 Gram</div>';
   } else if(curr === 'USDT') {
     convertTargetCurrency = 'Coin';
@@ -3093,7 +3093,7 @@ function selectConvertMain(curr) {
     convertTargetCurrency = 'Coin';
     targetGrid.innerHTML = 
       '<div class="convert-sky-card active" id="cTargetCoin" onclick="selectConvertTarget(\'Coin\')">🪙 Coin</div>' +
-      '<div class="convert-sky-card" id="cTargetUSDT" onclick="selectConvertTarget(\'USDT\')">💵 USDT</div>';
+      '<div class="convert-sky-card" id="cTargetUSDT" onclick="selectConvertTarget(\'USDT\')"><img src="https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png" alt="USDT" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 3px;" />USDT</div>';
   }
 
   updateConvertSourceBalanceDisplay();
@@ -3107,7 +3107,7 @@ function selectConvertTarget(targetCurr) {
     var cards = targetGrid.querySelectorAll('.convert-sky-card');
     cards.forEach(function(card) {
       card.classList.remove('active');
-      if(card.innerText.indexOf(targetCurr) !== -1) {
+      if(card.innerText.indexOf(targetCurr) !== -1 || (targetCurr === 'USDT' && card.innerHTML.indexOf('USDT') !== -1)) {
         card.classList.add('active');
       }
     });
@@ -3240,7 +3240,7 @@ function toggleWithdrawFields() {
   if (currentWithdrawSubMethod === 'faucetpay') {
     if(destLabel) destLabel.innerText = "FaucetPay Email ID:";
     if(destInput) { destInput.placeholder = "Enter FaucetPay email address"; destInput.value = ""; }
-    if(minLbl) minLbl.innerText = "Min " + minWithdrawalAmt + " USDT";
+    if(minLbl) minLbl.innerHTML = "Min " + minWithdrawalAmt + " <img src='https://www.image2url.com/r2/default/images/1793290416791-3a87bb1d-eda9-4d2f-83b0-5cb1a066a4f6.png' alt='USDT' style='width: 11px; height: 11px; vertical-align: middle;' />USDT";
     availVal = usdtBalance;
   } else {
     if(destLabel) destLabel.innerText = "Gram Destination Address:";
@@ -3719,10 +3719,11 @@ function initBannerSlider() {
   renderCurrentBannerTask();
 
   if (bannerIntervalTimer) clearInterval(bannerIntervalTimer);
+  // Updated interval to exactly 4 seconds (4000ms) for full card changing
   bannerIntervalTimer = setInterval(function() {
     currentBannerIndex = (currentBannerIndex + 1) % Math.max(bannerTasksList.length, 6);
     renderCurrentBannerTask();
-  }, 5000);
+  }, 4000);
 }
 
 function renderCurrentBannerTask() {
