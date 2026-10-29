@@ -224,7 +224,7 @@ app.post('/api/tasks/publish', async (req, res) => {
 });
 
 /* =========================================================
-   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC
+   6. PAYOUT NOTIFICATIONS & INSTANT WITHDRAWAL LOGIC
    ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
@@ -361,7 +361,9 @@ async function handleFaucetPayPayout(req, res) {
 
       const reqKey = requestId || `fp_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
-      await sendPayoutNotification(payoutData);
+      
+      // Send notification instantly without waiting
+      sendPayoutNotification(payoutData);
 
       return res.status(200).json({
         success: true,
@@ -499,9 +501,11 @@ bot.command('approve_ton', async (ctx) => {
 
         item.status = 'SUCCESS (Approved)';
         item.postedToChannel = true;
+        
+        // Instant parallel update and notification dispatch for maximum speed
         await updateFirebaseData(`withdrawals/${uId}/${reqId}`, item);
+        sendPayoutNotification(item);
 
-        await sendPayoutNotification(item);
         found = true;
         ctx.reply(`✅ Request ${reqId} Approved aur Payout Channel par Post kar diya gaya!`);
         break;
@@ -527,9 +531,9 @@ bot.command('approve_all_ton', async (ctx) => {
         if (item && item.status === 'PENDING' && !item.postedToChannel) {
           item.status = 'SUCCESS (Approved)';
           item.postedToChannel = true;
+          
           await updateFirebaseData(`withdrawals/${uId}/${key}`, item);
-
-          await sendPayoutNotification(item);
+          sendPayoutNotification(item);
           approvedCount++;
         }
       }
