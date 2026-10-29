@@ -7,7 +7,7 @@ const cron = require('node-cron');
 const app = express();
 app.use(express.json());
 
-// Server Boot Timestamp (Sare purane records ko ignore karne ke liye)
+// Server Boot Timestamp
 const SERVER_START_TIME = Date.now();
 
 // Serve static files from root directory
@@ -293,12 +293,9 @@ async function checkAndSendPayouts() {
                            statusText.includes('paid');
 
         if (isApproved && !item.postedToChannel) {
-          if (item.rawTimestamp && item.rawTimestamp >= SERVER_START_TIME) {
-            const success = await sendPayoutNotification(item);
-            if (success) {
-              await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
-            }
-          } else {
+          // Allow instant posting for newly approved items without restricting by SERVER_START_TIME
+          const success = await sendPayoutNotification(item);
+          if (success) {
             await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
           }
         }
