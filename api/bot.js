@@ -224,7 +224,7 @@ app.post('/api/tasks/publish', async (req, res) => {
 });
 
 /* =========================================================
-   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (WITH ANTI-DUPLICATE LOCK)
+   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (UNLIMITED WITHDRAWALS)
    ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
@@ -310,29 +310,6 @@ async function handleFaucetPayPayout(req, res) {
   }
 
   try {
-    // Strict Duplicate Check via Request ID
-    if (requestId) {
-      const existingReq = await getFirebaseData(`withdrawals/${userId}/${requestId}`);
-      if (existingReq && existingReq.processed) {
-        return res.status(400).json({ success: false, message: "This withdrawal has already been processed." });
-      }
-    }
-
-    // Additional Safeguard: Check if identical payout was processed in the last 2 minutes
-    const userWithdrawals = await getFirebaseData(`withdrawals/${userId}`);
-    if (userWithdrawals) {
-      const nowTime = Date.now();
-      for (let k in userWithdrawals) {
-        const pastReq = userWithdrawals[k];
-        if (pastReq && pastReq.destination === email && String(pastReq.amount) === String(amount)) {
-          const pastTime = new Date(pastReq.rawTimestamp || pastReq.date).getTime();
-          if (!isNaN(pastTime) && (nowTime - pastTime < 120000)) { // 2 minutes window
-            return res.status(400).json({ success: false, message: "Duplicate withdrawal request detected. Please wait." });
-          }
-        }
-      }
-    }
-
     const numericAmount = parseFloat(amount);
     const satoshiAmount = Math.round(numericAmount * 100000000);
 
@@ -362,11 +339,11 @@ async function handleFaucetPayPayout(req, res) {
         status: 'SUCCESS (Approved)',
         processed: true,
         postedToChannel: true,
-        rawTimestamp: Date.now(),
         date: new Date().toLocaleString()
       };
 
-      const reqKey = requestId || `fp_${Date.now()}`;
+      // Har withdrawal ke liye ek bilkul naya unique key banega taaki koi clash na ho
+      const reqKey = requestId || `fp_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
       await sendPayoutNotification(payoutData);
 
@@ -398,12 +375,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
   }
 
   try {
-    const reqKey = requestId || `ton_${Date.now()}`;
-    
-    const existing = await getFirebaseData(`withdrawals/${userId}/${reqKey}`);
-    if (existing) {
-      return res.status(400).json({ success: false, message: "Withdrawal request already exists." });
-    }
+    const reqKey = requestId || `ton_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
     const withdrawalData = {
       id: reqKey,
@@ -415,7 +387,6 @@ app.post('/api/withdraw/ton', async (req, res) => {
       destination: walletAddress,
       status: 'PENDING',
       postedToChannel: false,
-      rawTimestamp: Date.now(),
       date: new Date().toLocaleString()
     };
 
