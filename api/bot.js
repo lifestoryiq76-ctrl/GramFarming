@@ -64,7 +64,6 @@ bot.start(async (ctx) => {
         telegramChatId: ctx.chat.id
     });
 
-    // Welcome Message (Exact Spanish Layout)
     const welcomeMessage = 
 `👋 Hola ${firstName}@ 🌏🌕
 Bienvenido/a a Gram Farming
@@ -153,7 +152,7 @@ setInterval(() => {
     }
 }, 60000);
 
-// Helper Function: Send Payout Proof to Telegram Channel (Fixed Currency Issue)
+// Helper Function: Send Payout Proof to Telegram Channel
 async function sendPayoutNotification(withdrawalData) {
   try {
     const { userId, userName, name, amount, tonAmount, currency, method, txUrl, date, destination } = withdrawalData || {};
@@ -199,7 +198,41 @@ async function sendPayoutNotification(withdrawalData) {
   }
 }
 
-// Automatic FaucetPay Merchant API Integration with Strict Anti-Duplicate Lock
+// Background Payout Checker to catch and post approved/processed withdrawals automatically
+async function checkAndSendPayouts() {
+  try {
+    const parentData = await getFirebaseData('withdrawals');
+    if (!parentData) return;
+
+    for (let uId in parentData) {
+      let userWithdrawals = parentData[uId];
+      if (!userWithdrawals) continue;
+
+      for (let key in userWithdrawals) {
+        let item = userWithdrawals[key];
+        if (!item) continue;
+
+        const statusText = String(item.status || '').toLowerCase();
+        const isApproved = statusText.includes('approved') || 
+                           statusText.includes('success') || 
+                           statusText.includes('completed') || 
+                           statusText.includes('paid');
+
+        // Agar approved hai aur channel par post nahi hua hai, toh notification bhej do
+        if (isApproved && !item.postedToChannel) {
+          const success = await sendPayoutNotification(item);
+          if (success) {
+            await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error in checkAndSendPayouts:", err.message);
+  }
+}
+
+// Automatic FaucetPay Merchant API Integration
 async function handleFaucetPayPayout(req, res) {
   const { email, amount, currency, userId, displayName, requestId } = req.body;
 
@@ -208,7 +241,6 @@ async function handleFaucetPayPayout(req, res) {
   }
 
   try {
-    // Check if this specific request ID has already been processed to prevent duplicates
     if (requestId) {
       const existingReq = await getFirebaseData(`withdrawals/${userId}/${requestId}`);
       if (existingReq && existingReq.processed) {
@@ -249,8 +281,6 @@ async function handleFaucetPayPayout(req, res) {
       };
 
       const reqKey = requestId || `fp_${Date.now()}`;
-      
-      // Save directly with processed status to prevent double execution
       await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
       await sendPayoutNotification(payoutData);
 
@@ -274,7 +304,7 @@ async function handleFaucetPayPayout(req, res) {
   }
 }
 
-// Manual TON Withdrawal Endpoint with Anti-Duplicate Check
+// Manual TON Withdrawal Endpoint
 app.post('/api/withdraw/ton', async (req, res) => {
   const { walletAddress, amount, currency, userId, displayName, requestId } = req.body;
 
@@ -285,7 +315,6 @@ app.post('/api/withdraw/ton', async (req, res) => {
   try {
     const reqKey = requestId || `ton_${Date.now()}`;
     
-    // Verify if already exists
     const existing = await getFirebaseData(`withdrawals/${userId}/${reqKey}`);
     if (existing) {
       return res.status(400).json({ success: false, message: "Withdrawal request already exists." });
@@ -458,6 +487,9 @@ app.post('/api/bot', async (req, res) => {
             await bot.handleUpdate(req.body);
         }
 
+        // Check payouts on every webhook hit as well
+        await checkAndSendPayouts();
+
         res.status(200).send('OK');
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
@@ -468,7 +500,8 @@ app.get('/api/bot', async (req, res) => {
     try {
         const webhookUrl = `https://${req.headers.host}/api/bot`;
         await bot.telegram.setWebhook(webhookUrl);
-        res.status(200).send(`✅ Bot Active & Webhook Set Successfully!`);
+        await checkAndSendPayouts();
+        res.status(200).send(`✅ Bot Active, Webhook Set & Payouts Checked Successfully!`);
     } catch (err) {
         res.status(200).send(`⚠️ Handled: ${err.message}`);
     }
