@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
+const cron = require('node-cron');
 
 const app = express();
 app.use(express.json());
@@ -92,7 +93,6 @@ async function sendDailyCheckinReminder(chatId, userId) {
     try {
         const todayStr = new Date().toDateString();
         
-        // Check if reminder was already sent today to this user
         const userData = await getFirebaseData(`users/${userId}`);
         if (userData && userData.lastReminderDate === todayStr) {
             return false; 
@@ -120,7 +120,6 @@ Open the app and check in before the day ends to keep your streak.`;
             ])
         });
 
-        // Update last reminder date flag in Firebase
         await updateFirebaseData(`users/${userId}`, { lastReminderDate: todayStr });
         return true;
     } catch (err) {
@@ -142,7 +141,6 @@ async function triggerDailyCheckinBroadcast() {
     const now = new Date();
     const currentMinuteKey = `${now.toDateString()}-${now.getHours()}-${now.getMinutes()}`;
     
-    // Ensure it triggers strictly once per minute slot
     if (lastBroadcastMinute === currentMinuteKey) return;
     lastBroadcastMinute = currentMinuteKey;
 
@@ -158,7 +156,6 @@ async function triggerDailyCheckinBroadcast() {
     }
 }
 
-// Timer checking every 30 seconds
 setInterval(() => {
     const now = new Date();
     if (now.getHours() === 9 && now.getMinutes() === 30) {
@@ -167,7 +164,67 @@ setInterval(() => {
 }, 30000);
 
 /* =========================================================
-   4. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC
+   4. NODE-CRON SCHEDULE FOR 5:30 AM RESET
+   ========================================================= */
+cron.schedule('30 5 * * *', async () => {
+    console.log("⏰ Running 5:30 AM Daily Reset Task...");
+}, {
+    scheduled: true,
+    timezone: "Asia/Kolkata"
+});
+
+/* =========================================================
+   5. NEW TASK PUBLISH BROADCAST ENDPOINT
+   ========================================================= */
+app.post('/api/tasks/publish', async (req, res) => {
+    const { title, reward } = req.body;
+
+    try {
+        const taskTitle = title || 'Earn Mony';
+        const taskReward = reward || '0.05';
+
+        const taskMessage = 
+`📣 <b>New Paid Task Available!</b>\n\n` +
+`🎯 A new paid task is available: <b>${taskTitle}</b>!\n` +
+`Complete it now to earn <b>+${taskReward} Coin</b>!`;
+
+        const keyboard = Markup.inlineKeyboard([
+            [Markup.button.webApp('🎯 View Tasks', MINI_APP_URL)]
+        ]);
+
+        const usersData = await getFirebaseData('users');
+        let sentCount = 0;
+
+        if (usersData) {
+            for (let uId in usersData) {
+                const user = usersData[uId];
+                if (user && user.telegramChatId) {
+                    try {
+                        await bot.telegram.sendMessage(user.telegramChatId, taskMessage, {
+                            parse_mode: 'HTML',
+                            ...keyboard
+                        });
+                        sentCount++;
+                    } catch (err) {
+                        console.error(`Failed to send task broadcast to ${user.telegramChatId}:`, err.message);
+                    }
+                }
+            }
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: `Task published and broadcasted to ${sentCount} users successfully!`,
+            sentCount
+        });
+    } catch (error) {
+        console.error("Task Publish Error:", error.message);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/* =========================================================
+   6. PAYOUT NOTIFICATIONS & WITHDRAWAL LOGIC (WITH ANTI-DUPLICATE LOCK)
    ========================================================= */
 async function sendPayoutNotification(withdrawalData) {
   try {
@@ -253,10 +310,26 @@ async function handleFaucetPayPayout(req, res) {
   }
 
   try {
+    // Strict Duplicate Check via Request ID
     if (requestId) {
       const existingReq = await getFirebaseData(`withdrawals/${userId}/${requestId}`);
       if (existingReq && existingReq.processed) {
         return res.status(400).json({ success: false, message: "This withdrawal has already been processed." });
+      }
+    }
+
+    // Additional Safeguard: Check if identical payout was processed in the last 2 minutes
+    const userWithdrawals = await getFirebaseData(`withdrawals/${userId}`);
+    if (userWithdrawals) {
+      const nowTime = Date.now();
+      for (let k in userWithdrawals) {
+        const pastReq = userWithdrawals[k];
+        if (pastReq && pastReq.destination === email && String(pastReq.amount) === String(amount)) {
+          const pastTime = new Date(pastReq.rawTimestamp || pastReq.date).getTime();
+          if (!isNaN(pastTime) && (nowTime - pastTime < 120000)) { // 2 minutes window
+            return res.status(400).json({ success: false, message: "Duplicate withdrawal request detected. Please wait." });
+          }
+        }
       }
     }
 
@@ -289,6 +362,7 @@ async function handleFaucetPayPayout(req, res) {
         status: 'SUCCESS (Approved)',
         processed: true,
         postedToChannel: true,
+        rawTimestamp: Date.now(),
         date: new Date().toLocaleString()
       };
 
@@ -341,6 +415,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
       destination: walletAddress,
       status: 'PENDING',
       postedToChannel: false,
+      rawTimestamp: Date.now(),
       date: new Date().toLocaleString()
     };
 
