@@ -36,6 +36,10 @@
 <!-- TON Connect UI SDK -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
 
+<!-- Firebase Compat Scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js" defer></script>
+
 <style>
 :root {
 --bg-color: #0d1b38;
@@ -329,7 +333,7 @@ input:focus, select:focus { border-color: var(--accent); }
   <div></div>
   <div class="splash-center">
     <div class="splash-logo-container">
-      <span class="splash-logo-icon" id="splashLogoIcon">🌱</span>
+      <span class="splash-logo-icon">🌱</span>
     </div>
     <div class="splash-title">GRAM FARMING</div>
     <div class="splash-subtitle">MINI APP</div>
@@ -359,10 +363,7 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <div class="header">
 <div style="display: flex; align-items: center; gap: 8px;">
-<img id="headerAppLogoImg" src="" alt="Logo" style="height: 26px; border-radius: 4px; display: none;">
-<a id="headerAppLogoLink" href="#" target="_blank" style="color: var(--accent); font-weight: bold; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 6px;">
-  <span>🌱</span> <span id="headerBrandTitle">Gram Farming</span>
-</a>
+<h3 style="margin:0; color: var(--accent);">🌱 Gram Farming</h3>
 <span class="live-badge">🔴 LIVE</span>
 </div>
 <select id="langSelect" onchange="changeLanguage(this.value)" style="width: auto; padding: 6px 12px;">
@@ -1108,53 +1109,6 @@ No recent transactions yet.
 
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
-<!-- MONGODB BACKEND SYNC SCRIPT -->
-<script>
-    // MongoDB Backend se data fetch karne aur sync karne ka function
-    async function fetchUserDataFromMongoDB() {
-        try {
-            const response = await fetch(`/api/user/${userId}`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data) {
-                    balance = data.balance !== undefined ? data.balance : balance;
-                    tonBalance = data.tonBalance !== undefined ? data.tonBalance : tonBalance;
-                    usdtBalance = data.usdtBalance !== undefined ? data.usdtBalance : usdtBalance;
-                    refReward = data.refReward !== undefined ? data.refReward : refReward;
-                    totalInvited = data.totalInvited !== undefined ? data.totalInvited : totalInvited;
-                    renderUIValues();
-                }
-            }
-        } catch (e) {
-            console.error("MongoDB fetch error:", e);
-        }
-    }
-
-    // Data MongoDB server par save/sync karne ka function
-    async function saveToServer() {
-        saveToLocalStorage(); // Local backup
-        try {
-            await fetch('/api/user/update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: userId,
-                    displayName: displayName,
-                    balance: balance,
-                    tonBalance: tonBalance,
-                    usdtBalance: usdtBalance,
-                    refReward: refReward,
-                    totalInvited: totalInvited,
-                    activeStakes: activeStakes,
-                    adWatchedCounts: adWatchedCounts
-                })
-            });
-        } catch (e) {
-            console.error("MongoDB save error:", e);
-        }
-    }
-</script>
-
 <script>
 document.addEventListener('copy', function(e) { e.preventDefault(); });
 document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
@@ -1192,7 +1146,22 @@ if (window.Telegram && window.Telegram.WebApp) {
 }
 
 window.addEventListener('load', function() {
-  initAppOptimizedListeners();
+  if (typeof firebase !== 'undefined') {
+    const firebaseConfig = {
+      apiKey: "AIzaSyCx2g_tueJ0tqghMMlh4z20ltA_UlLe_Hg",
+      authDomain: "gramfarmingbot-1a570.firebaseapp.com",
+      databaseURL: "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com",
+      projectId: "gramfarmingbot-1a570",
+      storageBucket: "gramfarmingbot-1a570.appspot.com",
+      messagingSenderId: "113291680927",
+      appId: "1:113291680927:web:cb20c9f6b7914a546156aa"
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    window.db = firebase.database();
+    initAppOptimizedListeners();
+  }
   selectConvertMain('Coin');
 });
 
@@ -1340,7 +1309,7 @@ function check530AmRestartAndStaking() {
     localStorage.setItem('last_530_reset_date', todayStr);
     
     localStorage.removeItem(CACHE_KEY);
-    saveToServer();
+    saveToFirebase();
 
     showToast("🔄 Mini App successfully refreshed at 5:30 AM!", "success");
     setTimeout(function() { location.reload(); }, 1500);
@@ -1386,14 +1355,155 @@ function updateOfficialButtonsState() {
   }
 }
 
+// OPTIMIZED LISTENERS: Replaced heavy background .on() loops with .once() and smart Caching to completely eliminate 12GB bandwidth leak
 function initAppOptimizedListeners() {
-  fetch('/api/bot', { method: 'GET' }).catch(function(e) {});
-  loadFromLocalStorage();
-  fetchUserDataFromMongoDB(); // MongoDB se latest user data load karein
-  renderUIValues();
-  renderStakingList();
-  renderCustomTasksFromFirebase();
-  updateOfficialButtonsState();
+  if (!window.db) return;
+
+  // 1. Fetch completed tasks once on load & use LocalStorage
+  db.ref('completedTasks/' + userId).once('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var serverCompleted = Object.keys(snapshot.val());
+      completedTasksSet = Array.from(new Set(completedTasksSet.concat(serverCompleted)));
+    }
+    localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
+    updateOfficialButtonsState();
+    renderCustomTasksFromFirebase();
+  });
+
+  // 2. Fetch user profile data once to prevent continuous bandwidth consumption
+  var userRef = db.ref('users/' + userId);
+  userRef.once('value', function(snapshot) {
+    var data = snapshot.val();
+    if (data) {
+      if (data.isBlocked === true) {
+        document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d1b38; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #14254a; padding: 30px; border-radius: 16px; border: 1px solid #233b6a; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Fake accounts & activity detected. Aapka account block kar diya gaya hai!</p></div></div>';
+        return;
+      }
+      balance = data.balance || 0.00;
+      tonBalance = data.tonBalance !== undefined ? data.tonBalance : 0.0590;
+      usdtBalance = data.usdtBalance !== undefined ? data.usdtBalance : 5.0500;
+      refReward = data.refReward || 0.00;
+      totalInvited = data.totalInvited || 0;
+      savedTonAddress = data.savedTonAddress || "";
+      activeStakes = data.activeStakes || [];
+      lastCheckin = data.lastCheckin || 0;
+      if (data.adWatchedCounts) adWatchedCounts = data.adWatchedCounts;
+
+      saveToLocalStorage();
+    } else {
+      userRef.set({
+        name: displayName,
+        balance: 0.00, tonBalance: 0.0590, usdtBalance: 5.0500, refReward: 0.00, totalInvited: 0, savedTonAddress: "", activeStakes: [], lastCheckin: 0,
+        adWatchedCounts: { taskMonetagLimit: 0, taskGigapubLimit: 0, taskMonetixLimit: 0, taskAdsterraLimit: 0, taskAdsbitvexLimit: 0 }
+      });
+    }
+    renderUIValues();
+    renderStakingList();
+    toggleWithdrawFields();
+  });
+
+  // 3. Admin settings loaded once (no repetitive .on loop)
+  db.ref('adminSettings/general').once('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      if (data.coinUsdtValue !== undefined) coinUsdtValue = parseFloat(data.coinUsdtValue);
+      if (data.dailyBonus !== undefined) currentDailyBonus = parseFloat(data.dailyBonus);
+      if (data.minWithdrawal !== undefined || data.minFaucetPay !== undefined) {
+        minWithdrawalAmt = parseFloat(data.minFaucetPay !== undefined ? data.minFaucetPay : data.minWithdrawal);
+      }
+      if (data.minTonWithdrawal !== undefined || data.minTon !== undefined) {
+        minTonWithdrawalAmt = parseFloat(data.minTon !== undefined ? data.minTon : data.minTonWithdrawal);
+      }
+      if (data.refPercent !== undefined || data.referralBonus !== undefined || data.referralPercentage !== undefined) {
+        referralPercentage = parseFloat(data.refPercent || data.referralBonus || data.referralPercentage);
+        var refEl = document.getElementById('refPercentText');
+        if(refEl) refEl.innerText = "Get " + referralPercentage + "%";
+      }
+      renderUIValues();
+      calculateExchange();
+      toggleWithdrawFields();
+      updateCostCalculation();
+    }
+  });
+
+  db.ref('adminSettings/clickRates').once('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var rates = snapshot.val();
+      if (rates.coin100 !== undefined) clickPackagesData[0].coin = parseFloat(rates.coin100);
+      if (rates.coin250 !== undefined) clickPackagesData[1].coin = parseFloat(rates.coin250);
+      if (rates.coin500 !== undefined) clickPackagesData[2].coin = parseFloat(rates.coin500);
+      if (rates.coin1000 !== undefined) clickPackagesData[3].coin = parseFloat(rates.coin1000);
+      if (rates.coin2000 !== undefined) clickPackagesData[4].coin = parseFloat(rates.coin2000);
+      if (rates.coin3000 !== undefined) clickPackagesData[5].coin = parseFloat(rates.coin3000);
+      if (rates.coin4000 !== undefined) clickPackagesData[6].coin = parseFloat(rates.coin4000);
+      if (rates.coin5000 !== undefined) clickPackagesData[7].coin = parseFloat(rates.coin5000);
+
+      var activePkg = clickPackagesData.find(function(p) { return p.clicks === selectedClickCount; });
+      if (activePkg) {
+        selectedCoinCost = activePkg.coin;
+      }
+      updateCostCalculation();
+    }
+  });
+
+  db.ref('adminSettings/mining').once('value', function(snapshot) {
+    if (snapshot.exists()) applyMiningData(snapshot.val());
+  });
+
+  db.ref('adminSettings/stakingApy').once('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      for (var key in data) { stakingApyRates[key] = data[key]; }
+
+      if (data[0] !== undefined && document.getElementById('displayFlexApy')) document.getElementById('displayFlexApy').innerText = data[0];
+      if (data[7] !== undefined && document.getElementById('displayApy7')) document.getElementById('displayApy7').innerText = data[7];
+      if (data[15] !== undefined && document.getElementById('displayApy15')) document.getElementById('displayApy15').innerText = data[15];
+      if (data[30] !== undefined && document.getElementById('displayApy30')) document.getElementById('displayApy30').innerText = data[30];
+      if (data[60] !== undefined && document.getElementById('displayApy60')) document.getElementById('displayApy60').innerText = data[60];
+      if (data[90] !== undefined && document.getElementById('displayApy90')) document.getElementById('displayApy90').innerText = data[90];
+      if (data[120] !== undefined && document.getElementById('displayApy120')) document.getElementById('displayApy120').innerText = data[120];
+      if (data[365] !== undefined && document.getElementById('displayApy365')) document.getElementById('displayApy365').innerText = data[365];
+
+      var calcSelect = document.getElementById('stakeCalcPlan');
+      if (calcSelect) {
+        calcSelect.innerHTML = '<option value="0|' + stakingApyRates[0] + '">Flexible (0 Days - ' + stakingApyRates[0] + '% APY)</option>' +
+        '<option value="7|' + stakingApyRates[7] + '">Fixed (7 Days - ' + stakingApyRates[7] + '% APY)</option>' +
+        '<option value="15|' + stakingApyRates[15] + '">Fixed (15 Days - ' + stakingApyRates[15] + '% APY)</option>' +
+        '<option value="30|' + stakingApyRates[30] + '">Fixed (30 Days - ' + stakingApyRates[30] + '% APY)</option>' +
+        '<option value="60|' + stakingApyRates[60] + '">Fixed (60 Days - ' + stakingApyRates[60] + '% APY)</option>' +
+        '<option value="90|' + stakingApyRates[90] + '">Fixed (90 Days - ' + stakingApyRates[90] + '% APY)</option>' +
+        '<option value="120|' + stakingApyRates[120] + '">Fixed (120 Days - ' + stakingApyRates[120] + '% APY)</option>' +
+        '<option value="365|' + stakingApyRates[365] + '">Fixed (365 Days - ' + stakingApyRates[365] + '% APY)</option>';
+      }
+      calculateStakeRewards();
+    }
+  });
+
+  db.ref('adminSettings/ads').once('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      if (data.monetagLimit) maxLimits.monetag = parseInt(data.monetagLimit);
+      if (data.gigapubLimit) maxLimits.gigapub = parseInt(data.gigapubLimit);
+      if (data.monetixLimit) maxLimits.monetix = parseInt(data.monetixLimit);
+      if (data.adsterraLimit) maxLimits.adsterra = parseInt(data.adsterraLimit);
+      if (data.adsbitvexLimit) maxLimits.adsbitvex = parseInt(data.adsbitvexLimit);
+
+      if (data.monetagReward) rewards.monetag = parseFloat(data.monetagReward);
+      if (data.gigapubReward) rewards.gigapub = parseFloat(data.gigapubReward);
+      if (data.monetixReward) rewards.monetix = parseFloat(data.monetixReward);
+      if (data.adsterraReward) rewards.adsterra = parseFloat(data.adsterraReward);
+      if (data.adsbitvexReward) rewards.adsbitvex = parseFloat(data.adsbitvexReward);
+
+      if (data.monetagTimer) adTimers.monetag = parseInt(data.monetagTimer);
+      if (data.gigapubTimer) adTimers.gigapub = parseInt(data.gigapubTimer);
+      if (data.monetixTimer) adTimers.monetix = parseInt(data.monetixTimer);
+      if (data.adsterraTimer) adTimers.adsterra = parseInt(data.adsterraTimer);
+      if (data.adsbitvexTimer) adTimers.adsbitvex = parseInt(data.adsbitvexTimer);
+
+      renderUIValues();
+    }
+  });
+
   trackUserLoginAndIp();
   loadTransactionHistory();
 }
@@ -1423,7 +1533,9 @@ function initTonConnectUI() {
         }
       });
     }
-  } catch(e) {}
+  } catch(e) {
+    console.error("TON Connect init error:", e);
+  }
 }
 
 function handleGramWalletConnect() {
@@ -1480,23 +1592,26 @@ function sendGramDepositTransaction() {
   tonConnectUI.sendTransaction(transaction).then(function(result) {
     if (result) {
       tonBalance += payTon;
-      saveToServer();
+      saveToFirebase();
       renderUIValues();
       showToast("✅ Successfully deposited " + payTon.toFixed(4) + " Gram (TON)!", "success");
 
-      fetch('/api/verify-ton', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: userId, displayName: displayName, amount: payTon })
-      }).then(function(res) { return res.json(); }).then(function(data) {
-        loadTransactionHistory();
-        resetGramDepositForm();
-      }).catch(function(e) {
-        loadTransactionHistory();
-        resetGramDepositForm();
-      });
+      var depositRecord = {
+        id: Date.now(),
+        userName: displayName,
+        userId: userId,
+        method: 'Gram (TON) Deposit',
+        amount: payTon,
+        usdAmount: usdAmt,
+        status: 'SUCCESS',
+        date: new Date().toLocaleString()
+      };
+      if (window.db) db.ref('deposits/' + userId).push(depositRecord);
+      loadTransactionHistory();
+      resetGramDepositForm();
     }
   }).catch(function(e) {
+    console.error("TON Deposit Error:", e);
     showToast("Transaction cancelled or failed.", "error");
   });
 }
@@ -1539,11 +1654,59 @@ function saveToLocalStorage() {
 loadFromLocalStorage();
 
 function trackUserLoginAndIp() {
+  if (!window.db) return;
   fetch('https://api.ipify.org?format=json').then(function(res) {
     return res.json();
   }).then(function(ipData) {
     var userIp = ipData.ip;
-  }).catch(function(err) {});
+    var userDevice = navigator.userAgent;
+    var userRef = db.ref('users/' + userId);
+
+    userRef.once('value', function(snapshot) {
+      if (snapshot.exists()) {
+        var userData = snapshot.val();
+        if (userData.isBlocked === true) {
+          document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d1b38; color: #fff; text-align: center; padding: 20px; font-family: sans-serif;"><div style="background: #14254a; padding: 30px; border-radius: 16px; border: 1px solid #233b6a; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><h2 style="color: #ef4444; margin-top: 0;">🚫 Access Denied</h2><p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Aapka account block kar diya gaya hai!</p></div></div>';
+        }
+      }
+    });
+
+    userRef.update({
+      ipAddress: userIp,
+      deviceInfo: userDevice,
+      lastLogin: firebase.database.ServerValue.TIMESTAMP
+    });
+  }).catch(function(err) {
+    console.error("IP tracking error:", err);
+  });
+}
+
+function applyMiningData(data) {
+  if (!data) return;
+  if (data.novaReward !== undefined) miningRewardCoins = parseFloat(data.novaReward);
+  if (data.novaDuration !== undefined) miningDurationSeconds = parseFloat(data.novaDuration) * 3600;
+  if (data.novaTimer !== undefined) novaTimerSec = parseInt(data.novaTimer);
+  if (data.cosmicTimer !== undefined) cosmicTimerSec = parseInt(data.cosmicTimer);
+
+  if (data.novaReqAds !== undefined) {
+    novaRequiredAds = parseInt(data.novaReqAds);
+    var novaMaxEl = document.getElementById('novaLimitMax');
+    if(novaMaxEl) novaMaxEl.innerText = novaRequiredAds;
+    if (rocketStates[0].status === 'ads') {
+      var rBtn0 = document.getElementById('rocketBtn-0');
+      if(rBtn0) rBtn0.innerText = "Watch Ad (" + rocketStates[0].adsWatched + "/" + novaRequiredAds + ")";
+    }
+  }
+
+  if (data.cosmicReqAds !== undefined) {
+    cosmicRequiredAds = parseInt(data.cosmicReqAds);
+    var cosmicMaxEl = document.getElementById('cosmicLimitMax');
+    if(cosmicMaxEl) cosmicMaxEl.innerText = cosmicRequiredAds;
+    if (rocketStates[1].status === 'ads') {
+      var rBtn1 = document.getElementById('rocketBtn-1');
+      if(rBtn1) rBtn1.innerText = "Watch Ad (" + rocketStates[1].adsWatched + "/" + cosmicRequiredAds + ")";
+    }
+  }
 }
 
 var translations = {
@@ -1561,11 +1724,24 @@ function changeLanguage(lang) {
   toggleWithdrawFields();
 }
 
+function saveToFirebase() {
+  saveToLocalStorage();
+  if (window.db) {
+    db.ref('users/' + userId).update({
+      balance: balance, tonBalance: tonBalance, usdtBalance: usdtBalance, refReward: refReward, totalInvited: totalInvited, savedTonAddress: savedTonAddress, activeStakes: activeStakes, lastCheckin: lastCheckin,
+      adWatchedCounts: adWatchedCounts
+    });
+    if (savedTonAddress) {
+      db.ref('tonAddresses/' + userId).update({ address: savedTonAddress, userName: displayName, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+    }
+  }
+}
+
 function addEarningsWithReferral(earnedAmount) {
   balance += earnedAmount;
   var refCommission = earnedAmount * (referralPercentage / 100);
   refReward += refCommission;
-  saveToServer();
+  saveToFirebase();
   renderUIValues();
 }
 
@@ -1990,7 +2166,7 @@ function publishCampaign() {
     tonBalance -= gramCost;
   }
 
-  saveToServer();
+  saveToFirebase();
   renderUIValues();
 
   var newCampaignObj = {
@@ -2011,11 +2187,7 @@ function publishCampaign() {
     date: new Date().toLocaleString()
   };
 
-  fetch('/api/tasks/publish', {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newCampaignObj)
-  }).catch(function(e) {});
+  if (window.db) db.ref('customTasks').push(newCampaignObj);
 
   if(document.getElementById('customTaskTitle')) document.getElementById('customTaskTitle').value = '';
   if(document.getElementById('campaignTitleInputText')) document.getElementById('campaignTitleInputText').value = '';
@@ -2071,6 +2243,7 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
       onErrorCallback();
     }
   } catch(err) {
+    console.error("Monetix Execution Error:", err);
     onErrorCallback();
   }
 }
@@ -2179,6 +2352,7 @@ function watchAdsBitvexAd() {
           })
           .catch(function(err) {
             hideAdLoadingScreen();
+            console.error("AdsBitvex Show Error:", err);
             showToast("AdsBitvex ad currently unavailable.", "error");
             if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
           });
@@ -2189,6 +2363,7 @@ function watchAdsBitvexAd() {
       }
     } catch(err) {
       hideAdLoadingScreen();
+      console.error("AdsBitvex Execution Exception:", err);
       showToast("AdsBitvex ad error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
@@ -2291,7 +2466,7 @@ function startTaskCountdownTimer(btn, durationSec) {
 function finishAdWatchSuccess(limitElementId, btn, rewardPerAd) {
   addEarningsWithReferral(rewardPerAd);
   adWatchedCounts[limitElementId] = (adWatchedCounts[limitElementId] || 0) + 1;
-  saveToServer();
+  saveToFirebase();
   renderUIValues();
   showToast("Claim Successful! +" + rewardPerAd + " Coin added automatically!", "success");
 }
@@ -2306,7 +2481,7 @@ function claimDailyBonus() {
   var runClaimAction = function() {
     lastCheckin = now;
     addEarningsWithReferral(currentDailyBonus);
-    saveToServer();
+    saveToFirebase();
     renderUIValues();
     showToast("Claim Successful! +" + currentDailyBonus.toFixed(2) + " Coins added!", "success");
   };
@@ -2381,7 +2556,7 @@ function stake(planName, days, apy) {
   };
 
   activeStakes.push(newStakeObj);
-  saveToServer();
+  saveToFirebase();
   renderUIValues();
   renderStakingList();
 
@@ -2410,7 +2585,7 @@ function processStakingDailyTransfer() {
   });
 
   if (updated) {
-    saveToServer();
+    saveToFirebase();
     renderUIValues();
     renderStakingList();
   }
@@ -2448,7 +2623,7 @@ function unstake(stakeId) {
     else if (curr === 'Gram') tonBalance += refundedAmount;
 
     activeStakes.splice(index, 1);
-    saveToServer();
+    saveToFirebase();
     renderUIValues();
     renderStakingList();
     showToast("🔓 Successfully unstaked and returned " + refundedAmount.toFixed(2) + curr + ".", "success");
@@ -2809,7 +2984,7 @@ function exchangeCoins() {
   }
 
   var exInp = document.getElementById('exchangeAmount'); if(exInp) exInp.value = '';
-  saveToServer();
+  saveToFirebase();
   renderUIValues();
   calculateExchange();
 }
@@ -2883,6 +3058,22 @@ function requestWithdrawal() {
   }
 
   if (currentWithdrawSubMethod === 'faucetpay') {
+    var newWithdrawal = {
+      id: Date.now(),
+      userName: displayName,
+      userId: userId,
+      method: 'FAUCETPAY',
+      amount: netReceive,
+      requestedAmount: amt,
+      fee: fee,
+      received: netReceive,
+      destination: destination,
+      status: 'SUCCESS (Approved)',
+      date: new Date().toLocaleString()
+    };
+
+    if (window.db) db.ref('withdrawals/' + userId).push(newWithdrawal);
+
     fetch('/api/bot', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -2902,33 +3093,50 @@ function requestWithdrawal() {
         showToast("❌ Payout Error: " + (data.message || "Failed"), "error");
       }
     }).catch(function(e) {
+      console.error("API Error:", e);
       showToast("❌ Network error during payout processing.", "error");
     });
   } else if (currentWithdrawSubMethod === 'gram') {
     showToast("⌛ Submitting Gram Withdrawal Request...", "success");
+
+    var newWithdrawalGram = {
+      id: Date.now(),
+      userName: displayName,
+      userId: userId,
+      method: 'Gram',
+      amount: netReceive,
+      requestedAmount: amt,
+      fee: fee,
+      received: netReceive,
+      destination: destination,
+      status: 'PENDING',
+      date: new Date().toLocaleString()
+    };
+    if (window.db) db.ref('withdrawals/' + userId).push(newWithdrawalGram);
 
     fetch('/api/withdraw/ton', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: userId,
-        displayName: displayName,
+        userName: displayName,
         amount: netReceive,
         requestedAmount: amt,
         fee: fee,
-        walletAddress: destination,
-        currency: 'Gram'
+        destination: destination,
+        method: 'Gram'
       })
     }).then(function(res) {
       return res.json();
     }).then(function(data) {
       showToast("✅ Gram Withdrawal Request submitted successfully!", "success");
     }).catch(function(e) {
-      showToast("✅ Request logged & pending approval.", "success");
+      console.error("TON Withdraw Error:", e);
+      showToast("✅ Request logged locally & pending approval.", "error");
     });
   }
 
-  saveToServer();
+  saveToFirebase();
   renderUIValues();
   loadTransactionHistory();
 
@@ -2938,8 +3146,54 @@ function requestWithdrawal() {
 
 function loadTransactionHistory() {
   var historyContainer = document.getElementById('transactionHistoryList');
-  if (!historyContainer) return;
-  historyContainer.innerHTML = "No recent transactions yet.";
+  if (!historyContainer || !window.db) return;
+
+  db.ref('withdrawals/' + userId).once('value', function(withdrawSnap) {
+    var allTransactions = [];
+
+    if (withdrawSnap.exists()) {
+      var wData = withdrawSnap.val();
+      Object.values(wData).forEach(function(item) {
+        allTransactions.push({
+          type: 'Withdrawal',
+          method: item.method || 'Payout',
+          amount: item.received || item.amount || 0,
+          status: item.status || 'PENDING',
+          date: item.date || ''
+        });
+      });
+    }
+
+    db.ref('deposits/' + userId).once('value', function(depositSnap) {
+      if (depositSnap.exists()) {
+        var dData = depositSnap.val();
+        Object.values(dData).forEach(function(item) {
+          allTransactions.push({
+            type: 'Deposit',
+            method: item.method || 'Deposit',
+            amount: item.amount || 0,
+            status: item.status || 'SUCCESS',
+            date: item.date || ''
+          });
+        });
+      }
+
+      if (allTransactions.length === 0) {
+        historyContainer.innerHTML = "No recent transactions yet.";
+        return;
+      }
+
+      var html = '';
+      allTransactions.reverse().forEach(function(item) {
+        var isDeposit = item.type === 'Deposit';
+        var badgeColor = isDeposit ? 'var(--accent)' : 'var(--yellow)';
+        var sign = isDeposit ? '+' : '-';
+
+        html += '<div style="background: #14254a; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;"><div><b style="color: ' + badgeColor + ';">' + item.type + ' (' + item.method + '): ' + sign + parseFloat(item.amount).toFixed(4) + '</b><div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">' + item.date + '</div></div><span style="color: ' + badgeColor + '; font-weight: bold; font-size: 11px;">' + item.status + '</span></div>';
+      });
+      historyContainer.innerHTML = html;
+    });
+  });
 }
 
 function copyRef() {
@@ -2966,7 +3220,7 @@ function claimRefRewards() {
   var claimable = refReward;
   refReward = 0.00;
   balance += claimable;
-  saveToServer();
+  saveToFirebase();
   renderUIValues();
   showToast("Claim Successful! +" + claimable.toFixed(2) + " Coins claimed from referrals!", "success");
 }
@@ -3063,6 +3317,25 @@ function claimTaskReward(reward, taskKey) {
     completedTasksSet.push(taskKey);
     localStorage.setItem('completed_tasks_' + userId, JSON.stringify(completedTasksSet));
 
+    if (window.db) {
+      db.ref('completedTasks/' + userId + '/' + taskKey).set({
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        reward: reward
+      });
+
+      if (!taskKey.startsWith('official_')) {
+        db.ref('customTasks/' + taskKey).transaction(function(task) {
+          if (task) {
+            task.clicksDone = (task.clicksDone || 0) + 1;
+            if (task.clicksRemaining !== undefined) {
+              task.clicksRemaining = Math.max(0, task.clicksRemaining - 1);
+            }
+          }
+          return task;
+        });
+      }
+    }
+
     addEarningsWithReferral(reward);
     showToast("🎉 Verification Successful! +" + reward + " Coins added to balance!", "success");
 
@@ -3072,24 +3345,103 @@ function claimTaskReward(reward, taskKey) {
 }
 
 function renderCustomTasksFromFirebase() {
-  var listEl = document.getElementById('dynamicTasksList');
-  var noticeEl = document.getElementById('emptyTasksNotice');
+  if (!window.db) return;
+  db.ref('customTasks').once('value', function(snapshot) {
+    var listEl = document.getElementById('dynamicTasksList');
+    var noticeEl = document.getElementById('emptyTasksNotice');
 
-  bannerTasksList = [
-    {
-      key: 'default_partner_1',
-      title: 'Gram Farming Official',
-      description: 'Join official news and updates channel',
-      link: 'https://t.me/GramFarming_Official',
-      objective: 'Channel',
-      buttonText: 'Join',
-      image: 'https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png'
+    bannerTasksList = [
+      {
+        key: 'default_partner_1',
+        title: 'Gram Farming Official',
+        description: 'Join official news and updates channel',
+        link: 'https://t.me/GramFarming_Official',
+        objective: 'Channel',
+        buttonText: 'Join',
+        image: 'https://cdn.phototourl.com/member/2026-10-20-547963a5-6f58-4463-8ff5-12e051b8fbb3.png'
+      }
+    ];
+
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      var html = '';
+      var visibleTaskCount = 0;
+
+      Object.entries(data).forEach(function(entry) {
+        var key = entry[0];
+        var task = entry[1];
+
+        var isCompleted = completedTasksSet.includes(key);
+        if (isCompleted) return;
+
+        var totalClicks = task.totalClicks || 100;
+        var clicksDone = task.clicksDone || 0;
+        var clicksLeft = task.clicksRemaining !== undefined ? task.clicksRemaining : (totalClicks - clicksDone);
+
+        if (clicksLeft <= 0) return;
+
+        if (task.bannerAddon === true) {
+          bannerTasksList.push({
+            key: key,
+            title: task.title,
+            description: task.description || "Complete task & claim reward!",
+            link: task.link,
+            objective: task.objective || "Channel",
+            buttonText: task.buttonText || "Join",
+            image: task.image || ""
+          });
+        }
+
+        visibleTaskCount++;
+
+        var imgHtml = task.image 
+          ? '<img src="' + task.image + '" style="width:48px; height:48px; border-radius:12px; object-fit:cover; margin-right:12px; flex-shrink:0; border:1px solid rgba(255,255,255,0.1);" />' 
+          : '<div style="width:48px; height:48px; border-radius:12px; background:#0ea5e9; display:flex; align-items:center; justify-content:center; font-size:22px; margin-right:12px; flex-shrink:0;">🚀</div>';
+
+        var safeTitle = task.title.replace(/'/g, "\\'");
+        var safeLink = task.link.replace(/'/g, "\\'");
+        var isVerified = task.verifiedAddon || false;
+
+        var customBtnText = task.buttonText || "Join";
+        var btnDisplayLabel = customBtnText + (customBtnText === 'Join' ? ' 👥' : (customBtnText === 'Launch Bot' ? ' 🚀' : (customBtnText === 'Visit' ? ' 🌐' : ' ▶')));
+        var btnBg = "#10b981";
+
+        var verifiedBadgeHtml = isVerified 
+          ? '<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">✔ Verified</span>' 
+          : '';
+
+        html += '<div class="card flex-between" style="background:#0d1b38; border: 1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:10px;">' +
+          '<div style="display:flex; align-items:center; flex:1; overflow:hidden;">' + 
+            imgHtml + 
+            '<div style="overflow:hidden;">' +
+              '<div style="display:flex; align-items:center;">' +
+                '<b style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; color:#fff;">' + task.title + '</b>' +
+                verifiedBadgeHtml +
+              '</div>' +
+              '<div style="margin-top:2px; font-size:12px; font-weight:bold; color:var(--accent);">' +
+                '+0.05 🪙' +
+              '</div>' +
+              '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">' +
+                '🕒 ' + Math.max(0, clicksLeft) + ' clicks left' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<button class="btn" style="width:auto; background:' + btnBg + '; padding:8px 16px; border-radius:10px; font-weight:bold; font-size:12px; white-space:nowrap;" ' +
+          'onclick="openTaskVerificationModal(\'' + safeTitle + '\', \'' + safeLink + '\', \'' + safeTitle + '\', \'' + key + '\', 0.05, \'' + customBtnText + '\')">' + btnDisplayLabel + '</button>' +
+        '</div>';
+      });
+
+      if (visibleTaskCount === 0) {
+        if(listEl) listEl.innerHTML = "";
+        if (noticeEl) noticeEl.style.display = 'block';
+      } else {
+        if (noticeEl) noticeEl.style.display = 'none';
+        if(listEl) listEl.innerHTML = html;
+      }
     }
-  ];
 
-  if (noticeEl) noticeEl.style.display = 'block';
-  if (listEl) listEl.innerHTML = "";
-  initBannerSlider();
+    initBannerSlider();
+  });
 }
 
 function initBannerSlider() {
@@ -3173,8 +3525,34 @@ function renderCurrentBannerTask() {
 
 function loadMyPublishedTasks() {
   var myContainer = document.getElementById('myPublishedTasksList');
-  if(!myContainer) return;
-  myContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published campaigns found.</div>';
+  if(!myContainer || !window.db) return;
+  db.ref('customTasks').once('value', function(snapshot) {
+    if (!snapshot.exists()) {
+      myContainer.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">No published campaigns found.</div>';
+      return;
+    }
+    var data = snapshot.val();
+    var html = '';
+    var foundAny = false;
+
+    Object.entries(data).forEach(function(entry) {
+      var task = entry[1];
+      if (task.userId === userId) {
+        foundAny = true;
+        var done = task.clicksDone || 0;
+        var total = task.totalClicks || 100;
+        var remaining = task.clicksRemaining !== undefined ? task.clicksRemaining : (total - done);
+        
+        var statusText = (remaining <= 0) ? 'Done' : 'Active';
+        var statusColor = (remaining <= 0) ? 'var(--accent)' : '#0ea5e9';
+        
+        var imgHtml = task.image ? '<img src="' + task.image + '" style="width:36px; height:36px; border-radius:8px; object-fit:cover; margin-right:8px; flex-shrink:0;" />' : '';
+
+        html += '<div class="card" style="background:#0d1b38; margin-bottom:10px; padding:12px;"><div class="flex-between" style="margin-bottom:6px;"><div style="display:flex; align-items:center;">' + imgHtml + '<b style="color: var(--accent); font-size:14px;">' + task.title + '</b></div><span style="font-size: 11px; color: ' + statusColor + '; font-weight: bold; background: rgba(14, 165, 233, 0.15); padding: 2px 6px; border-radius: 4px;">' + statusText + '</span></div><div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Button: <strong>' + (task.buttonText || 'Join') + '</strong> | Plan: <strong>' + (task.plan || '100 clicks') + '</strong></div><div class="flex-between" style="font-size: 12px; background: #0d1b38; padding: 8px; border-radius: 8px;"><span>🔥 Total Clicks: <strong style="color:var(--yellow);">' + done + ' / ' + total + '</strong></span><span>⏳ Remaining: <strong style="color:var(--accent);">' + Math.max(0, remaining) + '</strong></span></div></div>';
+      }
+    });
+    myContainer.innerHTML = foundAny ? html : '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 15px;">Aapne abhi tak koi campaign publish nahi kiya hai.</div>';
+  });
 }
 </script>
 </body>
