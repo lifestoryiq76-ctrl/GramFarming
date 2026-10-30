@@ -3,6 +3,7 @@ const path = require('path');
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
 const cron = require('node-cron');
+const { MongoClient } = require('mongodb');
 
 const app = express();
 app.use(express.json());
@@ -22,25 +23,57 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-// Firebase REST Setup
-const FIREBASE_DATABASE_URL = "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com";
+// MongoDB Connection Setup
+const uri = process.env.MONGO_URI || "mongodb+srv://lifestoryiq76_db_user:Rajesh123@cluster0.fpbqneq.mongodb.net/?retryWrites=true&w=majority";
+let client;
+let dbInstance;
 
-async function getFirebaseData(path) {
-    try {
-        let res = await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`);
-        return await res.json();
-    } catch(e) { return null; }
+async function getDB() {
+    if (dbInstance) return dbInstance;
+    if (!client) {
+        client = new MongoClient(uri);
+        await client.connect();
+    }
+    dbInstance = client.db('gram_farming');
+    return dbInstance;
 }
 
-async function updateFirebaseData(path, data) {
+// MongoDB Helper Functions (Replacing Firebase REST)
+async function getMongoData(collectionName, query = {}) {
     try {
-        await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+        const db = await getDB();
+        const collection = db.collection(collectionName);
+        if (query._id || query.userId || query.key) {
+            return await collection.findOne(query);
+        }
+        const results = await collection.find(query).toArray();
+        // Convert array to object key-value pairs if needed to match old structure
+        const dataObj = {};
+        results.forEach(doc => {
+            const docKey = doc.key || doc.userId || doc._id.toString();
+            dataObj[docKey] = doc;
         });
+        return Object.keys(dataObj).length > 0 ? dataObj : null;
+    } catch(e) {
+        console.error("Get Mongo Error:", e.message);
+        return null;
+    }
+}
+
+async function updateMongoData(collectionName, filterQuery, updateData) {
+    try {
+        const db = await getDB();
+        const collection = db.collection(collectionName);
+        await collection.updateOne(
+            filterQuery,
+            { $set: updateData },
+            { upsert: true }
+        );
         return true;
-    } catch(e) { return false; }
+    } catch(e) {
+        console.error("Update Mongo Error:", e.message);
+        return false;
+    }
 }
 
 // Credentials Configuration
@@ -59,7 +92,8 @@ bot.start(async (ctx) => {
     const userId = String(ctx.from.id);
     const firstName = ctx.from.first_name || 'User';
 
-    await updateFirebaseData(`users/${userId}`, {
+    await updateMongoData('users', { userId: userId }, {
+        userId: userId,
         name: "👑 " + firstName + (ctx.from.username ? ' (@' + ctx.from.username + ')' : ''),
         telegramChatId: ctx.chat.id
     });
@@ -93,12 +127,12 @@ async function sendDailyCheckinReminder(chatId, userId) {
     try {
         const todayStr = new Date().toDateString();
         
-        const userData = await getFirebaseData(`users/${userId}`);
+        const userData = await getMongoData('users', { userId: String(userId) });
         if (userData && userData.lastReminderDate === todayStr) {
             return false; 
         }
 
-        const generalData = await getFirebaseData('adminSettings/general');
+        const generalData = await getMongoData('adminSettings', { key: 'general' });
         const dynamicDailyReward = (generalData && generalData.dailyBonus) ? parseFloat(generalData.dailyBonus) : 0.01;
 
         let currentStreak = userData && userData.streak !== undefined ? userData.streak : 0;
@@ -120,7 +154,7 @@ Open the app and check in before the day ends to keep your streak.`;
             ])
         });
 
-        await updateFirebaseData(`users/${userId}`, { lastReminderDate: todayStr });
+        await updateMongoData('users', { userId: String(userId) }, { lastReminderDate: todayStr });
         return true;
     } catch (err) {
         console.error(`Error sending reminder to ${chatId}:`, err.message);
@@ -145,12 +179,12 @@ async function triggerDailyCheckinBroadcast() {
     lastBroadcastMinute = currentMinuteKey;
 
     console.log("📢 Triggering Daily Check-in Broadcast to users...");
-    const usersData = await getFirebaseData('users');
+    const usersData = await getMongoData('users');
     if (usersData) {
         for (let uId in usersData) {
             const user = usersData[uId];
             if (user && user.telegramChatId) {
-                await sendDailyCheckinReminder(user.telegramChatId, uId);
+                await sendDailyCheckinReminder(user.telegramChatId, user.userId || uId);
             }
         }
     }
@@ -192,7 +226,7 @@ app.post('/api/tasks/publish', async (req, res) => {
             [Markup.button.webApp('🎯 View Tasks', MINI_APP_URL)]
         ]);
 
-        const usersData = await getFirebaseData('users');
+        const usersData = await getMongoData('users');
         let sentCount = 0;
 
         if (usersData) {
@@ -272,7 +306,7 @@ async function sendPayoutNotification(withdrawalData) {
 
 async function checkAndSendPayouts() {
   try {
-    const parentData = await getFirebaseData('withdrawals');
+    const parentData = await getMongoData('withdrawals');
     if (!parentData) return;
 
     for (let uId in parentData) {
@@ -280,8 +314,9 @@ async function checkAndSendPayouts() {
       if (!userWithdrawals) continue;
 
       for (let key in userWithdrawals) {
+        if (key === '_id') continue;
         let item = userWithdrawals[key];
-        if (!item) continue;
+        if (!item || typeof item !== 'object') continue;
 
         const statusText = String(item.status || '').toLowerCase();
         const isApproved = statusText.includes('approved') || 
@@ -292,7 +327,7 @@ async function checkAndSendPayouts() {
         if (isApproved && !item.postedToChannel) {
           const success = await sendPayoutNotification(item);
           if (success) {
-            await updateFirebaseData(`withdrawals/${uId}/${key}`, { postedToChannel: true });
+            await updateMongoData('withdrawals', { userId: uId, requestId: key }, { postedToChannel: true });
           }
         }
       }
@@ -320,8 +355,9 @@ async function handleFaucetPayPayout(req, res) {
   setTimeout(() => recentRequests.delete(hitKey), 5000);
 
   try {
+    const reqKey = requestId || `fp_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
     if (requestId) {
-      const existingReq = await getFirebaseData(`withdrawals/${userId}/${requestId}`);
+      const existingReq = await getMongoData('withdrawals', { userId: String(userId), requestId: requestId });
       if (existingReq && existingReq.processed) {
         return res.status(400).json({ success: false, message: "This withdrawal has already been processed." });
       }
@@ -347,7 +383,8 @@ async function handleFaucetPayPayout(req, res) {
 
     if (faucetPayResponse.data && faucetPayResponse.data.status === 200) {
       const payoutData = {
-        userId: userId,
+        userId: String(userId),
+        requestId: reqKey,
         userName: displayName,
         amount: amount,
         currency: currency || 'USDT',
@@ -359,10 +396,7 @@ async function handleFaucetPayPayout(req, res) {
         date: new Date().toLocaleString()
       };
 
-      const reqKey = requestId || `fp_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, payoutData);
-      
-      // Send notification instantly without waiting
+      await updateMongoData('withdrawals', { userId: String(userId), requestId: reqKey }, payoutData);
       sendPayoutNotification(payoutData);
 
       return res.status(200).json({
@@ -396,8 +430,8 @@ app.post('/api/withdraw/ton', async (req, res) => {
     const reqKey = requestId || `ton_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
     const withdrawalData = {
-      id: reqKey,
-      userId: userId || 'Unknown',
+      requestId: reqKey,
+      userId: String(userId || 'Unknown'),
       userName: displayName || 'User',
       amount: amount,
       currency: currency || 'Gram',
@@ -408,7 +442,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
       date: new Date().toLocaleString()
     };
 
-    await updateFirebaseData(`withdrawals/${userId}/${reqKey}`, withdrawalData);
+    await updateMongoData('withdrawals', { userId: String(userId || 'Unknown'), requestId: reqKey }, withdrawalData);
 
     return res.status(200).json({
       success: true,
@@ -422,7 +456,7 @@ app.post('/api/withdraw/ton', async (req, res) => {
 
 bot.command('single_ton', async (ctx) => {
   try {
-    const data = await getFirebaseData('withdrawals');
+    const data = await getMongoData('withdrawals');
     if (!data) return ctx.reply("Koi pending Gram withdrawal nahi mila.");
 
     let responseMsg = "📋 <b>Single Gram Withdrawals (Pending):</b>\n\n";
@@ -431,10 +465,11 @@ bot.command('single_ton', async (ctx) => {
     for (let uId in data) {
       const userWithdrawals = data[uId];
       for (let key in userWithdrawals) {
+        if (key === '_id') continue;
         const item = userWithdrawals[key];
         if (item && item.status === 'PENDING') {
           count++;
-          responseMsg += `<b>${count}. Request ID:</b> <code>${key}</code>\n` +
+          responseMsg += `<b>${count}. Request ID:</b> <code>${item.requestId || key}</code>\n` +
                          `<b>User:</b> ${item.userName} (${item.userId})\n` +
                          `<b>Address:</b> <code>${item.destination}</code>\n` +
                          `<b>Amount:</b> ${item.amount} ${item.currency || 'Gram'}\n\n`;
@@ -451,7 +486,7 @@ bot.command('single_ton', async (ctx) => {
 
 bot.command('multisend_ton', async (ctx) => {
   try {
-    const data = await getFirebaseData('withdrawals');
+    const data = await getMongoData('withdrawals');
     if (!data) return ctx.reply("Multi-send ke liye koi data nahi hai.");
 
     let batchText = "";
@@ -460,6 +495,7 @@ bot.command('multisend_ton', async (ctx) => {
     for (let uId in data) {
       const userWithdrawals = data[uId];
       for (let key in userWithdrawals) {
+        if (key === '_id') continue;
         const item = userWithdrawals[key];
         if (item && item.status === 'PENDING') {
           count++;
@@ -489,12 +525,13 @@ bot.command('approve_ton', async (ctx) => {
   if (!reqId) return ctx.reply("Kripya Request ID dein. Example: /approve_ton ton_1710000000");
 
   try {
-    const allData = await getFirebaseData('withdrawals');
+    const allData = await getMongoData('withdrawals');
     let found = false;
 
     for (let uId in allData) {
-      if (allData[uId][reqId]) {
-        const item = allData[uId][reqId];
+      const userWithdrawals = allData[uId];
+      if (userWithdrawals && userWithdrawals[reqId]) {
+        const item = userWithdrawals[reqId];
         if (item.postedToChannel) {
           return ctx.reply("⚠️ Yeh request pehle hi approved aur channel par post ho chuki hai.");
         }
@@ -502,8 +539,7 @@ bot.command('approve_ton', async (ctx) => {
         item.status = 'SUCCESS (Approved)';
         item.postedToChannel = true;
         
-        // Instant parallel update and notification dispatch for maximum speed
-        await updateFirebaseData(`withdrawals/${uId}/${reqId}`, item);
+        await updateMongoData('withdrawals', { userId: uId, requestId: reqId }, item);
         sendPayoutNotification(item);
 
         found = true;
@@ -520,19 +556,20 @@ bot.command('approve_ton', async (ctx) => {
 
 bot.command('approve_all_ton', async (ctx) => {
   try {
-    const data = await getFirebaseData('withdrawals');
+    const data = await getMongoData('withdrawals');
     if (!data) return ctx.reply("Approve karne ke liye koi data nahi mila.");
 
     let approvedCount = 0;
     for (let uId in data) {
       const userWithdrawals = data[uId];
       for (let key in userWithdrawals) {
+        if (key === '_id') continue;
         const item = userWithdrawals[key];
         if (item && item.status === 'PENDING' && !item.postedToChannel) {
           item.status = 'SUCCESS (Approved)';
           item.postedToChannel = true;
           
-          await updateFirebaseData(`withdrawals/${uId}/${key}`, item);
+          await updateMongoData('withdrawals', { userId: uId, requestId: item.requestId || key }, item);
           sendPayoutNotification(item);
           approvedCount++;
         }
