@@ -1,3 +1,20 @@
+const { MongoClient } = require('mongodb');
+
+// MongoDB Connection Setup
+const uri = process.env.MONGO_URI || "mongodb+srv://lifestoryiq76_db_user:Rajesh123@cluster0.fpbqneq.mongodb.net/?retryWrites=true&w=majority";
+let client;
+let dbInstance;
+
+async function getDB() {
+    if (dbInstance) return dbInstance;
+    if (!client) {
+        client = new MongoClient(uri);
+        await client.connect();
+    }
+    dbInstance = client.db('gram_farming');
+    return dbInstance;
+}
+
 export default async function handler(req, res) {
   // CORS Headers set karein taaki network block na ho
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,7 +37,6 @@ export default async function handler(req, res) {
 
   const ADMIN_WALLET = "UQDFz_BjBSx-zBiwQx4wDs6BkFKy8z_uJoRnCYshNrgqthtd";
   const expectedNano = Math.round(parseFloat(amount) * 1e9); // TON/Gram to nanoTON
-  const FIREBASE_DATABASE_URL = "https://gramfarmingbot-1a570-default-rtdb.firebaseio.com";
 
   try {
     // 1st Attempt: TonAPI Fetch
@@ -68,37 +84,42 @@ export default async function handler(req, res) {
     }
 
     if (isFound) {
-      // 1. Fetch current user data from Firebase to update balance
-      let userRes = await fetch(`${FIREBASE_DATABASE_URL}/users/${userId}.json`);
-      let userData = await userRes.json();
+      const db = await getDB();
+      const usersCollection = db.collection('users');
+      const depositsCollection = db.collection('deposits');
+
+      // 1. Fetch current user data from MongoDB to update balance
+      const userQuery = { userId: String(userId) };
+      let userData = await usersCollection.findOne(userQuery);
       
       let currentTonBalance = userData && userData.tonBalance !== undefined ? parseFloat(userData.tonBalance) : 0.0590;
       let newTonBalance = currentTonBalance + parseFloat(amount);
 
-      // 2. Update user's Ton Balance in Firebase
-      await fetch(`${FIREBASE_DATABASE_URL}/users/${userId}.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tonBalance: newTonBalance })
-      });
+      // 2. Update user's Ton Balance in MongoDB
+      await usersCollection.updateOne(
+        userQuery,
+        { $set: { tonBalance: newTonBalance } },
+        { upsert: true }
+      );
 
-      // 3. Save Deposit Record in Firebase for Transaction History
+      // 3. Save Deposit Record in MongoDB for Transaction History
       const depositKey = `dep_${Date.now()}`;
       const depositRecord = {
         id: depositKey,
+        requestId: depositKey,
         userName: displayName || 'User',
-        userId: userId,
+        userId: String(userId),
         method: 'Gram Deposit',
         amount: parseFloat(amount),
         status: 'SUCCESS',
         date: new Date().toLocaleString()
       };
 
-      await fetch(`${FIREBASE_DATABASE_URL}/deposits/${userId}/${depositKey}.json`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(depositRecord)
-      });
+      await depositsCollection.updateOne(
+        { userId: String(userId), id: depositKey },
+        { $set: depositRecord },
+        { upsert: true }
+      );
 
       return res.status(200).json({
         success: true,
