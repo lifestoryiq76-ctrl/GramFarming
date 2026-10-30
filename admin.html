@@ -62,7 +62,7 @@
 
         <div style="margin-top: 10px; text-align: center;">
             <label>Selected Logo Preview:</label>
-            <div id="imagePreviewContainer" style="margin-top: 8px; min-height: 50px; display: flex; justify-align: center; align-items: center;">
+            <div id="imagePreviewContainer" style="margin-top: 8px; min-height: 50px; display: flex; justify-content: center; align-items: center;">
                 <span style="color: var(--text-muted); font-size: 12px;">Koyi image select nahi ki gayi hai</span>
             </div>
         </div>
@@ -924,6 +924,18 @@
                     'adminSettings/stakingApy/365': parseFloat(document.getElementById('stakeApy365').value) || 20
                 };
                 update(ref(db), stakingData).then(() => alert('Staking APY Rates Saved Successfully!'));
+            } else if (type === 'clickRates') {
+                let clickData = {
+                    'adminSettings/clickRates/coin100': parseFloat(document.getElementById('rateCoin100').value) || 35,
+                    'adminSettings/clickRates/coin250': parseFloat(document.getElementById('rateCoin250').value) || 87.5,
+                    'adminSettings/clickRates/coin500': parseFloat(document.getElementById('rateCoin500').value) || 175,
+                    'adminSettings/clickRates/coin1000': parseFloat(document.getElementById('rateCoin1000').value) || 350,
+                    'adminSettings/clickRates/coin2000': parseFloat(document.getElementById('rateCoin2000').value) || 600,
+                    'adminSettings/clickRates/coin3000': parseFloat(document.getElementById('rateCoin3000').value) || 750,
+                    'adminSettings/clickRates/coin4000': parseFloat(document.getElementById('rateCoin4000').value) || 900,
+                    'adminSettings/clickRates/coin5000': parseFloat(document.getElementById('rateCoin5000').value) || 1100
+                };
+                update(ref(db), clickData).then(() => alert('Click Rates Saved Successfully!'));
             }
         } catch (e) {
             alert("Error: " + e.message);
