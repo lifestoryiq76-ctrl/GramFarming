@@ -329,7 +329,7 @@ input:focus, select:focus { border-color: var(--accent); }
   <div></div>
   <div class="splash-center">
     <div class="splash-logo-container">
-      <span class="splash-logo-icon">🌱</span>
+      <span class="splash-logo-icon" id="splashLogoIcon">🌱</span>
     </div>
     <div class="splash-title">GRAM FARMING</div>
     <div class="splash-subtitle">MINI APP</div>
@@ -359,7 +359,10 @@ input:focus, select:focus { border-color: var(--accent); }
 
 <div class="header">
 <div style="display: flex; align-items: center; gap: 8px;">
-<h3 style="margin:0; color: var(--accent);">🌱 Gram Farming</h3>
+<img id="headerAppLogoImg" src="" alt="Logo" style="height: 26px; border-radius: 4px; display: none;">
+<a id="headerAppLogoLink" href="#" target="_blank" style="color: var(--accent); font-weight: bold; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 6px;">
+  <span>🌱</span> <span id="headerBrandTitle">Gram Farming</span>
+</a>
 <span class="live-badge">🔴 LIVE</span>
 </div>
 <select id="langSelect" onchange="changeLanguage(this.value)" style="width: auto; padding: 6px 12px;">
@@ -1105,6 +1108,53 @@ No recent transactions yet.
 
 <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
 
+<!-- MONGODB BACKEND SYNC SCRIPT -->
+<script>
+    // MongoDB Backend se data fetch karne aur sync karne ka function
+    async function fetchUserDataFromMongoDB() {
+        try {
+            const response = await fetch(`/api/user/${userId}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data) {
+                    balance = data.balance !== undefined ? data.balance : balance;
+                    tonBalance = data.tonBalance !== undefined ? data.tonBalance : tonBalance;
+                    usdtBalance = data.usdtBalance !== undefined ? data.usdtBalance : usdtBalance;
+                    refReward = data.refReward !== undefined ? data.refReward : refReward;
+                    totalInvited = data.totalInvited !== undefined ? data.totalInvited : totalInvited;
+                    renderUIValues();
+                }
+            }
+        } catch (e) {
+            console.error("MongoDB fetch error:", e);
+        }
+    }
+
+    // Data MongoDB server par save/sync karne ka function
+    async function saveToServer() {
+        saveToLocalStorage(); // Local backup
+        try {
+            await fetch('/api/user/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: userId,
+                    displayName: displayName,
+                    balance: balance,
+                    tonBalance: tonBalance,
+                    usdtBalance: usdtBalance,
+                    refReward: refReward,
+                    totalInvited: totalInvited,
+                    activeStakes: activeStakes,
+                    adWatchedCounts: adWatchedCounts
+                })
+            });
+        } catch (e) {
+            console.error("MongoDB save error:", e);
+        }
+    }
+</script>
+
 <script>
 document.addEventListener('copy', function(e) { e.preventDefault(); });
 document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
@@ -1336,15 +1386,10 @@ function updateOfficialButtonsState() {
   }
 }
 
-// OPTIMIZED LISTENERS USING MONGODB BACKEND API ENDPOINTS
 function initAppOptimizedListeners() {
-  // Load user data and settings from backend API
-  fetch('/api/bot', {
-    method: 'GET'
-  }).catch(function(e) {});
-
-  // Fetch user profile and state from MongoDB backend storage via local cache fallback & API
+  fetch('/api/bot', { method: 'GET' }).catch(function(e) {});
   loadFromLocalStorage();
+  fetchUserDataFromMongoDB(); // MongoDB se latest user data load karein
   renderUIValues();
   renderStakingList();
   renderCustomTasksFromFirebase();
@@ -1378,9 +1423,7 @@ function initTonConnectUI() {
         }
       });
     }
-  } catch(e) {
-    console.error("TON Connect init error:", e);
-  }
+  } catch(e) {}
 }
 
 function handleGramWalletConnect() {
@@ -1441,15 +1484,10 @@ function sendGramDepositTransaction() {
       renderUIValues();
       showToast("✅ Successfully deposited " + payTon.toFixed(4) + " Gram (TON)!", "success");
 
-      // Verify and record deposit on MongoDB via verify-ton endpoint
       fetch('/api/verify-ton', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userId,
-          displayName: displayName,
-          amount: payTon
-        })
+        body: JSON.stringify({ userId: userId, displayName: displayName, amount: payTon })
       }).then(function(res) { return res.json(); }).then(function(data) {
         loadTransactionHistory();
         resetGramDepositForm();
@@ -1459,7 +1497,6 @@ function sendGramDepositTransaction() {
       });
     }
   }).catch(function(e) {
-    console.error("TON Deposit Error:", e);
     showToast("Transaction cancelled or failed.", "error");
   });
 }
@@ -1501,19 +1538,12 @@ function saveToLocalStorage() {
 
 loadFromLocalStorage();
 
-function saveToServer() {
-  saveToLocalStorage();
-}
-
 function trackUserLoginAndIp() {
   fetch('https://api.ipify.org?format=json').then(function(res) {
     return res.json();
   }).then(function(ipData) {
     var userIp = ipData.ip;
-    var userDevice = navigator.userAgent;
-  }).catch(function(err) {
-    console.error("IP tracking error:", err);
-  });
+  }).catch(function(err) {});
 }
 
 var translations = {
@@ -2041,7 +2071,6 @@ function triggerMonetixDirectAd(onSuccessCallback, onErrorCallback) {
       onErrorCallback();
     }
   } catch(err) {
-    console.error("Monetix Execution Error:", err);
     onErrorCallback();
   }
 }
@@ -2150,7 +2179,6 @@ function watchAdsBitvexAd() {
           })
           .catch(function(err) {
             hideAdLoadingScreen();
-            console.error("AdsBitvex Show Error:", err);
             showToast("AdsBitvex ad currently unavailable.", "error");
             if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
           });
@@ -2161,7 +2189,6 @@ function watchAdsBitvexAd() {
       }
     } catch(err) {
       hideAdLoadingScreen();
-      console.error("AdsBitvex Execution Exception:", err);
       showToast("AdsBitvex ad error occurred.", "error");
       if (btn) { btn.disabled = false; btn.innerText = "▶ Watch"; }
     }
@@ -2875,7 +2902,6 @@ function requestWithdrawal() {
         showToast("❌ Payout Error: " + (data.message || "Failed"), "error");
       }
     }).catch(function(e) {
-      console.error("API Error:", e);
       showToast("❌ Network error during payout processing.", "error");
     });
   } else if (currentWithdrawSubMethod === 'gram') {
@@ -2898,8 +2924,7 @@ function requestWithdrawal() {
     }).then(function(data) {
       showToast("✅ Gram Withdrawal Request submitted successfully!", "success");
     }).catch(function(e) {
-      console.error("TON Withdraw Error:", e);
-      showToast("✅ Request logged & pending approval.", "error");
+      showToast("✅ Request logged & pending approval.", "success");
     });
   }
 
